@@ -15,7 +15,7 @@ namespace JdCat.Cat.Web.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return View();  
         }
 
         public async Task<IActionResult> About()
