@@ -25,17 +25,31 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Address");
+
+                    b.Property<string>("AppId");
+
+                    b.Property<string>("BusinessLicense");
+
                     b.Property<string>("Code");
 
                     b.Property<DateTime?>("CreateTime");
 
-                    b.Property<string>("Log");
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("InvitationCode");
+
+                    b.Property<string>("Mobile");
 
                     b.Property<string>("Name");
 
                     b.Property<string>("Password");
 
                     b.Property<DateTime?>("RegisterDate");
+
+                    b.Property<string>("StoreId");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
