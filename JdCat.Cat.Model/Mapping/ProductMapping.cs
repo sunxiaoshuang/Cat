@@ -15,6 +15,11 @@ namespace JdCat.Cat.Model.Mapping
                 .WithOne(a => a.Product)
                 .HasForeignKey(a => a.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            //builder.(a => a.ProductType)
+            //    .WithMany(a => a.Products)
+            //    .HasForeignKey(a => a.ProductTypeId)
+            //    .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

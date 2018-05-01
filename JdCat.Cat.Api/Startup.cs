@@ -31,6 +31,7 @@ namespace JdCat.Cat.Api
 //            services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext")));
             services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
             services.AddScoped<IBusinessRepository, BusinessRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
             services.AddSingleton(new UtilHelper());
         }
 

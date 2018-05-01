@@ -11,7 +11,7 @@ namespace JdCat.Cat.Model
     {
         public CatDbContext(DbContextOptions<CatDbContext> options) : base(options)
         {
-            
+
         }
 
 //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -20,6 +20,7 @@ namespace JdCat.Cat.Model
 //        }
 
         public DbSet<Business> Businesses { get; set; }
+        public DbSet<ProductType> ProductTypes { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
 

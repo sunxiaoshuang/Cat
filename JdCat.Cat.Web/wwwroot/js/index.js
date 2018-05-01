@@ -18,7 +18,6 @@
 
         initialization: function () {
             mainApp.initFunction();
-
         }
 
     }
@@ -40,4 +39,22 @@
         });
     });
 
+    var pageObj = {
+        $frame: $("#mainframe"),
+        defaultUrl: "/product",
+        method: {
+            hashchange: function () {
+                var url = pageObj.defaultUrl;
+                if (window.location.href.indexOf("#") > -1) {
+                    url = window.location.href.substring(window.location.href.indexOf("#") + 1)
+                }
+                pageObj.$frame.attr("src", url);
+            }
+        }
+    };
+    window.onhashchange = function () {
+        pageObj.method.hashchange();
+    }
+    pageObj.method.hashchange();
+    
 }(jQuery));

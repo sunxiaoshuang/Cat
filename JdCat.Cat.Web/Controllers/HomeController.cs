@@ -22,23 +22,24 @@ namespace JdCat.Cat.Web.Controllers
 
         public IActionResult Index()
         {
-            return View(Business);
+            ViewBag.UserName = Business.Name;
+            return View();
         }
 
-        public async Task<IActionResult> About([FromServices]IOptions<AppData> appdata)
+        public IActionResult About([FromServices]AppData appdata)
         {
-            ViewData["Message"] = "Your application description page.";
-            var client = new HttpClient();
-            var data = new FormUrlEncodedContent(new Dictionary<string, string>()
-            {
-                { "user", "sunxsh" },
-                { "pwd", "000000"}
-            });
-            var result = client.GetAsync(appdata.Value.ApiUri + "/business?user=sunxsh&pwd=000000");
-            var stream = result.Result.Content.ReadAsStringAsync();
-            var a = await stream;
-            client.Dispose();
-            ViewBag.Msg = a;
+            //ViewData["Message"] = "Your application description page.";
+            //var client = new HttpClient();
+            //var data = new FormUrlEncodedContent(new Dictionary<string, string>()
+            //{
+            //    { "user", "sunxsh" },
+            //    { "pwd", "000000"}
+            //});
+            //var result = client.GetAsync(appdata.ApiUri + "/business?user=sunxsh&pwd=000000");
+            //var stream = result.Result.Content.ReadAsStringAsync();
+            //var a = await stream;
+            //client.Dispose();
+            //ViewBag.Msg = a;
             return View();
         }
 

@@ -1,0 +1,88 @@
+﻿
+@{
+    ViewData["Title"] = "商品管理";
+}
+
+@section Scripts{
+    <environment include="Development">
+        <script src="~/js/product.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/product.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="pull-left product-type">
+                <div class="category-title clearfix">
+                    分类列表
+                    <div class="kui-button pull-right" style="z-index: 1;">
+                        <button type="button" class="btn btn-primary" id="btnType">
+                            <i class="fa fa-gear inline-middle" style="font-size: 16px;"></i>
+                            <span class="inline-middle">管理分类</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="cate-tree" style="min-height: 456px;">
+                    <div class="all-line selected">
+                        <span>全部商品</span>
+                        <span class="all-cnt">50</span>
+                    </div>
+                    <div class="cate-panel closed2">
+                        <div class="cate-title">
+                            <div class="cate-name relative">
+                                特色牛肉面
+                                <span class="cate-cnt">8</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cate-panel closed2">
+                        <div class="cate-title">
+                            <div class="cate-name relative">
+                                特色早点
+                                <span class="cate-cnt">18</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pull-left product-main">
+                <div class="category-name" style="">
+                    商品列表
+                </div>
+                <div class="product-list relative">
+                    <div class="tool-bar relative">
+                        <div class="clearfix" style="padding: 16px;">
+                            <div class="kui-checkbox checkbox  pull-left m-left-md m-right-md" style="margin-top: 6px; margin-right: 20px;">
+                                <label class="label-checkbox">
+                                    <input type="checkbox" class="">
+                                    <span class="custom-checkbox"></span>
+                                    全选本页
+                                </label>
+                            </div>
+                            <div class="pull-left">
+                                <div class="kui-button m-right-xs">
+                                    <button type="button" class="btn btn-sm kui-button-primary btn-">
+                                        批量上架
+                                    </button>
+                                </div>
+                                <div class="kui-button m-right-xs">
+                                    <button type="button" class="btn btn-sm kui-button-primary btn-">
+                                        批量下架
+                                    </button>
+                                </div>
+                                <div class="kui-button m-right-xs">
+                                    <button type="button" class="btn btn-sm kui-button-primary btn-">
+                                        批量删除
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

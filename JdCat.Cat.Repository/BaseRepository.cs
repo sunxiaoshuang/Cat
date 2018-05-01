@@ -9,7 +9,7 @@ namespace JdCat.Cat.Repository
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity, new()
     {
-        private readonly CatDbContext _context;
+        protected readonly CatDbContext _context;
         public BaseRepository(CatDbContext context)
         {
             _context = context;

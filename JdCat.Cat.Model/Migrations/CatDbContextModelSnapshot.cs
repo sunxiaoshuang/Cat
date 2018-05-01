@@ -74,6 +74,8 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<int?>("ProductTypeId");
+
                     b.Property<DateTime>("PublishTime");
 
                     b.Property<byte[]>("Timestamp")
@@ -83,6 +85,8 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("BusinessId");
+
+                    b.HasIndex("ProductTypeId");
 
                     b.ToTable("Product","dbo");
                 });
@@ -113,12 +117,43 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("ProductImage","dbo");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ProductType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int>("Sort");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("ProductType","dbo");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.Product", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
                         .WithMany("Products")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("JdCat.Cat.Model.Data.ProductType", "ProductType")
+                        .WithMany("Products")
+                        .HasForeignKey("ProductTypeId");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.ProductImage", b =>
@@ -126,6 +161,14 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.Product", "Product")
                         .WithMany("Images")
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ProductType", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany("ProductsTypes")
+                        .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

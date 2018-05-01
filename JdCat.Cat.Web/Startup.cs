@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.IRepository;
+using JdCat.Cat.Model;
+using JdCat.Cat.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,12 +33,20 @@ namespace JdCat.Cat.Web
                 options.IdleTimeout = TimeSpan.FromSeconds(600);
                 options.Cookie.HttpOnly = true;
             });
+            // 配置依赖
+            services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
+            services.AddScoped<IBusinessRepository, BusinessRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddSingleton(new UtilHelper());
             // 系统参数
             var appData = Configuration.GetSection("appData");
             services.AddSingleton(new AppData
             {
                 ApiUri = appData["apiUri"],
                 Name = appData["name"],
+                Session = appData["session"],
+                Cookie = appData["cookie"],
+                Connection = Configuration.GetConnectionString("CatContext")
             });
         }
 

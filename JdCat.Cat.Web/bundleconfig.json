@@ -10,7 +10,8 @@
     "outputFileName": "wwwroot/js/site.min.js",
     "inputFiles": [
       "wwwroot/js/site.js",
-      "wwwroot/js/lib/plugins.js"
+      "wwwroot/js/lib/plugins.js",
+      "wwwroot/js/lib/common.js"
     ],
     "minify": {
       "enabled": true,
@@ -42,6 +43,13 @@
     "outputFileName": "wwwroot/js/index.min.js",
     "inputFiles": [
       "wwwroot/js/index.js"
+    ]
+  },
+  // 商品管理
+  {
+    "outputFileName": "wwwroot/js/product.min.js",
+    "inputFiles": [
+      "wwwroot/js/product.js"
     ]
   }
 ]
