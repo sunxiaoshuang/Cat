@@ -27,6 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\lib\axios\axios.js" />
+    <None Include="wwwroot\lib\axios\axios.map" />
+    <None Include="wwwroot\lib\axios\axios.min.js" />
+    <None Include="wwwroot\lib\axios\axios.min.map" />
     <None Include="wwwroot\lib\jquery\dist\core.js" />
     <None Include="wwwroot\lib\jquery\dist\jquery.js" />
     <None Include="wwwroot\lib\jquery\dist\jquery.min.js" />

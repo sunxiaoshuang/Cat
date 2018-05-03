@@ -51,6 +51,34 @@
         return fmt;
     };
 
+    // html特殊字符转义
+    window.HTMLEncode = function (html) {
+        var temp = document.createElement("div");
+        (temp.textContent != null) ? (temp.textContent = html) : (temp.innerText = html);
+        var output = temp.innerHTML; temp = null;
+        return output;
+    }
+
+    // html特殊字符返转义
+    window.HTMLDecode = function (text) {
+        var temp = document.createElement("div");
+        temp.innerHTML = text;
+        var output = temp.innerText || temp.textContent;
+        temp = null;
+        return output;
+    }
+
+    // 数组扩展
+    Array.prototype.first = function (fn) {
+        var i = 0, len = this.length;
+        for (; i < len; i++) {
+            if (fn.call(this[i], this[i]) === true) {
+                return this[i];
+            }
+        }
+        return null;
+    }
+
 })();
 
 

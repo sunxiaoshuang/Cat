@@ -11,12 +11,13 @@ using JdCat.Cat.Web.Models;
 using JdCat.Cat.Common;
 using Microsoft.Extensions.Options;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.IRepository;
 
 namespace JdCat.Cat.Web.Controllers
 {
-    public class HomeController : BaseController
+    public class HomeController : BaseController<IBusinessRepository, Business>
     {
-        public HomeController(AppData appData) : base(appData)
+        public HomeController(AppData appData, IBusinessRepository service) : base(appData, service)
         {
         }
 

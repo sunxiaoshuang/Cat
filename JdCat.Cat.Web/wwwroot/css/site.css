@@ -31,12 +31,23 @@
     width: 10%;
 }
 
-.require::after {
+div.require::after {
     content: "*";
     color: red;
     position: absolute;
     top: 2px;
     right: -10px;
+}
+span.require {
+    position: relative;
+}
+span.require::before {
+    content: "*";
+    color: red;
+    position: absolute;
+    font-size: 90%;
+    top: 0;
+    left: -10px;
 }
 /*------------------------------------------------------*/
 @media screen and (max-width: 767px) {
@@ -960,7 +971,6 @@ ul.dropdown-menu.dropdown-messages li a div {
     .mainframe .container-fluid {
         margin: 0 20px;
         background: #f7f7f7;
-        min-height: 1050px;
     }
 
 .category-title {
@@ -992,6 +1002,7 @@ ul.dropdown-menu.dropdown-messages li a div {
         height: 60px;
         line-height: 60px;
         padding: 0 0 0 38px;
+        cursor: pointer;
         border-bottom: 1px dashed #e5e5e5;
     }
 
@@ -1115,6 +1126,7 @@ ul.dropdown-menu.dropdown-messages li a div {
 .kui-checkbox input[type="checkbox"] + .custom-checkbox, .kui-checkbox input[type="checkbox"]:disabled + .custom-checkbox {
     border-radius: 1px;
 }
+
 input[type="checkbox"] + .custom-checkbox {
     width: 14px;
     height: 14px;
@@ -1130,6 +1142,7 @@ input[type="checkbox"] + .custom-checkbox {
     border-color: rgb(160, 160, 160);
     border-image: initial;
 }
+
 input[type="checkbox"] + .custom-checkbox, input[type="checkbox"]:disabled + .custom-checkbox {
     position: relative;
     display: inline-block;
@@ -1146,7 +1159,7 @@ input[type="checkbox"] + .custom-checkbox, input[type="checkbox"]:disabled + .cu
     margin-right: 5px;
 }
 
-.kui-button .kui-button-primary, .kui-button .kui-button-primary:focus {
+.kui-button .kui-button-primary, .kui-button .kui-button-primary:focus, .kui-button .kui-button-primary:active {
     background-color: #fff;
     border: 1px solid #ea7042;
     color: #2a2a2a;
@@ -1187,14 +1200,17 @@ input[type="checkbox"]:checked + .custom-checkbox {
     background-color: #ea7042;
     border-color: #ea7042;
 }
+
 input[type="radio"], input[type="checkbox"] {
     line-height: normal;
     margin: 4px 0px 0px;
 }
+
 input[type="checkbox"], input[type="radio"] {
     box-sizing: border-box;
     padding: 0px;
 }
+
 input[type="checkbox"] {
     position: absolute;
     top: 50%;
@@ -1255,3 +1271,74 @@ input[type="checkbox"] {
         .list-type .list-type-item .form-control {
             margin-right: 10px;
         }
+
+/*
+    添加商品面板
+*/
+.panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+.panel-default {
+    border-color: #fafafa;
+}
+
+.panel-heading {
+    padding: 10px 15px;
+    border-bottom: 1px solid transparent;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.panel-default > .panel-heading {
+    color: #2a2a2a;
+    background-color: #fafafa;
+    border-color: #fafafa;
+}
+
+.text-primary {
+    color: #ea7042 !important;
+}
+
+.panel-title {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 18px;
+    color: inherit;
+    line-height: 30px;
+}
+
+    .panel-title title {
+        height: 20px;
+        color: #2a2a2a;
+        font-size: 18px;
+    }
+
+    .panel-title .title::before {
+        display: inline-block;
+        width: 4px;
+        height: 30px;
+        margin-right: 8px;
+        vertical-align: top;
+        content: "";
+        background-color: #ea7042;
+    }
+.panel-footer {
+    padding: 10px 15px;
+    background-color: #fafafa;
+    border-top: 1px solid #fafafa;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+
+/*----------------------------------*/
+.kui-button{
+    margin-right: 20px;
+}

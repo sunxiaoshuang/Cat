@@ -50,5 +50,10 @@ namespace JdCat.Cat.Repository
         {
             return _context.SaveChanges();
         }
+
+        public DbSet<TEntity> Set<TEntity>() where TEntity : class
+        {
+            return _context.Set<TEntity>();
+        }
     }
 }

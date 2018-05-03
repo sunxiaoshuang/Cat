@@ -5,6 +5,7 @@ using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace JdCat.Cat.Repository
 {
@@ -13,13 +14,10 @@ namespace JdCat.Cat.Repository
         public ProductRepository(CatDbContext context) : base(context)
         {
         }
-
-
         public IEnumerable<ProductType> GetTypes(Business business)
         {
-            return _context.ProductTypes.Where(a => a.BusinessId == business.ID).ToList();
+            return _context.ProductTypes.Include(a => a.Products).Where(a => a.BusinessId == business.ID).OrderBy(a => a.Sort).ToList();
         }
-
         public IEnumerable<ProductType> AddTypes(IEnumerable<ProductType> types)
         {
             foreach (var item in types)
@@ -29,7 +27,6 @@ namespace JdCat.Cat.Repository
             }
             return types;
         }
-
         public IEnumerable<ProductType> EditTypes(IEnumerable<ProductType> types)
         {
             var ids = types.Select(a => a.ID);
@@ -49,6 +46,11 @@ namespace JdCat.Cat.Repository
             var list = _context.ProductTypes.Where(a => ids.Contains(a.ID));
             _context.ProductTypes.RemoveRange(list);
         }
+        public bool ExistProduct(int id)
+        {
+            return _context.Products.Count(a => a.ProductTypeId == id) > 0;
+        }
+
 
     }
 }

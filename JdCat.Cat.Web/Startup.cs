@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace JdCat.Cat.Web
 {
@@ -47,6 +49,10 @@ namespace JdCat.Cat.Web
                 Session = appData["session"],
                 Cookie = appData["cookie"],
                 Connection = Configuration.GetConnectionString("CatContext")
+            });
+            services.AddSingleton(new JsonSerializerSettings {
+                DateFormatString = "yyyy-MM-dd HH:mm:ss",
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
         }
 

@@ -4,7 +4,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1000;
+    z-index: 2000;
 }
 .loading-shadow {
     position: absolute;
@@ -99,4 +99,23 @@
     color: #000;
     left: -10px;
     white-space: nowrap;
+}
+
+.modal-header.bg-danger {
+    background-color: #f2dede;
+}
+.modal-header.bg-info {
+    background-color: #d9edf7;
+}
+.modal-header.bg-warning {
+    background-color: #fcf8e3;
+}
+.modal-header.bg-success {
+    background-color: #dff0d8;
+}
+.modal-alert {
+    z-index: 1061;
+}
+.modal-alert + .modal-backdrop{
+    z-index: 1060;
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Repository;
@@ -15,7 +16,9 @@ using Newtonsoft.Json;
 
 namespace JdCat.Cat.Web.Controllers
 {
-    public class BaseController : Controller
+    public class BaseController<T, TEntity> : Controller 
+        where TEntity : BaseEntity, new()
+        where T: IBaseRepository<TEntity>
     {
         /// <summary>
         /// 系统数据
@@ -33,9 +36,13 @@ namespace JdCat.Cat.Web.Controllers
                 return _business;
             }
         }
-        public BaseController(AppData appData)
+        private T _service;
+        protected T Service => _service;
+        public BaseController(AppData appData, T service)
         {
             this.AppData = appData;
+            this._service = service;
+
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -56,15 +63,22 @@ namespace JdCat.Cat.Web.Controllers
                     //var response = GetAsync($"/business/{id}");
                     //response.Wait();
                     //var content = response.Result;
-                    using (var db = new CatDbContext(new DbContextOptionsBuilder<CatDbContext>().UseSqlServer(AppData.Connection).Options))
+
+                    //using (var db = new CatDbContext(new DbContextOptionsBuilder<CatDbContext>().UseSqlServer(AppData.Connection).Options))
+                    //{
+                    //    _business = db.Find<Business>(int.Parse(id));
+                    //    if (_business == null)
+                    //    {
+                    //        context.Result = new RedirectResult("~/Login");
+                    //    }
+                    //    HttpContext.Session.Set(AppData.Session, _business);
+                    //}
+                    _business = Service.Set<Business>().FirstOrDefault(a => a.ID == int.Parse(id));
+                    if (_business == null)
                     {
-                        _business = db.Find<Business>(int.Parse(id));
-                        if (_business == null)
-                        {
-                            context.Result = new RedirectResult("~/Login");
-                        }
-                        HttpContext.Session.Set(AppData.Session, _business);
+                        context.Result = new RedirectResult("~/Login");
                     }
+                    HttpContext.Session.Set(AppData.Session, _business);
                 }
             }
             base.OnActionExecuting(context);

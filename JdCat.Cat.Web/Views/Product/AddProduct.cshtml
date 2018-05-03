@@ -1,0 +1,148 @@
+﻿@{
+    ViewData["Title"] = "添加商品";
+}
+
+@section Scripts{
+    <script>
+        var pageData = {
+            types: JSON.parse('@Html.Raw(ViewBag.types == null ? "[]" : ViewBag.types)')
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/js/addproduct.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/addproduct.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">添加商品</span>
+                        <a asp-controller="product" asp-action="index" class="pull-right text-primary">返回</a>
+                    </h3>
+                </div>
+            </div>
+            <div class="panel-body form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span class="require">商品分类</span>
+                    </label>
+                    <div class="col-xs-3">
+                        <select id="ddlType" name="type" class="form-control" v-model="entity.ProductTypeId">
+                            <option v-for="item in typeList" v-bind:value="item.id">{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-2">
+                        <div class="kui-button m-right-xs">
+                            <button class="btn kui-button-primary" v-on:click="addType()">
+                                添加分类
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span class="require">商品名称</span>
+                    </label>
+                    <div class="col-xs-6">
+                        <input type="text" v-model="entity.Name" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span>商品图片</span>
+                    </label>
+                    <div class="col-xs-6">
+                        @*<input type="text" name="name" class="form-control" />*@
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span>商品描述</span>
+                    </label>
+                    <div class="col-xs-6">
+                        <textarea type="text" v-model="entity.Description" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span class="require">商品规格</span>
+                    </label>
+                    <div class="col-xs-6">
+                        @*<input type="text" name="format" class="form-control" />*@
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span>商品特色</span>
+                    </label>
+                    <div class="col-xs-6">
+                        <div class="kui-button mr_10 label-gray">
+                            <button type="button" class="btn btn-default">
+                                <span class="fa fa-check-circle-o"></span>
+                                <span>招牌</span>
+                            </button>
+                        </div>
+                        <div class="kui-button mr_10 label-gray">
+                            <button type="button" class="btn btn-default">
+                                <span class="fa fa-check-circle-o"></span>
+                                <span>套餐</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span>商品属性</span>
+                    </label>
+                    <div class="col-xs-11">
+                        <div class="kui-button m-right-xs">
+                            <button type="button" class="btn kui-button-primary">
+                                添加
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span class="require">商品单位</span>
+                    </label>
+                    <div class="col-xs-3">
+                        <input type="text" v-model="entity.UnitName" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span class="require">最小购买量</span>
+                    </label>
+                    <div class="col-xs-3">
+                        <input type="number" v-model="entity.MinBuyQuantity" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer text-center">
+                <div class="kui-button">
+                    <button type="button" class="btn btn-primary" style="font-size: 85%;" id="btnSave" v-on:click="saveReturn()">
+                        保存并返回
+                    </button>
+                </div>
+                <div class="kui-button">
+                    <button type="button" class="btn btn-sm kui-button-primary" v-on:click="saveContinu()">
+                        保存并继续添加
+                    </button>
+                </div>
+                <div class="kui-button">
+                    <button type="button" class="btn btn-sm kui-button-primary" v-on:click="cancel()">
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

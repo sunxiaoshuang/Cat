@@ -4,6 +4,11 @@
 }
 
 @section Scripts{
+    <script>
+        var pageData = {
+            types: JSON.parse('@Html.Raw(ViewBag.types == null ? "[]" : ViewBag.types)')
+        };
+    </script>
     <environment include="Development">
         <script src="~/js/product.js" asp-append-version="true"></script>
     </environment>
@@ -13,7 +18,7 @@
 }
 
 <div class="mainframe">
-    <div class="container-fluid">
+    <div class="container-fluid" style="min-height: 1050px;">
         <div class="row">
             <div class="pull-left product-type">
                 <div class="category-title clearfix">
@@ -25,24 +30,17 @@
                         </button>
                     </div>
                 </div>
-                <div class="cate-tree" style="min-height: 456px;">
-                    <div class="all-line selected">
+                <div class="cate-tree" id="category" style="min-height: 456px;">
+                    <div class="all-line" v-bind:class="{ 'selected': allSelected }" v-on:click="allClick()">
                         <span>全部商品</span>
-                        <span class="all-cnt">50</span>
+                        <span class="all-cnt">{{ productCount }}</span>
                     </div>
-                    <div class="cate-panel closed2">
-                        <div class="cate-title">
+
+                    <div class="cate-panel" v-for="item in list" v-bind:class="{ 'selected': item.selected }" v-on:click="typeClick(item)">
+                        <div class="cate-title" :data-id="item.id">
                             <div class="cate-name relative">
-                                特色牛肉面
-                                <span class="cate-cnt">8</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="cate-panel closed2">
-                        <div class="cate-title">
-                            <div class="cate-name relative">
-                                特色早点
-                                <span class="cate-cnt">18</span>
+                                {{ item.name }}
+                                <span class="cate-cnt">{{ item.count }}</span>
                             </div>
                         </div>
                     </div>
@@ -50,7 +48,13 @@
             </div>
             <div class="pull-left product-main">
                 <div class="category-name" style="">
-                    商品列表
+                    @*<span>商品列表</span>*@
+                    <div class="kui-button " style="z-index: 1; margin-right: 20px;">
+                        <a class="btn btn-primary" asp-controller="product" asp-action="addproduct">
+                            <i class="fa fa-plus inline-middle" style="font-size: 16px;"></i>
+                            <span class="inline-middle">添加商品</span>
+                        </a>
+                    </div>
                 </div>
                 <div class="product-list relative">
                     <div class="tool-bar relative">

@@ -12,47 +12,100 @@ using Newtonsoft.Json;
 
 namespace JdCat.Cat.Web.Controllers
 {
-    public class ProductController : BaseController
+    public class ProductController : BaseController<IProductRepository, Product>
     {
-        public ProductController(AppData appData) : base(appData)
+        public ProductController(AppData appData, IProductRepository service) : base(appData, service)
         {
         }
 
-        public IActionResult Index()
+        /// <summary>
+        /// 商品管理页面
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public IActionResult Index([FromServices] JsonSerializerSettings settings)
         {
+            var types = Service.GetTypes(Business);
+            ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name, Count = a.Products?.Count() }), settings);
             return View();
         }
 
-        public IActionResult AddType([FromServices]IProductRepository service)
+        /// <summary>
+        /// 添加商品类别页面
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult AddType()
         {
-            var types = service.GetTypes(Business);
+            var types = Service.GetTypes(Business);
             return PartialView(types);
         }
 
+        /// <summary>
+        /// 修改商品类别
+        /// </summary>
+        /// <param name="add">新增的类别</param>
+        /// <param name="edit">需要修改的类别</param>
+        /// <param name="remove">删除的类别</param>
+        /// <returns></returns>
         [HttpPost]
-        public IEnumerable<ProductType> UpdateTypes(IEnumerable<ProductType> add, IEnumerable<ProductType> edit, IEnumerable<int> remove, [FromServices]IProductRepository service)
+        public IActionResult UpdateTypes(IEnumerable<ProductType> add, IEnumerable<ProductType> edit, IEnumerable<int> remove)
         {
-            if(add.Count() > 0)
+            if (add.Count() > 0)
             {
                 foreach (var item in add)
                 {
                     item.BusinessId = Business.ID;
                 }
-                service.AddTypes(add);
+                Service.AddTypes(add);
             }
             if (edit.Count() > 0)
             {
-                service.EditTypes(edit);
+                Service.EditTypes(edit);
             }
             if (remove.Count() > 0)
             {
-                service.RemoveTypes(remove);
+                Service.RemoveTypes(remove);
             }
-            service.Commit();
+            Service.Commit();
 
+            var types = Service.GetTypes(Business);
 
-
-            return null;
+            return Json(new JsonData { Success = true,
+                Data = types.Select(a => new { a.ID, a.Name, Count = a.Products?.Count() }),
+                Msg = "修改成功" });
         }
+
+        /// <summary>
+        /// 判断指定的类别下是否存在商品
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IActionResult ExistProduct(int id)
+        {
+            var result = new JsonData();
+            result.Data = Service.ExistProduct(id);
+            result.Success = true;
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 添加商品
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult AddProduct([FromServices] JsonSerializerSettings settings)
+        {
+            var types = Service.GetTypes(Business);
+            ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name }), settings);
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Save([FromBody]Product product)
+        {
+            product.BusinessId = Business.ID;
+            Service.Add(product);
+            return Json(product);
+        }
+
     }
 }

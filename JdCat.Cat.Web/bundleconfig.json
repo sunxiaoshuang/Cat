@@ -19,6 +19,18 @@
     },
     "sourceMap": false
   },
+  // axios默认配置
+  {
+    "outputFileName": "wwwroot/js/axios/config.min.js",
+    "inputFiles": [
+      "wwwroot/js/axios/config.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
   // 登录
   {
     "outputFileName": "wwwroot/css/login.min.css",
@@ -50,6 +62,13 @@
     "outputFileName": "wwwroot/js/product.min.js",
     "inputFiles": [
       "wwwroot/js/product.js"
+    ]
+  },
+  // 添加商品
+  {
+    "outputFileName": "wwwroot/js/addproduct.min.js",
+    "inputFiles": [
+      "wwwroot/js/addproduct.js"
     ]
   }
 ]

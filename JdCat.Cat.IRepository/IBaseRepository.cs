@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -11,6 +12,7 @@ namespace JdCat.Cat.IRepository
     {
         IQueryable<T> GetAll(Expression<Func<T, bool>> predicate = null);
         T Get(Expression<Func<T, bool>> predicate);
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
         void Add(T entity, bool commit = true);
         void Delete(T entity, bool commit = true);
         void Update(T entity, bool commit = true);

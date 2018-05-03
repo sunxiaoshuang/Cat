@@ -1,4 +1,5 @@
-﻿;
+﻿
+;
 (function ($) {
     var templateObj = {
         listItemType: '<div class="list-type-item form-horizontal clearfix new" data-id="{id}">\
@@ -35,6 +36,7 @@
             });
             var html = templateObj.listItemType.format({ id: 0, name: name, sort: maxSort + 1 });
             $list.append(html);
+            $("#txtTypeName").val("");
             return false;
         })
         .on("click", "#type .btn-save", function () {
@@ -58,9 +60,20 @@
                 data.remove.push(id);
             });
             $.loading();
-            $.post("/product/updatetypes", data, function () {
+            $.post("/product/updatetypes", data, function (msg) {
                 $.loaded();
+                if (!msg.success) {
+                    $.error(msg.msg);
+                    return;
+                }
+                var types = msg.data;
                 $("#type").modal("hide");
+                types.forEach(function (obj) { obj.selected = false; });
+                var selected = category.list.first(function (obj) { return obj.selected; });
+                if (selected) {
+                    types.first(function (obj) { return obj.id === selected.id; }).selected = true;
+                }
+                category.list = types;
             });
             return false;
         })
@@ -76,9 +89,53 @@
                 $parent.remove();
                 return;
             }
-            $parent.removeClass("edit").addClass("remove");
-            $parent.hide();
+            $.post("/product/existproduct/" + $parent.data("id"), null, function (data) {
+                if (data.data) {
+                    $.danger("类别下存在商品，不允许删除");
+                    return;
+                }
+                $parent.removeClass("edit").addClass("remove");
+                $parent.hide();
+            });
         });
+
+    // 方法
+    var pageHandler = {
+        count: function (types) {
+            if (types.length === 0) {
+                return 0;
+            }
+            var all = 0;
+            types.forEach(function (obj) { all += obj.count; });
+            return all;
+        }
+    }
+
+    var list = pageData.types.map(function (obj) {
+        obj.selected = false;
+        return obj;
+    });
+    // 数据
+    var category = new Vue({
+        el: "#category",
+        data: {
+            list: pageData.types,
+            productCount: pageHandler.count(pageData.types),
+            allSelected: true
+        },
+        methods: {
+            typeClick: function (item) {
+                this.list.forEach(function (obj) { obj.selected = false; });
+                item.selected = true;
+                this.allSelected = false;
+            },
+            allClick: function () {
+                this.list.forEach(function (obj) { obj.selected = false; });
+                this.allSelected = true;
+            }
+        }
+    });
+    
 
 
 })(jQuery);

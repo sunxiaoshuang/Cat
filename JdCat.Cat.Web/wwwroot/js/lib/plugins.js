@@ -30,7 +30,7 @@
         loaded: function () {
             appObj.$loading.hide();
         },
-        // 模态框，加载页面
+        // 模态框，加载页面，使用template加载视图模版，可以取到模态框返回值
         view: function () {
             var template = '<div class="modal fade" id="{name}" aria-hidden="true">\
                 <div class="modal-dialog" >\
@@ -40,37 +40,104 @@
                             <h5 class="modal-title">{title}</h5>\
                         </div>\
                         <div class="modal-body">{body}</div>\
-                        <div class="modal-footer" style="display: {footDisplay}">\
-                            <button type="button" class="btn btn-default" data-dismiss="modal">{closeText}</button>\
-                            <button type="button" class="btn btn-primary btn-save">{saveText}</button>\
+                    </div>\
+                    <div class="modal-footer" style="display: {footDisplay}">\
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{closeText}</button>\
+                        <button type="button" class="btn btn-primary btn-save">{saveText}</button>\
+                    </div>\
+                </div >\
+            </div >';
+            var $body = $(document.body);
+            var loadView = function (obj) {
+                var html = template.format(obj);
+                var $modal = $(html).appendTo($body);
+                $modal.modal({ backdrop: "static" });
+                $modal.on("hidden.bs.modal", function () {
+                    $modal.remove();
+                });
+                if (obj.load) {
+                    obj.load.call($modal);
+                }
+                return $modal;
+            };
+            $.view = function (name, title, url, template) {
+                var obj = {
+                    name: name || "view_jquery", title: title, url: url, template: template,
+                    footDisplay: "none", closeText: "关闭", saveText: "保存"
+                };
+                if (arguments.length === 1) {
+                    $.extend(obj, arguments[0]);
+                }
+
+                if (obj.template) {
+                    obj.body = obj.template;
+                    return loadView(obj);
+                }
+
+                $.post(obj.url, null, function (page) {
+                    obj.body = page;
+                    loadView(obj);
+                });
+                return null;
+            };
+            return $.view.apply(this, arguments);
+        },
+        confirm: function () {
+            var template = '<div class="modal fade modal-alert" aria-hidden="true">\
+                <div class="modal-dialog" style="margin-top: 200px;width: 400px;">\
+                    <div class="modal-content">\
+                        <div class="modal-header {alertColor}">\
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
+                            <h5 class="modal-title">{pic}{title}</h5>\
+                        </div>\
+                        <div class="modal-body">{msg}</div>\
+                        <div class="modal-footer">\
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>\
+                            <button type="button" class="btn {submitStyle} {submitDisplay}">确定</button>\
                         </div>\
                     </div>\
                 </div >\
             </div >';
             var $body = $(document.body);
-            $.view = function (name, title, url) {
+            $.confirm = function (title, msg, submit, cancel, pic, alertColor, submitStyle) {
                 var obj = {
-                    name: name, title: title, url: url,
-                    footDisplay: "none", closeText: "关闭", saveText: "保存"
-                }, html, $modal, args;
-                if (arguments.length === 1) {
-                    $.extend(obj, arguments[0]);
-                }
-
-                $.post(obj.url, null, function (page) {
-                    obj.body = page;
-                    html = template.format(obj);
-                    $modal = $(html).appendTo($body);
-                    $modal.modal({ backdrop: "static" });
-                    $modal.on("hidden.bs.modal", function () {
-                        $modal.remove();
-                    });
+                    title: title, msg: msg,
+                    submitDisplay: !submit ? "hide" : "",
+                    alertColor: alertColor || "",
+                    submitStyle: submitStyle || "btn-primary",
+                    pic: "<i class='fa " + (pic || "fa-question-circle-o") + "'></i> "
+                };
+                var html = template.format(obj);
+                $modal = $(html).appendTo($body);
+                $modal.modal({ backdrop: "static" });
+                $modal.on("hidden.bs.modal", function () {
+                    if (cancel) {
+                        cancel.call($modal);
+                    }
+                    $modal.remove();
                 });
+                if (submit) {
+                    $modal.find(".btn-primary").click(function () {
+                        var result = submit.call($modal);
+                        if (result) {
+                            $modal.modal("hide");
+                        }
+                    });
+                }
             };
-            $.view.apply(this, arguments);
+            $.confirm.apply(this, arguments);
         },
-        confirm: function () {
-
+        warning: function (msg, submit, cancel) {
+            $.confirm("警告", msg, submit, cancel, "fa-warning text-warning", "bg-warning", "btn-warning");
+        },
+        info: function (msg, submit, cancel) {
+            $.confirm("提示", msg, submit, cancel, "fa-info-circle text-info", "bg-info", "btn-info");
+        },
+        danger: function (msg, submit, cancel) {
+            $.confirm("错误", msg, submit, cancel, "fa-times-circle text-danger", "bg-danger", "btn-danger");
+        },
+        success: function (msg, submit, cancel) {
+            $.confirm("提示", msg, submit, cancel, "fa-check-circle text-success", "bg-success", "btn-success");
         }
     });
 
