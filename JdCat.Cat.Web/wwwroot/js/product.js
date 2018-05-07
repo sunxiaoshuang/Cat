@@ -19,6 +19,7 @@
     };
 
     $("#btnType").click(function () {
+        console.log(this);
         $.view({
             name: "type", title: "添加类别", url: "/product/addtype", footDisplay: "block"
         });
@@ -132,6 +133,9 @@
             allClick: function () {
                 this.list.forEach(function (obj) { obj.selected = false; });
                 this.allSelected = true;
+            },
+            uploadClick: function () {
+
             }
         }
     });

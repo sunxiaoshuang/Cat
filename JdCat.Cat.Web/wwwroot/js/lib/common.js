@@ -77,7 +77,18 @@
             }
         }
         return null;
-    }
+    };
+    Array.prototype.remove = function (obj) {
+        var i = 0, len = this.length;
+        for (; i < len;) {
+            if (this[i] === obj) {
+                break;
+            }
+            i++;
+        }
+        this.splice(i, 1);
+        return this;
+    };
 
 })();
 

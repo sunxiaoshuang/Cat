@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using JdCat.Cat.Model.Data;
 
 namespace JdCat.Cat.IRepository
@@ -36,5 +37,21 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         bool ExistProduct(int id);
+        /// <summary>
+        /// 上传商品图片
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="businessId"></param>
+        /// <param name="name"></param>
+        /// <param name="img400"></param>
+        /// <param name="img200"></param>
+        /// <param name="img100"></param>
+        /// <returns></returns>
+        Task<string> UploadImageAsync(string url, int businessId, string name, string img400, string img200, string img100);
+        /// <summary>
+        /// 获取商品属性列表
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<SettingProductAttribute> GetAttributes();
     }
 }

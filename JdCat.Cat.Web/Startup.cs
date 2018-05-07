@@ -54,6 +54,8 @@ namespace JdCat.Cat.Web
                 DateFormatString = "yyyy-MM-dd HH:mm:ss",
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
+            // 自动迁移
+            
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

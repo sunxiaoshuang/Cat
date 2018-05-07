@@ -6,6 +6,7 @@
     height: 100%;
     z-index: 2000;
 }
+
 .loading-shadow {
     position: absolute;
     background: #ea7042;
@@ -15,6 +16,7 @@
     height: 100%;
     opacity: .2;
 }
+
 .loading {
     width: 100px;
     height: 100px;
@@ -93,6 +95,7 @@
     left: 14px;
     -webkit-animation-delay: 1.04s;
 }
+
 .loading label {
     position: absolute;
     top: 120px;
@@ -104,18 +107,94 @@
 .modal-header.bg-danger {
     background-color: #f2dede;
 }
+
 .modal-header.bg-info {
     background-color: #d9edf7;
 }
+
 .modal-header.bg-warning {
     background-color: #fcf8e3;
 }
+
 .modal-header.bg-success {
     background-color: #dff0d8;
 }
+
 .modal-alert {
     z-index: 1061;
 }
-.modal-alert + .modal-backdrop{
-    z-index: 1060;
+
+    .modal-alert + .modal-backdrop {
+        z-index: 1060;
+    }
+
+
+
+.alert-status {
+    position: fixed;
+    background-color: rgba(0,0,0,0.7);
+    padding: 0 46px;
+    height: 120px;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    border-radius: 6px;
+    z-index: 2000;
+    transition: opacity 0.15s linear;
+    opacity: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
 }
+
+    .alert-status .icon {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        text-align: center;
+        border: 2px solid;
+        border-radius: 100%;
+        font-size: 20px;
+    }
+        .alert-status .icon > .fa {
+            font-size: 12px;
+            display: inline-block;
+            vertical-align: top;
+            height: 20px;
+            line-height: 20px;
+            margin-left: 1px;
+        }
+
+    .alert-status .content {
+        display: inline-block;
+        display: -webkit-box;
+        max-width: 320px;
+        color: #fff;
+        font-size: 16px;
+        line-height: 24px;
+        word-wrap: break-word;
+        word-break: break-all;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 96px;
+    }
+    .alert-status .icon ~ .content {
+        margin-left: 34px;
+    }
+    .alert-status.alert-error .icon {
+        color: #ff5a5a;
+    }
+    .alert-status.alert-success .icon {
+        color: #9dd685;
+    }
+    .alert-status.alert-warning .icon {
+        color: #f3ce89;
+    }
+
+

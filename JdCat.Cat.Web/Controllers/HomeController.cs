@@ -24,6 +24,7 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult Index()
         {
             ViewBag.UserName = Business.Name;
+            ViewBag.CompanyName = AppData.Name;
             return View();
         }
 

@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace JdCat.Cat.Model.Mapping
 {
-    public class MenuMapping : IEntityTypeConfiguration<Menu>
-    {
-        public void Configure(EntityTypeBuilder<Menu> builder)
-        {
+    //public class MenuMapping : IEntityTypeConfiguration<Menu>
+    //{
+    //    public void Configure(EntityTypeBuilder<Menu> builder)
+    //    {
 
-        }
-    }
+    //    }
+    //}
 }

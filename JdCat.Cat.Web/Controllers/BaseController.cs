@@ -25,23 +25,13 @@ namespace JdCat.Cat.Web.Controllers
         /// </summary>
         protected AppData AppData { get; }
         private Business _business;
-        protected Business Business
-        {
-            get
-            {
-                if (_business == null)
-                {
-                    _business = HttpContext.Session.Get<Business>(AppData.Session);
-                }
-                return _business;
-            }
-        }
-        private T _service;
-        protected T Service => _service;
+        protected Business Business => _business ?? (_business = HttpContext.Session.Get<Business>(AppData.Session));
+        protected T Service { get; }
+
         public BaseController(AppData appData, T service)
         {
             this.AppData = appData;
-            this._service = service;
+            this.Service = service;
 
         }
 
@@ -83,11 +73,11 @@ namespace JdCat.Cat.Web.Controllers
             }
             base.OnActionExecuting(context);
         }
-        public override void OnActionExecuted(ActionExecutedContext context)
-        {
-            ViewBag.CompanyName = AppData.Name;
-            base.OnActionExecuted(context);
-        }
+        //public override void OnActionExecuted(ActionExecutedContext context)
+        //{
+        //    ViewBag.CompanyName = AppData.Name;
+        //    base.OnActionExecuted(context);
+        //}
 
         /* 不要了
         #region 请求方法

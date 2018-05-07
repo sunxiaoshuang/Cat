@@ -6,6 +6,10 @@ using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace JdCat.Cat.Repository
 {
@@ -51,6 +55,33 @@ namespace JdCat.Cat.Repository
             return _context.Products.Count(a => a.ProductTypeId == id) > 0;
         }
 
+        public async Task<string> UploadImageAsync(string url, int businessId, string name, string img400, string img200, string img100)
+        {
+            using (var hc = new HttpClient())
+            {
+                var param = JsonConvert.SerializeObject(new
+                {
+                    BusinessId = businessId,
+                    Name = name,
+                    Image400 = img400,
+                    Image200 = img200,
+                    Image100 = img100,
+                });
+                var httpcontent = new StringContent(param);
+                httpcontent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var msg = await hc.PostAsync(url, httpcontent);
+                if (msg.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return "ok";
+                }
+                return await msg.Content.ReadAsStringAsync();
+            }
+        }
+
+        public IEnumerable<SettingProductAttribute> GetAttributes()
+        {
+            return _context.SettingProductAttributes.Include(a => a.Childs).Where(a => a.Level == 1);
+        }
 
     }
 }

@@ -149,6 +149,8 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Code");
+
                     b.Property<DateTime?>("CreateTime");
 
                     b.Property<string>("Name");
@@ -191,13 +193,15 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<long>("Length");
 
-                    b.Property<string>("Path");
+                    b.Property<string>("Name");
 
                     b.Property<int>("ProductId");
 
                     b.Property<byte[]>("Timestamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<int>("Type");
 
                     b.HasKey("ID");
 
@@ -231,6 +235,32 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasIndex("BusinessId");
 
                     b.ToTable("ProductType","dbo");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SettingProductAttribute", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("Level");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int?>("ParentId");
+
+                    b.Property<int>("Sort");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("SettingProductAttribute","dbo");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Product", b =>
@@ -275,6 +305,13 @@ namespace JdCat.Cat.Model.Migrations
                         .WithMany("ProductsTypes")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SettingProductAttribute", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.SettingProductAttribute", "Parent")
+                        .WithMany("Childs")
+                        .HasForeignKey("ParentId");
                 });
 #pragma warning restore 612, 618
         }

@@ -40,10 +40,10 @@
                             <h5 class="modal-title">{title}</h5>\
                         </div>\
                         <div class="modal-body">{body}</div>\
-                    </div>\
-                    <div class="modal-footer" style="display: {footDisplay}">\
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{closeText}</button>\
-                        <button type="button" class="btn btn-primary btn-save">{saveText}</button>\
+                        <div class="modal-footer" style="display: {footDisplay}">\
+                            <button type="button" class="btn btn-default" data-dismiss="modal">{closeText}</button>\
+                            <button type="button" class="btn btn-primary btn-save">{saveText}</button>\
+                        </div>\
                     </div>\
                 </div >\
             </div >';
@@ -62,19 +62,20 @@
             };
             $.view = function (name, title, url, template) {
                 var obj = {
-                    name: name || "view_jquery", title: title, url: url, template: template,
+                    title: title, url: url, template: template,
                     footDisplay: "none", closeText: "关闭", saveText: "保存"
                 };
                 if (arguments.length === 1) {
                     $.extend(obj, arguments[0]);
                 }
+                obj.name = obj.name || "view_jquery";
 
                 if (obj.template) {
                     obj.body = obj.template;
                     return loadView(obj);
                 }
 
-                $.post(obj.url, null, function (page) {
+                $.get(obj.url, null, function (page) {
                     obj.body = page;
                     loadView(obj);
                 });
@@ -138,7 +139,46 @@
         },
         success: function (msg, submit, cancel) {
             $.confirm("提示", msg, submit, cancel, "fa-check-circle text-success", "bg-success", "btn-success");
-        }
+        },
+        alert: function (msg, status) {
+            status = status || "error";
+            var icon = "fa-times";
+            switch (status) {
+                case "success":
+                    icon = "fa-check";
+                    break;
+                case "error":
+                    icon = "fa-times";
+                    break;
+                case "warning":
+                    icon = "fa-warning";
+                    break;
+                default:
+            }
+            var obj = {
+                status: status,
+                title: msg,
+                icon: icon
+            }
+            var html = '<div class="alert-status alert-{status}">\
+                            <div>\
+                                <span class="icon">\
+                                    <i class="fa {icon}"></i>\
+                                </span>\
+                                <span title="{title}" class="content">\
+                                    {title}\
+		                        </span>\
+	                        </div >\
+                        </div >';
+            var $alert = $(html.format(obj));
+            var $body = $(document.body);
+            $body.append($alert);
+            setTimeout(() => {
+                $alert.css("opacity", 0);
+                setTimeout(() => $alert.remove(), 500);
+            }, 5000);
+
+        },
     });
 
 })(jQuery);

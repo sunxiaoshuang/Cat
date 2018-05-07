@@ -14,6 +14,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string Name { get; set; }
         /// <summary>
+        /// 规格编码
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
         /// 价格
         /// </summary>
         public decimal? Price { get; set; }

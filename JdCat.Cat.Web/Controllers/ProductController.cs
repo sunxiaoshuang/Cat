@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
+using JdCat.Cat.Web.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -76,6 +81,19 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         /// <summary>
+        /// 商品管理页面添加商品类别
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult AddType([FromBody]ProductType entity)
+        {
+            entity.BusinessId = Business.ID;
+            Service.AddTypes(new[] { entity });
+            Service.Commit();
+            return Json(new { entity.ID, entity.Name, entity.Sort });
+        }
+
+        /// <summary>
         /// 判断指定的类别下是否存在商品
         /// </summary>
         /// <param name="id"></param>
@@ -92,20 +110,55 @@ namespace JdCat.Cat.Web.Controllers
         /// 添加商品
         /// </summary>
         /// <returns></returns>
-        public IActionResult AddProduct([FromServices] JsonSerializerSettings settings)
+        public IActionResult AddProduct([FromServices]JsonSerializerSettings settings)
         {
             var types = Service.GetTypes(Business);
-            ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name }), settings);
+            ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name, a.Sort }), settings);
+            ViewBag.attrs = JsonConvert.SerializeObject(Service.GetAttributes().Select(a => new {a.Name, Childs = a.Childs.Select(b => b.Name)}).ToList(), settings);
             return View();
         }
 
         [HttpPost]
-        public IActionResult Save([FromBody]Product product)
+        public async Task<IActionResult> Save([FromBody]ProductModel product, [FromServices]IHostingEnvironment host)
         {
-            product.BusinessId = Business.ID;
-            Service.Add(product);
-            return Json(product);
+            var result = new JsonData();
+            if (!string.IsNullOrEmpty(product.Img400))
+            {
+                var file = new ProductImage
+                {
+                    CreateTime = DateTime.Now,
+                    Name = Guid.NewGuid().ToString().ToLower(),
+                    Type = ImageType.Product,
+                    Length = Convert.FromBase64String(product.Img400.Replace("data:image/jpeg;base64,", "")).Length
+                };
+                // 上传图片
+                var msg = await Service.UploadImageAsync(AppData.ApiUri + "/Product", Business.ID, file.Name + "." + file.ExtensionName, product.Img400, product.Img200, product.Img100);
+                if (msg != "ok")
+                {
+                    result.Msg = msg;
+                    return Json(result);
+                }
+                product.Images = new List<ProductImage> { file };
+            }
+
+            // 图片上传成功后，保存商品
+            var entity = new Product {
+                BusinessId = Business.ID,
+                Description = product.Description,
+                MinBuyQuantity = product.MinBuyQuantity,
+                Name = product.Name,
+                ProductTypeId = product.ProductTypeId,
+                UnitName = product.UnitName,
+                Images = product.Images,
+                Formats = product.Formats,
+                Attributes = product.Attributes
+            };
+            Service.Add(entity);
+            result.Success = true;
+            result.Msg = "保存成功";
+            return Ok(result);
         }
+
 
     }
 }

@@ -19,11 +19,22 @@
     },
     "sourceMap": false
   },
+  {
+    "outputFileName": "wwwroot/js/lib/iscroll-zoom.min.js",
+    "inputFiles": [
+      "wwwroot/js/lib/iscroll-zoom.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
   // axios默认配置
   {
-    "outputFileName": "wwwroot/js/axios/config.min.js",
+    "outputFileName": "wwwroot/lib/axios/config.min.js",
     "inputFiles": [
-      "wwwroot/js/axios/config.js"
+      "wwwroot/lib/axios/config.js"
     ],
     "minify": {
       "enabled": true,

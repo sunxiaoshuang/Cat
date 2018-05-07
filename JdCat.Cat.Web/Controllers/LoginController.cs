@@ -15,47 +15,44 @@ namespace JdCat.Cat.Web.Controllers
 {
     public class LoginController : Controller
     {
-        private AppData appData;
-        private IBusinessRepository service;
+        private readonly AppData _appData;
+        private readonly IBusinessRepository _service;
         public LoginController(AppData appData, IBusinessRepository rep)
         {
-            this.appData = appData;
-            this.service = rep;
+            this._appData = appData;
+            this._service = rep;
         }
 
         public IActionResult Index()
         {
-            ViewBag.CompanyName = appData.Name;
+            ViewBag.CompanyName = _appData.Name;
             return View();
         }
 
         public IActionResult Login(string username, string pwd, [FromServices]UtilHelper helper)
         {
             var result = new JsonData();
-            using (var client = new HttpClient())
+            var business = _service.Get(a => (a.Code == username || a.Mobile == username) && a.Password == helper.GetMd5(pwd));
+            if (business == null)
             {
-                var business = service.Get(a => (a.Code == username || a.Mobile == username) && a.Password == helper.GetMd5(pwd));
-                if(business == null)
-                {
-                    result.Msg = "帐号或密码错误";
-                    return Json(result);
-                }
-                result.Success = true;
-                result.Data = business;
-                HttpContext.Session.Set(appData.Session, business);
-                HttpContext.Response.Cookies.Append(appData.Cookie, business.ID.ToString(),
-                    new CookieOptions
-                    {
-                        Expires = DateTime.Now.AddDays(7)
-                    });
+                result.Msg = "帐号或密码错误";
                 return Json(result);
             }
+            result.Success = true;
+            result.Data = business;
+            HttpContext.Session.Set(_appData.Session, business);
+            HttpContext.Response.Cookies.Append(_appData.Cookie, business.ID.ToString(),
+                new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(3)
+                });
+            return Json(result);
         }
 
         public IActionResult Logout()
         {
-            HttpContext.Session.SetString(appData.Session, "");
-            HttpContext.Response.Cookies.Delete(appData.Cookie);
+            HttpContext.Session.SetString(_appData.Session, "");
+            HttpContext.Response.Cookies.Delete(_appData.Cookie);
             return Redirect("/Login");
         }
     }
