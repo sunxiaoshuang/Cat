@@ -5,17 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="File\Product\" />
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\File\Product\2\100x75\2fcb4ecc-3842-4883-927f-ec42870b5d6d.jpg" />
+    <None Include="wwwroot\File\Product\2\200x150\2fcb4ecc-3842-4883-927f-ec42870b5d6d.jpg" />
+    <None Include="wwwroot\File\Product\2\400x300\2fcb4ecc-3842-4883-927f-ec42870b5d6d.jpg" />
   </ItemGroup>
 
 </Project>

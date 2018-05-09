@@ -85,80 +85,84 @@
                         </div>
                     </div>
                     <div class="products clearfix">
-                        <div class="product clearfix" v-for="product in list">
+                        <div class="product clearfix">
                             <div class="product-check">
                                 <label class="label-checkbox">
-                                    <input type="checkbox" :data-id="product.id">
+                                    <input type="checkbox" class="">
                                     <span class="custom-checkbox"></span>
                                 </label>
                             </div>
                             <div class="product-content">
-                                <div class="product-img" v-bind:class="{'hide': product.images.length == 0}">
+                                <div class="product-img ">
                                     <div>
-                                        <img :src="getImage(product)" alt="热干面" style="width: 100%;" />
-                                    </div>
-                                </div>
-                                <div v-bind:class="{'hide': product.images.length > 0}" class="product-no-img">
-                                    <div>
-                                        暂无图片
+                                        <img src="http://localhost:5002/File/Product/2/400x300/2fcb4ecc-3842-4883-927f-ec42870b5d6d.jpg" alt="热干面" style="width: 100%;" />
                                     </div>
                                 </div>
                                 <div class="product-data">
                                     <div class="product-name">
-                                        <span style="font-size: 16px;font-weight:800;">{{product.name}}</span>
+                                        <input type="text" class="form-control" maxlength="30" placeholder="请输入商品名称" value="热干面" />
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-check"></i>
+                                            <i class="fa fa-remove"></i>
+                                        </span>
                                     </div>
                                     <div class="product-format">
                                         <ul class="list-group">
-                                            <li class="relative" v-for="format in product.formats">
-                                                <div class="li-item" v-if="product.formats.length > 1">
-                                                    <p class="bold">规格：</p>
-                                                    <p>{{format.name}}</p>
-                                                </div>
+                                            <li class="relative">
                                                 <div class="li-item">
                                                     <p><i class="fa fa-cny"></i></p>
-                                                    <p>{{format.price | currency}}</p>
+                                                    <div class="li-input">
+                                                        <input type="text" class="form-control" value="" />
+                                                        <span class="input-group-addon">
+                                                            <i class="fa fa-check"></i>
+                                                            <i class="fa fa-remove"></i>
+                                                        </span>
+                                                    </div>
                                                 </div>
                                                 <div class="li-item">
-                                                    <p class="bold">库存：</p>
-                                                    <p>{{format.stock | stock}}</p>
+                                                    <p>库存</p>
+                                                    <div class="li-input">
+                                                        <input type="text" class="form-control" value="无限" />
+                                                        <span class="input-group-addon">
+                                                            <i class="fa fa-check"></i>
+                                                            <i class="fa fa-remove"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="li-item format-operate">
+                                                    <span>沽清</span>
+                                                    <span> | </span>
+                                                    <span>无限</span>
                                                 </div>
                                             </li>
                                         </ul>
                                     </div>
+                                    <div class="pull-right" style="margin-top: -10px;">
+                                        <span style="color: #ea7042">编辑规格</span>
+                                    </div>
                                 </div>
                                 <div class="product-remark">
-                                    <p style="display:flex;">
-                                        <span style="line-height:1.1;min-height: 30px;">
-                                            <span class="bold">描述：</span>
-                                            {{product.description}}
-                                        </span>
+                                    <p style="display:flex">
+                                        <span>描述</span>
+                                        <input type="text" placeholder="添加描述" class="form-control" />
                                     </p>
-                                    <hr style="margin: 5px 0;" />
-                                    <p style="display:flex; height: 30px">
-                                        <span style="line-height:1.1;">
-                                            <span class="bold">属性：</span>
-                                            {{product.attributes | attribute}}
-                                        </span>
+                                    <p style="display:flex">
+                                        <span>属性</span>
+                                        <input type="text" placeholder="添加属性" class="form-control" />
                                     </p>
                                 </div>
                                 <div class="product-operate pull-right">
                                     <p style="text-align: center;">
                                         <div class="kui-button m-right-xs">
-                                            <button type="button" v-on:click="toggleStatus(product)" style="width: 100px" class="btn btn-sm kui-button-primary">
-                                                {{product.status == 1 ? "下架" : "上架"}}
+                                            <button type="button" style="width: 100px" class="btn btn-sm kui-button-primary">
+                                                下架
                                             </button>
                                         </div>
                                     </p>
                                     <p style="text-align: center; margin-top: 20px;">
-                                        <span v-on:click="editProduct(product)">
-                                            <i class="fa fa-edit"></i>
-                                            编辑
-                                        </span>
+                                        <i class="fa fa-remove"></i><span>删除</span>
                                         &nbsp;&nbsp;&nbsp;&nbsp;
-                                        <span v-on:click="delProduct(item)">
-                                            <i class="fa fa-remove"></i>
-                                            删除
-                                        </span>
+                                        <i class="fa fa-edit"></i><span>编辑</span>
                                     </p>
                                 </div>
                             </div>

@@ -18,7 +18,7 @@ namespace JdCat.Cat.FileService.Models
         public void Save(IHostingEnvironment environment)
         {
             // 建立商家目录
-            var path = $"{environment.ContentRootPath}/{_defaultPath}/{BusinessId}";
+            var path = $"{environment.WebRootPath}/{_defaultPath}/{BusinessId}";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);

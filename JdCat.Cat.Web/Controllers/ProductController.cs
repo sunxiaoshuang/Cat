@@ -13,6 +13,7 @@ using JdCat.Cat.Model.Enum;
 using JdCat.Cat.Web.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace JdCat.Cat.Web.Controllers
@@ -75,9 +76,12 @@ namespace JdCat.Cat.Web.Controllers
 
             var types = Service.GetTypes(Business);
 
-            return Json(new JsonData { Success = true,
+            return Json(new JsonData
+            {
+                Success = true,
                 Data = types.Select(a => new { a.ID, a.Name, Count = a.Products?.Count() }),
-                Msg = "修改成功" });
+                Msg = "修改成功"
+            });
         }
 
         /// <summary>
@@ -114,7 +118,7 @@ namespace JdCat.Cat.Web.Controllers
         {
             var types = Service.GetTypes(Business);
             ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name, a.Sort }), settings);
-            ViewBag.attrs = JsonConvert.SerializeObject(Service.GetAttributes().Select(a => new {a.Name, Childs = a.Childs.Select(b => b.Name)}).ToList(), settings);
+            ViewBag.attrs = JsonConvert.SerializeObject(Service.GetAttributes().Select(a => new { a.Name, Childs = a.Childs.Select(b => b.Name) }).ToList(), settings);
             return View();
         }
 
@@ -142,7 +146,8 @@ namespace JdCat.Cat.Web.Controllers
             }
 
             // 图片上传成功后，保存商品
-            var entity = new Product {
+            var entity = new Product
+            {
                 BusinessId = Business.ID,
                 Description = product.Description,
                 MinBuyQuantity = product.MinBuyQuantity,
@@ -159,6 +164,12 @@ namespace JdCat.Cat.Web.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        public IActionResult GetProducts([FromQuery]int? typeId, [FromServices]JsonSerializerSettings setting, [FromQuery]int pageIndex = 1)
+        {
+            var list = Service.GetProducts(Business, typeId, pageIndex);
+            return Json(list, setting);
+        }
 
     }
 }

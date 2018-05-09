@@ -52,7 +52,8 @@ namespace JdCat.Cat.Web
             });
             services.AddSingleton(new JsonSerializerSettings {
                 DateFormatString = "yyyy-MM-dd HH:mm:ss",
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
             // 自动迁移
             

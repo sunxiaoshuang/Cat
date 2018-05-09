@@ -1,6 +1,4 @@
-﻿
-;
-(function ($) {
+﻿;(function ($) {
     var templateObj = {
         listItemType: '<div class="list-type-item form-horizontal clearfix new" data-id="{id}">\
                 <label class="pull-left control-label">\
@@ -78,7 +76,7 @@
             });
             return false;
         })
-        .on("change", "input", function () {
+        .on("change", "#type input", function () {
             var self = $(this), $parent = self.closest(".list-type-item");
             if ($parent.length === 0) return;
             if ($parent.hasClass("new")) return;
@@ -139,7 +137,40 @@
             }
         }
     });
-    
+    // 过滤器
+    Vue.filter("stock", function (num) {
+        return num < 0 ? "无限" : num;
+    });
+    Vue.filter("attribute", function (attrs) {
+        if (!attrs || attrs.length === 0) return "";
+        let name = "";
+        attrs.forEach(function (obj) { name += obj.name + "/"; });
+        return name.substr(0, name.length - 1);
+    });
+    // 商品列表
+    var productList = new Vue({
+        el: "#productList",
+        data: {
+            list: []
+        },
+        methods: {
+            getImage: function (item) {
+                if (item.images.length === 0) return "";
+                return "http://localhost:5002/File/Product/" + item.businessId + "/400x300/" + item.images[0].name + "." + item.images[0].extensionName;
+            },
+
+        }
+    });
+    $.loading();
+    axios.post("/Product/GetProducts")
+        .then(function (response) {
+            $.loaded();
+            productList.list = response.data;
+        })
+        .catch(function (error) {
+            $.loaded();
+            $.alert(error);
+        });
 
 
 })(jQuery);

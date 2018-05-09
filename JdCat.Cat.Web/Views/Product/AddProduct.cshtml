@@ -54,7 +54,7 @@
                         <span class="require">商品名称</span>
                     </label>
                     <div class="col-xs-6">
-                        <input type="text" v-model.trim="entity.Name" class="form-control" />
+                        <input type="text" maxlength="30" v-model.trim="entity.Name" class="form-control" />
                     </div>
                 </div>
                 <div class="form-group">
@@ -91,7 +91,6 @@
                         <span class="require">商品规格</span>
                     </label>
                     <div class="col-xs-6">
-                        @*<input type="text" name="format" class="form-control" />*@
                         <div style="border: 1px solid #ccc;padding: 20px;margin-bottom: 5px;" class="container" v-for="item in entity.Formats">
                             <div class="row">
                                 <div class="col-xs-10">
@@ -157,8 +156,7 @@
                         <span style="color: #888;font-weight: 400;font-size:80%;">(商品备注)</span>
                     </label>
                     <div class="col-xs-6">
-                        @*<input type="text" name="format" class="form-control" />*@
-                        <div style="border: 1px solid #ccc;padding: 20px;margin-bottom: 5px;" class="container" v-for="item in entity.Attributes">
+                        <div style="border: 1px solid #ccc;padding: 20px;margin-bottom: 5px; position: relative;" class="container" v-for="item in entity.Attributes">
                             <div class="row">
                                 <!--选择商品属性-->
                                 <div class="product-attr" v-bind:class="{'show': item.container.attrDisplay}" v-bind:style="{top: item.container.attrTop + 'px', left: item.container.attrLeft + 'px', opacity: item.container.attrOpacity}">
@@ -182,7 +180,7 @@
                                     <input type="text" v-on:focus="detailFocus($event, item, 7)" v-on:blur="detailBlur($event, item)" maxlength="10" class="form-control pull-left margin-right-10 margin-bottom-10" style="width: 20%;" v-model="item.Item7" />
                                     <input type="text" v-on:focus="detailFocus($event, item, 8)" v-on:blur="detailBlur($event, item)" maxlength="10" class="form-control pull-left margin-right-10 margin-bottom-10" style="width: 20%;" v-model="item.Item8" />
                                     <!--选择属性详情-->
-                                    <div class="product-attr" v-bind:class="{'show': item.container.detailDisplay}" v-bind:style="{top: item.container.detailTop + 'px', left: item.container.detailLeft + 'px', opacity: item.container.detailOpacity}">
+                                    <div class="product-attr" v-bind:class="{'show': item.container.detailDisplay && item.container.list.length > 0}" v-bind:style="{top: item.container.detailTop + 'px', left: item.container.detailLeft + 'px', opacity: item.container.detailOpacity}">
                                         <div class="arrow"></div>
                                         <ul class="content">
                                             <li v-for="name in item.container.list">

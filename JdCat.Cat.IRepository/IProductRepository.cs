@@ -53,5 +53,13 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <returns></returns>
         IEnumerable<SettingProductAttribute> GetAttributes();
+        /// <summary>
+        /// 获取商品列表
+        /// </summary>
+        /// <param name="business"></param>
+        /// <param name="typeId"></param>
+        /// <param name="pageIndex"></param>
+        /// <returns></returns>
+        List<Product> GetProducts(Business business, int? typeId, int pageIndex);
     }
 }

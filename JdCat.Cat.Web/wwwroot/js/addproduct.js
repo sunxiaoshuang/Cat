@@ -11,7 +11,7 @@
                 ProductTypeId: null,
                 Name: "",
                 Description: "",
-                UnitName: '份',
+                UnitName: "份",
                 MinBuyQuantity: 1,
                 Formats: [
                     { ID: 0, Code: "", Name: "", Price: 0, Stock: -1, PackingPrice: 0, PackingQuantity: 1 }
@@ -39,7 +39,8 @@
                 });
             },
             save: function (flag) {
-                var entity = $.extend({}, this._data.entity)
+                var entity = $.extend({}, this._data.entity);
+                
                 if (!entity.ProductTypeId || !entity.Name || !entity.UnitName || !entity.MinBuyQuantity) {
                     $.alert("请将表单填写完整！", "warning");
                     this._data.showError = true;
@@ -56,6 +57,17 @@
                     $.alert("请输入规格名称");
                     return;
                 }
+                // 验证是否填写属性名称
+                if (entity.Attributes.length > 0) {
+                    for (var i = 0, len = entity.Attributes.length; i < len; i++) {
+                        if (!$.trim(entity.Attributes[i].Name)) {
+                            $.alert("请填写属性名称");
+                            return;
+                        }
+                        delete entity.Attributes[i].container;
+                    }
+                }
+
                 // 保存三种格式的图片：400*300，200*150，100*75
                 if (this._data.imgsrc) {
                     var img = document.getElementById("img");
@@ -63,8 +75,6 @@
                     entity.img200 = compress(img, 200, 150, 400, 300);
                     entity.img100 = compress(img, 100, 75, 400, 300);
                 }
-                console.log(entity);
-                return;
                 $.loading();
                 axios.post("/Product/Save", entity)
                     .then(function (response) {
@@ -130,7 +140,7 @@
             attrFocus: function (e, item) {
                 item.container.attrOpacity = 1;
                 item.container.attrLeft = e.target.offsetLeft;
-                item.container.attrTop = e.target.offsetTop + 70;
+                item.container.attrTop = e.target.offsetTop + 60;
                 item.container.attrDisplay = true;
             },
             attrBlur: function (e, item) {
@@ -138,7 +148,7 @@
                 setTimeout(function () {
                     item.container.attrOpacity = 0;
                     item.container.attrDisplay = false;
-                }, 500);
+                }, 200);
             },
             detailFocus: function (e, item, index) {
                 item.container.detailOpacity = 1;
@@ -152,7 +162,7 @@
                 setTimeout(function () {
                     item.container.detailOpacity = 0;
                     item.container.detailDisplay = false;
-                }, 500);
+                }, 200);
             },
             selectAttr: function (item, attr) {
                 item.container.list = attr.childs;
