@@ -56,5 +56,10 @@ namespace JdCat.Cat.Repository
         {
             return _context.Set<TEntity>();
         }
+
+        public bool Exists(Expression<Func<T, bool>> predicate)
+        {
+            return _context.Set<T>().FirstOrDefault(predicate) != null;
+        }
     }
 }
