@@ -3,58 +3,67 @@
     padding-bottom: 20px;
     background: #fff;
 }
+
 .navbar-inverse {
     padding-left: 10px;
     background-color: #ea7042;
     border-color: #ea7042;
 }
 
-.navbar-inverse .navbar-brand {
-    color: #fff;
-}
+    .navbar-inverse .navbar-brand {
+        color: #fff;
+    }
 
-.margin-top-100{
-    margin-top: 140px;
-}
-.margin-top-10{
+.margin-top-100 {
     margin-top: 10px;
 }
 
-.login-container {
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.registe-container {
     margin: 0 auto;
     width: 25%;
 }
 
-.login-label {
+.registe-label {
     padding-left: 10px;
     letter-spacing: .1em;
     color: #ea7042;
 }
 
-.loginFrame{
+.registeFrame {
     border-top: 1px solid #eee;
 }
+
 .addon-color {
     background-color: #fff;
     border: 1px solid #ccc;
 }
-.login-input {
+
+.registe-input {
     border: 1px solid #ccc;
 }
-.login-input:focus {
-    border: 1px solid #ea7042;
-    box-shadow: 0 0 5px 0 #ea7042;
-}
+
+    .registe-input:focus {
+        border: 1px solid #ea7042;
+        box-shadow: 0 0 5px 0 #ea7042;
+    }
+
 .btn-danger {
     background-color: #ea7042;
     border-color: #ea7042;
 }
+
     .btn-danger:hover {
         background-color: #dc5b2b;
     }
+
 .input-group {
     margin-bottom: 15px;
 }
+
 .alert-danger {
     padding: 10px;
     padding-left: 20px;
@@ -63,22 +72,23 @@
     color: #fff;
 }
 
-.registe-a {
-    color: #ea7042;
-}
-.registe-i {
+.login-a {
     color: #ea7042;
 }
 
-.registe-a:hover {
+.login-i {
+    color: #ea7042;
+}
+
+.login-a:hover {
     font-weight: bold;
     color: #dc5b2b;
 }
 
-.registe-a:focus {
+.login-a:focus {
     color: #dc5b2b;
 }
 
-.registe-div {
+.login-div {
     float: right;
 }

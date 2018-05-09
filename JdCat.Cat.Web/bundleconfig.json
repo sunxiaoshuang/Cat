@@ -81,5 +81,18 @@
     "inputFiles": [
       "wwwroot/js/addproduct.js"
     ]
+  },
+  // 注册
+  {
+    "outputFileName": "wwwroot/css/registe.min.css",
+    "inputFiles": [
+      "wwwroot/css/registe.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/registe.min.js",
+    "inputFiles": [
+      "wwwroot/js/registe.js"
+    ]
   }
 ]

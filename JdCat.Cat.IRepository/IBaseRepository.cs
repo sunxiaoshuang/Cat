@@ -18,5 +18,6 @@ namespace JdCat.Cat.IRepository
         void Update(T entity, bool commit = true);
         int Count();
         int Commit();
+        bool Exists(Expression<Func<T, bool>> predicate);
     }
 }
