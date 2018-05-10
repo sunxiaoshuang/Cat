@@ -921,7 +921,7 @@ ul.dropdown-menu.dropdown-messages li a div {
 #mainframe {
     border: none;
     width: 100%;
-    min-height: 1100px;
+    min-height: 700px;
     padding: 0;
     margin: 0;
     height: auto;
@@ -963,21 +963,10 @@ ul.dropdown-menu.dropdown-messages li a div {
     color: #fff;
 }
 
-    .btn-primary:hover {
+    .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:active:focus, .btn-primary[disabled]:hover {
         background: #dc5b2b;
     }
 
-    .btn-primary:focus {
-        background: #dc5b2b;
-    }
-
-    .btn-primary:active {
-        background: #dc5b2b;
-    }
-
-        .btn-primary:active:focus {
-            background: #dc5b2b;
-        }
 
 .mainframe {
     margin-top: 20px;

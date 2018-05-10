@@ -61,5 +61,12 @@ namespace JdCat.Cat.IRepository
         /// <param name="pageIndex"></param>
         /// <returns></returns>
         List<Product> GetProducts(Business business, int? typeId, int pageIndex);
+        /// <summary>
+        /// 删除商品
+        /// </summary>
+        /// <param name="id">商品id</param>
+        /// <param name="apiUrl">图片服务器的地址</param>
+        /// <returns></returns>
+        bool DeleteProduct(int id, string apiUrl);
     }
 }

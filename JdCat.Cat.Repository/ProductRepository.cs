@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using JdCat.Cat.Common;
 
 namespace JdCat.Cat.Repository
 {
@@ -98,6 +99,31 @@ namespace JdCat.Cat.Repository
                 query = query.Where(a => a.ProductTypeId == typeId.Value);
             }
             return query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+        }
+
+        public bool DeleteProduct(int id, string apiUrl)
+        {
+            var product = Context.Products
+                .Include(a => a.Formats)
+                .Include(a => a.Images)
+                .Include(a => a.Attributes)
+                .FirstOrDefault(a => a.ID == id);
+            if (product == null) return true;
+            if(product.Images.Count > 0)
+            {
+                Task.Run(async () =>
+                {
+                    using (var client = new HttpClient())
+                    {
+                        var img = product.Images.FirstOrDefault();
+                        var result = await client.DeleteAsync($"{apiUrl}/Product?name={img.Name}.{img.ExtensionName}&businessId={product.BusinessId}");
+                        var msg = await result.Content.ReadAsStringAsync();
+
+                    }
+                });
+            }
+            Context.Products.Remove(product);
+            return Context.SaveChanges() > 0;
         }
 
     }

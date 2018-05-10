@@ -18,5 +18,9 @@ namespace JdCat.Cat.FileService.Controllers
             image.Save(hosting);
             return Ok("保存成功");
         }
+        public IActionResult Delete(string name, int businessId)
+        {
+
+        }
     }
 }

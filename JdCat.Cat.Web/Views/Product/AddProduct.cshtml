@@ -90,8 +90,8 @@
                     <label class="control-label col-xs-1">
                         <span class="require">商品规格</span>
                     </label>
-                    <div class="col-xs-6">
-                        <div style="border: 1px solid #ccc;padding: 20px;margin-bottom: 5px;" class="container" v-for="item in entity.Formats">
+                    <div class="col-xs-10">
+                        <div style="border: 1px solid #ccc;padding: 20px;margin-bottom: 5px;" v-for="item in entity.Formats">
                             <div class="row">
                                 <div class="col-xs-10">
                                     <span>规格编码：{{item.Code}}</span>
@@ -130,34 +130,13 @@
                         </div>
                     </div>
                 </div>
-                @*<div class="form-group">
-                        <label class="control-label col-xs-1">
-                            <span>商品特色</span>
-                        </label>
-                        <div class="col-xs-6">
-                            <div class="kui-button mr_10 label-gray">
-                                <button type="button" class="btn btn-default">
-                                    <span class="fa fa-check-circle-o"></span>
-                                    <span>招牌</span>
-                                </button>
-                            </div>
-                            <div class="kui-button mr_10 label-gray">
-                                <button type="button" class="btn btn-default">
-                                    <span class="fa fa-check-circle-o"></span>
-                                    <span>套餐</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>*@
-
                 <div class="form-group">
                     <label class="control-label col-xs-1">
                         <span>商品属性</span><br />
                         <span style="color: #888;font-weight: 400;font-size:80%;">(商品备注)</span>
                     </label>
-                    <div class="col-xs-6">
-                        <div style="border: 1px solid #ccc;padding: 20px;margin-bottom: 5px; position: relative;" class="container" v-for="item in entity.Attributes">
-                            <div class="row">
+                    <div class="col-xs-10">
+                            <div class="clearfix" style="border: 1px solid #ccc;padding: 20px;margin-bottom: 5px; position: relative;" v-for="item in entity.Attributes">
                                 <!--选择商品属性-->
                                 <div class="product-attr" v-bind:class="{'show': item.container.attrDisplay}" v-bind:style="{top: item.container.attrTop + 'px', left: item.container.attrLeft + 'px', opacity: item.container.attrOpacity}">
                                     <div class="arrow"></div>
@@ -193,7 +172,6 @@
                                     <i class="fa fa-times-circle-o format-remove" v-on:click="removeAttr(item)" title="删除规格"></i>
                                 </div>
                             </div>
-                        </div>
                         <div class="kui-button m-right-xs margin-top-10">
                             <button class="btn kui-button-primary" v-on:click="addAttr()">
                                 添加属性
@@ -220,12 +198,12 @@
             </div>
             <div class="panel-footer text-center">
                 <div class="kui-button">
-                    <button type="button" class="btn btn-primary" style="font-size: 85%;" id="btnSave" v-on:click="save(false)">
+                    <button type="button" class="btn btn-primary" v-bind:disabled="isDisabled" style="font-size: 85%;" id="btnSave" v-on:click="save(false)">
                         保存并返回
                     </button>
                 </div>
                 <div class="kui-button">
-                    <button type="button" class="btn btn-sm kui-button-primary" v-on:click="save(true)">
+                    <button type="button" class="btn btn-sm kui-button-primary" v-bind:disabled="isDisabled" v-on:click="save(true)">
                         保存并继续添加
                     </button>
                 </div>

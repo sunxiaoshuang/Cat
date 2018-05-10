@@ -5,9 +5,9 @@
     var appData = new Vue({
         el: "#app",
         data: {
-            typeList: pageData.types,
-            attrList: pageData.attrs,
-            entity: {
+            typeList: pageData.types,   // 待选择的分类
+            attrList: pageData.attrs,   // 待选择的属性
+            entity: {                   // 商品实体
                 ProductTypeId: null,
                 Name: "",
                 Description: "",
@@ -18,8 +18,9 @@
                 ],
                 Attributes: []
             },
-            imgsrc: null,
-            showError: false
+            imgsrc: null,               // 图片地址
+            showError: false,           // 是否表单错误
+            isDisabled: false
         },
         methods: {
             addType: function () {
@@ -76,6 +77,7 @@
                     entity.img100 = compress(img, 100, 75, 400, 300);
                 }
                 $.loading();
+                this.isDisabled = true;
                 axios.post("/Product/Save", entity)
                     .then(function (response) {
                         $.loaded();
@@ -83,7 +85,7 @@
                             $.alert(response.data.msg);
                             return;
                         }
-                        $.alert("保存成功");
+                        $.alert("保存成功", "success");
                         setTimeout(() => {
                             if (flag) {
                                 window.location.reload();
@@ -91,6 +93,11 @@
                             }
                             window.location.href = "/Product";
                         }, 2000);
+                    })
+                    .catch(function (msg) {
+                        this.isDisabled = false;
+                        $.loaded();
+                        $.alert(msg);
                     });
             },
             cancel: function () {

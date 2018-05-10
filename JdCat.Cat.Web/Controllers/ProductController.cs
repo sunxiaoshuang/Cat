@@ -171,5 +171,16 @@ namespace JdCat.Cat.Web.Controllers
             return Json(list, setting);
         }
 
+        [HttpPost]
+        public IActionResult DelProduct(int id)
+        {
+            var appData = HttpContext.RequestServices.GetService<AppData>();
+            var result = new JsonData
+            {
+                Success = Service.DeleteProduct(id, AppData.ApiUri)
+            };
+            return Json(result);
+        }
+
     }
 }
