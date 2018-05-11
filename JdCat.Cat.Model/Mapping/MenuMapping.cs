@@ -11,7 +11,12 @@ namespace JdCat.Cat.Model.Mapping
     {
         public void Configure(EntityTypeBuilder<Menu> builder)
         {
-
+            builder.HasOne(a => a.Parent)
+                .WithMany(a => a.Menus)
+                .HasForeignKey(a => a.ParentId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(a => a.Roles)
+                .
         }
     }
 }
