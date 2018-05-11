@@ -17,7 +17,6 @@
     };
 
     $("#btnType").click(function () {
-        console.log(this);
         $.view({
             name: "type", title: "添加类别", url: "/product/addtype", footDisplay: "block"
         });
@@ -131,9 +130,6 @@
             allClick: function () {
                 this.list.forEach(function (obj) { obj.selected = false; });
                 this.allSelected = true;
-            },
-            uploadClick: function () {
-
             }
         }
     });
@@ -161,11 +157,7 @@
             delProduct: function (product) {
                 var self = this;
                 $.confirm("提示", "确定删除商品【" + product.name + "】？", function () {
-                    axios.post("/Product/DelProduct", {
-                        param: {
-                            id: product.id
-                        }
-                    }).then(function (response) {
+                    axios.post("/Product/DelProduct/" + product.id).then(function (response) {
                         if (!response.data.success) {
                             $.alert(response.data.msg)
                             return;
@@ -175,7 +167,19 @@
                     }).catch(function (error) {
                         $.alert(error);
                     });
+                    return true;
                 });
+            },
+            toggleStatus: function (item) {
+                var url = item.status === 1 ? "Down" : "Up"
+                axios.post("/Product/" + url + "/" + item.id)
+                    .then(function (response) {
+                        item.status = item.status === 1 ? 2 : 1;
+                        $.alert(response.data, "success");
+                    })
+                    .catch(function (error) {
+                        $.alert(data);
+                    });
             }
         }
     });

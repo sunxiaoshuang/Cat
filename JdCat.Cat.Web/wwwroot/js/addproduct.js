@@ -7,7 +7,7 @@
         data: {
             typeList: pageData.types,   // 待选择的分类
             attrList: pageData.attrs,   // 待选择的属性
-            entity: {                   // 商品实体
+            entity: pageData.entity || {// 商品实体
                 ProductTypeId: null,
                 Name: "",
                 Description: "",
@@ -18,7 +18,7 @@
                 ],
                 Attributes: []
             },
-            imgsrc: null,               // 图片地址
+            imgsrc: (!!pageData.entity && pageData.entity.Images.length > 0) ? pageData.entity.Images[0] : null,
             showError: false,           // 是否表单错误
             isDisabled: false
         },
@@ -41,7 +41,7 @@
             },
             save: function (flag) {
                 var entity = $.extend({}, this._data.entity);
-                
+
                 if (!entity.ProductTypeId || !entity.Name || !entity.UnitName || !entity.MinBuyQuantity) {
                     $.alert("请将表单填写完整！", "warning");
                     this._data.showError = true;

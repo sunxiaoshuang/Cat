@@ -114,14 +114,24 @@ namespace JdCat.Cat.Web.Controllers
         /// 添加商品
         /// </summary>
         /// <returns></returns>
-        public IActionResult AddProduct([FromServices]JsonSerializerSettings settings)
+        public IActionResult AddProduct(int? id, [FromServices]JsonSerializerSettings settings)
         {
             var types = Service.GetTypes(Business);
             ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name, a.Sort }), settings);
             ViewBag.attrs = JsonConvert.SerializeObject(Service.GetAttributes().Select(a => new { a.Name, Childs = a.Childs.Select(b => b.Name) }).ToList(), settings);
+            if(id.HasValue)
+            {
+                ViewBag.entity = JsonConvert.SerializeObject(Service.GetProduct(id.Value), settings);
+            }
             return View();
         }
 
+        /// <summary>
+        /// 保存商品
+        /// </summary>
+        /// <param name="product"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Save([FromBody]ProductModel product, [FromServices]IHostingEnvironment host)
         {
@@ -164,6 +174,13 @@ namespace JdCat.Cat.Web.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// 获取商品列表
+        /// </summary>
+        /// <param name="typeId"></param>
+        /// <param name="setting"></param>
+        /// <param name="pageIndex"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult GetProducts([FromQuery]int? typeId, [FromServices]JsonSerializerSettings setting, [FromQuery]int pageIndex = 1)
         {
@@ -171,6 +188,11 @@ namespace JdCat.Cat.Web.Controllers
             return Json(list, setting);
         }
 
+        /// <summary>
+        /// 删除商品
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult DelProduct(int id)
         {
@@ -180,6 +202,26 @@ namespace JdCat.Cat.Web.Controllers
                 Success = Service.DeleteProduct(id, AppData.ApiUri)
             };
             return Json(result);
+        }
+        /// <summary>
+        /// 商品上架
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IActionResult Up(int id)
+        {
+            Service.Up(id);
+            return Ok("上架成功");
+        }
+        /// <summary>
+        /// 商品下架
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IActionResult Down(int id)
+        {
+            Service.Down(id);
+            return Ok("下架成功");
         }
 
     }

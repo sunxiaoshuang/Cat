@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fs = System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using JdCat.Cat.FileService.Models;
@@ -18,9 +19,19 @@ namespace JdCat.Cat.FileService.Controllers
             image.Save(hosting);
             return Ok("保存成功");
         }
-        public IActionResult Delete(string name, int businessId)
+        [HttpDelete]
+        public IActionResult Delete(string name, int businessId, [FromServices]IHostingEnvironment environment)
         {
-
+            var path = $"{environment.WebRootPath}/{ProductImage._defaultPath}/{businessId}";
+            var paths = new[] { $"{path}/400x300/{name}", $"{path}/200x150/{name}", $"{path}/100x75/{name}" };
+            foreach (var item in paths)
+            {
+                if(Fs.File.Exists(item))
+                {
+                    Fs.File.Delete(item);
+                }
+            }
+            return Ok("删除成功");
         }
     }
 }

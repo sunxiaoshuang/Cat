@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using JdCat.Cat.Common;
+using System.Linq.Expressions;
 
 namespace JdCat.Cat.Repository
 {
@@ -55,7 +56,6 @@ namespace JdCat.Cat.Repository
         {
             return Context.Products.Count(a => a.ProductTypeId == id) > 0;
         }
-
         public async Task<string> UploadImageAsync(string url, int businessId, string name, string img400, string img200, string img100)
         {
             using (var hc = new HttpClient())
@@ -78,12 +78,10 @@ namespace JdCat.Cat.Repository
                 return await msg.Content.ReadAsStringAsync();
             }
         }
-
         public IEnumerable<SettingProductAttribute> GetAttributes()
         {
             return Context.SettingProductAttributes.Include(a => a.Childs).Where(a => a.Level == 1);
         }
-
         public List<Product> GetProducts(Business business, int? typeId, int pageIndex)
         {
             // 默认每页显示20条数据
@@ -94,13 +92,20 @@ namespace JdCat.Cat.Repository
                 .Include(a => a.Images)
                 .Include(a => a.Attributes)
                 .Where(a => a.BusinessId == business.ID);
-            if(typeId.HasValue)
+            if (typeId.HasValue)
             {
                 query = query.Where(a => a.ProductTypeId == typeId.Value);
             }
             return query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         }
-
+        public Product GetProduct(int id)
+        {
+            return Context.Products
+                .Include(a => a.Formats)
+                .Include(a => a.Images)
+                .Include(a => a.Attributes)
+                .First(a => a.ID == id);
+        }
         public bool DeleteProduct(int id, string apiUrl)
         {
             var product = Context.Products
@@ -109,7 +114,7 @@ namespace JdCat.Cat.Repository
                 .Include(a => a.Attributes)
                 .FirstOrDefault(a => a.ID == id);
             if (product == null) return true;
-            if(product.Images.Count > 0)
+            if (product.Images.Count > 0)
             {
                 Task.Run(async () =>
                 {
@@ -125,6 +130,23 @@ namespace JdCat.Cat.Repository
             Context.Products.Remove(product);
             return Context.SaveChanges() > 0;
         }
-
+        public bool Up(int id)
+        {
+            var product = new Product { ID = id };
+            Context.Attach(product);
+            product.ModifyTime = DateTime.Now;
+            product.PublishTime = DateTime.Now;
+            product.Status = Model.Enum.ProductStatus.Sale;
+            return Context.SaveChanges() > 0;
+        }
+        public bool Down(int id)
+        {
+            var product = new Product { ID = id };
+            Context.Attach(product);
+            product.ModifyTime = DateTime.Now;
+            product.NotSaleTime = DateTime.Now;
+            product.Status = Model.Enum.ProductStatus.NotSale;
+            return Context.SaveChanges() > 0;
+        }
     }
 }

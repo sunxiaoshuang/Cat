@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using JdCat.Cat.IRepository;
@@ -19,10 +20,11 @@ namespace JdCat.Cat.Repository
         {
             return _context.Set<T>().Count();
         }
-        public void Delete(T entity, bool commit = true)
+        public int Delete(T entity, bool commit = true)
         {
             _context.Set<T>().Remove(entity);
-            if (commit) Commit();
+            if (commit) return Commit();
+            return 0;
         }
         public T Get(Expression<Func<T, bool>> predicate)
         {
@@ -32,21 +34,37 @@ namespace JdCat.Cat.Repository
         {
             return predicate == null ? _context.Set<T>() : _context.Set<T>().Where(predicate);
         }
-        public void Add(T entity, bool commit = true)
+        public int Add(T entity, bool commit = true)
         {
             if (entity.CreateTime == null)
             {
                 entity.CreateTime = DateTime.Now;
             }
             _context.Set<T>().Add(entity);
-            if (commit) Commit();
+            if (commit) return Commit();
+            return 0;
         }
-        public void Update(T entity, bool commit = true)
+        public int Update(T entity, IEnumerable<string> fieldNames = null, bool commit = true)
         {
-            _context.Set<T>().Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
-            if (commit) Commit();
+            if(fieldNames == null || fieldNames.Count() == 0)
+            {
+                _context.Entry(entity).State = EntityState.Modified;
+            }
+            else
+            {
+                _context.Set<T>().Attach(entity);
+                foreach (var field in fieldNames)
+                {
+                    _context.Entry(entity).Property(field).IsModified = true;
+                }
+            }
+            if (commit) return Commit();
+            return 0;
         }
+        //public void Update(T entity, Expression<Func<T, T>> fieldNames = null, bool commit = true)
+        //{
+
+        //}
         public int Commit()
         {
             return _context.SaveChanges();

@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
-namespace JdCat.Cat.Web.Migrations
+namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    [Migration("20180506033336_InitCreate")]
-    partial class InitCreate
+    [Migration("20180511013920_Remove_TimeStamp")]
+    partial class Remove_TimeStamp
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,10 +53,6 @@ namespace JdCat.Cat.Web.Migrations
 
                     b.Property<string>("StoreId");
 
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
                     b.HasKey("ID");
 
                     b.ToTable("Business","dbo");
@@ -91,10 +87,6 @@ namespace JdCat.Cat.Web.Migrations
                     b.Property<int>("Status");
 
                     b.Property<string>("Tag");
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<string>("UnitName");
 
@@ -134,10 +126,6 @@ namespace JdCat.Cat.Web.Migrations
 
                     b.Property<int>("ProductId");
 
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
                     b.HasKey("ID");
 
                     b.HasIndex("ProductId");
@@ -149,6 +137,8 @@ namespace JdCat.Cat.Web.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code");
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -167,10 +157,6 @@ namespace JdCat.Cat.Web.Migrations
                     b.Property<string>("SKU");
 
                     b.Property<decimal?>("Stock");
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<string>("UPC");
 
@@ -195,10 +181,6 @@ namespace JdCat.Cat.Web.Migrations
                     b.Property<string>("Name");
 
                     b.Property<int>("ProductId");
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<int>("Type");
 
@@ -225,15 +207,33 @@ namespace JdCat.Cat.Web.Migrations
 
                     b.Property<int>("Sort");
 
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
                     b.HasKey("ID");
 
                     b.HasIndex("BusinessId");
 
                     b.ToTable("ProductType","dbo");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SettingProductAttribute", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("Level");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int?>("ParentId");
+
+                    b.Property<int>("Sort");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("SettingProductAttribute","dbo");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Product", b =>
@@ -278,6 +278,13 @@ namespace JdCat.Cat.Web.Migrations
                         .WithMany("ProductsTypes")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SettingProductAttribute", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.SettingProductAttribute", "Parent")
+                        .WithMany("Childs")
+                        .HasForeignKey("ParentId");
                 });
 #pragma warning restore 612, 618
         }

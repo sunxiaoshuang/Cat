@@ -52,10 +52,6 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("StoreId");
 
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
                     b.HasKey("ID");
 
                     b.ToTable("Business","dbo");
@@ -90,10 +86,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int>("Status");
 
                     b.Property<string>("Tag");
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<string>("UnitName");
 
@@ -133,10 +125,6 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("ProductId");
 
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
                     b.HasKey("ID");
 
                     b.HasIndex("ProductId");
@@ -169,10 +157,6 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<decimal?>("Stock");
 
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
                     b.Property<string>("UPC");
 
                     b.HasKey("ID");
@@ -196,10 +180,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<string>("Name");
 
                     b.Property<int>("ProductId");
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<int>("Type");
 
@@ -226,10 +206,6 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("Sort");
 
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
                     b.HasKey("ID");
 
                     b.HasIndex("BusinessId");
@@ -251,10 +227,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int?>("ParentId");
 
                     b.Property<int>("Sort");
-
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
 
                     b.HasKey("ID");
 

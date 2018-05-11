@@ -6,7 +6,8 @@
     <script>
         var pageData = {
             types: JSON.parse('@Html.Raw(ViewBag.types == null ? "[]" : ViewBag.types)'),
-            attrs: JSON.parse('@Html.Raw(ViewBag.attrs == null ? "[]" : ViewBag.attrs)')
+            attrs: JSON.parse('@Html.Raw(ViewBag.attrs == null ? "[]" : ViewBag.attrs)'),
+            entity: JSON.parse('@Html.Raw(ViewBag.entity == null ? "null" : ViewBag.entity)'),
         };
     </script>
     <script src="~/js/lib/iscroll-zoom.min.js" asp-append-version="true"></script>

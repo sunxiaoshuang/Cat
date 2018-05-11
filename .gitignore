@@ -6,7 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
-js/*.min.js
+JdCat.Cat.Web/wwwroot/js/*.min.js
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
