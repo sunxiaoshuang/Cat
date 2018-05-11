@@ -8,24 +8,41 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using JdCat.Cat.Web.Models;
+using JdCat.Cat.Common;
+using Microsoft.Extensions.Options;
+using JdCat.Cat.Model.Data;
+using JdCat.Cat.IRepository;
 
 namespace JdCat.Cat.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController<IBusinessRepository, Business>
     {
+        public HomeController(AppData appData, IBusinessRepository service) : base(appData, service)
+        {
+        }
+
         public IActionResult Index()
         {
+            ViewBag.UserName = Business.Name;
+            ViewBag.CompanyName = AppData.Name;
             return View();
         }
 
-        public async Task<IActionResult> About()
+        public IActionResult About([FromServices]AppData appdata)
         {
-            ViewData["Message"] = "Your application description page.";
-            HttpClient client = new HttpClient();
-            var result = client.GetAsync("http://localhost:53741/api/business");
-            var stream = result.Result.Content.ReadAsStringAsync();
-            var a = await stream;
-            return View(a);
+            //ViewData["Message"] = "Your application description page.";
+            //var client = new HttpClient();
+            //var data = new FormUrlEncodedContent(new Dictionary<string, string>()
+            //{
+            //    { "user", "sunxsh" },
+            //    { "pwd", "000000"}
+            //});
+            //var result = client.GetAsync(appdata.ApiUri + "/business?user=sunxsh&pwd=000000");
+            //var stream = result.Result.Content.ReadAsStringAsync();
+            //var a = await stream;
+            //client.Dispose();
+            //ViewBag.Msg = a;
+            return View();
         }
 
         public IActionResult Contact()

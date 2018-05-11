@@ -11,8 +11,8 @@ namespace JdCat.Cat.Model
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        public DateTime? CreateTime { get; set; }
-        [Timestamp]
-        public byte[] Timestamp { get; set; }
+        public DateTime? CreateTime { get; set; } = DateTime.Now;
+        //[Timestamp]
+        //public byte[] Timestamp { get; set; }
     }
 }

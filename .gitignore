@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+JdCat.Cat.Web/wwwroot/js/*.min.js
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -21,6 +22,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+Temp/
+File/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -259,3 +262,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+
+.Temp/

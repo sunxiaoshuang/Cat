@@ -1,0 +1,171 @@
+﻿
+@{
+    ViewData["Title"] = "商品管理";
+}
+
+@section Scripts{
+    <script>
+        var pageData = {
+            types: JSON.parse('@Html.Raw(ViewBag.types == null ? "[]" : ViewBag.types)')
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/js/product.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/product.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe">
+    <div class="container-fluid" style="min-height: 600px;">
+        <div class="row">
+            <div class="pull-left product-type">
+                <div class="category-title clearfix">
+                    分类列表
+                    <div class="kui-button pull-right" style="z-index: 1;">
+                        <button type="button" class="btn btn-primary" id="btnType">
+                            <i class="fa fa-gear inline-middle" style="font-size: 16px;"></i>
+                            <span class="inline-middle">管理分类</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="cate-tree" id="category" style="min-height: 456px;">
+                    <div class="all-line" v-bind:class="{ 'selected': allSelected }" v-on:click="allClick()">
+                        <span>全部商品</span>
+                        <span class="all-cnt">{{ productCount }}</span>
+                    </div>
+
+                    <div class="cate-panel" v-for="item in list" v-bind:class="{ 'selected': item.selected }" v-on:click="typeClick(item)">
+                        <div class="cate-title" :data-id="item.id">
+                            <div class="cate-name relative">
+                                {{ item.name }}
+                                <span class="cate-cnt">{{ item.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pull-left product-main" id="productList">
+                <div class="category-name">
+                    <div class="kui-button " style="z-index: 1; margin-right: 20px;">
+                        <a class="btn btn-primary" asp-controller="product" asp-action="addproduct">
+                            <i class="fa fa-plus inline-middle" style="font-size: 16px;"></i>
+                            <span class="inline-middle">添加商品</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="product-list relative">
+                    <div class="tool-bar relative">
+                        <div class="clearfix" style="padding: 16px;">
+                            <div class="kui-checkbox checkbox  pull-left m-left-md m-right-md" style="margin-top: 6px; margin-right: 20px;">
+                                <label class="label-checkbox">
+                                    <input type="checkbox" class="">
+                                    <span class="custom-checkbox"></span>
+                                    全选本页
+                                </label>
+                            </div>
+                            <div class="pull-left">
+                                <div class="kui-button m-right-xs">
+                                    <button type="button" class="btn btn-sm kui-button-primary">
+                                        批量上架
+                                    </button>
+                                </div>
+                                <div class="kui-button m-right-xs">
+                                    <button type="button" class="btn btn-sm kui-button-primary">
+                                        批量下架
+                                    </button>
+                                </div>
+                                <div class="kui-button m-right-xs">
+                                    <button type="button" class="btn btn-sm kui-button-primary">
+                                        批量删除
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="products clearfix">
+                        <div class="product clearfix" v-for="product in list">
+                            <div class="product-check">
+                                <label class="label-checkbox">
+                                    <input type="checkbox" :data-id="product.id">
+                                    <span class="custom-checkbox"></span>
+                                </label>
+                            </div>
+                            <div class="product-content">
+                                <div class="product-img" v-bind:class="{'hide': product.images.length == 0}">
+                                    <div>
+                                        <img :src="getImage(product)" :alt="product.name" style="width: 100%;" />
+                                    </div>
+                                </div>
+                                <div v-bind:class="{'hide': product.images.length > 0}" class="product-no-img">
+                                    <div>
+                                        暂无图片
+                                    </div>
+                                </div>
+                                <div class="product-data">
+                                    <div class="product-name">
+                                        <span style="font-size: 16px;font-weight:800;">{{product.name}}</span>
+                                    </div>
+                                    <div class="product-format">
+                                        <ul class="list-group">
+                                            <li class="relative" v-for="format in product.formats">
+                                                <div class="li-item" v-if="product.formats.length > 1">
+                                                    <p class="bold">规格：</p>
+                                                    <p>{{format.name}}</p>
+                                                </div>
+                                                <div class="li-item">
+                                                    <p><i class="fa fa-cny"></i></p>
+                                                    <p>{{format.price | currency}}</p>
+                                                </div>
+                                                <div class="li-item">
+                                                    <p class="bold">库存：</p>
+                                                    <p>{{format.stock | stock}}</p>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="product-remark">
+                                    <p style="display:flex;">
+                                        <span style="line-height:1.1;min-height: 30px;">
+                                            <span class="bold">描述：</span>
+                                            {{product.description}}
+                                        </span>
+                                    </p>
+                                    <hr style="margin: 5px 0;" />
+                                    <p style="display:flex; height: 30px">
+                                        <span style="line-height:1.1;">
+                                            <span class="bold">属性：</span>
+                                            {{product.attributes | attribute}}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="product-operate pull-right">
+                                    <p style="text-align: center;">
+                                        <div class="kui-button m-right-xs">
+                                            <button type="button" v-on:click="toggleStatus(product)" style="width: 100px" class="btn btn-sm kui-button-primary">
+                                                {{product.status == 1 ? "下架" : "上架"}}
+                                            </button>
+                                        </div>
+                                    </p>
+                                    <p style="text-align: center; margin-top: 20px;">
+                                        <span v-on:click="editProduct(product)">
+                                            <i class="fa fa-edit"></i>
+                                            编辑
+                                        </span>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <span v-on:click="delProduct(product)">
+                                            <i class="fa fa-remove"></i>
+                                            删除
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

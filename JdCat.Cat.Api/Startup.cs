@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JdCat.Cat.Common;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Repository;
@@ -28,8 +29,10 @@ namespace JdCat.Cat.Api
         {
             services.AddMvc();
 //            services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext")));
-            services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Api")));
+            services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
             services.AddScoped<IBusinessRepository, BusinessRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddSingleton(new UtilHelper());
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

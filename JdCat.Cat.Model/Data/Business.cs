@@ -60,5 +60,9 @@ namespace JdCat.Cat.Model.Data
         /// 产品列表
         /// </summary>
         public virtual ICollection<Product> Products { get; set; }
+        /// <summary>
+        /// 产品类别
+        /// </summary>
+        public virtual ICollection<ProductType> ProductsTypes { get; set; }
     }
 }

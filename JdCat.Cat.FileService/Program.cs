@@ -17,9 +17,17 @@ namespace JdCat.Cat.FileService
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("hosting.json", optional: true)
+                .Build();
+            return WebHost.CreateDefaultBuilder(args)
+                //.UseConfiguration(config)
+                .UseUrls("http://localhost:5002")
                 .UseStartup<Startup>()
                 .Build();
+        }
     }
 }
