@@ -82,11 +82,10 @@ namespace JdCat.Cat.Repository
         {
             return Context.SettingProductAttributes.Include(a => a.Childs).Where(a => a.Level == 1);
         }
-        public List<Product> GetProducts(Business business, int? typeId, int pageIndex)
+        public List<Product> GetProducts(Business business, int? typeId, int pageIndex, out int count)
         {
             // 默认每页显示20条数据
             var pageSize = 20;
-
             var query = Context.Products
                 .Include(a => a.Formats)
                 .Include(a => a.Images)
@@ -96,6 +95,7 @@ namespace JdCat.Cat.Repository
             {
                 query = query.Where(a => a.ProductTypeId == typeId.Value);
             }
+            count = query.Count();
             return query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         }
         public Product GetProduct(int id)
@@ -106,47 +106,122 @@ namespace JdCat.Cat.Repository
                 .Include(a => a.Attributes)
                 .First(a => a.ID == id);
         }
-        public bool DeleteProduct(int id, string apiUrl)
+        public bool DeleteProduct(string apiUrl, params int[] ids)
         {
-            var product = Context.Products
+            var products = Context.Products
                 .Include(a => a.Formats)
                 .Include(a => a.Images)
                 .Include(a => a.Attributes)
-                .FirstOrDefault(a => a.ID == id);
-            if (product == null) return true;
-            if (product.Images.Count > 0)
+                .Where(a => ids.Contains(a.ID)).ToList();
+            if (products.Count == 0) return false;
+            foreach (var product in products)
             {
-                Task.Run(async () =>
+                if (product.Images.Count > 0)
                 {
-                    using (var client = new HttpClient())
-                    {
-                        var img = product.Images.FirstOrDefault();
-                        var result = await client.DeleteAsync($"{apiUrl}/Product?name={img.Name}.{img.ExtensionName}&businessId={product.BusinessId}");
-                        var msg = await result.Content.ReadAsStringAsync();
-
-                    }
-                });
+                    DeleteImage(product.Images.First(), apiUrl, product.BusinessId);
+                }
             }
-            Context.Products.Remove(product);
+            Context.Products.RemoveRange(products);
             return Context.SaveChanges() > 0;
         }
-        public bool Up(int id)
+        public void DeleteImage(ProductImage image, string apiUrl, int businessId)
+        {
+            Task.Run(async () =>
+            {
+                using (var client = new HttpClient())
+                {
+                    var result = await client.DeleteAsync($"{apiUrl}/Product?name={image.Name}.{image.ExtensionName}&businessId={businessId}");
+                    var msg = await result.Content.ReadAsStringAsync();
+                }
+            });
+        }
+        public void DeleteImage(ProductImage image)
+        {
+            Context.ProductImages.Remove(image);
+        }
+
+        public Product Update(Product product)
+        {
+            var entity = Context.Products
+                .Include(a => a.Formats)
+                .Include(a => a.Attributes)
+                .First(a => a.ID == product.ID);
+            entity.Description = product.Description;
+            entity.MinBuyQuantity = product.MinBuyQuantity;
+            entity.Name = product.Name;
+            entity.ProductTypeId = product.ProductTypeId;
+            entity.UnitName = product.UnitName;
+            if (product.Images != null && product.Images.Count > 0)
+            {
+                entity.Images = new List<ProductImage>();
+                foreach (var img in product.Images.Where(a => a.ID == 0))
+                {
+                    entity.Images.Add(img);
+                }
+            }
+            var removeFormats = entity.Formats.Where(a => product.Formats.FirstOrDefault(b => b.ID == a.ID) == null).ToList();
+            foreach (var removeFormat in removeFormats)
+            {
+                entity.Formats.Remove(removeFormat);
+            }
+            foreach (var format in product.Formats)
+            {
+                if (format.ID == 0)
+                {
+                    entity.Formats.Add(format);
+                    continue;
+                }
+                var old = entity.Formats.First(a => a.ID == format.ID);
+                old.Name = format.Name;
+                old.PackingPrice = format.PackingPrice;
+                old.PackingQuantity = format.PackingQuantity;
+                old.Position = format.Position;
+                old.Price = format.Price;
+                old.SKU = format.SKU;
+                old.Stock = old.Stock;
+                old.UPC = old.UPC;
+            }
+            var removeAttrs = entity.Attributes.Where(a => product.Attributes.FirstOrDefault(b => b.ID == a.ID) == null).ToList();
+            foreach (var removeAttr in removeAttrs)
+            {
+                entity.Attributes.Remove(removeAttr);
+            }
+            foreach (var attr in product.Attributes)
+            {
+                if (attr.ID == 0)
+                {
+                    entity.Attributes.Add(attr);
+                    continue;
+                }
+                var old = entity.Attributes.First(a => a.ID == attr.ID);
+                old.Name = attr.Name;
+                old.Item1 = attr.Item1;
+                old.Item2 = attr.Item2;
+                old.Item3 = attr.Item3;
+                old.Item4 = attr.Item4;
+                old.Item5 = attr.Item5;
+                old.Item6 = attr.Item6;
+                old.Item7 = attr.Item7;
+                old.Item8 = attr.Item8;
+            }
+            Context.SaveChanges();
+            return entity;
+        }
+        public void Up(int id)
         {
             var product = new Product { ID = id };
             Context.Attach(product);
             product.ModifyTime = DateTime.Now;
             product.PublishTime = DateTime.Now;
             product.Status = Model.Enum.ProductStatus.Sale;
-            return Context.SaveChanges() > 0;
         }
-        public bool Down(int id)
+        public void Down(int id)
         {
             var product = new Product { ID = id };
             Context.Attach(product);
             product.ModifyTime = DateTime.Now;
             product.NotSaleTime = DateTime.Now;
             product.Status = Model.Enum.ProductStatus.NotSale;
-            return Context.SaveChanges() > 0;
         }
     }
 }

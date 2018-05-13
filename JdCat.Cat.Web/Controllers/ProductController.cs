@@ -119,7 +119,7 @@ namespace JdCat.Cat.Web.Controllers
             var types = Service.GetTypes(Business);
             ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name, a.Sort }), settings);
             ViewBag.attrs = JsonConvert.SerializeObject(Service.GetAttributes().Select(a => new { a.Name, Childs = a.Childs.Select(b => b.Name) }).ToList(), settings);
-            if(id.HasValue)
+            if (id.HasValue)
             {
                 ViewBag.entity = JsonConvert.SerializeObject(Service.GetProduct(id.Value), settings);
             }
@@ -173,6 +173,46 @@ namespace JdCat.Cat.Web.Controllers
             result.Msg = "保存成功";
             return Ok(result);
         }
+        /// <summary>
+        /// 修改商品
+        /// </summary>
+        /// <param name="product"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Update([FromBody]ProductModel product, [FromServices]IHostingEnvironment host)
+        {
+            var result = new JsonData();
+            if (!string.IsNullOrEmpty(product.Img400))
+            {
+                var file = new ProductImage
+                {
+                    CreateTime = DateTime.Now,
+                    Name = Guid.NewGuid().ToString().ToLower(),
+                    Type = ImageType.Product,
+                    Length = Convert.FromBase64String(product.Img400.Replace("data:image/jpeg;base64,", "")).Length
+                };
+                // 上传图片
+                var msg = await Service.UploadImageAsync(AppData.ApiUri + "/Product", Business.ID, file.Name + "." + file.ExtensionName, product.Img400, product.Img200, product.Img100);
+                if (msg != "ok")
+                {
+                    result.Msg = msg;
+                    return Json(result);
+                }
+                if (product.Images.Count > 0)
+                {
+                    Service.DeleteImage(product.Images.First(), AppData.ApiUri, Business.ID);
+                    Service.DeleteImage(product.Images.First());
+                }
+                product.Images = new List<ProductImage> { file };
+            }
+
+            // 图片上传成功后，修改商品
+            Service.Update(product);
+            result.Success = true;
+            result.Msg = "修改成功";
+            return Ok(result);
+        }
 
         /// <summary>
         /// 获取商品列表
@@ -181,11 +221,11 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="setting"></param>
         /// <param name="pageIndex"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         public IActionResult GetProducts([FromQuery]int? typeId, [FromServices]JsonSerializerSettings setting, [FromQuery]int pageIndex = 1)
         {
-            var list = Service.GetProducts(Business, typeId, pageIndex);
-            return Json(list, setting);
+            var list = Service.GetProducts(Business, typeId, pageIndex, out int count);
+            return Json(new { data = list, count }, setting);
         }
 
         /// <summary>
@@ -199,7 +239,7 @@ namespace JdCat.Cat.Web.Controllers
             var appData = HttpContext.RequestServices.GetService<AppData>();
             var result = new JsonData
             {
-                Success = Service.DeleteProduct(id, AppData.ApiUri)
+                Success = Service.DeleteProduct(AppData.ApiUri, id)
             };
             return Json(result);
         }
@@ -208,9 +248,11 @@ namespace JdCat.Cat.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [HttpPost]
         public IActionResult Up(int id)
         {
             Service.Up(id);
+            Service.Commit();
             return Ok("上架成功");
         }
         /// <summary>
@@ -218,10 +260,43 @@ namespace JdCat.Cat.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [HttpPost]
         public IActionResult Down(int id)
         {
             Service.Down(id);
+            Service.Commit();
             return Ok("下架成功");
+        }
+
+        [HttpPut]
+        public IActionResult BatchUp([FromBody]IEnumerable<int> ids)
+        {
+            foreach (var id in ids)
+            {
+                Service.Up(id);
+            }
+            var result = new JsonData { Success = Service.Commit() > 0 };
+            result.Msg = result.Success ? "批量上架成功" : "批量上架失败";
+            return Json(result);
+        }
+        [HttpPut]
+        public IActionResult BatchDown([FromBody]IEnumerable<int> ids)
+        {
+            foreach (var id in ids)
+            {
+                Service.Down(id);
+            }
+            var result = new JsonData { Success = Service.Commit() > 0 };
+            result.Msg = result.Success ? "批量下架成功" : "批量下架失败";
+            return Json(result);
+        }
+
+        [HttpPut]
+        public IActionResult BatchRemove([FromBody] IEnumerable<int> ids)
+        {
+            var result = new JsonData { Success = Service.DeleteProduct(AppData.ApiUri, ids.ToArray()) };
+            result.Msg = result.Success ? "批量删除成功" : "没有找到删除的商品，可以已经被删除了";
+            return Json(result);
         }
 
     }

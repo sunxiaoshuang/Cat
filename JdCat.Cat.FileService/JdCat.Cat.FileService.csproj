@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\File\Product\2\**" />
+    <Content Remove="wwwroot\File\Product\2\**" />
+    <EmbeddedResource Remove="wwwroot\File\Product\2\**" />
+    <None Remove="wwwroot\File\Product\2\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
   </ItemGroup>
@@ -14,9 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\File\Product\2\100x75\2fcb4ecc-3842-4883-927f-ec42870b5d6d.jpg" />
-    <None Include="wwwroot\File\Product\2\200x150\2fcb4ecc-3842-4883-927f-ec42870b5d6d.jpg" />
-    <None Include="wwwroot\File\Product\2\400x300\2fcb4ecc-3842-4883-927f-ec42870b5d6d.jpg" />
+    <Folder Include="wwwroot\File\Product\" />
   </ItemGroup>
 
 </Project>

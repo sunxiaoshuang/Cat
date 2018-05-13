@@ -73,6 +73,23 @@ namespace JdCat.Cat.Web.Controllers
             }
             base.OnActionExecuting(context);
         }
+
+        public override ViewResult View()
+        {
+            ViewLoad();
+            return base.View();
+        }
+        public override ViewResult View(object model)
+        {
+            ViewLoad();
+            return base.View();
+        }
+
+        private void ViewLoad()
+        {
+            ViewBag.apiUrl = AppData.FileUri;
+            ViewBag.CompanyName = AppData.Name;
+        }
         //public override void OnActionExecuted(ActionExecutedContext context)
         //{
         //    ViewBag.CompanyName = AppData.Name;

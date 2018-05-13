@@ -59,25 +59,25 @@
                     <div class="tool-bar relative">
                         <div class="clearfix" style="padding: 16px;">
                             <div class="kui-checkbox checkbox  pull-left m-left-md m-right-md" style="margin-top: 6px; margin-right: 20px;">
-                                <label class="label-checkbox">
-                                    <input type="checkbox" class="">
+                                <label class="label-checkbox" v-on:click="toggleCheck()">
+                                    <input type="checkbox" class="" v-model="allCheck">
                                     <span class="custom-checkbox"></span>
                                     全选本页
                                 </label>
                             </div>
                             <div class="pull-left">
                                 <div class="kui-button m-right-xs">
-                                    <button type="button" class="btn btn-sm kui-button-primary">
+                                    <button type="button" class="btn btn-sm kui-button-primary" v-on:click="batchUp()">
                                         批量上架
                                     </button>
                                 </div>
                                 <div class="kui-button m-right-xs">
-                                    <button type="button" class="btn btn-sm kui-button-primary">
+                                    <button type="button" class="btn btn-sm kui-button-primary" v-on:click="batchDown()">
                                         批量下架
                                     </button>
                                 </div>
                                 <div class="kui-button m-right-xs">
-                                    <button type="button" class="btn btn-sm kui-button-primary">
+                                    <button type="button" class="btn btn-sm kui-button-primary" v-on:click="batchRemove()">
                                         批量删除
                                     </button>
                                 </div>
@@ -88,7 +88,7 @@
                         <div class="product clearfix" v-for="product in list">
                             <div class="product-check">
                                 <label class="label-checkbox">
-                                    <input type="checkbox" :data-id="product.id">
+                                    <input type="checkbox" v-model="product.checked" v-on:click="toggleProduct()">
                                     <span class="custom-checkbox"></span>
                                 </label>
                             </div>
@@ -164,6 +164,25 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="text-center" v-if="pageCount >= 1">
+                    <ul class="pagination cat-pagination pagination-sm">
+                        <li v-bind:class="{'disabled': pageIndex === 1}" v-on:click="prev()">
+                            <a>
+                                <i class="fa fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        <li v-for="num in pageCount" v-bind:class="{'active': num === pageIndex}" v-on:click="page(num)">
+                            <a>
+                                <span>{{num}}</span>
+                            </a>
+                        </li>
+                        <li v-bind:class="{'disabled': pageIndex === pageCount}" v-on:click="next()">
+                            <a>
+                                <i class="fa fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

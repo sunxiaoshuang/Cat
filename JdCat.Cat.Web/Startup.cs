@@ -45,6 +45,7 @@ namespace JdCat.Cat.Web
             services.AddSingleton(new AppData
             {
                 ApiUri = appData["apiUri"],
+                FileUri = appData["fileUri"],
                 Name = appData["name"],
                 Session = appData["session"],
                 Cookie = appData["cookie"],

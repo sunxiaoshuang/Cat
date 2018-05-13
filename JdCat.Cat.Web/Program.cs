@@ -7,6 +7,7 @@ using JdCat.Cat.Model;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,20 +19,8 @@ namespace JdCat.Cat.Web
         public static void Main(string[] args)
         {
             var host = BuildWebHost(args);
-            using (var scope = host.Services.CreateScope())
-            {
-                var serviceProvider = scope.ServiceProvider;
-                try
-                {
-                    var context = serviceProvider.GetService<CatDbContext>();
-                    new SeedData(context).Seed();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("初始化种子错误", ex);
-                }
-            }
-
+            InitSeed(host);
+            AutoMigration(host);
             host.Run();
         }
 
@@ -45,6 +34,47 @@ namespace JdCat.Cat.Web
                 .UseConfiguration(config)
                 .UseStartup<Startup>()
                 .Build();
+        }
+
+        /// <summary>
+        /// 初始化种子
+        /// </summary>
+        private static void InitSeed(IWebHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                try
+                {
+                    var context = serviceProvider.GetService<CatDbContext>();
+                    new SeedData(context).Seed();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("初始化种子错误", ex);
+                }
+            }
+        }
+        /// <summary>
+        /// 自动迁移
+        /// </summary>
+        /// <param name="host"></param>
+        private static void AutoMigration(IWebHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                try
+                {
+                    var context = serviceProvider.GetService<CatDbContext>();
+                    context.Database.Migrate();
+
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("数据库自动迁移失败", ex);
+                }
+            }
         }
     }
 }

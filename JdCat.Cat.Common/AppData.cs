@@ -11,6 +11,10 @@ namespace JdCat.Cat.Common
         /// </summary>
         public string ApiUri { get; set; }
         /// <summary>
+        /// 文件服务器
+        /// </summary>
+        public string FileUri { get; set; }
+        /// <summary>
         /// 公司名称
         /// </summary>
         public string Name { get; set; }

@@ -109,10 +109,10 @@
         }
     }
 
-    var list = pageData.types.map(function (obj) {
-        obj.selected = false;
-        return obj;
-    });
+    //    var list = pageData.types.map(function (obj) {
+    //        obj.selected = false;
+    //        return obj;
+    //    });
     // 数据
     var category = new Vue({
         el: "#category",
@@ -123,13 +123,38 @@
         },
         methods: {
             typeClick: function (item) {
-                this.list.forEach(function (obj) { obj.selected = false; });
-                item.selected = true;
-                this.allSelected = false;
+                var self = this;
+                productList.pageIndex = 1;
+                $.loading();
+                axios.get("Product/GetProducts?typeId=" + item.id)
+                    .then(function (response) {
+                        $.loaded();
+                        self.list.forEach(function (obj) { obj.selected = false; });
+                        item.selected = true;
+                        self.allSelected = false;
+                        productList.list = response.data.data;
+                        productList.count = response.data.count;
+                    })
+                    .catch(function (error) {
+                        $.loaded();
+                        $.alert(error);
+                    });
             },
             allClick: function () {
-                this.list.forEach(function (obj) { obj.selected = false; });
-                this.allSelected = true;
+                var self = this;
+                productList.pageIndex = 1;
+                axios.get("Product/GetProducts")
+                    .then(function (response) {
+                        $.loaded();
+                        self.list.forEach(function (obj) { obj.selected = false; });
+                        self.allSelected = true;
+                        productList.list = response.data.data;
+                        productList.count = response.data.count;
+                    })
+                    .catch(function (error) {
+                        $.loaded();
+                        $.alert(error);
+                    });
             }
         }
     });
@@ -139,7 +164,7 @@
     });
     Vue.filter("attribute", function (attrs) {
         if (!attrs || attrs.length === 0) return "";
-        let name = "";
+        var name = "";
         attrs.forEach(function (obj) { name += obj.name + "/"; });
         return name.substr(0, name.length - 1);
     });
@@ -147,7 +172,15 @@
     var productList = new Vue({
         el: "#productList",
         data: {
-            list: []
+            list: [],
+            allCheck: false,
+            pageIndex: 1,
+            count: 0
+        },
+        computed: {
+            pageCount: function () {
+                return Math.ceil(this.count / 20);
+            }
         },
         methods: {
             getImage: function (item) {
@@ -159,7 +192,7 @@
                 $.confirm("提示", "确定删除商品【" + product.name + "】？", function () {
                     axios.post("/Product/DelProduct/" + product.id).then(function (response) {
                         if (!response.data.success) {
-                            $.alert(response.data.msg)
+                            $.alert(response.data.msg);
                             return;
                         }
                         $.alert("删除成功", "success");
@@ -171,29 +204,127 @@
                 });
             },
             toggleStatus: function (item) {
-                var url = item.status === 1 ? "Down" : "Up"
+                var url = item.status === 1 ? "Down" : "Up";
                 axios.post("/Product/" + url + "/" + item.id)
                     .then(function (response) {
                         item.status = item.status === 1 ? 2 : 1;
                         $.alert(response.data, "success");
                     })
                     .catch(function (error) {
-                        $.alert(data);
+                        $.alert(error);
                     });
+            },
+            editProduct: function (product) {
+                window.location.href = "/Product/AddProduct/" + product.id;
+            },
+            toggleCheck: function () {
+                var self = this;
+                this.list.forEach(function (obj) {
+                    obj.checked = !self.allCheck;
+                });
+            },
+            toggleProduct: function () {
+                this.allCheck = false;
+            },
+            batchUp: function () {
+                var list = this.list.filter(function (obj) { return obj.checked && obj.status !== 1; });
+                if (list.length === 0) {
+                    $.alert("没有需要上架的商品", "warning");
+                    return;
+                }
+                var ids = list.select(a => a.id);
+                axios.put("/Product/BatchUp", ids)
+                    .then(function (response) {
+                        if (!response.data.success) {
+                            $.alert(response.data.msg);
+                            return;
+                        }
+                        $.alert(response.data.msg, "success");
+                        list.forEach(function (obj) { obj.status = 1; });
+                    })
+                    .catch(function (error) {
+                        $.alert(error);
+                    });
+            },
+            batchDown: function () {
+                var list = this.list.filter(function (obj) { return obj.checked && obj.status === 1; });
+                if (list.length === 0) {
+                    $.alert("没有需要下架的商品", "warning");
+                    return;
+                }
+                var ids = list.select(a => a.id);
+                axios.put("/Product/BatchDown", ids)
+                    .then(function (response) {
+                        if (!response.data.success) {
+                            $.alert(response.data.msg);
+                            return;
+                        }
+                        $.alert(response.data.msg, "success");
+                        list.forEach(function (obj) { obj.status = 2; });
+                    })
+                    .catch(function (error) {
+                        $.alert(error);
+                    });
+            },
+            batchRemove: function () {
+                var self = this, list = this.list.filter(function (obj) { return obj.checked; });
+                if (list.length === 0) {
+                    $.alert("没有选择需要删除的商品", "warning");
+                    return;
+                }
+                var name = "";
+                list.forEach(function (obj) { name += obj.name + "，" });
+                name = name.substring(0, name.length - 1);
+                $.confirm("提示", "确定删除商品【" + name + "】？", function () {
+                    $.loading();
+                    var ids = list.select(a => a.id);
+                    axios.put("/Product/BatchRemove", ids).then(function (response) {
+                        $.loaded();
+                        if (!response.data.success) {
+                            $.alert(response.data.msg);
+                            return;
+                        }
+                        $.alert(response.data.msg, "success");
+                        list.forEach(function (obj) {
+                            self.list.remove(obj);
+                        });
+                    }).catch(function (error) {
+                        $.loaded();
+                        $.alert(error);
+                    });
+                    return true;
+                });
+            },
+            prev: function () {
+                if (productList.pageIndex === 1) return;
+                productList.pageIndex = productList.pageIndex - 1;
+                loadData();
+            },
+            page: function (num) {
+                productList.pageIndex = num;
+                loadData();
+            },
+            next: function () {
+                if (productList.pageIndex === productList.pageCount) return;
+                productList.pageIndex = productList.pageIndex + 1;
+                loadData();
             }
         }
     });
-    $.loading();
-    axios.post("/Product/GetProducts")
-        .then(function (response) {
-            $.loaded();
-            productList.list = response.data;
-        })
-        .catch(function (error) {
-            $.loaded();
-            $.alert(error);
-        });
-
+    function loadData() {
+        $.loading();
+        axios.get("/Product/GetProducts?pageIndex=" + productList.pageIndex)
+            .then(function (response) {
+                $.loaded();
+                productList.list = response.data.data;
+                productList.count = response.data.count;
+            })
+            .catch(function (error) {
+                $.loaded();
+                $.alert(error);
+            });
+    }
+    loadData();
 
 })(jQuery);
 

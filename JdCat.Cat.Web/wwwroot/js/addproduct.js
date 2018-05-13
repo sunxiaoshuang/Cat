@@ -1,24 +1,45 @@
 ﻿
 (function ($) {
 
-
+    // 修改实体对象过滤
+    var imgsrc = null;
+    if (!!pageData.entity) {
+        pageData.entity.attributes.forEach(function(obj) {
+            obj.container = {
+                list: [],
+                attrLeft: 0,
+                attrTop: 0,
+                attrDisplay: false,
+                attrOpacity: 0,
+                detailLeft: 0,
+                detailTop: 0,
+                detailDisplay: false,
+                detailOpacity: 0,
+                detailIndex: 1
+            };
+        });
+        if (!!pageData.entity && pageData.entity.images.length > 0) {
+            imgsrc = appConfig.apiUrl + "/File/Product/" + pageData.entity.businessId + "/400x300/" + pageData.entity.images[0].name + "." + pageData.entity.images[0].extensionName;
+        }
+    }
     var appData = new Vue({
         el: "#app",
         data: {
             typeList: pageData.types,   // 待选择的分类
             attrList: pageData.attrs,   // 待选择的属性
             entity: pageData.entity || {// 商品实体
-                ProductTypeId: null,
-                Name: "",
-                Description: "",
-                UnitName: "份",
-                MinBuyQuantity: 1,
-                Formats: [
-                    { ID: 0, Code: "", Name: "", Price: 0, Stock: -1, PackingPrice: 0, PackingQuantity: 1 }
+                id: 0,
+                productTypeId: null,
+                name: "",
+                description: "",
+                unitName: "份",
+                minBuyQuantity: 1,
+                formats: [
+                    { id: 0, code: "", name: "", price: 0, stock: -1, packingPrice: 0, packingQuantity: 1 }
                 ],
-                Attributes: []
+                attributes: []
             },
-            imgsrc: (!!pageData.entity && pageData.entity.Images.length > 0) ? pageData.entity.Images[0] : null,
+            imgsrc: imgsrc,
             showError: false,           // 是否表单错误
             isDisabled: false
         },
@@ -42,16 +63,16 @@
             save: function (flag) {
                 var entity = $.extend({}, this._data.entity);
 
-                if (!entity.ProductTypeId || !entity.Name || !entity.UnitName || !entity.MinBuyQuantity) {
+                if (!entity.productTypeId || !entity.name || !entity.unitName || !entity.minBuyQuantity) {
                     $.alert("请将表单填写完整！", "warning");
                     this._data.showError = true;
                     return;
                 }
                 // 验证是否填写规格名称
                 var noNameFormat = 0;
-                if (entity.Formats.length > 1) {
-                    noNameFormat = entity.Formats.filter(function (obj) {
-                        return !$.trim(obj.Name);
+                if (entity.formats.length > 1) {
+                    noNameFormat = entity.formats.filter(function (obj) {
+                        return !$.trim(obj.name);
                     }).length;
                 }
                 if (noNameFormat > 0) {
@@ -59,26 +80,27 @@
                     return;
                 }
                 // 验证是否填写属性名称
-                if (entity.Attributes.length > 0) {
-                    for (var i = 0, len = entity.Attributes.length; i < len; i++) {
-                        if (!$.trim(entity.Attributes[i].Name)) {
+                if (entity.attributes.length > 0) {
+                    for (var i = 0, len = entity.attributes.length; i < len; i++) {
+                        if (!$.trim(entity.attributes[i].name)) {
                             $.alert("请填写属性名称");
                             return;
                         }
-                        delete entity.Attributes[i].container;
+//                        delete entity.attributes[i].container;
                     }
                 }
 
                 // 保存三种格式的图片：400*300，200*150，100*75
-                if (this._data.imgsrc) {
+                if (this._data.imgsrc && this._data.imgsrc.indexOf(appConfig.apiUrl) === -1) {
                     var img = document.getElementById("img");
                     entity.img400 = this._data.imgsrc;
                     entity.img200 = compress(img, 200, 150, 400, 300);
                     entity.img100 = compress(img, 100, 75, 400, 300);
                 }
                 $.loading();
-                this.isDisabled = true;
-                axios.post("/Product/Save", entity)
+                this.isDisabled = true;                     // 按钮是否可用
+                var url = entity.id === 0 ? "/Product/Save" : "/Product/Update";
+                axios.post(url, entity)
                     .then(function (response) {
                         $.loaded();
                         if (!response.data.success) {
@@ -110,23 +132,23 @@
                 this._data.imgsrc = null;
             },
             addFormat: function () {
-                this._data.entity.Formats.push({ ID: 0, Code: "", Name: "", Price: 0, Stock: -1, PackingPrice: 0, PackingQuantity: 1 });
+                this._data.entity.formats.push({ id: 0, code: "", name: "", price: 0, stock: -1, packingPrice: 0, packingQuantity: 1 });
             },
             removeFormat: function (item) {
-                this._data.entity.Formats.remove(item);
+                this._data.entity.formats.remove(item);
             },
             addAttr: function () {
-                this._data.entity.Attributes.push({
-                    ID: 0,
-                    Name: "",
-                    Item1: "",
-                    Item2: "",
-                    Item3: "",
-                    Item4: "",
-                    Item5: "",
-                    Item6: "",
-                    Item7: "",
-                    Item8: "",
+                this._data.entity.attributes.push({
+                    id: 0,
+                    name: "",
+                    item1: "",
+                    item2: "",
+                    item3: "",
+                    item4: "",
+                    item5: "",
+                    item6: "",
+                    item7: "",
+                    item8: "",
                     container: {
                         list: [],
                         attrLeft: 0,
@@ -142,7 +164,7 @@
                 });
             },
             removeAttr: function (item) {
-                this._data.entity.Attributes.remove(item);
+                this._data.entity.attributes.remove(item);
             },
             attrFocus: function (e, item) {
                 item.container.attrOpacity = 1;
@@ -173,10 +195,10 @@
             },
             selectAttr: function (item, attr) {
                 item.container.list = attr.childs;
-                item.Name = attr.name;
+                item.name = attr.name;
             },
             selectDetail: function (item, name, index) {
-                item["Item" + index] = name;
+                item["item" + index] = name;
             }
 
         }
@@ -189,7 +211,7 @@
             $input.focus().closest(".form-group").addClass("has-error");
             return;
         }
-        var sort = appData._data.typeList[appData._data.typeList.length - 1].sort + 1;
+        var sort = appData._data.typeList.length === 0 ? 1 : (appData._data.typeList[appData._data.typeList.length - 1].sort + 1);
         var param = { name: val, sort: sort, id: 0 };
         axios.post("/Product/AddType", param)
             .then(function (response) {

@@ -7,20 +7,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace JdCat.Cat.Model.Mapping
 {
-<<<<<<< HEAD
-    public class MenuMapping : IEntityTypeConfiguration<Menu>
-    {
-        public void Configure(EntityTypeBuilder<Menu> builder)
-        {
-            builder.HasOne(a => a.Parent)
-                .WithMany(a => a.Menus)
-                .HasForeignKey(a => a.ParentId)
-                .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(a => a.Roles)
-                .
-        }
-    }
-=======
     //public class MenuMapping : IEntityTypeConfiguration<Menu>
     //{
     //    public void Configure(EntityTypeBuilder<Menu> builder)
@@ -28,5 +14,4 @@ namespace JdCat.Cat.Model.Mapping
 
     //    }
     //}
->>>>>>> cd382e338437d8c7e00b0cc5f67462005acf8bc2
 }

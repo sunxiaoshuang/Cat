@@ -89,6 +89,13 @@
         this.splice(i, 1);
         return this;
     };
+    Array.prototype.select = function (fn) {
+        var arr = [];
+        this.forEach(function(obj) {
+            arr.push(fn(obj));
+        });
+        return arr;
+    }
 
     // Vue过滤器
     if (Vue) {
@@ -97,9 +104,11 @@
             s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + "";
             var l = s.split(".")[0].split("").reverse(),
                 r = s.split(".")[1];
+            var t;
             t = "";
+            var i;
             for (i = 0; i < l.length; i++) {
-                t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");
+                t += l[i] + ((i + 1) % 3 === 0 && (i + 1) !== l.length ? "," : "");
             }
             return t.split("").reverse().join("") + "." + r;   
         });

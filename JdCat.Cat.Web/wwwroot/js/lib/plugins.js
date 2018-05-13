@@ -157,7 +157,7 @@
             }
             var obj = {
                 status: status,
-                title: msg,
+                title: msg || "未处理异常",
                 icon: icon
             }
             var html = '<div class="alert-status alert-{status}">\

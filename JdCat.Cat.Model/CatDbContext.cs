@@ -30,6 +30,7 @@ namespace JdCat.Cat.Model
         public DbSet<ProductAttribute> ProductAttributes { get; set; }
         public DbSet<SettingProductAttribute> SettingProductAttributes { get; set; }
 
+//        public DbSet<TestModel> TestModels { get; set; }
         /// <summary>
         /// 添加FluentAPI配置
         /// </summary>
@@ -37,19 +38,12 @@ namespace JdCat.Cat.Model
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             var typesToRegister = Assembly.GetExecutingAssembly().GetTypes().Where(q => q.GetInterface(typeof(IEntityTypeConfiguration<>).FullName) != null);
-
             foreach (var type in typesToRegister)
             {
                 dynamic configurationInstance = Activator.CreateInstance(type);
                 modelBuilder.ApplyConfiguration(configurationInstance);
             }
-
-
-            //modelBuilder.ApplyConfiguration(new BusinessMapping());
-            //modelBuilder.ApplyConfiguration(new ProductMapping());
-            //modelBuilder.ApplyConfiguration(new SettingProductAttributeMapping());
         }
     }
 }

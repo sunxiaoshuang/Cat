@@ -52,6 +52,33 @@ span.require {
         top: 0;
         left: -10px;
     }
+.cat-pagination li {
+    user-select: none;
+}
+    .cat-pagination li > a {
+        z-index: 3;
+        color: #555;
+        cursor: pointer;
+        background-color: #fff;
+        border-color: #ccc;
+        margin-right: 7px;
+        border-radius: 3px;
+    }
+        .cat-pagination li > a:hover {
+            color: #ea7042;
+            border-color: #ea7042;
+            background-color: #fff;
+        }
+    .cat-pagination li.active > a {
+        cursor: default;
+        color: #fff;
+        border-color: #ea7042;
+        background-color: #ea7042;
+    }
+.cat-pagination li.active > a:hover {
+    border-color: #ea7042;
+    background-color: #ea7042;
+}
 /*------------------------------------------------------*/
 @media screen and (max-width: 767px) {
     .carousel-caption {
@@ -91,7 +118,7 @@ body {
     margin: 0;
     background-color: transparent;
     padding: 0;
-    min-height: 1200px;
+    min-height: 600px;
 }
 
 .header .container-fluid {
@@ -868,7 +895,6 @@ ul.dropdown-menu.dropdown-messages li a div {
     #page-wrapper {
         margin: 0 0 0 260px;
         padding: 0;
-        min-height: 1200px;
     }
 
 
@@ -921,12 +947,31 @@ ul.dropdown-menu.dropdown-messages li a div {
 #mainframe {
     border: none;
     width: 100%;
-    min-height: 700px;
     padding: 0;
     margin: 0;
-    height: auto;
     overflow: hidden;
 }
+@media(max-height: 768px) {
+    #mainframe {
+        height: 560px;
+    }
+}
+@media(max-height: 900px) {
+    #mainframe {
+        height: 750px;
+    }
+}
+@media(max-height: 1080px) {
+    #mainframe {
+        height: 850px;
+    }
+}
+@media(min-height: 1080px) {
+    #mainframe {
+        height: 900px;
+    }
+}
+
 
 .margin-top-100 {
     margin-top: 100px;

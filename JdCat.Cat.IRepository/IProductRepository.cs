@@ -56,11 +56,12 @@ namespace JdCat.Cat.IRepository
         /// <summary>
         /// 获取商品列表
         /// </summary>
-        /// <param name="business"></param>
-        /// <param name="typeId"></param>
-        /// <param name="pageIndex"></param>
+        /// <param name="business">商户对象</param>
+        /// <param name="typeId">商品类别id</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="count">记录数</param>
         /// <returns></returns>
-        List<Product> GetProducts(Business business, int? typeId, int pageIndex);
+        List<Product> GetProducts(Business business, int? typeId, int pageIndex, out int count);
         /// <summary>
         /// 获取商品
         /// </summary>
@@ -70,21 +71,39 @@ namespace JdCat.Cat.IRepository
         /// <summary>
         /// 删除商品
         /// </summary>
-        /// <param name="id">商品id</param>
         /// <param name="apiUrl">图片服务器的地址</param>
+        /// <param name="ids">商品id</param>
         /// <returns></returns>
-        bool DeleteProduct(int id, string apiUrl);
+        bool DeleteProduct(string apiUrl, params int[] ids);
+        /// <summary>
+        /// 删除产品图片
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="apiUrl"></param>
+        /// <param name="businessId"></param>
+        void DeleteImage(ProductImage image, string apiUrl, int businessId);
+        /// <summary>
+        /// 删除产品图片记录
+        /// </summary>
+        /// <param name="image"></param>
+        void DeleteImage(ProductImage image);
+        /// <summary>
+        /// 修改产品
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        Product Update(Product product);
         /// <summary>
         /// 商品上架
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        bool Up(int id);
+        void Up(int id);
         /// <summary>
         /// 商品下架
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        bool Down(int id);
+        void Down(int id);
     }
 }
