@@ -11,6 +11,18 @@
     <Reference Include="Microsoft.AspNetCore.Http.Features">
       <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.http.features\2.0.2\lib\netstandard2.0\Microsoft.AspNetCore.Http.Features.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNetCore.Server.Kestrel.Core">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.server.kestrel.core\2.0.2\lib\netstandard2.0\Microsoft.AspNetCore.Server.Kestrel.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Server.Kestrel.Https">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.server.kestrel.https\2.0.2\lib\netstandard2.0\Microsoft.AspNetCore.Server.Kestrel.Https.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
+      <HintPath>..\..\..\..\..\.nuget\packages\microsoft.extensions.configuration.abstractions\2.0.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Binder">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.configuration.binder\2.0.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\10.0.1\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
     </Reference>

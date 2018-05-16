@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using JdCat.Cat.Common;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace JdCat.Cat.FileService
+namespace JdCat.Cat.WxApi
 {
     public class Program
     {
@@ -17,17 +18,10 @@ namespace JdCat.Cat.FileService
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args)
-        {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("hosting.json", optional: true)
-                .Build();
-            return WebHost.CreateDefaultBuilder(args)
-                //.UseConfiguration(config)
-                .UseUrls("http://0.0.0.0:5002")
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseKestrel(Host.SetHost)
                 .Build();
-        }
     }
 }

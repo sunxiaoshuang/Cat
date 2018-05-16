@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="www.jiandanmao.cn.pfx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="www.jiandanmao.cn.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JdCat.Cat.Common\JdCat.Cat.Common.csproj" />
+    <ProjectReference Include="..\JdCat.Cat.IRepository\JdCat.Cat.IRepository.csproj" />
+    <ProjectReference Include="..\JdCat.Cat.Model\JdCat.Cat.Model.csproj" />
+    <ProjectReference Include="..\JdCat.Cat.Repository\JdCat.Cat.Repository.csproj" />
+  </ItemGroup>
+
+</Project>

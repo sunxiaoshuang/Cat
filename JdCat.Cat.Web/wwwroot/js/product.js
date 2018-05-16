@@ -185,7 +185,7 @@
         methods: {
             getImage: function (item) {
                 if (item.images.length === 0) return "";
-                return "http://localhost:5002/File/Product/" + item.businessId + "/200x150/" + item.images[0].name + "." + item.images[0].extensionName;
+                return appConfig.apiUrl + "/File/Product/" + item.businessId + "/200x150/" + item.images[0].name + "." + item.images[0].extensionName;
             },
             delProduct: function (product) {
                 var self = this;

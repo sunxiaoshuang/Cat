@@ -56,8 +56,6 @@ namespace JdCat.Cat.Web
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
-            // 自动迁移
-            
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -1,0 +1,12 @@
+{
+	"client": "./client",
+	"svr": "./server",
+	"miniprogramRoot": "./client",
+	"qcloudRoot": "./server",
+	"setting": {
+		"newFeature": true
+	},
+	"appid": "wx7fc7dac038048c37",
+	"projectname": "JdCat.Cat.Weixin",
+	"condition": {}
+}

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using JdCat.Cat.Common;
 using JdCat.Cat.Model;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,20 +22,29 @@ namespace JdCat.Cat.Web
         public static void Main(string[] args)
         {
             var host = BuildWebHost(args);
-            InitSeed(host);
             AutoMigration(host);
+            InitSeed(host);
             host.Run();
         }
 
         public static IWebHost BuildWebHost(string[] args)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .Build();
+            //            var config = new ConfigurationBuilder()
+            //                .SetBasePath(Directory.GetCurrentDirectory())
+            //                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            //                .Build();
             return WebHost.CreateDefaultBuilder(args)
-                .UseConfiguration(config)
+                //                .UseConfiguration(config)
                 .UseStartup<Startup>()
+                .UseKestrel(Host.SetHost)
+                //                .UseKestrel(options =>
+                //                {
+                //                    options.Listen(IPAddress.Any, 5443, listenOption =>
+                //                    {
+                //                        var file = Directory.GetCurrentDirectory() + "\\www.jiandanmao.cn.pfx";
+                //                        listenOption.UseHttps(file, "0u4t4020v87tri8");
+                //                    });
+                //                })
                 .Build();
         }
 
@@ -76,5 +88,8 @@ namespace JdCat.Cat.Web
                 }
             }
         }
+
+
     }
+
 }
