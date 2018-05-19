@@ -24,8 +24,7 @@ namespace JdCat.Cat.FileService
                 .AddJsonFile("hosting.json", optional: true)
                 .Build();
             return WebHost.CreateDefaultBuilder(args)
-                //.UseConfiguration(config)
-                .UseUrls("http://0.0.0.0:5002")
+                .UseConfiguration(config)
                 .UseStartup<Startup>()
                 .Build();
         }

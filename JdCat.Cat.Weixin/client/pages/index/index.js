@@ -91,6 +91,12 @@ Page({
               },
             });
           } else {
+            wx.request({
+              url: 'https://www.jiandanmao.cn/api/values',
+              success: function(data){
+                console.log(data);
+              }
+            })
             util.showModel('用户未授权', e.detail.errMsg);
           }
         }

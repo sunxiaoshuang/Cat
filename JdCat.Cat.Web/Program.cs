@@ -29,22 +29,14 @@ namespace JdCat.Cat.Web
 
         public static IWebHost BuildWebHost(string[] args)
         {
-            //            var config = new ConfigurationBuilder()
-            //                .SetBasePath(Directory.GetCurrentDirectory())
-            //                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            //                .Build();
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("hosting.json", optional: true, reloadOnChange: true)
+                .Build();
             return WebHost.CreateDefaultBuilder(args)
-                //                .UseConfiguration(config)
+                .UseConfiguration(config)
                 .UseStartup<Startup>()
-                .UseKestrel(Host.SetHost)
-                //                .UseKestrel(options =>
-                //                {
-                //                    options.Listen(IPAddress.Any, 5443, listenOption =>
-                //                    {
-                //                        var file = Directory.GetCurrentDirectory() + "\\www.jiandanmao.cn.pfx";
-                //                        listenOption.UseHttps(file, "0u4t4020v87tri8");
-                //                    });
-                //                })
+                //                .UseKestrel(Host.SetHost)
                 .Build();
         }
 
