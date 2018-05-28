@@ -29,6 +29,7 @@ namespace JdCat.Cat.Model
         public DbSet<ProductFormat> ProductFormats { get; set; }
         public DbSet<ProductAttribute> ProductAttributes { get; set; }
         public DbSet<SettingProductAttribute> SettingProductAttributes { get; set; }
+        public DbSet<User> Users { get; set; }
 
 //        public DbSet<TestModel> TestModels { get; set; }
         /// <summary>
@@ -38,6 +39,18 @@ namespace JdCat.Cat.Model
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.HasSequence<int>("StoreNumbers", schema: "shared");            // 门店编号序列
+            modelBuilder.HasSequence<int>("OrderNumbers", schema: "shared");            // 订单编号序列
+            modelBuilder.HasSequence<int>("FormatNumbers", schema: "shared");           // 规格编码序列
+            modelBuilder.Entity<Business>()
+                .Property(a => a.StoreId)
+                .HasDefaultValueSql("'JD-' + dbo.fn_right_padding(NEXT VALUE FOR shared.StoreNumbers, 6)");
+            modelBuilder.Entity<ProductFormat>()
+                .Property(a => a.Code)
+                .HasDefaultValueSql("'F-' + CAST(YEAR(GETDATE()) AS varchar) + dbo.fn_right_padding(NEXT VALUE FOR shared.FormatNumbers, 9)");
+
+
             var typesToRegister = Assembly.GetExecutingAssembly().GetTypes().Where(q => q.GetInterface(typeof(IEntityTypeConfiguration<>).FullName) != null);
             foreach (var type in typesToRegister)
             {

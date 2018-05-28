@@ -11,6 +11,10 @@
             <button class="userinfo-nickname" wx:if="{{!logged}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">点击测试登录接口</button>
             <text class="userinfo-nickname" wx:else>{{userInfo.nickName}}</text>
         </view>
+        <view>
+            <button class="userinfo-nickname" wx-if="{{!userInfo.phone}}" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">获取手机号</button>
+            <text class="userinfo-nickname" wx-else>{{userInfo.phone}}</text>
+        </view>
     </view>
 
 

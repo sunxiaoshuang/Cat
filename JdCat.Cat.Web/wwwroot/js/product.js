@@ -301,6 +301,7 @@
                 loadData();
             },
             page: function (num) {
+                if (productList.pageIndex === num) return;
                 productList.pageIndex = num;
                 loadData();
             },

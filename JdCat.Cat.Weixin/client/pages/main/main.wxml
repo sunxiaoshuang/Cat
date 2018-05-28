@@ -1,0 +1,10 @@
+<view class="container">
+  <view>
+    <view class="userinfo" wx:if="{{logged === true}}">
+      <text>你好吗</text>
+      <image src="{{logged ? userInfo.avatarUrl : ''}}"></image>
+      <text>{{logged ? userInfo.nickName : ""}}</text>
+    </view>
+    <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">我要登录</button>
+  </view>
+</view>

@@ -57,17 +57,15 @@ Page({
 
     bindGetUserInfo: function (e) {
       if (this.data.logged) return;
-
       util.showBusy('正在登录');
-
+      
       var that = this;
       var userInfo = e.detail.userInfo;
-
+      
       // 查看是否授权
       wx.getSetting({
         success: function (res) {
           if (res.authSetting['scope.userInfo']) {
-
             // 检查登录是否过期
             wx.checkSession({
               success: function () {
@@ -91,16 +89,31 @@ Page({
               },
             });
           } else {
-            wx.request({
-              url: 'https://www.jiandanmao.cn/api/values',
-              success: function(data){
-                console.log(data);
-              }
-            })
             util.showModel('用户未授权', e.detail.errMsg);
           }
         }
       });
+    },
+
+    getPhoneNumber: function (e) {
+      console.log(e.detail.errMsg)
+      console.log(e.detail.iv)
+      console.log(e.detail.encryptedData)
+      if (e.detail.errMsg == 'getPhoneNumber:fail user deny') {
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '未授权',
+          success: function (res) { }
+        })
+      } else {
+        wx.showModal({
+          title: '提示',
+          showCancel: false,
+          content: '同意授权',
+          success: function (res) { }
+        })
+      }
     },
 
     doLogin: function(options) {
@@ -108,11 +121,12 @@ Page({
 
       wx.login({
         success: function (loginResult) {
+
           var loginParams = {
             code: loginResult.code,
             encryptedData: options.encryptedData,
             iv: options.iv,
-          }
+          };
           qcloud.requestLogin({
             loginParams, success() {
               util.showSuccess('登录成功');

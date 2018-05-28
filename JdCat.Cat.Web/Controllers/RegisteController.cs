@@ -71,7 +71,7 @@ namespace JdCat.Cat.Web.Controllers
                 {
                     var userInfo = new Business() {
                         Name = name,
-                        Password = helper.GetMd5(pwd),
+                        Password = helper.MD5Encrypt(pwd),
                         Code = code,
                         Email = email,
                         InvitationCode = invitationCode,

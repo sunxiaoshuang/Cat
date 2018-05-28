@@ -12,16 +12,16 @@ using System;
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180524041947_Modify_Table_Business_Add_Secret")]
+    partial class Modify_Table_Business_Add_Secret
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011")
                 .HasAnnotation("Relational:Sequence:shared.FormatNumbers", "'FormatNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
                 .HasAnnotation("Relational:Sequence:shared.OrderNumbers", "'OrderNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
-                .HasAnnotation("Relational:Sequence:shared.StoreNumbers", "'StoreNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Business", b =>
@@ -55,9 +55,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Secret");
 
-                    b.Property<string>("StoreId")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("'JD-' + dbo.fn_right_padding(NEXT VALUE FOR shared.StoreNumbers, 6)");
+                    b.Property<string>("StoreId");
 
                     b.HasKey("ID");
 
@@ -242,48 +240,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("SettingProductAttribute","dbo");
-                });
-
-            modelBuilder.Entity("JdCat.Cat.Model.Data.User", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("Age");
-
-                    b.Property<string>("AvatarUrl");
-
-                    b.Property<int>("BusinessId");
-
-                    b.Property<string>("City");
-
-                    b.Property<string>("Country");
-
-                    b.Property<DateTime?>("CreateTime");
-
-                    b.Property<int>("Gender");
-
-                    b.Property<bool>("IsPhone");
-
-                    b.Property<bool>("IsRegister");
-
-                    b.Property<string>("Language");
-
-                    b.Property<string>("NickName");
-
-                    b.Property<string>("OpenId");
-
-                    b.Property<string>("Phone");
-
-                    b.Property<string>("Province");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("OpenId")
-                        .IsUnique()
-                        .HasFilter("[OpenId] IS NOT NULL");
-
-                    b.ToTable("User","dbo");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Product", b =>

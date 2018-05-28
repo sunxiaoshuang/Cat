@@ -53,6 +53,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string AppId { get; set; }
         /// <summary>
+        /// 小程序App Secret
+        /// </summary>
+        public string Secret { get; set; }
+        /// <summary>
         /// 门店id
         /// </summary>
         public string StoreId { get; set; }

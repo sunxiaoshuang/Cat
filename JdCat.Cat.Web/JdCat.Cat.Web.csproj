@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
   </PropertyGroup>
 
   <ItemGroup>
@@ -246,7 +247,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Log\Error\" />
     <Folder Include="Temp\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>

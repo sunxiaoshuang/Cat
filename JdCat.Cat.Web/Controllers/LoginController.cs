@@ -32,7 +32,7 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult Login(string username, string pwd, [FromServices]UtilHelper helper)
         {
             var result = new JsonData();
-            var business = _service.Get(a => (a.Code == username || a.Mobile == username) && a.Password == helper.GetMd5(pwd));
+            var business = _service.Get(a => (a.Code == username || a.Mobile == username) && a.Password == helper.MD5Encrypt(pwd));
             if (business == null)
             {
                 result.Msg = "帐号或密码错误";

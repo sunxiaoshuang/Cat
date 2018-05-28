@@ -35,7 +35,7 @@
                 unitName: "份",
                 minBuyQuantity: 1,
                 formats: [
-                    { id: 0, code: "", name: "", price: 0, stock: -1, packingPrice: 0, packingQuantity: 1 }
+                    { id: 0, code: null, name: "", price: 0, stock: -1, packingPrice: 0, packingQuantity: 1 }
                 ],
                 attributes: []
             },
@@ -100,6 +100,8 @@
                 $.loading();
                 this.isDisabled = true;                     // 按钮是否可用
                 var url = entity.id === 0 ? "/Product/Save" : "/Product/Update";
+                //console.log(entity);
+                //return;
                 axios.post(url, entity)
                     .then(function (response) {
                         $.loaded();
@@ -132,7 +134,7 @@
                 this._data.imgsrc = null;
             },
             addFormat: function () {
-                this._data.entity.formats.push({ id: 0, code: "", name: "", price: 0, stock: -1, packingPrice: 0, packingQuantity: 1 });
+                this._data.entity.formats.push({ id: 0, code: null, name: "", price: 0, stock: -1, packingPrice: 0, packingQuantity: 1 });
             },
             removeFormat: function (item) {
                 this._data.entity.formats.remove(item);

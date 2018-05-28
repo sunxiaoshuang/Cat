@@ -97,7 +97,9 @@ namespace JdCat.Cat.Model
                 Description = "系统管理员",
                 Password = "670b14728ad9902aecba32e22fa4f6bd",
                 Mobile = "17354300837",
-                RegisterDate = DateTime.Now
+                RegisterDate = DateTime.Now,
+                AppId = "wx7fc7dac038048c37",
+                Secret = "79b39d625b3921c2f4bcefe3c4f7c732"
             });
         }
 

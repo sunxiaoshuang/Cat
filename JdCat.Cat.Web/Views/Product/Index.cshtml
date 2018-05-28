@@ -165,7 +165,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="text-center" v-if="pageCount >= 1">
+                <div class="text-center" v-if="pageCount > 1">
                     <ul class="pagination cat-pagination pagination-sm">
                         <li v-bind:class="{'disabled': pageIndex === 1}" v-on:click="prev()">
                             <a>
