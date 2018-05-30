@@ -40,12 +40,8 @@ namespace JdCat.Cat.WxApi.Controllers
         [HttpPut("info")]
         public IActionResult PutGrantInfo([FromBody]User user)
         {
-            var result = Service.GrantInfo(user);
-            if (result)
-            {
-                return Ok(FilterUser(user));
-            }
-            return NoContent();
+            var entity = Service.GrantInfo(user);
+            return Ok(FilterUser(entity));
         }
 
         /// <summary>

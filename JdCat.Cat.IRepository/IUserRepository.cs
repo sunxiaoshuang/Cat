@@ -19,7 +19,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        bool GrantInfo(User user);
+        User GrantInfo(User user);
         /// <summary>
         /// 授权手机号
         /// </summary>

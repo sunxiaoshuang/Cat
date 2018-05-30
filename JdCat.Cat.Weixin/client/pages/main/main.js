@@ -3,11 +3,11 @@ Page({
   onLoad: function(){
   },
   onShow: function () {
-    var app = getApp();
-    this.setData({
-      userInfo: app.globalData.userInfo,
-      logged: true
-    });
+    // var app = getApp();
+    // this.setData({
+    //   userInfo: app.globalData.userInfo,
+    //   logged: true
+    // });
   },
   data: {
     userInfo: undefined,

@@ -24,7 +24,7 @@ namespace JdCat.Cat.Repository
             return Context.Users.FirstOrDefault(a => a.OpenId == openId);
         }
 
-        public bool GrantInfo(User user)
+        public User GrantInfo(User user)
         {
             var entity = new User { ID = user.ID};
             Context.Attach(entity);
@@ -38,7 +38,7 @@ namespace JdCat.Cat.Repository
             entity.Province = user.Province;
             entity.Phone = user.Phone;
             entity.IsRegister = true;
-            return Context.SaveChanges() > 0;
+            return entity;
         }
 
         public bool GrantPhone(string phone)

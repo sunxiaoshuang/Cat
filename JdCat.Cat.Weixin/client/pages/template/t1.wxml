@@ -1,0 +1,6 @@
+
+<template name="t1">
+    <view>
+        {{name}}
+    </view>
+</template>

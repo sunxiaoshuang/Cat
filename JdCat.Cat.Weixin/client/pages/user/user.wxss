@@ -1,0 +1,21 @@
+.user-img {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100px;
+}
+.user-img image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+
+}
+.user-login {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 100px;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}

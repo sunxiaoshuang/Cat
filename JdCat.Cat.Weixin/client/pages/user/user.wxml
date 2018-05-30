@@ -1,0 +1,9 @@
+
+<view class="container">
+    <view class="user-img main-bg" wx:if="{{userInfo.isRegister}}">
+        <image src="{{userInfo.avatarUrl}}"></image>
+    </view>
+    <view wx:else class="user-login">
+        <button bindgetuserinfo="bindGetUserInfo" class="btn-none" open-type="getUserInfo">点击登录</button>
+    </view>
+</view>

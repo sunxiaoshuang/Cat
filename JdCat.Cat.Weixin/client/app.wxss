@@ -4,4 +4,11 @@
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-} 
+}
+.main-bg {
+  background-color: #ea7042;
+}
+.btn-none {
+  border: none;
+  background-color: transparent;
+}
