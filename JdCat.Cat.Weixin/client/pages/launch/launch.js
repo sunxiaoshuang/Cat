@@ -15,6 +15,10 @@ Page({
                 },
                 success: function(res){
                   app.globalData.userInfo = res.data;
+                  // 将返回的session保存起来
+                  var cookie = res.header["Set-Cookie"];
+                  cookie = cookie.substring(cookie.indexOf(".AspNetCore.Session"));
+                  app.globalData.header.Cookie = cookie.substr(0, cookie.indexOf(";"));
                   setTimeout(() => {
                     wx.switchTab({
                       url: "/pages/user/user"

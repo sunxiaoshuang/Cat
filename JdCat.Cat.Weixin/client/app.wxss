@@ -9,6 +9,7 @@
   background-color: #ea7042;
 }
 .btn-none {
-  border: none;
+  border: 1px solid transparent;
+  padding: 0;
   background-color: transparent;
 }

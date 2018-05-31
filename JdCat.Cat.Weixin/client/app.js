@@ -23,6 +23,9 @@ App({
     globalData: {
         // 全局数据
         userInfo: {},
-        businessId: 1
+        businessId: 1,
+        header: {
+            
+        }
     }
 });

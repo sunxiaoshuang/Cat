@@ -38,10 +38,11 @@ namespace JdCat.Cat.Repository
             entity.Province = user.Province;
             entity.Phone = user.Phone;
             entity.IsRegister = true;
+            Context.SaveChanges();
             return entity;
         }
 
-        public bool GrantPhone(string phone)
+        public bool GrantPhone(int id, string phone)
         {
             throw new NotImplementedException();
         }

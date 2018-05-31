@@ -23,8 +23,9 @@ namespace JdCat.Cat.IRepository
         /// <summary>
         /// 授权手机号
         /// </summary>
+        /// <param name="id">用户id</param>
         /// <param name="phone"></param>
         /// <returns></returns>
-        bool GrantPhone(string phone);
+        bool GrantPhone(int id, string phone);
     }
 }

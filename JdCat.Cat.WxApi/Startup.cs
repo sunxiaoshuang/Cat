@@ -28,6 +28,15 @@ namespace JdCat.Cat.WxApi
         
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowHeaders",
+                    builder =>
+                    {
+                        builder.WithOrigins("https://servicewechat.com")
+                            .WithHeaders("Cookie");
+                    });
+            });
             services.AddMvc(options =>
             {
                 // 注册全局异常过滤器

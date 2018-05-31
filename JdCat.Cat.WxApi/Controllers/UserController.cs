@@ -44,6 +44,16 @@ namespace JdCat.Cat.WxApi.Controllers
             return Ok(FilterUser(entity));
         }
 
+        [HttpPut("phone")]
+        public IActionResult PutGrantPhone([FromQuery]int id, [FromBody]string encrytedData, [FromBody]string iv, [FromServices]UtilHelper util)
+        {
+            var result = new JsonData();
+            var abc = util.AESDecrypt(encrytedData, LoginUser.SessionKey, iv);
+            result.Success = true;
+            result.Msg = abc;
+            return Json(result);
+        }
+
         /// <summary>
         /// 过滤返回数据
         /// </summary>

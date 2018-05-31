@@ -1,14 +1,19 @@
 .user-img {
     display: flex;
-    flex-direction: column;
     width: 100%;
     height: 100px;
+    flex-direction: row;
+    align-items: center;
 }
 .user-img image {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-
+    margin: 0 0 0 20px;
+}
+.user-img .nickname {
+    padding: 0 0 0 20px;
+    color: #fff;
 }
 .user-login {
     display: flex;
@@ -16,6 +21,40 @@
     justify-content: center;
     height: 100px;
     width: 100%;
-    border-bottom: 1px solid #eee;
     padding-bottom: 10px;
+}
+.btn-area {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.btn-area > navigator {
+    display: flex;
+    padding: 10px 20px;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+    line-height: 28px;
+    font-size: 90%;
+}
+.navigator-first {
+    border-top: 1px solid #eee;
+}
+
+.btn-area navigator image {
+    width: 28px;
+    height: 28px;
+    margin-right: 20px;
+}
+.user-phone {
+    width: 100%;
+    border: none;
+}
+.btn-bind-phone {
+    border: 1px solid #ea7042;
+    border-color: #fff;
+    padding: 5px;
+    font-size: 80%;
+    color: #ea7042;
+    background-color: #fff;
 }
