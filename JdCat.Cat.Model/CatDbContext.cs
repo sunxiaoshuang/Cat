@@ -30,8 +30,9 @@ namespace JdCat.Cat.Model
         public DbSet<ProductAttribute> ProductAttributes { get; set; }
         public DbSet<SettingProductAttribute> SettingProductAttributes { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<SessionData> SessionDatas { get; set; }
 
-//        public DbSet<TestModel> TestModels { get; set; }
+        //        public DbSet<TestModel> TestModels { get; set; }
         /// <summary>
         /// 添加FluentAPI配置
         /// </summary>

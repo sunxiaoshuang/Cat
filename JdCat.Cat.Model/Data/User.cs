@@ -38,6 +38,6 @@ namespace JdCat.Cat.Model.Data
         /// 微信的会话密钥
         /// </summary>
         [NotMapped]
-        public string SessionKey { get; set; }
+        public int Skey { get; set; }
     }
 }

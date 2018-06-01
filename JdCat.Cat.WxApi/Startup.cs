@@ -45,6 +45,7 @@ namespace JdCat.Cat.WxApi
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ISessionDataRepository, SessionDataRepository>();
             services.AddSingleton(new UtilHelper());
         }
         

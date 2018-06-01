@@ -259,13 +259,13 @@ namespace JdCat.Cat.Common
         #endregion
 
         #region AES-128-CBC
-        public string AESDecrypt(string input, string key, string vi)
+        public string AESDecrypt(string input, string key, string iv)
         {
             var encryptedData = Convert.FromBase64String(input);
             var rijndaelCipher = new RijndaelManaged
             {
                 Key = Convert.FromBase64String(key),
-                IV = Convert.FromBase64String(vi),
+                IV = Convert.FromBase64String(iv),
                 Mode = CipherMode.CBC,
                 Padding = PaddingMode.PKCS7
             };

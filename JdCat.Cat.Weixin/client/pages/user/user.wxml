@@ -1,0 +1,36 @@
+<view class="container">
+    <view class="user-img main-bg" wx:if="{{userInfo.isRegister}}">
+        <image src="{{userInfo.avatarUrl}}"></image>
+        <view class="nickname">
+            <text>{{userInfo.nickName}}</text>
+        </view>
+    </view>
+    <view wx:else class="user-login">
+        <button bindgetuserinfo="bindGetUserInfo" class="btn-none" open-type="getUserInfo">点击登录</button>
+    </view>
+    <view class="user-phone" wx:if="{{userInfo.isRegister && !userInfo.isPhone}}">
+        <button bindgetphonenumber="bindGetPhoneNumber" class="btn-bind-phone" open-type="getPhoneNumber">一键绑定手机，成为会员</button>
+    </view>
+    <view class="btn-area">
+        <navigator url="/pages/index/index" open-type="navigate">
+            <image src="/images/icon/address-2.png"></image>
+            <text>地址管理</text>
+        </navigator>
+        <navigator url="/pages/userinfo/userinfo" open-type="navigate">
+            <image src="/images/icon/user-order-2.png"></image>
+            <text>我的订单</text>
+        </navigator>
+        <navigator url="/pages/userinfo/userinfo" open-type="navigate">
+            <image src="/images/icon/phone-2.png"></image>
+            <text>联系商家</text>
+        </navigator>
+        <navigator url="/pages/userinfo/userinfo" open-type="navigate">
+            <image src="/images/icon/info-2.png"></image>
+            <text>个人信息</text>
+        </navigator>
+        <navigator url="/pages/userinfo/userinfo" open-type="navigate">
+            <image src="/images/icon/zizhi-2.png"></image>
+            <text>商家资质</text>
+        </navigator>
+    </view>
+</view>

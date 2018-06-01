@@ -4,4 +4,12 @@
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-} 
+}
+.main-bg {
+  background-color: #ea7042;
+}
+.btn-none {
+  border: 1px solid transparent;
+  padding: 0;
+  background-color: transparent;
+}

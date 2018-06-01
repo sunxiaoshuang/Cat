@@ -222,6 +222,22 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("ProductType","dbo");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SessionData", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("SessionKey");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("SessionData","dbo");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.SettingProductAttribute", b =>
                 {
                     b.Property<int>("ID")

@@ -1,3 +1,4 @@
+<import src="../template/t1.wxml"></import>
 <view class="container">
   <view>
     <view class="userinfo" wx:if="{{logged === true}}">
@@ -7,4 +8,7 @@
     </view>
     <button open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">我要登录</button>
   </view>
+  <map>
+  </map>
+  <template is="t1" data="{{name: '孙小双'}}" />
 </view>

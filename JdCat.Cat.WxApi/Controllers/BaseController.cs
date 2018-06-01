@@ -20,14 +20,6 @@ namespace JdCat.Cat.WxApi.Controllers
         where TEntity : BaseEntity, new()
         where T : IBaseRepository<TEntity>
     {
-        protected const string SessionName = "Session_User";
-        private User _loginUser;
-
-        protected User LoginUser
-        {
-            get => _loginUser ?? (_loginUser = HttpContext.Session.Get<User>(SessionName));
-            set => HttpContext.Session.Set(SessionName, value);
-        }
         protected T Service { get; }
 
         public BaseController(T service)

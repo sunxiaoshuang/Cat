@@ -1,0 +1,3 @@
+<view class="container margin-top-140">
+    <image src="../../images/log.jpg" style="width: 50px;height: 50px;border-radius: 50%;"></image>
+</view>
