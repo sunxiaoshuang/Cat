@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JdCat.Cat.Common.Wx
+namespace JdCat.Cat.WxApi.Models
 {
     public class WxUser
     {

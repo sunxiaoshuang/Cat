@@ -28,15 +28,6 @@ namespace JdCat.Cat.WxApi
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowHeaders",
-                    builder =>
-                    {
-                        builder.WithOrigins("https://servicewechat.com")
-                            .WithHeaders("Cookie");
-                    });
-            });
             services.AddMvc(options =>
             {
                 // 注册全局异常过滤器
@@ -54,6 +45,7 @@ namespace JdCat.Cat.WxApi
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ISessionDataRepository, SessionDataRepository>();
             services.AddSingleton(new UtilHelper());
         }
         

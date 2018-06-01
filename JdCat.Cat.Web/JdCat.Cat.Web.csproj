@@ -181,6 +181,7 @@
     <ProjectReference Include="..\JdCat.Cat.IRepository\JdCat.Cat.IRepository.csproj" />
     <ProjectReference Include="..\JdCat.Cat.Model\JdCat.Cat.Model.csproj" />
     <ProjectReference Include="..\JdCat.Cat.Repository\JdCat.Cat.Repository.csproj" />
+    <ProjectReference Include="..\JdCat.Cat.WxApi\JdCat.Cat.WxApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

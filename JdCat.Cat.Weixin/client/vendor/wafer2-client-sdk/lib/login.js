@@ -25,22 +25,24 @@ var LoginError = (function () {
 var getWxLoginResult = function getLoginCode(callback) {
     wx.login({
         success: function (loginResult) {
-          wx.getUserInfo({
-            success: function (userResult) {
-              callback(null, {
-                code: loginResult.code,
-                encryptedData: userResult.encryptedData,
-                iv: userResult.iv,
-                userInfo: userResult.userInfo,
-              });
-            },
+        //   wx.getUserInfo({
+        //     success: function (userResult) {
+        //       callback(null, {
+        //         code: loginResult.code,
+        //         encryptedData: userResult.encryptedData,
+        //         iv: userResult.iv,
+        //         userInfo: userResult.userInfo,
+        //       });
+        //       console.log(userResult.userInfo)
+        //     },
 
-            fail: function (userError) {
-              var error = new LoginError(constants.ERR_WX_GET_USER_INFO, '获取微信用户信息失败，请检查网络状态');
-              error.detail = userError;
-              callback(error, null);
-            },
-          });
+        //     fail: function (userError) {
+        //       var error = new LoginError(constants.ERR_WX_GET_USER_INFO, '获取微信用户信息失败，请检查网络状态');
+        //       error.detail = userError;
+        //       callback(error, null);
+        //     },
+        //   });
+            callback(null, {code: loginResult.code});
         },
 
         fail: function (loginError) {
@@ -52,7 +54,6 @@ var getWxLoginResult = function getLoginCode(callback) {
 };
 
 var noop = function noop() {
-  console.log("a")
 };
 var defaultOptions = {
     method: 'GET',
@@ -87,13 +88,13 @@ var login = function login(options) {
 
         // 构造请求头，包含 code、encryptedData 和 iv
         var code = wxLoginResult.code;
-        var encryptedData = wxLoginResult.encryptedData;
-        var iv = wxLoginResult.iv;
+        // var encryptedData = wxLoginResult.encryptedData;
+        // var iv = wxLoginResult.iv;
         var header = {};
 
         header[constants.WX_HEADER_CODE] = code;
-        header[constants.WX_HEADER_ENCRYPTED_DATA] = encryptedData;
-        header[constants.WX_HEADER_IV] = iv;
+        // header[constants.WX_HEADER_ENCRYPTED_DATA] = encryptedData;
+        // header[constants.WX_HEADER_IV] = iv;
 
         // 请求服务器登录地址，获得会话信息
         wx.request({

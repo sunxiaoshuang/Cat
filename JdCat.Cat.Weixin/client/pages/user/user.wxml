@@ -8,7 +8,7 @@
     <view wx:else class="user-login">
         <button bindgetuserinfo="bindGetUserInfo" class="btn-none" open-type="getUserInfo">点击登录</button>
     </view>
-    <view class="user-phone">
+    <view class="user-phone" wx:if="{{userInfo.isRegister && !userInfo.isPhone}}">
         <button bindgetphonenumber="bindGetPhoneNumber" class="btn-bind-phone" open-type="getPhoneNumber">一键绑定手机，成为会员</button>
     </view>
     <view class="btn-area">

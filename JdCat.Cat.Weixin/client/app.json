@@ -6,6 +6,7 @@
     "pages/index/index",
     "pages/order/order",
     "pages/userinfo/userinfo",
+    "pages/address/address",
     "pages/addCgi/addCgi"
   ],
   "window":{

@@ -22,9 +22,26 @@ namespace JdCat.Cat.WxApi.Controllers
         public UserController(IUserRepository service) : base(service)
         {
         }
-        [HttpGet]
-        public async Task<IActionResult> Get(string code, int businessId)
+        //        [HttpGet]
+        //        public async Task<IActionResult> Get(string code, int businessId, [FromServices]ISessionDataRepository sessionService)
+        //        {
+        //            var code = Request.Headers["X-WX-Code"];
+        //            var session = await GetOpenId(code, businessId);
+        //            var user = Service.Get(session.OpenId);
+        //            if (user == null)
+        //            {
+        //                user = new User { OpenId = session.OpenId, BusinessId = businessId };
+        //                Service.Add(user);
+        //            }
+        //            user.Skey = session.Session_Key;
+        //            LoginUser = user;
+        //            return Ok(FilterUser(user));
+        //        }
+
+        [HttpGet("login")]
+        public async Task<IActionResult> Login(int businessId, [FromServices]ISessionDataRepository sessionService)
         {
+            var code = Request.Headers["X-WX-Code"];
             var session = await GetOpenId(code, businessId);
             var user = Service.Get(session.OpenId);
             if (user == null)
@@ -32,26 +49,58 @@ namespace JdCat.Cat.WxApi.Controllers
                 user = new User { OpenId = session.OpenId, BusinessId = businessId };
                 Service.Add(user);
             }
-            user.SessionKey = session.Session_Key;
-            LoginUser = user;
-            return Ok(FilterUser(user));
+            var sessData = sessionService.SetSession(new SessionData { SessionKey = session.Session_Key, UserId = user.ID });
+            user.Skey = sessData.ID;
+            return Ok(new WxRetInfo
+            {
+                Data = new WxUserData
+                {
+                    Skey = sessData.ID,
+                    Userinfo = user
+                }
+            });
         }
+
 
         [HttpPut("info")]
         public IActionResult PutGrantInfo([FromBody]User user)
         {
             var entity = Service.GrantInfo(user);
-            return Ok(FilterUser(entity));
+            var skey = user.Skey;
+            entity.Skey = skey;
+            return Ok(new WxRetInfo
+            {
+                Data = new WxUserData
+                {
+                    Skey = skey,
+                    Userinfo = entity
+                }
+            });
         }
 
         [HttpPut("phone")]
-        public IActionResult PutGrantPhone([FromQuery]int id, [FromBody]string encrytedData, [FromBody]string iv, [FromServices]UtilHelper util)
+        public IActionResult PutGrantPhone([FromBody]dynamic data, [FromServices]UtilHelper util)
         {
-            var result = new JsonData();
-            var abc = util.AESDecrypt(encrytedData, LoginUser.SessionKey, iv);
-            result.Success = true;
-            result.Msg = abc;
-            return Json(result);
+            var encrytedData = data.encrytedData.ToString();
+            var iv = data.iv.ToString();
+            var skey = int.Parse(Request.Headers["X-WX-Skey"]);
+            var session = Service.Set<SessionData>().Find(skey);
+            var sessionKey = session.SessionKey;
+            var phoneMsg = util.AESDecrypt(encrytedData, sessionKey, iv);
+            var phone = JsonConvert.DeserializeObject<WxPhone>(phoneMsg);
+            if(string.IsNullOrEmpty(phone.PurePhoneNumber))
+            {
+                return Ok(new WxRetInfo
+                {
+                    Code = -1,
+                    Message = "微信未绑定手机号"
+                });
+            }
+            Service.GrantPhone(session.UserId, phone.PurePhoneNumber);
+            return Ok(new WxRetInfo
+            {
+                Data = phone.PurePhoneNumber
+            });
         }
 
         /// <summary>

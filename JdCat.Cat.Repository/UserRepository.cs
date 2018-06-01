@@ -44,7 +44,11 @@ namespace JdCat.Cat.Repository
 
         public bool GrantPhone(int id, string phone)
         {
-            throw new NotImplementedException();
+            var entity = new User { ID = id };
+            Context.Attach(entity);
+            entity.Phone = phone;
+            entity.IsPhone = true;
+            return Context.SaveChanges() > 0;
         }
 
     }
