@@ -22,7 +22,7 @@ namespace JdCat.Cat.Repository
         }
         public IEnumerable<ProductType> GetTypes(Business business)
         {
-            return Context.ProductTypes.Include(a => a.Products).Where(a => a.BusinessId == business.ID).OrderBy(a => a.Sort).ToList();
+            return Context.ProductTypes.Include("Products").Include("Products.Attributes").Include("Products.Formats").Where(a => a.BusinessId == business.ID).OrderBy(a => a.Sort).ToList();
         }
         public IEnumerable<ProductType> AddTypes(IEnumerable<ProductType> types)
         {
