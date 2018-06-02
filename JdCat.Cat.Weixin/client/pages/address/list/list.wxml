@@ -1,0 +1,7 @@
+<view class="container">
+    <navigator url="/pages/address/edit/edit" open-type="navigate" class="navigate navigate-top-border margin-top-20">
+        <image src="/images/icon/plus-2.png" class="margin-left-15"></image>
+        <text>新增地址</text>
+        <image style= src="/images/icon/right-1.png"></image>
+    </navigator>
+</view>

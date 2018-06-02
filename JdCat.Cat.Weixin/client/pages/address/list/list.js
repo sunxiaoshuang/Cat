@@ -1,4 +1,6 @@
-// pages/address/address.js
+const config = require("../../../config");
+const util = require("../../../utils/util");
+const qcloud = require('../../../vendor/wafer2-client-sdk/index');
 Page({
 
   /**
@@ -12,7 +14,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+    
+    
   },
 
   /**

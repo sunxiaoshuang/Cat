@@ -16,5 +16,10 @@ namespace JdCat.Cat.Model.Data
         /// 用户id
         /// </summary>
         public int UserId { get; set; }
+        /// <summary>
+        /// 用户实例
+        /// </summary>
+        public virtual User User { get; set; }
+
     }
 }

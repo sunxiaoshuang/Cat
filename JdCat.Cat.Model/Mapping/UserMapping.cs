@@ -12,6 +12,7 @@ namespace JdCat.Cat.Model.Mapping
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasIndex(a => a.OpenId).IsUnique();
+            builder.HasMany(a => a.Addresses).WithOne(a => a.User).HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

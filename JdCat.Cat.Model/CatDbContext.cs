@@ -31,6 +31,7 @@ namespace JdCat.Cat.Model
         public DbSet<SettingProductAttribute> SettingProductAttributes { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<SessionData> SessionDatas { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         //        public DbSet<TestModel> TestModels { get; set; }
         /// <summary>

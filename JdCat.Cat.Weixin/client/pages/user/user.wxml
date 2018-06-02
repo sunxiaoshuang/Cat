@@ -6,31 +6,40 @@
         </view>
     </view>
     <view wx:else class="user-login">
-        <button bindgetuserinfo="bindGetUserInfo" class="btn-none" open-type="getUserInfo">点击登录</button>
+        <button bindgetuserinfo="bindGetUserInfo" class="btn-none" open-type="getUserInfo">
+            点击登录
+        </button>
     </view>
     <view class="user-phone" wx:if="{{userInfo.isRegister && !userInfo.isPhone}}">
-        <button bindgetphonenumber="bindGetPhoneNumber" class="btn-bind-phone" open-type="getPhoneNumber">一键绑定手机，成为会员</button>
+        <button bindgetphonenumber="bindGetPhoneNumber" class="btn-bind-phone" open-type="getPhoneNumber">
+            一键绑定手机，成为会员
+        </button>
     </view>
-    <view class="btn-area">
-        <navigator url="/pages/index/index" open-type="navigate">
+    <view class="btn-area" wx:if="{{userInfo.isRegister}}">
+        <navigator url="/pages/address/list/list" open-type="navigate" class="navigate">
             <image src="/images/icon/address-2.png"></image>
             <text>地址管理</text>
+            <image src="/images/icon/right-1.png"></image>
         </navigator>
-        <navigator url="/pages/userinfo/userinfo" open-type="navigate">
+        <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="navigate">
             <image src="/images/icon/user-order-2.png"></image>
             <text>我的订单</text>
+            <image src="/images/icon/right-1.png"></image>
         </navigator>
-        <navigator url="/pages/userinfo/userinfo" open-type="navigate">
+        <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="navigate">
             <image src="/images/icon/phone-2.png"></image>
             <text>联系商家</text>
+            <image src="/images/icon/right-1.png"></image>
         </navigator>
-        <navigator url="/pages/userinfo/userinfo" open-type="navigate">
+        <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="navigate">
             <image src="/images/icon/info-2.png"></image>
             <text>个人信息</text>
+            <image src="/images/icon/right-1.png"></image>
         </navigator>
-        <navigator url="/pages/userinfo/userinfo" open-type="navigate">
+        <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="navigate">
             <image src="/images/icon/zizhi-2.png"></image>
             <text>商家资质</text>
+            <image src="/images/icon/right-1.png"></image>
         </navigator>
     </view>
 </view>

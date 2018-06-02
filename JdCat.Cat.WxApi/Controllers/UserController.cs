@@ -103,28 +103,17 @@ namespace JdCat.Cat.WxApi.Controllers
             });
         }
 
-        /// <summary>
-        /// 过滤返回数据
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        private object FilterUser(User user)
+        [HttpPost("address/{id}")]
+        public IActionResult PostAddress(int id, [FromBody]Address address, [FromServices]ISessionDataRepository sessionService)
         {
-            return new
-            {
-                user.ID,
-                user.AvatarUrl,
-                user.City,
-                user.Country,
-                user.Gender,
-                user.Language,
-                user.NickName,
-                user.Province,
-                user.Phone,
-                user.IsRegister,
-                user.IsPhone
-            };
+            var user = sessionService.Get(id).User;
+            address.User = user;
+            Service.Set<Address>().Add(address);
+            Service.Commit();
+            return Ok();
         }
+
+
         /// <summary>
         /// 获取用户OpenId
         /// </summary>

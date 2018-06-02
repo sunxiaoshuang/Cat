@@ -10,15 +10,6 @@ Page({
       userInfo: qcloud.getSession().userinfo
     });
   },
-  onReady: function () {
-
-  },
-  onHide: function () {
-
-  },
-  onUnload: function () {
-
-  },
   bindGetUserInfo: function (e) {
     var self = this;
     wx.getSetting({ // 如果用户允许授权，则将用户信息写入数据库
@@ -60,6 +51,7 @@ Page({
     qcloud.request({
       url: config.service.requestUrl + "/user/phone",
       method: "put",
+      login: true,      // 需要登录
       data: {
         encrytedData: encrytedData,
         iv: iv

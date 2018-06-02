@@ -1,0 +1,37 @@
+<view class="container padding-left-10 padding-right-10">
+    <view class="form-input">
+        <text>联系人：</text>
+        <input placeholder="请填写收货人的姓名"></input>
+    </view>
+    <view class="form-input">
+        <text></text>
+        <view>
+            <radio-group bindchange="changeGender">
+                <label wx:for="{{genderList}}" wx:for-item="item" wx:key="{{item.id}}" class="margin-right-30">
+                    <radio value="{{item.value}}" checked="{{item.checked}}" color="#ea7042" /> {{item.name}}
+                </label>
+            </radio-group>
+        </view>
+    </view>
+    <view class="form-input">
+        <text>手机号：</text>
+        <input placeholder="请填写收人手机号码"></input>
+    </view>
+    <view class="form-input">
+        <text>收货地址：</text>
+        <navigator class="navigator" url="/pages/address/select/select" open-type="navigate" >
+            <image src="../../../images/icon/address-1.png"></image>
+            <input placeholder="点击选择" disabled="{{true}}"></input>
+            <image src="../../../images/icon/right-1.png" style="width: 40rpx;height: 40rpx;"></image>
+        </navigator>
+    </view>
+    <view class="form-input">
+        <text>门牌号：</text>
+        <input placeholder="例如：3栋2单元1103"></input>
+    </view>
+    <view class="form-input" style="border: none;">
+        <button class="btn-block" type="primary" bindtap="saveAddress">
+            保存地址
+        </button>
+    </view>
+</view>
