@@ -1,1 +1,34 @@
+.address-list {
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+    align-items: stretch;
+    flex: 1;
+    margin-top: 40rpx;
+    font-size: 90%;
+    width: 100%;
+}
 
+.address-item {
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1;
+    font-size: 90%;
+}
+
+.address-item .address-info {
+    flex-grow: 1;
+}
+
+.address-item .address-detail {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    flex-basis: 70rpx;
+}
+
+.address-item .address-detail image {
+    width: 40rpx;
+    height: 40rpx;
+}

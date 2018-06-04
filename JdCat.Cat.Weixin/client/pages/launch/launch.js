@@ -10,12 +10,12 @@ Page({
       },
       success: function (userinfo) {
         setTimeout(() => {
-          // wx.switchTab({
-          //   url: "/pages/user/user"
-          // });
-          wx.navigateTo({
-            url: "/pages/address/select/select"
+          wx.switchTab({
+            url: "/pages/user/user"
           });
+          // wx.navigateTo({
+          //   url: "/pages/address/list/list"
+          // });
         }, 100);
       }
     });

@@ -1,16 +1,37 @@
-// pages/address/edit/edit.js
+const config = require("../../../config");
+const util = require("../../../utils/util");
+const qcloud = require('../../../vendor/wafer2-client-sdk/index');
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    genderList: [
-      {name: "先生", value: 1, checked: true},
-      {name: "女士", value: 2},
+    genderList: [{
+        name: "先生",
+        value: 1
+      },
+      {
+        name: "女士",
+        value: 2
+      },
     ],
+    isModify: false,
+    phoneFocus: false,
     entity: {
-      gender: 0
+      id: 0,
+      receiver: "",
+      provinceName: "",
+      cityName: "",
+      areaName: "",
+      mapInfo: "",
+      lng: 0,
+      lat: 0,
+      detailInfo: "",
+      phone: "",
+      gender: 1,
+      postalCode: "",
+      userId: 0
     }
   },
 
@@ -18,11 +39,113 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    
+    var id = options.id;
+    var self = this;
+    if(id){
+      qcloud.request({
+        url: `${config.service.requestUrl}/user/addressDetail/${id}`,
+        success: function(res){
+          self.setData({
+            entity: res.data,
+            isModify: true
+          });
+        }
+      });
+    }
   },
-  changeGender: function(e){
+  blurReceiver: function(e){
+    var entity = this.data.entity;
+    entity.receiver = e.detail.value;
     this.setData({
-      gender: parseInt(e.detail.value)
+      entity: entity
+    });
+  },
+  blurPhone: function(e){
+    if(!e.detail.value) return;
+    // 验证手机号
+    if(!util.regExp.phone.test(e.detail.value)){
+      util.showError("请输入正确的手机号码");
+      this.setData({
+        phoneFocus: true
+      });
+      return;
+    }
+    var entity = this.data.entity;
+    entity.phone = e.detail.value;
+    this.setData({
+      entity: entity,
+      phoneFocus: false
+    });
+  },
+  blurDetailInfo: function(e){
+    var entity = this.data.entity;
+    entity.detailInfo = e.detail.value;
+    this.setData({
+      entity: entity
+    });
+  },
+  changeGender: function (e) {
+    var entity = this.data.entity;
+    entity.gender = e.detail.value;
+    this.setData({
+      entity: entity
+    });
+  },
+  selectAddress: function () {
+    var self = this;
+    wx.chooseLocation({
+      success: function (res) {
+        if (res.errMsg != "chooseLocation:ok") return;
+        var address = self.data.entity;
+        address.mapInfo = res.address;
+        address.lng = res.longitude;
+        address.lat = res.latitude;
+        self.setData({
+          entity: address
+        });
+      }
+    });
+  },
+  saveAddress: function () {
+    var self = this, userId = qcloud.getSession().skey, entity = this.data.entity, url;
+    if(!entity.receiver){
+      util.showError("请输入联系人姓名");
+      return;
+    }
+    if(!entity.phone){
+      util.showError("请输入联系人手机号码");
+      return;
+    }
+    if(!entity.mapInfo){
+      util.showError("请选择收货地址");
+      return;
+    }
+    if(!entity.detailInfo){
+      util.showError("请输入门牌号");
+      return;
+    }
+    util.showBusy("loading");
+    if(this.data.isModify){
+      url = config.service.requestUrl + "/user/updateAddress/" + self.data.entity.id;
+    } else {
+      url = config.service.requestUrl + "/user/address/" + userId;
+    }
+    qcloud.request({
+      url: url,
+      method: this.data.isModify ? "put" : "post",
+      data: self.data.entity,
+      login: !this.data.isModify,
+      success: function(res){
+        wx.hideToast();
+        if(res.data == "ok"){
+          util.showSuccess("保存成功");
+          setTimeout(() => wx.navigateBack({
+            delta: 1
+          }), 1500);
+        } else {
+          util.showModel("保存失败", "原因：" + JSON.stringify(res.data));
+        }
+      }
     });
   }
 })

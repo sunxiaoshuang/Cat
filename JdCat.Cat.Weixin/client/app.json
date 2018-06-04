@@ -8,7 +8,6 @@
     "pages/userinfo/userinfo",
     "pages/address/list/list",
     "pages/address/edit/edit",
-    "pages/address/select/select",
     "pages/addCgi/addCgi"
   ],
   "window":{

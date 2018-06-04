@@ -40,7 +40,12 @@ function request(options) {
 
     var requireLogin = options.login;
     var success = options.success || noop;
-    var fail = options.fail || noop;
+    var fail = options.fail || function (err) {
+        wx.showToast({
+            title: err,
+            icon: 'none'
+        })
+    };
     var complete = options.complete || noop;
     var originHeader = options.header || {};
 
@@ -67,7 +72,10 @@ function request(options) {
 
     // 登录后再请求
     function doRequestWithLogin() {
-        loginLib.login({ success: doRequest, fail: callFail });
+        loginLib.login({
+            success: doRequest,
+            fail: callFail
+        });
     }
 
     // 实际进行请求的方法

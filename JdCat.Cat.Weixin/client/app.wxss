@@ -68,6 +68,9 @@ navigator input {
 .margin-top-20 {
   margin-top: 40rpx;
 }
+.margin-bottom-20 {
+  margin-bottom: 40rpx;
+}
 .margin-left-20 {
   margin-left: 40rpx;
 }
@@ -88,6 +91,15 @@ navigator input {
 }
 .padding-right-10 {
   padding-right: 20rpx;
+}
+.border-top {
+  border-top: 1px solid #eee;
+}
+.bold {
+  font-weight: bold;
+}
+.small {
+  font-size: 90%;
 }
 .form-input {
   display: flex;
@@ -115,4 +127,55 @@ navigator input {
 .btn-block {
   display: block;
   flex: 1;
+}
+.select-address {
+  display: flex;
+  flex: 1;
+  margin: 0;
+  flex-flow: row nowrap;
+  align-self: stretch;
+  align-items: center;
+}
+.select-address input {
+  align-self: stretch;
+}
+/*
+  滑动删除
+*/
+.touch-item {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  width: 100%;
+  overflow: hidden
+}
+.touch-item:first-child {
+  border-top: 1px solid #eee;
+}
+
+.content {
+  width: 100%;
+  padding: 10px;
+  line-height: 22px;
+  margin-right: 0;
+  transition: all 0.4s;
+  transform: translateX(90px);
+  margin-left: -90px;
+}
+
+.del {
+  background-color: #ea7042;
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transform: translateX(90px);
+  transition: all 0.4s;
+}
+
+.touch-move-active .content,
+.touch-move-active .del {
+  transform: translateX(0);
 }
