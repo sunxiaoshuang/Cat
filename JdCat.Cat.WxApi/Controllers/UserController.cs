@@ -103,28 +103,43 @@ namespace JdCat.Cat.WxApi.Controllers
             });
         }
 
-        /// <summary>
-        /// 过滤返回数据
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        private object FilterUser(User user)
+        [HttpPost("address/{id}")]
+        public IActionResult PostAddress(int id, [FromBody]Address address, [FromServices]ISessionDataRepository sessionService)
         {
-            return new
-            {
-                user.ID,
-                user.AvatarUrl,
-                user.City,
-                user.Country,
-                user.Gender,
-                user.Language,
-                user.NickName,
-                user.Province,
-                user.Phone,
-                user.IsRegister,
-                user.IsPhone
-            };
+            var user = sessionService.Get(id).User;
+            address.User = user;
+            address.ModifyTime = DateTime.Now;
+            Service.Set<Address>().Add(address);
+            Service.Commit();
+            return Ok("ok");
         }
+
+        [HttpGet("getAddress/{id}")]
+        public IActionResult GetAddresses(int id)
+        {
+            var list = Service.GetAddresses(id);
+            return Ok(list);
+        }
+
+        [HttpDelete("delAddress/{id}")]
+        public IActionResult DelAddress(int id)
+        {
+            Service.DelAddress(id);
+            return Ok("ok");
+        }
+        [HttpGet("addressDetail/{id}")]
+        public IActionResult AddressDetail(int id)
+        {
+            return Ok(Service.GetAddress(id));
+        }
+        [HttpPut("updateAddress/{id}")]
+        public IActionResult UpdateDetail(int id, [FromBody]Address address)
+        {
+            address.ID = id;
+            Service.UpdateAddress(address);
+            return Ok("ok");
+        }
+
         /// <summary>
         /// 获取用户OpenId
         /// </summary>

@@ -23,5 +23,9 @@ namespace JdCat.Cat.Repository
             Commit();
             return entity;
         }
+        public SessionData Get(int id)
+        {
+            return Context.SessionDatas.Include(a => a.User).First(a => a.ID == id);
+        }
     }
 }

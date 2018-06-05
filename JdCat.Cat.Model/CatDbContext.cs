@@ -31,6 +31,9 @@ namespace JdCat.Cat.Model
         public DbSet<SettingProductAttribute> SettingProductAttributes { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<SessionData> SessionDatas { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderProduct> OrderProducts { get; set; }
 
         //        public DbSet<TestModel> TestModels { get; set; }
         /// <summary>
@@ -50,6 +53,9 @@ namespace JdCat.Cat.Model
             modelBuilder.Entity<ProductFormat>()
                 .Property(a => a.Code)
                 .HasDefaultValueSql("'F-' + CAST(YEAR(GETDATE()) AS varchar) + dbo.fn_right_padding(NEXT VALUE FOR shared.FormatNumbers, 9)");
+            modelBuilder.Entity<Order>()
+                .Property(a => a.OrderCode)
+                .HasDefaultValueSql("'Cat-' + CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 10)");
 
 
             var typesToRegister = Assembly.GetExecutingAssembly().GetTypes().Where(q => q.GetInterface(typeof(IEntityTypeConfiguration<>).FullName) != null);

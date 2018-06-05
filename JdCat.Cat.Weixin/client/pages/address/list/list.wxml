@@ -1,0 +1,27 @@
+<view class="container">
+    <navigator url="/pages/address/edit/edit" open-type="navigate" 
+    class="navigate navigate-top-border margin-top-20 margin-bottom-20">
+        <image src="/images/icon/plus-2.png" class="margin-left-15"></image>
+        <text>新增地址</text>
+        <image style= src="/images/icon/right-1.png"></image>
+    </navigator>
+    <view class="touch-item {{item.isTouchMove ? 'touch-move-active' : ''}} {{index == 0 ? 'border-top' : ''}}" 
+    wx:for="{{list}}" bindtouchstart="touchstart" bindtouchmove="touchmove" data-index="{{index}}">
+        <view class="content address-item">
+            <view class="address-info">
+                <text>
+                    <text class="bold">{{item.receiver}} </text>
+                    <text class="gray small">   {{item.phone}}
+                    </text>
+                </text>
+                <text class="gray small">{{item.mapInfo}} {{item.detailInfo}}</text>
+            </view>
+            <view class="address-detail" catchtap="navigateEdit" data-id="{{item.id}}">
+                <image src="../../../images/icon/detail-2.png"></image>
+            </view>
+        </view>
+        <view class="del" catchtap="del" data-index="{{index}}">
+            删除
+        </view>
+    </view>
+</view>

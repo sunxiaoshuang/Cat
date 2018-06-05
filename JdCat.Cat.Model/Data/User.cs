@@ -35,6 +35,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public int BusinessId { get; set; }
         /// <summary>
+        /// 用户地址
+        /// </summary>
+        public virtual ICollection<Address> Addresses { get; set; }
+        /// <summary>
         /// 微信的会话密钥
         /// </summary>
         [NotMapped]

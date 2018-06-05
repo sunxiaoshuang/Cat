@@ -23,16 +23,9 @@
     width: 100%;
     padding-bottom: 10px;
 }
-.btn-area {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
 .btn-area > navigator {
     display: flex;
-    padding: 10px 20px;
-    width: 100%;
+    padding: 10rpx 0;
     border-bottom: 1px solid #eee;
     line-height: 28px;
     font-size: 90%;
@@ -41,11 +34,6 @@
     border-top: 1px solid #eee;
 }
 
-.btn-area navigator image {
-    width: 28px;
-    height: 28px;
-    margin-right: 20px;
-}
 .user-phone {
     width: 100%;
     border: none;

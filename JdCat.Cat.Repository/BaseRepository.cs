@@ -61,20 +61,14 @@ namespace JdCat.Cat.Repository
             if (commit) return Commit();
             return 0;
         }
-        //public void Update(T entity, Expression<Func<T, T>> fieldNames = null, bool commit = true)
-        //{
-
-        //}
         public int Commit()
         {
             return _context.SaveChanges();
         }
-
         public DbSet<TEntity> Set<TEntity>() where TEntity : class
         {
             return _context.Set<TEntity>();
         }
-
         public bool Exists(Expression<Func<T, bool>> predicate)
         {
             return _context.Set<T>().FirstOrDefault(predicate) != null;

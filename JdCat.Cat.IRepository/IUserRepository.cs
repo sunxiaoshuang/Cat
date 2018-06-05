@@ -27,5 +27,14 @@ namespace JdCat.Cat.IRepository
         /// <param name="phone"></param>
         /// <returns></returns>
         bool GrantPhone(int id, string phone);
+        /// <summary>
+        /// 根据用户id获取地址
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        IEnumerable<Address> GetAddresses(int id);
+        bool DelAddress(int id);
+        Address GetAddress(int id);
+        bool UpdateAddress(Address address);
     }
 }
