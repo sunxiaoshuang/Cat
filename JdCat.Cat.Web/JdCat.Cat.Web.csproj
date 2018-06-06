@@ -251,6 +251,7 @@
     <Folder Include="Log\Error\" />
     <Folder Include="Temp\" />
     <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\video\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>

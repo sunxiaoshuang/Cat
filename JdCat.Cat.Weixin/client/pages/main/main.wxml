@@ -11,7 +11,7 @@
       <input class="head-search-input" placeholder="鸡排" />
     </view>
 </view>
-<view class="mainContainer" disable-scroll="true">
+<scroll-view class="mainContainer" disable-scroll="true">
     <view class="header">
         <block wx:for="{{swiperTitle}}" wx:key="">
           <view class="title {{index==currentPage?'selected':''}}" data-index="{{index}}" bindtap="turnPage">{{item.text}}</view>
@@ -89,7 +89,7 @@
         </swiper-item>
         <swiper-item id="restaurantPage"></swiper-item>
     </swiper>
-</view>
+</scroll-view>
 <view class="mask" hidden="{{hideCart}}">
     <view class="cart-contain">
         <view class="cart-clear" bindtap="clearCart">清空购物车</view>

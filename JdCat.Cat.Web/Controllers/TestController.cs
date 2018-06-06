@@ -29,5 +29,15 @@ namespace JdCat.Cat.Web.Controllers
             return Ok(result + "||appid:" + appId);
         }
 
+        public IActionResult Video()
+        {
+            return View();
+        }
+
+        public IActionResult WsService()
+        {
+            return View();
+        }
+
     }
 }

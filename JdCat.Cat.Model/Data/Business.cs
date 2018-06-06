@@ -61,6 +61,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string StoreId { get; set; }
         /// <summary>
+        /// 是否自动接单
+        /// </summary>
+        public bool IsAutoReceipt { get; set; }
+        /// <summary>
         /// 产品列表
         /// </summary>
         public virtual ICollection<Product> Products { get; set; }

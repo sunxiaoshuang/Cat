@@ -54,6 +54,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string TablewareQuantity { get; set; }
         /// <summary>
+        /// 送货方式
+        /// </summary>
+        public DeliveryMode DeliveryMode { get; set; }
+        /// <summary>
+        /// 微信支付订单号
+        /// </summary>
+        public string WxPayCode { get; set; }
+        /// <summary>
         /// 订单状态
         /// </summary>
         public OrderStatus Status { get; set; }
@@ -65,6 +73,10 @@ namespace JdCat.Cat.Model.Data
         /// 支付方式
         /// </summary>
         public PaymentType PaymentType { get; set; } = PaymentType.OnLine;
+        /// <summary>
+        /// 送达时间
+        /// </summary>
+        public DateTime? AchieveTime { get; set; }
         /// <summary>
         /// 商户Id
         /// </summary>

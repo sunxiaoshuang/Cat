@@ -138,8 +138,7 @@ Page({
     this.setData({
       pullBar: !this.data.pullBar
     })
-  }
-  ,
+  },
   addFood: function (e) {
     var productItems = this.data.productList;
     productItems[e.currentTarget.dataset.index].Count++;
