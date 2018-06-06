@@ -22,13 +22,14 @@ Page({
     foodSelected: 0,
     howMuch: 12,
     totalPrice: 0,
-    hideCart: true,
-    hideItem: true,
+    showCart: false,
+    showDeatail: false,
     pullBar: false,
     animationData: "",
     location: "",
     foodToView: "scroll21",
-    scrollTop: 0
+    scrollTop: 0,
+    imageUrl: "http://f.jiandanmao.cn/File/Product/"
   },
 
   finish: function () {
@@ -49,7 +50,7 @@ Page({
   onLoad: function (options) {
     var that = this;
     wx.request({
-      url: "https://www.easy-mock.com/mock/5afff442c20d695226befb23/JdCat/api/menus",
+      url: "https://www.jiandanmao.cn/api/Product/menus?businessId="+ 1,
       method: "GET",
       success: function (res) {
         var menuArr = new Array();
@@ -72,6 +73,7 @@ Page({
             product.Description = productItem.Description;
             product.Formats = productItem.Formats;
             product.Attributes = productItem.Attributes;
+            product.Images = productItem.Images;
             product.Count = 0;
             product.ViewIndex = j;
             productArr.push(product);
@@ -209,14 +211,14 @@ Page({
     })
     console.log(e.currentTarget.dataset.index);
   },
-  maskCancel: function () {
+  closeCartDialog: function () {
     this.setData({
-      hideCart: true
+      showCart: false
     })
   },
   showCart: function () {
     this.setData({
-      hideCart: false
+      showCart: !this.data.showCart
     })
   },
   showFoodDetail: function (e) {
@@ -224,12 +226,12 @@ Page({
       foodSelected: e.currentTarget.dataset.index
     })
     this.setData({
-      hideItem: false
+      showDeatail: true
     })
   },
-  hideItem: function (e) {
+  showDeatail: function (e) {
     this.setData({
-      hideItem: true
+      showDeatail: false
     })
   },
   addFoodInCart: function (e) {
