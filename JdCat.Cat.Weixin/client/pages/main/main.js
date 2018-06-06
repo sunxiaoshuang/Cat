@@ -23,13 +23,14 @@ Page({
     howMuch: 12,
     totalPrice: 0,
     showCart: false,
-    showDeatail: false,
+    showDetail: false,
     pullBar: false,
     animationData: "",
     location: "",
     foodToView: "scroll21",
     scrollTop: 0,
-    imageUrl: "http://f.jiandanmao.cn/File/Product/"
+    imageUrl: "http://f.jiandanmao.cn/File/Product/",
+    formatIndex:0
   },
 
   finish: function () {
@@ -227,12 +228,13 @@ Page({
       foodSelected: e.currentTarget.dataset.index
     })
     this.setData({
-      showDeatail: true
+      showDetail: true
     })
   },
-  showDeatail: function (e) {
+  closeDetail: function (e) {
     this.setData({
-      showDeatail: false
+      showDetail: false,
+      formatIndex: 0
     })
   },
   addFoodInCart: function (e) {
@@ -340,6 +342,11 @@ Page({
     this.setData({
       productList: productItems,
       cartList: cartItems
+    })
+  },
+  selectFormat: function(e){
+    this.setData({
+      formatIndex: e.currentTarget.dataset.index
     })
   }
 })

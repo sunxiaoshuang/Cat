@@ -315,6 +315,34 @@ page{
   display:flex;
   flex-direction: column;
 }
+.detail-format{
+  display:flex;
+  margin-left: 30rpx;
+  margin-top: 5rpx;
+  margin-bottom: 5rpx;
+}
+.detail-format-item{
+  font-size: 25rpx;
+  color: #000000;  
+  margin-left: 20rpx;
+  margin-right: 20rpx;
+  border: 2rpx solid  #ACACAC;
+  border-radius: 5px;
+  background: rgba(15, 15, 26, 0);
+  text-align: center; 
+  padding:5rpx;
+}
+.detail-format-item.active{
+  font-size: 25rpx;
+  color: #EA7042;  
+  margin-left: 20rpx;
+  margin-right: 20rpx;
+  border: 2rpx solid  #EA7042;
+  border-radius: 5px;
+  background: rgba(15, 15, 26, 0);
+  text-align: center; 
+  padding:5rpx;
+}
 .item-pic{
   height: 300rpx;
   width: 90%;
@@ -530,11 +558,25 @@ page{
   justify-content: flex-end;
 }
 .multi-format{
+  display: flex;
+  flex-direction: row;
+}
+.selectFormat{
   width: 100rpx;
   border-radius: 15rpx;
   text-align: center; 
   background: #EA7042;
   justify-content: flex-end;
+}
+.formtCount{
+  font-size: 30rpx;
+  height:40rpx;
+  width:40rpx;
+  background: red;
+  border-radius: 20rpx;
+  color:#FFF;
+  margin:-20rpx;
+  text-align: center; 
 }
 .food-numb .add,.food-numb .remove{
   width: 40rpx;

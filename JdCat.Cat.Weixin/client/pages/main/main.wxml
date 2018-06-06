@@ -47,7 +47,8 @@
                             <view class="add" bindtap="addFood" data-index="{{index}}">+</view>
                           </view>
                           <view class="multi-format" hidden="{{item.Formats.length==1}}">
-                          <view class="selectFormat" bindtap="showFoodDetail" data-index="{{index}}">选规格</view>
+                            <view class="selectFormat" bindtap="showFoodDetail" data-index="{{index}}">选规格</view>
+                            <view class="formtCount" hidden="{{item.Count==0}}" data-index="{{index}}">{{item.Count}}</view>
                           </view> 
                           </view>
                         </view>
@@ -114,27 +115,31 @@
         </scroll-view>
     </view>
 </view>
-<view class="detail-dialog" hidden="{{!showDeatail}}">
+<view class="detail-dialog" hidden="{{!showDetail}}">
     <view class="detail-main">
         <block>
             <view class="detail-food-main">
-              <image class="item-pic" src="{{menu[selected].menuContent[foodSelected].src}}"></image>
-              <view class="item-name">{{productList[foodSelected].Name}}</view>
-              <view class="item-sales">特色 {{productList[foodSelected].Description}}</view>
-              <block wx:for="{{productList[foodSelected].Formats}}" wx:key="">
+                <image class="item-pic" src="{{menu[selected].menuContent[foodSelected].src}}"></image>
+                <view class="item-name">{{productList[foodSelected].Name}}</view>
+                <view class="detail-format" hidden="{{productList[foodSelected].Formats.length==1}}">
+                    <block wx:for="{{productList[foodSelected].Formats}}" wx:key="">
+                        <view class="detail-format-item {{formatIndex==index?'active':''}}" data-index="{{index}}" bindtap="selectFormat">
+                            {{item.Name}}
+                        </view>
+                    </block>
+                </view>
                 <view class="item-footer">
-                    <view class="item-price">{{item.Name}} {{item.Price}}元 </view>
+                    <view class="item-price">{{productList[foodSelected].Formats[0].Price}}元 </view>
                     <view class="item-food-numb">
-                    <view class="item-remove" bindtap="removeFoodInDetail" hidden="{{productList[foodSelected].Count==0}}" >-</view>
-                    <text class="item-food-text" hidden="{{productList[foodSelected].Count==0}}">{{productList[foodSelected].Count}}</text>
-                    <view class="item-add" bindtap="addFoodInDetail">+</view>
+                        <view class="item-remove" bindtap="removeFoodInDetail" hidden="{{productList[foodSelected].Count==0}}" >-</view>
+                        <text class="item-food-text" hidden="{{productList[foodSelected].Count==0}}">{{productList[foodSelected].Count}}</text>
+                        <view class="item-add" bindtap="addFoodInDetail">+</view>
                     </view>
-              </view>
-              </block>
+                </view>
             </view>
         </block>
     </view>
-    <view class="item-close" bindtap="showDeatail">
+    <view class="item-close" bindtap="closeDetail">
     X 
     </view>
 </view>
