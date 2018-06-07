@@ -80,11 +80,30 @@ Page({
             productArr.push(product);
           }
         };
+        for (var m in productArr){
+          for (var n in productArr[m].Formats){
+            productArr[m].Formats[n].Count = 0;
+            productArr[m].Formats[n].Uid = getUuid();
+          }
+        }
         that.setData({
           productList: productArr,
           menu: menuArr,
           location: wx.getStorageSync('location')
         });
+        function getUuid() {
+          var s = [];
+          var hexDigits = "0123456789abcdef";
+          for (var i = 0; i < 36; i++) {
+              s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+          }
+          s[14] = "4";  
+          s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
+          s[8] = s[13] = s[18] = s[23] = "-";
+       
+          var uuid = s.join("");
+          return uuid;
+        }
       }
     });
   },
@@ -143,9 +162,14 @@ Page({
     })
   },
   addFood: function (e) {
+    var formatIndex = this.data.formatIndex;
     var productItems = this.data.productList;
     productItems[e.currentTarget.dataset.index].Count++;
     var productItem = productItems[e.currentTarget.dataset.index];
+    if(productItem.Formats[formatIndex].Count == undefined){
+      productItem.Formats[formatIndex].Count = 0;
+    }
+    productItem.Formats[formatIndex].Count++;
     var cartItems = this.data.cartList;
     if (cartItems.length == 0) {
       cartItems.push(productItem)
@@ -154,6 +178,7 @@ Page({
       for (var i in cartItems) {
         if (cartItems[i].ID == productItem.ID) {
           cartItems[i].Count++;
+          cartItems[i].Formats[formatIndex].Count++;
           exist = true;
           break;
         }
@@ -168,16 +193,19 @@ Page({
     })
   },
   removeFood: function (e) {
+    var formatIndex = this.data.formatIndex;
     var productItems = this.data.productList;
     if (productItems[e.currentTarget.dataset.index].Count != 0) {
       productItems[e.currentTarget.dataset.index].Count--;
       var productItem = productItems[e.currentTarget.dataset.index];
+      productItem.Formats[formatIndex].Count--;
       var cartItems = this.data.cartList;
       if (cartItems.length == 0) {
         return;
       } else {
         for (var i in cartItems) {
           if (cartItems[i].ID == productItem.ID) {
+            cartItems[i].Formats[formatIndex].Count--;
             cartItems[i].Count--;
           }
           if (cartItems[i].Count == 0) {
@@ -238,14 +266,26 @@ Page({
   },
   addFoodInCart: function (e) {
     var cartItems = this.data.cartList;
-    cartItems[e.currentTarget.dataset.index].Count++;
-    var cartItem = cartItems[e.currentTarget.dataset.index];
     var productItems = this.data.productList;
+    var uid = e.currentTarget.dataset.index;
+
     for (var i in productItems) {
-      if (productItems[i].ID == cartItem.ID) {
-        productItems[i].Count++;
+      for (var j in productItems[i].Formats) {
+        if(productItems[i].Formats[j].Uid == uid){
+          productItems[i].Formats[j].Count++;
+          productItems[i].Count++;
+        }      
       }
     }
+
+    for (var i in cartItems) {
+      for (var j in cartItems[i].Formats) {
+        if(cartItems[i].Formats[j].Uid == uid){
+          cartItems[i].Formats[j].Count++;
+        }      
+      }
+    }
+
     this.setData({
       productList: productItems,
       cartList: cartItems
@@ -253,22 +293,26 @@ Page({
   },
   removeFoodInCart: function (e) {
     var cartItems = this.data.cartList;
-    var cartItem = cartItems[e.currentTarget.dataset.index];
     var productItems = this.data.productList;
-    for (var i in cartItems) {
-      if (cartItems[i].ID == cartItem.ID) {
-        cartItems[i].Count--;
+    var uid = e.currentTarget.dataset.index;
 
-        if (cartItems[i].Count == 0) {
-          cartItems.splice(i, 1);
-        }
-      }
-    }
     for (var i in productItems) {
-      if (productItems[i].ID == cartItem.ID) {
-        productItems[i].Count--;
+      for (var j in productItems[i].Formats) {
+        if(productItems[i].Formats[j].Uid == uid){
+          productItems[i].Formats[j].Count--;
+          productItems[i].Count--;
+        }      
       }
     }
+
+    for (var i in cartItems) {
+      for (var j in cartItems[i].Formats) {
+        if(cartItems[i].Formats[j].Uid == uid){
+          cartItems[i].Formats[j].Count--;
+        }      
+      }
+    }
+
     this.setData({
       productList: productItems,
       cartList: cartItems
@@ -279,6 +323,9 @@ Page({
     for (var i in productItems) {
       if (productItems[i].Count != 0) {
         productItems[i].Count = 0;
+        for (var j in productItems[i].Formats){
+          productItems[i].Formats[j].Count = 0;
+        }
       }
     }
     this.setData({
@@ -290,10 +337,16 @@ Page({
     var foodSelected = this.data.foodSelected;
     var cartItems = this.data.cartList;
     var productItems = this.data.productList;
+    var formatIndex = this.data.formatIndex;
     var product = productItems[foodSelected];
 
     for (var i in productItems) {
       if (productItems[i].ID == product.ID) {
+        if(productItems[i].Formats[formatIndex].Count == undefined){
+          productItems[i].Formats[formatIndex].Count = 0;
+        }
+        productItems[i].Formats[formatIndex].Count++;
+        
         productItems[i].Count++;
         break;
       }
@@ -305,6 +358,11 @@ Page({
       var exist = false;
       for (var i in cartItems) {
         if (cartItems[i].ID == product.ID) {
+          if(cartItems[i].Formats[formatIndex].Count == undefined){
+            cartItems[i].Formats[formatIndex].Count = 0;
+          }
+          cartItems[i].Formats[formatIndex].Count++;
+
           cartItems[i].Count++;
           exist = true;
           break;
@@ -324,14 +382,17 @@ Page({
     var cartItems = this.data.cartList;
     var productItems = this.data.productList;
     var product = productItems[foodSelected];
+    var formatIndex = this.data.formatIndex;
 
     for (var i in productItems) {
       if (productItems[i].ID == product.ID) {
+        productItems[i].Formats[formatIndex].Count--;
         productItems[i].Count--;
       }
     }
     for (var i in cartItems) {
       if (cartItems[i].ID == product.ID) {
+        cartItems[i].Formats[formatIndex].Count--;
         cartItems[i].Count--;
         if (cartItems[i].Count == 0) {
           cartItems.splice(i, 1);
@@ -347,5 +408,8 @@ Page({
     this.setData({
       formatIndex: e.currentTarget.dataset.index
     })
+  },
+  scrollFoodList: function(e){
+    console.log(this.data.foodToView);
   }
 })

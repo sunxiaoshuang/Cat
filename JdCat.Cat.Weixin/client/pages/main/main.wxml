@@ -29,7 +29,7 @@
                 </scroll-view>
                 <view class="foodListMain">
                 <view class="selectedMenu">{{menu[selected].Name}}</view>
-                <scroll-view class="foodList" scroll-y="true" scroll-top="{{scrollTop}}" scroll-into-view ="{{foodToView}}">
+                <scroll-view class="foodList" scroll-y="true" scroll-with-animation="true" scroll-top="{{scrollTop}}" scroll-into-view ="{{foodToView}}" bindscroll="scrollFoodList">
                     <block wx:for="{{productList}}" wx:key="">
                         <view class="food" id="{{'scroll'+item.MenuId+item.ViewIndex}}">
                           <image class="img" bindtap="showFoodDetail" data-index="{{index}}" src="{{item.src}}"></image>
@@ -101,16 +101,18 @@
     <view class="cart-contain">
         <view class="cart-clear" bindtap="clearCart">清空购物车</view>
         <scroll-view>
-            <block wx:for="{{cartList}}" wx:key="">
-                <view class="cart" hidden ="{{item.numb==0}}">
-                    <view class="cart-food-name">{{item.Name}}</view>
-                    <view class="cart-food-price">￥{{item.Formats[0].Price*item.Count}}</view>
+            <block wx:for="{{cartList}}" wx:for-item="product" wx:key="product">
+                <block wx:for="{{product.Formats}}" wx:for-item="format" wx:key="format">
+                <view class="cart" hidden="{{format.Count==0 || format.Count==undefined}}">
+                    <view class="cart-food-name">{{product.Formats.length == 1?product.Name:product.Name+'('+format.Name +')'}}</view>
+                    <view class="cart-food-price">￥{{format.Price*format.Count}}</view>
                     <view class="cart-food-count">
-                        <view class="cart-food-remove" bindtap="removeFoodInCart" hidden="{{item.Count==0}}" data-index="{{index}}">-</view>
-                        <text class="cart-food-text" hidden="{{item.Count==0}}">{{item.Count}}</text>
-                        <view class="cart-food-add" bindtap="addFoodInCart" data-index="{{index}}">+</view>
+                        <view class="cart-food-remove" bindtap="removeFoodInCart" hidden="{{format.Count==0}}" data-index="{{format.Uid}}">-</view>
+                        <text class="cart-food-text" hidden="{{format.Count==0}}">{{format.Count}}</text>
+                        <view class="cart-food-add" bindtap="addFoodInCart" data-index="{{format.Uid}}">+</view>
                     </view>
                 </view>
+                </block>
             </block>
         </scroll-view>
     </view>
@@ -129,17 +131,15 @@
                     </block>
                 </view>
                 <view class="item-footer">
-                    <view class="item-price">{{productList[foodSelected].Formats[0].Price}}元 </view>
+                    <view class="item-price">{{productList[foodSelected].Formats[formatIndex].Price}}元 </view>
                     <view class="item-food-numb">
-                        <view class="item-remove" bindtap="removeFoodInDetail" hidden="{{productList[foodSelected].Count==0}}" >-</view>
-                        <text class="item-food-text" hidden="{{productList[foodSelected].Count==0}}">{{productList[foodSelected].Count}}</text>
+                        <view class="item-remove" bindtap="removeFoodInDetail">-</view>
+                        <text class="item-food-text">{{productList[foodSelected].Formats[formatIndex].Count!=undefined?productList[foodSelected].Formats[formatIndex].Count:0}}</text>
                         <view class="item-add" bindtap="addFoodInDetail">+</view>
                     </view>
                 </view>
             </view>
         </block>
     </view>
-    <view class="item-close" bindtap="closeDetail">
-    X 
-    </view>
+    <view class="item-close" bindtap="closeDetail">X</view>
 </view>
