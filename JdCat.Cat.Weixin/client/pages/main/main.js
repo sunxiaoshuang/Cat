@@ -112,7 +112,7 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-
+    
   },
 
   /**
@@ -241,14 +241,10 @@ Page({
     console.log(e.currentTarget.dataset.index);
   },
   closeCartDialog: function () {
-    this.setData({
-      showCart: false
-    })
+    this.showCartAnimation(false);
   },
   showCart: function () {
-    this.setData({
-      showCart: !this.data.showCart
-    })
+    this.showCartAnimation(!this.data.showCart);
   },
   showFoodDetail: function (e) {
     this.setData({
@@ -411,5 +407,47 @@ Page({
   },
   scrollFoodList: function(e){
     console.log(this.data.foodToView);
+  },
+  showCartAnimation: function(isShow){  
+
+    var animation = wx.createAnimation({  
+      duration: 200,   
+      timingFunction: "linear", 
+      delay: 0  
+    });  
+      
+    this.animation = animation;  
+  
+    animation.opacity(0).translateX(-100).step();  
+  
+    this.setData({  
+      animationData: animation.export()  
+    })  
+      
+    setTimeout(function () {  
+
+      animation.opacity(1).translateX(0).step();  
+
+      this.setData({  
+        animationData: animation  
+      })  
+        
+      if (!isShow) {  
+        this.setData(  
+          {  
+            showCart: false  
+          }  
+        );  
+      }  
+    }.bind(this), 200)  
+ 
+    if (isShow) {  
+      this.setData(  
+        {  
+          showCart: true  
+        }  
+      );  
+    }  
   }
+
 })

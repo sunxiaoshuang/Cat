@@ -81,7 +81,7 @@ page{
   width:100%;
   position:absolute;
   top: 0;
-  bottom:98rpx;
+  bottom:97rpx;
   z-index:999;
 }
 .cart-contain{
