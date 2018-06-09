@@ -49,7 +49,7 @@ Page({
   onLoad: function (options) {
     var that = this;
     wx.request({
-      url: "https://www.easy-mock.com/mock/5afff442c20d695226befb23/JdCat/api/menus",
+      url: "https://www.jiandanmao.cn/api/product/menus?businessId=" + 1,
       method: "GET",
       success: function (res) {
         var menuArr = new Array();
