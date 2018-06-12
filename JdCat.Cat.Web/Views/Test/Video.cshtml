@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewData["Title"] = "Video";
+}
+
+<h2>Video</h2>
+
+<button class="btn btn-primary" id="btn">接单</button>
+<video id="video" src="~/video/Receipt_z.ogg" autoplay></video>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var video = document.getElementById("video");
+            $("#btn").click(function () {
+                video.play();
+            });
+
+        });
+    </script>
+}
+
