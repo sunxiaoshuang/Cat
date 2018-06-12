@@ -250,7 +250,6 @@
     <Folder Include="Log\Error\" />
     <Folder Include="Temp\" />
     <Folder Include="wwwroot\images\" />
-    <Folder Include="wwwroot\video\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>

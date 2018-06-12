@@ -22,14 +22,13 @@ Page({
     foodSelected: 0,
     howMuch: 12,
     totalPrice: 0,
-    showCart: false,
-    showDeatail: false,
+    hideCart: true,
+    hideItem: true,
     pullBar: false,
     animationData: "",
     location: "",
     foodToView: "scroll21",
-    scrollTop: 0,
-    imageUrl: "http://f.jiandanmao.cn/File/Product/"
+    scrollTop: 0
   },
 
   finish: function () {
@@ -50,7 +49,7 @@ Page({
   onLoad: function (options) {
     var that = this;
     wx.request({
-      url: "https://www.jiandanmao.cn/api/Product/menus?businessId="+ 1,
+      url: "https://www.jiandanmao.cn/api/product/menus?businessId=" + 1,
       method: "GET",
       success: function (res) {
         var menuArr = new Array();
@@ -73,7 +72,6 @@ Page({
             product.Description = productItem.Description;
             product.Formats = productItem.Formats;
             product.Attributes = productItem.Attributes;
-            product.Images = productItem.Images;
             product.Count = 0;
             product.ViewIndex = j;
             productArr.push(product);
@@ -140,7 +138,8 @@ Page({
     this.setData({
       pullBar: !this.data.pullBar
     })
-  },
+  }
+  ,
   addFood: function (e) {
     var productItems = this.data.productList;
     productItems[e.currentTarget.dataset.index].Count++;
@@ -211,14 +210,14 @@ Page({
     })
     console.log(e.currentTarget.dataset.index);
   },
-  closeCartDialog: function () {
+  maskCancel: function () {
     this.setData({
-      showCart: false
+      hideCart: true
     })
   },
   showCart: function () {
     this.setData({
-      showCart: !this.data.showCart
+      hideCart: false
     })
   },
   showFoodDetail: function (e) {
@@ -226,12 +225,12 @@ Page({
       foodSelected: e.currentTarget.dataset.index
     })
     this.setData({
-      showDeatail: true
+      hideItem: false
     })
   },
-  showDeatail: function (e) {
+  hideItem: function (e) {
     this.setData({
-      showDeatail: false
+      hideItem: true
     })
   },
   addFoodInCart: function (e) {
