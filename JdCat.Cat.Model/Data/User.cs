@@ -6,17 +6,47 @@ using JdCat.Cat.Model.Enum;
 
 namespace JdCat.Cat.Model.Data
 {
+    /// <summary>
+    /// 用户表
+    /// </summary>
     [Table("User", Schema = "dbo")]
     public class User : BaseEntity
     {
+        /// <summary>
+        /// 用户年龄
+        /// </summary>
         public int Age { get; set; } = 0;
+        /// <summary>
+        /// 用户头像地址
+        /// </summary>
         public string AvatarUrl { get; set; }
+        /// <summary>
+        /// 用户所在城市
+        /// </summary>
         public string City { get; set; }
+        /// <summary>
+        /// 用户国家
+        /// </summary>
         public string Country { get; set; }
+        /// <summary>
+        /// 性别
+        /// </summary>
         public UserGender Gender { get; set; }
+        /// <summary>
+        /// 常用语言
+        /// </summary>
         public string Language { get; set; }
+        /// <summary>
+        /// 昵称
+        /// </summary>
         public string NickName { get; set; }
+        /// <summary>
+        /// 省份
+        /// </summary>
         public string Province { get; set; }
+        /// <summary>
+        /// 手机号
+        /// </summary>
         public string Phone { get; set; }
         /// <summary>
         /// 微信唯一标识码
@@ -38,6 +68,10 @@ namespace JdCat.Cat.Model.Data
         /// 用户地址
         /// </summary>
         public virtual ICollection<Address> Addresses { get; set; }
+        /// <summary>
+        /// 用户订单集合
+        /// </summary>
+        public virtual ICollection<Order> Orders { get; set; }
         /// <summary>
         /// 微信的会话密钥
         /// </summary>

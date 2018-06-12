@@ -5,6 +5,9 @@ using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    /// <summary>
+    /// 商户表
+    /// </summary>
     [Table("Business", Schema = "dbo")]
     public class Business : BaseEntity
     {
@@ -65,12 +68,36 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public bool IsAutoReceipt { get; set; }
         /// <summary>
-        /// 产品列表
+        /// 运费
+        /// </summary>
+        public decimal? Freight { get; set; } = 4;
+        /// <summary>
+        /// 达达商户标识
+        /// </summary>
+        public string DadaAppKey { get; set; }
+        /// <summary>
+        /// 达达商户密码
+        /// </summary>
+        public int DadaAppSecret { get; set; }
+        /// <summary>
+        /// 商户所属的城市
+        /// </summary>
+        public string CityName { get; set; }
+        /// <summary>
+        /// 商户所属城市的区号
+        /// </summary>
+        public string CityCode { get; set; }
+        /// <summary>
+        /// 产品列表集合
         /// </summary>
         public virtual ICollection<Product> Products { get; set; }
         /// <summary>
-        /// 产品类别
+        /// 产品类别集合
         /// </summary>
         public virtual ICollection<ProductType> ProductsTypes { get; set; }
+        /// <summary>
+        /// 商户订单集合
+        /// </summary>
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

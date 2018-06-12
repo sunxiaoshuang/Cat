@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+    <!--<MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>-->
   </PropertyGroup>
 
   <ItemGroup>
@@ -181,7 +181,6 @@
     <ProjectReference Include="..\JdCat.Cat.IRepository\JdCat.Cat.IRepository.csproj" />
     <ProjectReference Include="..\JdCat.Cat.Model\JdCat.Cat.Model.csproj" />
     <ProjectReference Include="..\JdCat.Cat.Repository\JdCat.Cat.Repository.csproj" />
-    <ProjectReference Include="..\JdCat.Cat.WxApi\JdCat.Cat.WxApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -254,6 +253,6 @@
     <Folder Include="wwwroot\video\" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

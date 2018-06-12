@@ -30,5 +30,25 @@ namespace JdCat.Cat.Common
         /// 数据库连接字符串
         /// </summary>
         public string Connection { get; set; }
+        /// <summary>
+        /// 新订单通知接口
+        /// </summary>
+        public string OrderUrl { get; set; }
+        /// <summary>
+        /// 达达接口域名
+        /// </summary>
+        public string DadaDomain { get; set; }
+        /// <summary>
+        /// 简单猫开发者标识
+        /// </summary>
+        public string DadaAppKey { get; set; }
+        /// <summary>
+        /// 简单猫开发者密码
+        /// </summary>
+        public string DadaAppSecret { get; set; }
+        /// <summary>
+        /// 绑定到开发者账号中的某个商户编号
+        /// </summary>
+        public string DadaSourceId { get; set; }
     }
 }

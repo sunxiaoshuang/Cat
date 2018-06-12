@@ -5,6 +5,9 @@ using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    /// <summary>
+    /// 菜单表
+    /// </summary>
     [Table("Menu", Schema = "dbo")]
     public class Menu : BaseEntity
     {

@@ -49,6 +49,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 已评价（前：订单已完成，后：已评价），有效订单
         /// </summary>
-        Appraised = 512
+        Appraised = 512,
+        /// <summary>
+        /// 已关闭，无效订单
+        /// </summary>
+        Close = 1024
     }
 }

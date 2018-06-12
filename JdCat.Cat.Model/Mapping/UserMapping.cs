@@ -13,6 +13,7 @@ namespace JdCat.Cat.Model.Mapping
         {
             builder.HasIndex(a => a.OpenId).IsUnique();
             builder.HasMany(a => a.Addresses).WithOne(a => a.User).HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(a => a.Orders).WithOne(a => a.User).HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

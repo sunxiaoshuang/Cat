@@ -123,6 +123,7 @@
         },
         methods: {
             typeClick: function (item) {
+                if (item.selected) return;
                 var self = this;
                 productList.pageIndex = 1;
                 $.loading();

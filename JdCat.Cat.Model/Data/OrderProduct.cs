@@ -5,6 +5,9 @@ using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    /// <summary>
+    /// 订单商品表
+    /// </summary>
     [Table("OrderProduct", Schema = "dbo")]
     public class OrderProduct : BaseEntity
     {
@@ -15,11 +18,11 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 商品数量
         /// </summary>
-        public double Quantity { get; set; }
+        public decimal? Quantity { get; set; }
         /// <summary>
         /// 商品总价
         /// </summary>
-        public double Price { get; set; }
+        public decimal? Price { get; set; }
         /// <summary>
         /// 商品图片地址
         /// </summary>
@@ -31,12 +34,21 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 商品id
         /// </summary>
-        public int ProductId { get; set; }
+        public int? ProductId { get; set; }
         public virtual Product Product { get; set; }
         /// <summary>
         /// 订单id
         /// </summary>
         public int OrderId { get; set; }
         public virtual Order Order { get; set; }
+        /// <summary>
+        /// 商品规格id
+        /// </summary>
+        public int? FormatId { get; set; }
+        public virtual ProductFormat Format { get; set; }
+        /// <summary>
+        /// 订单商品属性集合
+        /// </summary>
+        public virtual ICollection<OrderProductAttribute> Attributes { get; set; }
     }
 }

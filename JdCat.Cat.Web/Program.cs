@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
 using JdCat.Cat.Model;
+using JdCat.Cat.Web.App_Code;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -24,9 +25,12 @@ namespace JdCat.Cat.Web
             var host = BuildWebHost(args);
             AutoMigration(host);
             InitSeed(host);
+            Task.Run(async () => 
+            {
+                await ResetCity(host);
+            }) ;
             host.Run();
         }
-
         public static IWebHost BuildWebHost(string[] args)
         {
             var config = new ConfigurationBuilder()
@@ -80,7 +84,25 @@ namespace JdCat.Cat.Web
                 }
             }
         }
-
+        /// <summary>
+        /// 重置城市编码库
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        private async static Task ResetCity(IWebHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                try
+                {
+                    await new InitTool(host).ResetCityAsync();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("城市编码数据重置失败", ex);
+                }
+            }
+        }
 
     }
 

@@ -7,13 +7,13 @@
   flex: 1;
 }
 button[type="primary"] {
-  background-color: #ea7042;
+  background-color: #f36c21;
 }
 .button-hover[type="primary"]{
   background-color: #cc6138;
 }
 .main-bg {
-  background-color: #ea7042;
+  background-color: #f36c21;
 }
 .btn-none {
   border: 1px solid transparent;
@@ -164,7 +164,7 @@ navigator input {
 }
 
 .del {
-  background-color: #ea7042;
+  background-color: #f36c21;
   width: 90px;
   display: flex;
   flex-direction: column;

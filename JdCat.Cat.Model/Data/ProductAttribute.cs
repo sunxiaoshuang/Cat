@@ -6,6 +6,9 @@ using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    /// <summary>
+    /// 商品属性表
+    /// </summary>
     [Table("ProductAttribute", Schema = "dbo")]
     public class ProductAttribute : BaseEntity
     {
@@ -54,6 +57,9 @@ namespace JdCat.Cat.Model.Data
         /// 商品对象
         /// </summary>
         public virtual Product Product { get; set; }
-
+        /// <summary>
+        /// 订单商品集合
+        /// </summary>
+        public virtual ICollection<OrderProductAttribute> OrderProductAttributes { get; set; }
     }
 }

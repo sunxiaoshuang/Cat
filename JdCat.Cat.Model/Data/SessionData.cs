@@ -5,6 +5,9 @@ using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    /// <summary>
+    /// 用户登录Session记录表
+    /// </summary>
     [Table("SessionData", Schema = "dbo")]
     public class SessionData : BaseEntity
     {

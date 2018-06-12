@@ -34,6 +34,7 @@ namespace JdCat.Cat.Model
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderProduct> OrderProducts { get; set; }
+        public DbSet<City> Citys { get; set; }
 
         //        public DbSet<TestModel> TestModels { get; set; }
         /// <summary>

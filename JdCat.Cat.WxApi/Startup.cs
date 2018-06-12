@@ -47,6 +47,12 @@ namespace JdCat.Cat.WxApi
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ISessionDataRepository, SessionDataRepository>();
             services.AddSingleton(new UtilHelper());
+            // 系统参数
+            var appData = Configuration.GetSection("appData");
+            services.AddSingleton(new AppData
+            {
+                OrderUrl = appData["orderUrl"]
+            });
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

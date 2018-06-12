@@ -1012,6 +1012,10 @@ ul.dropdown-menu.dropdown-messages li a div {
         background: #dc5b2b;
     }
 
+.text-primary {
+    color: #ea7042;
+}
+
 
 .mainframe {
     margin-top: 20px;

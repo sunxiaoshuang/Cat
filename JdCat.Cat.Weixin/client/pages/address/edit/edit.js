@@ -96,6 +96,7 @@ Page({
     wx.chooseLocation({
       success: function (res) {
         if (res.errMsg != "chooseLocation:ok") return;
+        console.log(res);
         var address = self.data.entity;
         address.mapInfo = res.address;
         address.lng = res.longitude;
