@@ -8,6 +8,34 @@ namespace JdCat.Cat.Common
 {
     public class UtilHelper
     {
+
+        /// <summary>  
+        /// 将c# DateTime时间格式转换为Unix时间戳格式  
+        /// </summary>  
+        /// <param name="time">时间</param>  
+        /// <returns>long</returns>  
+        public long ConvertDateTimeToInt(DateTime time)
+        {
+            var startTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
+            var t = (time.Ticks - startTime.Ticks) / 10000;
+            return t;
+        }
+
+        /// <summary>        
+        /// 时间戳转为C#格式时间        
+        /// </summary>        
+        /// <param name="timeStamp"></param>
+        /// <returns></returns>        
+        public DateTime ConvertStringToDateTime(string timeStamp)
+        {
+            var dtStart = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
+            var lTime = long.Parse(timeStamp + "0000");
+            var toNow = new TimeSpan(lTime);
+            return dtStart.Add(toNow);
+        }
+
+        #region 加密与解密
+
         #region Base64加密解密
         /// <summary>
         /// Base64加密
@@ -274,6 +302,7 @@ namespace JdCat.Cat.Common
             var result = Encoding.UTF8.GetString(plainText);
             return result;
         }
+        #endregion
         #endregion
     }
 }

@@ -55,6 +55,14 @@
                 $modal.on("hidden.bs.modal", function () {
                     $modal.remove();
                 });
+                if (obj.submit) {
+                    $modal.on("click", ".btn-save", function (e) {
+                        var result = obj.submit.call(this, e, $modal);
+                        if (result) {
+                            $modal.modal("hide");
+                        }
+                    });
+                }
                 if (obj.load) {
                     obj.load.call($modal);
                 }

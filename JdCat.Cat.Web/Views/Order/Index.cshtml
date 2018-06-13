@@ -1,0 +1,207 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+@section Styles {
+    <environment include="Development">
+        <link href="~/css/order/index.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/css/order/index.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+
+}
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/order/index.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/order/index.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-md-1 text-left">订单编号：</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" />
+                </div>
+                <label class="control-label col-md-1">手机号：</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-primary">
+                        <i class="fa fa-search"></i>
+                        搜索
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fa fa-file-excel-o"></i>
+                        导出统计表格
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn" v-bind:class="{ 'btn-primary': item.selected, 'btn-default': !item.selected}" v-for="item in buttons" v-text="item.name" @@click="changeType(item)"></button>
+        </div>
+        <table class="table" style="min-width: 1160px;">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>订单编号</th>
+                    <th>下单时间</th>
+                    <th>订单类型</th>
+                    <th>支付方式</th>
+                    <th>状态</th>
+                    <th>金额</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="order in orderList">
+                    <td colspan="8" style="padding: 0">
+                        <table class="table table-order">
+                            <tr title="点击查看详情" @@click="expend(order)" class="tr-hover">
+                                <td>
+                                    @*<i class="fa fa-angle-right transition" v-bind:class="{'transition-down': order.expend}"></i>*@
+                                    <span class="small text-primary">{{order.expend ? '收起' : '展开'}}</span>
+                                </td>
+                                <td><i class="fa fa-warning text-danger" v-if="order.status == 1"></i><span :class="{'text-danger': order.status == 1}">{{order.orderCode}}</span></td>
+                                <td>{{order.createTime}}</td>
+                                <td>{{order.category | category}}</td>
+                                <td>{{order.paymentType | paymentType}}</td>
+                                <td>{{order.status | status}}</td>
+                                <td><i class="fa fa-jpy"></i> {{order.price | currency}}</td>
+                                <td class="operate">
+                                    <div class="kui-button m-right-xs" v-if="order.status == 1">
+                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="receive(order)">
+                                            确认接单
+                                        </button>
+                                    </div>
+                                    <div class="kui-button m-right-xs" v-if="order.status == 1">
+                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="reject(order)">
+                                            拒绝
+                                        </button>
+                                    </div>
+                                    <div class="kui-button m-right-xs" v-if="order.status == 4">
+                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="thirdSend(order)">
+                                            第三方配送
+                                        </button>
+                                    </div>
+                                    <div class="kui-button m-right-xs" v-if="order.status == 4">
+                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="selfSend(order)">
+                                            自己配送
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr v-show="order.expend">
+                                <td></td>
+                                <td colspan="7">
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label class="text-primary">配送信息</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>配送地址： {{order.receiverName}}-{{order.phone}}-{{order.receiverAddress}}</p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>配送时间： {{order.distributionTime}}</p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>配送方式： {{order.deliveryMode | deliveryType}}</p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>备注： {{order.remark}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label class="text-primary">订单信息</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>订单编号： {{order.orderCode}}</p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>下单时间： {{order.createTime}}</p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>订单类型： {{order.category | category}}</p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>支付方式： {{order.paymentType | paymentType}}</p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>微信支付流水号： {{order.wxPayCode}}</p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>应付款：<i class="fa fa-jpy"></i> {{order.price | currency}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <table class="product-detail">
+                                                <thead>
+                                                    <tr>
+                                                        <td>商品名称</td>
+                                                        <td>规格描述</td>
+                                                        <td>总价</td>
+                                                        <td>数量</td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="product in order.products">
+                                                        <td>{{product.name}}</td>
+                                                        <td>{{product.description}}</td>
+                                                        <td><i class="fa fa-jpy"></i> {{product.price | currency}}</td>
+                                                        <td>{{product.quantity}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+            </tbody>
+            <tfoot v-if="orderList.length == 0">
+                <tr>
+                    <td colspan="8">
+                        暂无订单数据...
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="pull-right" v-show="pageObj.pageCount > 1">
+            <div>
+                <ul class="pagination cat-pagination pagination-sm">
+                    <li v-bind:class="{'disabled': pageObj.pageIndex === 1}" v-on:click="prevPage()">
+                        <a>
+                            <i class="fa fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li v-for="num in pageObj.pageCount" v-bind:class="{'active': num === pageObj.pageIndex}" v-on:click="changePage(num)">
+                        <a>
+                            <span>{{num}}</span>
+                        </a>
+                    </li>
+                    <li v-bind:class="{'disabled': pageObj.pageIndex === pageObj.pageCount}" v-on:click="nextPage()">
+                        <a>
+                            <i class="fa fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

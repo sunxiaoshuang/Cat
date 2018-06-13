@@ -131,14 +131,15 @@ namespace JdCat.Cat.Repository
         }
         public void DeleteImage(ProductImage image, string apiUrl, int businessId)
         {
-            Task.Run(async () =>
-            {
-                using (var client = new HttpClient())
-                {
-                    var result = await client.DeleteAsync($"{apiUrl}/Product?name={image.Name}.{image.ExtensionName}&businessId={businessId}");
-                    var msg = await result.Content.ReadAsStringAsync();
-                }
-            });
+            // 由于订单中可能使用到图片，所以不允许删除
+            //Task.Run(async () =>
+            //{
+            //    using (var client = new HttpClient())
+            //    {
+            //        var result = await client.DeleteAsync($"{apiUrl}/Product?name={image.Name}.{image.ExtensionName}&businessId={businessId}");
+            //        var msg = await result.Content.ReadAsStringAsync();
+            //    }
+            //});
         }
         public void DeleteImage(ProductImage image)
         {

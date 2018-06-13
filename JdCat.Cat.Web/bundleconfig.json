@@ -94,5 +94,18 @@
     "inputFiles": [
       "wwwroot/js/registe.js"
     ]
+  },
+  // 订单
+  {
+    "outputFileName": "wwwroot/css/order/index.min.css",
+    "inputFiles": [
+      "wwwroot/css/order/index.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/order/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/order/index.js"
+    ]
   }
 ]

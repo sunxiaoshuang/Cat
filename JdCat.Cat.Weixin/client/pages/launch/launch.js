@@ -14,7 +14,7 @@ Page({
             url: "/pages/user/user"
           });
           // wx.navigateTo({
-          //   url: "/pages/address/list/list"
+          //   url: "/pages/test/test"
           // });
         }, 100);
       }

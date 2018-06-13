@@ -6,6 +6,9 @@ using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    /// <summary>
+    /// 商品类别表
+    /// </summary>
     [Table("ProductType", Schema = "dbo")]
     public class ProductType : BaseEntity
     {

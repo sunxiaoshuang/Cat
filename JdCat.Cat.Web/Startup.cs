@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.Common.Filter;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
+using JdCat.Cat.Model.Data;
 using JdCat.Cat.Repository;
+using JdCat.Cat.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +30,11 @@ namespace JdCat.Cat.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc(options =>
+            {
+                // 注册全局异常过滤器
+                options.Filters.Add<GlobalExceptionAttribute>();
+            });
             services.AddMvc();
             // 配置会话应用状态
             services.AddDistributedMemoryCache();
@@ -39,7 +47,9 @@ namespace JdCat.Cat.Web
             services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddSingleton(new UtilHelper());
+            services.AddSingleton(new List<City>());
             // 系统参数
             var appData = Configuration.GetSection("appData");
             services.AddSingleton(new AppData
@@ -49,7 +59,12 @@ namespace JdCat.Cat.Web
                 Name = appData["name"],
                 Session = appData["session"],
                 Cookie = appData["cookie"],
-                Connection = Configuration.GetConnectionString("CatContext")
+                Connection = Configuration.GetConnectionString("CatContext"),
+                OrderUrl = appData["orderUrl"],
+                DadaDomain = appData["dadaDomain"],
+                DadaAppKey = appData["dadaAppKey"],
+                DadaAppSecret = appData["dadaAppSecret"],
+                DadaSourceId = appData["dadaSourceId"]
             });
             services.AddSingleton(new JsonSerializerSettings {
                 DateFormatString = "yyyy-MM-dd HH:mm:ss",

@@ -12,6 +12,7 @@ using JdCat.Cat.Common;
 using Microsoft.Extensions.Options;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.IRepository;
+using Newtonsoft.Json;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -21,10 +22,17 @@ namespace JdCat.Cat.Web.Controllers
         {
         }
 
-        public IActionResult Index()
+        public IActionResult Index([FromServices]JsonSerializerSettings setting)
         {
+            ViewBag.entity = JsonConvert.SerializeObject(Business, setting);
+            ViewBag.orderUrl = AppData.OrderUrl;
             ViewBag.UserName = Business.Name;
             ViewBag.CompanyName = AppData.Name;
+            return View();
+        }
+
+        public IActionResult Empty()
+        {
             return View();
         }
 

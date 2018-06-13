@@ -39,10 +39,10 @@
     border: none;
 }
 .btn-bind-phone {
-    border: 1px solid #ea7042;
+    border: 1px solid #f36c21;
     border-color: #fff;
     padding: 5px;
     font-size: 80%;
-    color: #ea7042;
+    color: #f36c21;
     background-color: #fff;
 }

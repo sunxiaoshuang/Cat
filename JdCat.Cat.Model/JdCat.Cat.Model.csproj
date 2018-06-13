@@ -13,6 +13,16 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\20180531101335_Add_SessionData.cs" />
+    <Compile Remove="Migrations\20180607023440_Add_Order.cs" />
+    <Compile Remove="Migrations\20180607031843_Add_Order.cs" />
+    <Compile Remove="Migrations\20180607032120_Add_Order.cs" />
+    <Compile Remove="Migrations\20180607032828_Add_Order.cs" />
+    <Compile Remove="Migrations\20180607033205_Add_Order.cs" />
+    <Compile Remove="Migrations\20180607070805_Add_Order.cs" />
+    <Compile Remove="Migrations\20180607072229_Add_Order.cs" />
+    <Compile Remove="Migrations\20180607085156_Add_Order.cs" />
+    <Compile Remove="Migrations\20180607085507_Add_Order.cs" />
+    <Compile Remove="Migrations\20180607090649_Add_Order.cs" />
   </ItemGroup>
 
   <ItemGroup>

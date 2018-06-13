@@ -8,6 +8,7 @@
         var pageData = {
             types: JSON.parse('@Html.Raw(ViewBag.types == null ? "[]" : ViewBag.types)')
         };
+        pageData.types.forEach(function (obj) { obj.selected = false; });
     </script>
     <environment include="Development">
         <script src="~/js/product.js" asp-append-version="true"></script>

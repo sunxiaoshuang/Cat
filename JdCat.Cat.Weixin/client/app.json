@@ -8,18 +8,19 @@
     "pages/userinfo/userinfo",
     "pages/address/list/list",
     "pages/address/edit/edit",
-    "pages/addCgi/addCgi"
+    "pages/addCgi/addCgi",
+    "pages/test/test"
   ],
   "window":{
-    "backgroundColor":"#ea7042",
+    "backgroundColor":"#f36c21",
     "backgroundTextStyle":"light",
-    "navigationBarBackgroundColor": "#ea7042",
+    "navigationBarBackgroundColor": "#f36c21",
     "navigationBarTitleText": "简单猫科技（武汉）有限公司",
     "navigationBarTextStyle":"#fff",
     "enablePullDownRefresh": true
   },
   "tabBar": {
-    "selectedColor": "#ea7042",
+    "selectedColor": "#f36c21",
     "list": [{
       "pagePath": "pages/main/main",
       "iconPath": "images/icon/home-1.png",

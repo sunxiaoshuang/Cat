@@ -6,6 +6,9 @@ using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    /// <summary>
+    /// 用户地址表
+    /// </summary>
     [Table("Address", Schema = "dbo")]
     public class Address : BaseEntity
     {

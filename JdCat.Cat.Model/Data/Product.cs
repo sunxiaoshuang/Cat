@@ -7,6 +7,9 @@ using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    /// <summary>
+    /// 商品表
+    /// </summary>
     [Table("Product", Schema = "dbo")]
     public class Product : BaseEntity
     {
@@ -67,6 +70,10 @@ namespace JdCat.Cat.Model.Data
         /// 商品图片
         /// </summary>
         public virtual ICollection<ProductImage> Images { get; set; }
+        /// <summary>
+        /// 订单商品集合
+        /// </summary>
+        public virtual ICollection<OrderProduct> OrderProducts { get; set; }
         /// <summary>
         /// 产品分类id
         /// </summary>

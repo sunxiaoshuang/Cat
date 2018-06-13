@@ -5,6 +5,9 @@ using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    /// <summary>
+    /// 角色表
+    /// </summary>
     [Table("Role", Schema = "dbo")]
     public class Role : BaseEntity
     {
