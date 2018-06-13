@@ -27,6 +27,7 @@ namespace JdCat.Cat.Web.Controllers
             ViewBag.entity = JsonConvert.SerializeObject(Business, setting);
             ViewBag.orderUrl = AppData.OrderUrl;
             ViewBag.UserName = Business.Name;
+            ViewBag.Code = Business.Code;
             ViewBag.CompanyName = AppData.Name;
             return View();
         }

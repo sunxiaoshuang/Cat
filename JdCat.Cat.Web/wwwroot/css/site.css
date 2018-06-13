@@ -353,6 +353,10 @@ p {
     margin: 0 30px;
 }
 
+.mainframe .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .mainframe .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
+    background-color: #ea7042;
+}
+
 h1.page-header small {
     color: #7E7E7E;
     margin-left: 15px;

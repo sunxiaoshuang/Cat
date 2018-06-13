@@ -9,7 +9,22 @@ namespace JdCat.Cat.FileService.Models
 {
     public class ProductImage
     {
+        static ProductImage()
+        {
+            var dir = Directory.GetCurrentDirectory();
+            var productPath = Path.Combine(dir, "wwwroot", _defaultPath);
+            if (!Directory.Exists(productPath))
+            {
+                Directory.CreateDirectory(productPath);
+            }
+            var logoPath = Path.Combine(dir, "wwwroot", _logoPath);
+            if (!Directory.Exists(logoPath))
+            {
+                Directory.CreateDirectory(logoPath);
+            }
+        }
         public static string _defaultPath = "/File/Product";
+        public static string _logoPath = "File/Logo";
         public int BusinessId { get; set; }
         public string Name { get; set; }
         public string Image400 { get; set; }
@@ -51,6 +66,19 @@ namespace JdCat.Cat.FileService.Models
             using (var file = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write))
             {
                 byte[] imageBytes = Convert.FromBase64String(source.Replace("data:image/jpeg;base64,", ""));
+                file.Write(imageBytes, 0, imageBytes.Length);
+            }
+        }
+        public void SaveLogo(IHostingEnvironment environment)
+        {
+            var dir = Path.Combine(environment.WebRootPath, _logoPath, BusinessId + "");
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            using (var file = new FileStream(Path.Combine(dir, Name), FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                byte[] imageBytes = Convert.FromBase64String(Image400.Replace("data:image/jpeg;base64,", ""));
                 file.Write(imageBytes, 0, imageBytes.Length);
             }
         }

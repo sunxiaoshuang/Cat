@@ -20,6 +20,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string Code { get; set; }
         /// <summary>
+        /// 联系人
+        /// </summary>
+        public string Contact { get; set; }
+        /// <summary>
         /// 邮箱
         /// </summary>
         public string Email { get; set; }
@@ -64,6 +68,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string StoreId { get; set; }
         /// <summary>
+        /// LOGO地址
+        /// </summary>
+        public string LogoSrc { get; set; }
+        /// <summary>
         /// 是否自动接单
         /// </summary>
         public bool IsAutoReceipt { get; set; }
@@ -87,6 +95,10 @@ namespace JdCat.Cat.Model.Data
         /// 商户所属城市的区号
         /// </summary>
         public string CityCode { get; set; }
+        /// <summary>
+        /// 配送范围
+        /// </summary>
+        public double Range { get; set; } = 0;
         /// <summary>
         /// 产品列表集合
         /// </summary>

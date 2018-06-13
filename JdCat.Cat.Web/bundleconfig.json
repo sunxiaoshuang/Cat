@@ -107,5 +107,24 @@
     "inputFiles": [
       "wwwroot/js/order/index.js"
     ]
+  },
+  // 商户设置
+  {
+    "outputFileName": "wwwroot/css/business/index.min.css",
+    "inputFiles": [
+      "wwwroot/css/business/index.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/business/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/business/index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/business/smallprogram.min.js",
+    "inputFiles": [
+      "wwwroot/js/business/smallprogram.js"
+    ]
   }
 ]
