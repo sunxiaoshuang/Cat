@@ -17,20 +17,22 @@ namespace JdCat.Cat.Web.Controllers
         {
         }
 
-        public IActionResult Index([FromServices]List<City> cityList, [FromServices]JsonSerializerSettings setting)
+        public IActionResult Index([FromServices]JsonSerializerSettings setting)
         {
-            ViewBag.cityList = JsonConvert.SerializeObject(cityList.Select(a => new { a.Name, a.Code }), setting);
             ViewBag.business = JsonConvert.SerializeObject(Business, setting);
             return View();
         }
 
-        public IActionResult SmallProgram()
+        public IActionResult SmallProgram([FromServices]JsonSerializerSettings setting)
         {
+            ViewBag.business = JsonConvert.SerializeObject(Business, setting);
             return View();
         }
 
-        public IActionResult Dada()
+        public IActionResult Dada([FromServices]List<City> cityList, [FromServices]JsonSerializerSettings setting)
         {
+            ViewBag.cityList = JsonConvert.SerializeObject(cityList.Select(a => new { a.Name, a.Code }), setting);
+            ViewBag.business = JsonConvert.SerializeObject(Business, setting);
             return View();
         }
 
@@ -64,6 +66,41 @@ namespace JdCat.Cat.Web.Controllers
                 result.Msg = "保存失败";
             }
             HttpContext.Session.Set(AppData.Session, Service.Get(a => a.ID == business.ID));
+            return Ok(result);
+        }
+
+        public IActionResult SaveSmall([FromBody]Business business)
+        {
+            var result = new JsonData
+            {
+                Success = Service.SaveSmall(new Business { ID = Business.ID, AppId = business.AppId, Secret = business.Secret })
+            };
+            if (!result.Success)
+            {
+                result.Msg = "保存失败";
+            }
+            Business.AppId = business.AppId;
+            Business.Secret = business.Secret;
+            HttpContext.Session.Set(AppData.Session, Business);
+            return Ok(result);
+        }
+
+        public IActionResult SaveDada([FromBody]Business business)
+        {
+            business.ID = Business.ID;
+            var result = new JsonData
+            {
+                Success = Service.SaveDada(business)
+            };
+            if (!result.Success)
+            {
+                result.Msg = "保存失败";
+            }
+            Business.DadaAppKey = business.DadaAppKey;
+            Business.DadaAppSecret = business.DadaAppSecret;
+            Business.CityCode = business.CityCode;
+            Business.CityName = business.CityName;
+            HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }
 

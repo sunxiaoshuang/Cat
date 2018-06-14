@@ -86,7 +86,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 达达商户密码
         /// </summary>
-        public int DadaAppSecret { get; set; }
+        public string DadaAppSecret { get; set; }
         /// <summary>
         /// 商户所属的城市
         /// </summary>

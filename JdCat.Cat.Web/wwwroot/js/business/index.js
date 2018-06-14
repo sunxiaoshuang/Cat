@@ -18,7 +18,7 @@
                     $.alert("请上传商户LOGO");
                     return;
                 }
-                if (!entity.name || !entity.address || !entity.contact || !entity.mobile || !entity.cityCode || !entity.freight) {
+                if (!entity.name || !entity.address || !entity.contact || !entity.mobile || !entity.freight || !entity.businessLicense) {
                     $.alert("请将信息填写完整");
                     this.showError = true;
                     return;
@@ -29,7 +29,7 @@
                     .then(function (res) {
                         $.loaded();
                         if (!res.data.success) {
-                            $.alert(response.data.msg);
+                            $.alert(res.data.msg);
                             return;
                         }
                         $.alert("保存成功", "success");

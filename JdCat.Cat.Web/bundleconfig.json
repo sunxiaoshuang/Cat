@@ -126,5 +126,11 @@
     "inputFiles": [
       "wwwroot/js/business/smallprogram.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/business/dada.min.js",
+    "inputFiles": [
+      "wwwroot/js/business/dada.js"
+    ]
   }
 ]

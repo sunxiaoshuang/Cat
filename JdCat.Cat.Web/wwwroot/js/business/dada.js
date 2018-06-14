@@ -4,6 +4,7 @@
         el: "#app",
         data: {
             entity: pageObj.business,
+            cityList: pageObj.cityList,
             showError: false
         },
         methods: {
@@ -12,18 +13,18 @@
             },
             save: function () {
                 var entity = this.entity;
-                if (!entity.appId || !entity.secret) {
+                if (!entity.dadaAppKey || !entity.dadaAppSecret || !entity.cityCode) {
                     $.alert("请将信息填写完整");
                     this.showError = true;
                     return;
                 }
                 this.showError = false;
                 $.loading();
-                axios.post("/business/savesmall", { appId: this.entity.appId, secret: this.entity.secret })
+                axios.post("/business/savedada", { dadaAppKey: entity.dadaAppKey, dadaAppSecret: entity.dadaAppSecret, cityCode: entity.cityCode, cityName: entity.cityName })
                     .then(function (res) {
                         $.loaded();
                         if (!res.data.success) {
-                            $.alert(res.data.msg);
+                            $.alert(response.data.msg);
                             return;
                         }
                         $.alert("保存成功", "success");
@@ -33,6 +34,10 @@
                         $.alert(err);
                     });
             },
+            changeOption: function (e) {
+                if (!e.target.selectedOptions[0]) return;
+                this.entity.cityName = e.target.selectedOptions[0].text;
+            }
         }
     });
 
