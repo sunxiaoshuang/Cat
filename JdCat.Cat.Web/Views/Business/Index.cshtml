@@ -3,5 +3,211 @@
     ViewData["Title"] = "商户设置";
 }
 
-<
 
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-switch.css" rel="stylesheet" />
+        <link href="~/css/business/index.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-switch.min.css" rel="stylesheet" />
+        <link href="~/css/business/index.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+
+}
+@section Scripts {
+    <script>
+        var pageObj = {
+            business: JSON.parse('@Html.Raw(ViewBag.business)')
+        };
+    </script>
+    <script src="~/js/lib/iscroll-zoom.min.js"></script>
+    <script src="~/js/lib/lrz.all.bundle.min.js"></script>
+    <script src="~/js/lib/jquery.photoClip.min.js"></script>
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-switch.js"></script>
+        <script src="~/js/business/index.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-switch.min.js"></script>
+        <script src="~/js/business/index.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">商户信息设置</span>
+                    </h3>
+                </div>
+            </div>
+            <div class="panel-body form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">商户LOGO</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <div v-bind:class="{ 'hide': !entity.logoSrc}">
+                            <img style="width: 200px; height: 150px;margin-right: 20px;" :src="logo" id="img" />
+                            <i class="fa fa-times-circle-o" style="color: #808080;cursor: pointer;font-size: 1.5em;" title="删除" v-on:click="remove()"></i>
+                        </div>
+                        <div class="cat-upload" v-on:click="selectFile()" v-bind:class="{ 'hide': !!entity.logoSrc}">
+                            <div class="icon-upload">
+                                <span class="fa fa-cloud-upload"></span>
+                            </div>
+                            <div class="note-upload">
+                                <span>点击上传</span>
+                            </div>
+                            <input type="file" id="file" style="display: none;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">商户编码</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" :value="entity.storeId" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1 col-md-1">
+                        登录账号
+                    </label>
+                    <div class="col-xs-4 col-md-3">
+                        <input type="text" :value="entity.code" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.name)}">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">商品名称</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" maxlength="30" v-model.trim="entity.name" class="form-control" />
+                    </div>
+                </div>
+                @*<div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            邮箱
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <input type="email" v-model.trim="entity.email" class="form-control" />
+                        </div>
+                    </div>*@
+                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.address)}">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">地址</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" v-model.trim="entity.address" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.contact)}">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">联系人</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" maxlength="30" v-model.trim="entity.contact" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.mobile)}">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">联系人电话</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" maxlength="30" v-model.trim="entity.mobile" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        邀请码
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" :value="entity.invitationCode" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        配送范围
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <div class="input-group">
+                            <input type="number" v-model.trim="entity.range" class="form-control" />
+                            <span class="input-group-addon">公里</span>
+                        </div>
+                    </div>
+                    <div class="col-xs-2">
+                        <label class="control-label text-primary">
+                            0=无限制
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">是否自动接单</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <div class="switch">
+                            <input type="checkbox" data-on-text="启动" data-off-text="停止" id="switch" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">外卖运费</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <div class="input-group">
+                            <input type="number" v-model.trim="entity.freight" class="form-control" />
+                            <span class="input-group-addon"><i class="fa fa-jpy"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.businessLicense)}">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">营业执照</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" v-model.trim="entity.businessLicense" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        商户备注
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <textarea type="text" maxlength="30" rows="5" v-model.trim="entity.description" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer text-center">
+                <div class="kui-button">
+                    <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" v-on:click="save()">
+                        保存
+                    </button>
+                </div>
+                <div class="kui-button">
+                    <button type="button" class="btn kui-button-primary" style="width: 100px" v-on:click="ret()">
+                        返回
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;"></div>
+</div>
+
+
+<!--图片剪切-->
+<div class="cover-wrap">
+    <div>
+        <div id="clipArea" style="margin:10px;height: 520px;"></div>
+        <div class="save-warp">
+            <button id="clipBtn">保存封面</button>
+        </div>
+    </div>
+</div>

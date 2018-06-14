@@ -12,9 +12,10 @@ using System;
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180613012503_Modify_Business_Contact")]
+    partial class Modify_Business_Contact
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,7 +88,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("DadaAppKey");
 
-                    b.Property<string>("DadaAppSecret");
+                    b.Property<int>("DadaAppSecret");
 
                     b.Property<string>("Description");
 
@@ -99,15 +100,11 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<bool>("IsAutoReceipt");
 
-                    b.Property<string>("LogoSrc");
-
                     b.Property<string>("Mobile");
 
                     b.Property<string>("Name");
 
                     b.Property<string>("Password");
-
-                    b.Property<double>("Range");
 
                     b.Property<DateTime?>("RegisterDate");
 

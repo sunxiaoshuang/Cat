@@ -13,6 +13,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 头像
         /// </summary>
-        Face = 1
+        Face = 1,
+        /// <summary>
+        /// LOGO
+        /// </summary>
+        Logo = 2
     }
 }
