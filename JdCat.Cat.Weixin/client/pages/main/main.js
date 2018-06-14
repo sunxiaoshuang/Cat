@@ -469,6 +469,11 @@ Page({
         totalPrice: price  
       }  
     );
+  },
+  pay:function(){
+    wx.navigateTo({
+      url: '../pay/pay'
+    })
   }
 
 })

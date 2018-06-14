@@ -1,0 +1,52 @@
+
+.payMain{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items:stretch;
+}
+.userInfo{
+  display: flex;
+  flex-direction:column;
+}
+.address{
+  display: flex;
+  flex-direction:row;
+  padding: 20rpx;
+  border-bottom: 2rpx solid #888
+}
+.addressIcon{
+  width: 80rpx;
+  height: 100rpx;
+  display: flex;
+}
+.icon{
+  width: 50rpx;
+  height: 50rpx;
+  display: flex;
+}
+.addressInfo{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.addressUser{
+  display: flex;
+  flex-grow: 1;
+  font-size: 30rpx;
+}
+.name{
+  display: flex;
+}
+.phoneHolder{
+  display: flex;
+  flex-grow: 1;
+  justify-content: flex-end;
+}
+.phone{
+  display: flex;
+}
+.addressdetail{
+  font-size: 25rpx;
+  color: #888
+}

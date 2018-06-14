@@ -1,0 +1,31 @@
+<view class = "payMain">
+    <view class = "userInfo">
+        <view class = "address">
+            <view class = "addressIcon">
+            <image class="icon"src="/images/icon/address-2.png"></image>
+            </view>
+            <view class = "addressInfo">
+                <view class="addressUser">
+                  <view class = "name">收货人：{{address.receiver}}</view>
+                  <view class = "phoneHolder">
+                    <view class = "phone">{{address.phone}} ></view>
+                  </view>
+                </view>
+                <view class = "addressdetail">收货地址：{{address.mapInfo}}{{address.detailInfo}}</view>
+            </view>
+        </view>
+        <view class = "arriveTime"></view>
+    </view>
+    <view  class = "orderInfo">
+        <view class = "order">订单</view>
+        <scroll-view scroll-y="true"  class = "">
+            
+        </scroll-view>
+    </view>
+    <view class = "mark">
+        <view>买家留言：</view>
+    </view>
+    <view class = "commit">
+    
+    </view>
+</view>
