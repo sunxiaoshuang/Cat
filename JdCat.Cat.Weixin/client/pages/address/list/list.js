@@ -49,6 +49,7 @@ Page({
         self.setData({
           list: res.data
         });
+        wx.setStorageSync('addresses', res.data);
       },
       fail: function (err) {
         util.showModel("错误", "请检查网络连接");

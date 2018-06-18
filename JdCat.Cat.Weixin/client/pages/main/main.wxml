@@ -63,7 +63,7 @@
                     <view class="cost" wx:if="{{cartList.length!=0}}">￥{{totalPrice}}</view>
                     <view class="free" wx:if="{{cartList.length==0}}">免配送费</view>
                 </view>
-                <view class="pay">结算</view>
+                <view class="pay" bindtap="pay">结算</view>
             </view>
         </swiper-item>
         <swiper-item id="commentPage">
