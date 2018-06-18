@@ -25,10 +25,7 @@ namespace JdCat.Cat.Web
             var host = BuildWebHost(args);
             AutoMigration(host);
             InitSeed(host);
-            Task.Run(async () => 
-            {
-                await ResetCity(host);
-            }) ;
+            Task.Run(async () => await Reset(host));
             host.Run();
         }
         public static IWebHost BuildWebHost(string[] args)
@@ -89,17 +86,19 @@ namespace JdCat.Cat.Web
         /// </summary>
         /// <param name="host"></param>
         /// <returns></returns>
-        private async static Task ResetCity(IWebHost host)
+        private async static Task Reset(IWebHost host)
         {
             using (var scope = host.Services.CreateScope())
             {
                 try
                 {
-                    await new InitTool(host).ResetCityAsync();
+                    var tool = new InitTool(host);
+                    await tool.ResetCityAsync();
+                    await tool.ResetCancelReasonAsync();
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("城市编码数据重置失败", ex);
+                    throw new Exception("重置工具失败", ex);
                 }
             }
         }

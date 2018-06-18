@@ -53,6 +53,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 已关闭，无效订单
         /// </summary>
-        Close = 1024
+        Close = 1024,
+        /// <summary>
+        /// 订单配送已取消
+        /// </summary>
+        CallOff = 2048
     }
 }

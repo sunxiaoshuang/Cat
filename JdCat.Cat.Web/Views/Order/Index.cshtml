@@ -12,6 +12,11 @@
 
 }
 @section Scripts {
+    <script>
+        var pageObj = {
+            reasonList: JSON.parse('@Html.Raw(ViewBag.reasonList)')
+        }
+    </script>
     <environment include="Development">
         <script src="~/js/order/index.js"></script>
     </environment>
@@ -77,22 +82,22 @@
                                 <td class="operate">
                                     <div class="kui-button m-right-xs" v-if="order.status == 1">
                                         <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="receive(order)">
-                                            确认接单
+                                            接单并配送
                                         </button>
                                     </div>
                                     <div class="kui-button m-right-xs" v-if="order.status == 1">
                                         <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="reject(order)">
-                                            拒绝
+                                            拒绝接单
                                         </button>
                                     </div>
-                                    <div class="kui-button m-right-xs" v-if="order.status == 4">
-                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="thirdSend(order)">
-                                            第三方配送
+                                    <div class="kui-button m-right-xs" v-if="order.status == 4 || order.status == 2048">
+                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="receive(order)">
+                                            配送
                                         </button>
                                     </div>
-                                    <div class="kui-button m-right-xs" v-if="order.status == 4">
-                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="selfSend(order)">
-                                            自己配送
+                                    <div class="kui-button m-right-xs" v-if="order.status == 8 || order.status == 16 || order.status == 32">
+                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="cancel(order)">
+                                            取消配送
                                         </button>
                                     </div>
                                 </td>
@@ -172,7 +177,7 @@
                         </table>
                     </td>
                 </tr>
-                
+
             </tbody>
             <tfoot v-if="orderList.length == 0">
                 <tr>
@@ -201,6 +206,25 @@
                         </a>
                     </li>
                 </ul>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-sendType" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h5 class="modal-title">选择配送方式</h5>
+                </div>
+                <div class="modal-body">
+                    <ul class="select-type">
+                        <li v-for="item in sendTypes" @@click="selectSendType(item)" :class="{'active': item.selected}"><img :src="item.selected ? '/images/pao-2.png': '/images/pao-1.png'" /> {{item.name}}</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" @@click="submitSend()">确定</button>
+                </div>
             </div>
         </div>
     </div>

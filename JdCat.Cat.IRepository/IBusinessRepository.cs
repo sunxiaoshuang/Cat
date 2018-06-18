@@ -7,7 +7,7 @@ using JdCat.Cat.Model.Data;
 
 namespace JdCat.Cat.IRepository
 {
-    public interface IBusinessRepository : IBaseRepository<Business>
+    public interface IBusinessRepository : IBusinessRepository<Business>
     {
         /// <summary>
         /// 获取商户对象，不要跟踪状态

@@ -88,6 +88,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string DadaAppSecret { get; set; }
         /// <summary>
+        /// 商户编号
+        /// </summary>
+        public string DadaSourceId { get; set; }
+        /// <summary>
+        /// 门店编号
+        /// </summary>
+        public string DadaShopNo { get; set; }
+        /// <summary>
         /// 商户所属的城市
         /// </summary>
         public string CityName { get; set; }

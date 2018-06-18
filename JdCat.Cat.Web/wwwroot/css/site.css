@@ -23,7 +23,10 @@
     -----------------------------------------------------
     基础
 */
-.bold {font-weight: 800;}
+.bold {
+    font-weight: 800;
+}
+
 .width-30 {
     width: 30%;
 }
@@ -52,9 +55,11 @@ span.require {
         top: 0;
         left: -10px;
     }
+
 .cat-pagination li {
     user-select: none;
 }
+
     .cat-pagination li > a {
         z-index: 3;
         color: #555;
@@ -64,21 +69,24 @@ span.require {
         margin-right: 7px;
         border-radius: 3px;
     }
+
         .cat-pagination li > a:hover {
             color: #ea7042;
             border-color: #ea7042;
             background-color: #fff;
         }
+
     .cat-pagination li.active > a {
         cursor: default;
         color: #fff;
         border-color: #ea7042;
         background-color: #ea7042;
     }
-.cat-pagination li.active > a:hover {
-    border-color: #ea7042;
-    background-color: #ea7042;
-}
+
+        .cat-pagination li.active > a:hover {
+            border-color: #ea7042;
+            background-color: #ea7042;
+        }
 /*------------------------------------------------------*/
 @media screen and (max-width: 767px) {
     .carousel-caption {
@@ -955,21 +963,25 @@ ul.dropdown-menu.dropdown-messages li a div {
     margin: 0;
     overflow: hidden;
 }
+
 @media(max-height: 768px) {
     #mainframe {
         height: 560px;
     }
 }
+
 @media(max-height: 900px) {
     #mainframe {
         height: 750px;
     }
 }
+
 @media(max-height: 1080px) {
     #mainframe {
         height: 850px;
     }
 }
+
 @media(min-height: 1080px) {
     #mainframe {
         height: 900px;
@@ -1572,12 +1584,14 @@ input[type="checkbox"] {
                     .products .product .product-content .product-img > div:hover {
                         border-color: #dc5b2b;
                     }
+
             .products .product .product-content .product-no-img {
                 width: 132px;
                 padding: 10px;
                 box-sizing: border-box;
                 float: left;
             }
+
                 .products .product .product-content .product-no-img > div {
                     border: 1px solid #eee;
                     background-color: #fff;
@@ -1753,5 +1767,50 @@ input[type="checkbox"] {
     padding: 0;
     margin: 0;
     font-size: 12px;
-    color:#ea7042 ;
+    color: #ea7042;
+}
+
+ul.select-type {
+    display: flex;
+    list-style: none;
+    flex-flow: column nowrap;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
+
+    ul.select-type li {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        align-items: center;
+        list-style: none;
+        width: 150px;
+        height: 100px;
+        border: 1px solid #ea7042;
+        margin-top: 10px;
+        color: #ea7042;
+    }
+
+        ul.select-type li img {
+            width: 2em;
+            margin-right: 1em;
+        }
+
+        ul.select-type li:hover {
+            cursor: pointer;
+            background-color: #fff1ec;
+        }
+
+        ul.select-type li.active {
+            background-color: #ea7042;
+            color: #fff;
+        }
+
+            ul.select-type li.active:hover {
+                background-color: #ec5e28;
+            }
+
+.nowarp {
+    white-space: nowrap;
 }

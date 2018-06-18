@@ -29,10 +29,10 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
-        public IActionResult Login(string username, string pwd, [FromServices]UtilHelper helper)
+        public IActionResult Login(string username, string pwd)
         {
             var result = new JsonData();
-            var business = _service.GetBusiness(a => (a.Code == username || a.Mobile == username) && a.Password == helper.MD5Encrypt(pwd));
+            var business = _service.GetBusiness(a => (a.Code == username || a.Mobile == username) && a.Password == UtilHelper.MD5Encrypt(pwd));
             if (business == null)
             {
                 result.Msg = "帐号或密码错误";

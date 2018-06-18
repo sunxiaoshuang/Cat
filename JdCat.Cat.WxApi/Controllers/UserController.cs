@@ -42,7 +42,8 @@ namespace JdCat.Cat.WxApi.Controllers
         public async Task<IActionResult> Login(int businessId, [FromServices]ISessionDataRepository sessionService)
         {
             var code = Request.Headers["X-WX-Code"];
-            var session = await GetOpenId(code, businessId);
+            var business = Service.Set<Business>().First(a => a.ID == businessId);
+            var session = await GetOpenId(code, business);
             var user = Service.Get(session.OpenId);
             if (user == null)
             {
@@ -56,7 +57,8 @@ namespace JdCat.Cat.WxApi.Controllers
                 Data = new WxUserData
                 {
                     Skey = sessData.ID,
-                    Userinfo = user
+                    Userinfo = user,
+                    Business = business
                 }
             });
         }
@@ -79,14 +81,14 @@ namespace JdCat.Cat.WxApi.Controllers
         }
 
         [HttpPut("phone")]
-        public IActionResult PutGrantPhone([FromBody]dynamic data, [FromServices]UtilHelper util)
+        public IActionResult PutGrantPhone([FromBody]dynamic data)
         {
             var encrytedData = data.encrytedData.ToString();
             var iv = data.iv.ToString();
             var skey = int.Parse(Request.Headers["X-WX-Skey"]);
             var session = Service.Set<SessionData>().Find(skey);
             var sessionKey = session.SessionKey;
-            var phoneMsg = util.AESDecrypt(encrytedData, sessionKey, iv);
+            var phoneMsg = UtilHelper.AESDecrypt(encrytedData, sessionKey, iv);
             var phone = JsonConvert.DeserializeObject<WxPhone>(phoneMsg);
             if(string.IsNullOrEmpty(phone.PurePhoneNumber))
             {
@@ -146,9 +148,8 @@ namespace JdCat.Cat.WxApi.Controllers
         /// <param name="code"></param>
         /// <param name="businessId"></param>
         /// <returns></returns>
-        private async Task<WxSession> GetOpenId(string code, int businessId)
+        private async Task<WxSession> GetOpenId(string code, Business business)
         {
-            var business = Service.Set<Business>().First(a => a.ID == businessId);
             var url = $"https://api.weixin.qq.com/sns/jscode2session?appid={business.AppId}&secret={business.Secret}&js_code={code}&grant_type=authorization_code";
             using (var hc = new HttpClient())
             {

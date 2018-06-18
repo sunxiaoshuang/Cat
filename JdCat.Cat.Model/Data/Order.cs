@@ -110,5 +110,17 @@ namespace JdCat.Cat.Model.Data
         /// 订单商品
         /// </summary>
         public virtual ICollection<OrderProduct> Products { get; set; }
+        /// <summary>
+        /// 达达订单回调结果集
+        /// </summary>
+        public virtual ICollection<DadaCallBack> DadaCallBacks { get; set; }
+        /// <summary>
+        /// 达达新增订单返回结果
+        /// </summary>
+        public virtual DadaReturn DadaReturn { get; set; }
+        /// <summary>
+        /// 违约金
+        /// </summary>
+        public virtual ICollection<DadaLiquidatedDamages> DadaLiquidatedDamages { get; set; }
     }
 }

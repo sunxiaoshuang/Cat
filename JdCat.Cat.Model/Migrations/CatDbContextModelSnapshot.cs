@@ -89,6 +89,10 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("DadaAppSecret");
 
+                    b.Property<string>("DadaShopNo");
+
+                    b.Property<string>("DadaSourceId");
+
                     b.Property<string>("Description");
 
                     b.Property<string>("Email");
@@ -138,6 +142,105 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("City","dbo");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DadaCallBack", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("OrderId");
+
+                    b.Property<int>("cancel_from");
+
+                    b.Property<string>("cancel_reason");
+
+                    b.Property<string>("client_id");
+
+                    b.Property<int>("dm_id");
+
+                    b.Property<string>("dm_mobile");
+
+                    b.Property<string>("dm_name");
+
+                    b.Property<string>("order_id");
+
+                    b.Property<int>("order_status");
+
+                    b.Property<string>("signature");
+
+                    b.Property<int>("update_time");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("DadaCallBack","dbo");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DadaCancelReason", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("FlagId");
+
+                    b.Property<string>("Reason");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("DadaCancelReason","dbo");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DadaLiquidatedDamages", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<double>("Deduct_fee");
+
+                    b.Property<int>("OrderId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("DadaLiquidatedDamages","dbo");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DadaReturn", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double?>("CouponFee");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<double>("DeliverFee");
+
+                    b.Property<double>("Distance");
+
+                    b.Property<double>("Fee");
+
+                    b.Property<double?>("InsuranceFee");
+
+                    b.Property<int>("OrderId");
+
+                    b.Property<double?>("Tips");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.ToTable("DadaReturn","dbo");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.Order", b =>
                 {
                     b.Property<int>("ID")
@@ -165,7 +268,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("OrderCode")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("'Cat-' + CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 10)");
+                        .HasDefaultValueSql("CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 6) + CAST(floor(rand()*100000) as varchar(5))");
 
                     b.Property<int>("PaymentType");
 
@@ -501,6 +604,30 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.User", "User")
                         .WithMany("Addresses")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DadaCallBack", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Order", "Order")
+                        .WithMany("DadaCallBacks")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DadaLiquidatedDamages", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Order", "Order")
+                        .WithMany("DadaLiquidatedDamages")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DadaReturn", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Order", "Order")
+                        .WithOne("DadaReturn")
+                        .HasForeignKey("JdCat.Cat.Model.Data.DadaReturn", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

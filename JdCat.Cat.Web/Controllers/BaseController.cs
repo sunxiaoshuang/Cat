@@ -13,12 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace JdCat.Cat.Web.Controllers
 {
     public class BaseController<T, TEntity> : Controller 
         where TEntity : BaseEntity, new()
-        where T: IBaseRepository<TEntity>
+        where T: IBusinessRepository<TEntity>
     {
         /// <summary>
         /// 系统数据
@@ -83,6 +84,11 @@ namespace JdCat.Cat.Web.Controllers
         {
             ViewLoad();
             return base.View();
+        }
+
+        public override JsonResult Json(object data)
+        {
+            return base.Json(data, AppData.JsonSetting);
         }
 
         private void ViewLoad()

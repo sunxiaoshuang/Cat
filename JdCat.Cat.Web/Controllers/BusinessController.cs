@@ -65,7 +65,18 @@ namespace JdCat.Cat.Web.Controllers
             {
                 result.Msg = "保存失败";
             }
-            HttpContext.Session.Set(AppData.Session, Service.Get(a => a.ID == business.ID));
+            Business.Name = business.Name;
+            Business.Email = business.Email;
+            Business.Address = business.Address;
+            Business.Contact = business.Contact;
+            Business.Mobile = business.Mobile;
+            Business.IsAutoReceipt = business.IsAutoReceipt;
+            Business.Freight = business.Freight;
+            Business.Description = business.Description;
+            Business.Range = business.Range;
+            Business.LogoSrc = business.LogoSrc;
+            Business.BusinessLicense = business.BusinessLicense;
+            HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }
 
@@ -98,6 +109,8 @@ namespace JdCat.Cat.Web.Controllers
             }
             Business.DadaAppKey = business.DadaAppKey;
             Business.DadaAppSecret = business.DadaAppSecret;
+            Business.DadaSourceId = business.DadaSourceId;
+            Business.DadaShopNo = business.DadaShopNo;
             Business.CityCode = business.CityCode;
             Business.CityName = business.CityName;
             HttpContext.Session.Set(AppData.Session, Business);

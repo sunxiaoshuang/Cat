@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.Common.Models;
+using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -39,11 +47,146 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
+        public IActionResult AppData()
+        {
+            var appData = HttpContext.RequestServices.GetService<AppData>();
+            return Ok(JsonConvert.SerializeObject(appData));
+        }
 
         public IActionResult CityList([FromServices]List<City> list, [FromServices]JsonSerializerSettings setting)
         {
             return Json(list, setting);
         }
 
+
+        #region 达达
+
+        public IActionResult DadaCallback([FromBody]DadaCallBack dada, [FromServices]IHostingEnvironment environment)
+        {
+            var filename = Path.Combine(environment.ContentRootPath, "Log", DateTime.Now.ToString("yyyy-MM-dd") + ".txt");
+            System.IO.File.AppendAllText(filename, "\r\n" + Environment.NewLine + JsonConvert.SerializeObject(dada));
+            return Ok("成功");
+        }
+
+        public IActionResult DadaTest()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 达达模拟接单
+        /// </summary>
+        /// <param name="orderCode"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> DadaReceive([FromQuery]string orderCode)
+        {
+            return Ok(await DadaSimulation(orderCode, "/api/order/accept"));
+        }
+        /// <summary>
+        /// 达达模拟取货
+        /// </summary>
+        /// <param name="orderCode"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> DadaFetch([FromQuery]string orderCode)
+        {
+            return Ok(await DadaSimulation(orderCode, "/api/order/fetch"));
+        }
+        /// <summary>
+        /// 达达模拟完成订单
+        /// </summary>
+        /// <param name="orderCode"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> DadaFinish([FromQuery]string orderCode)
+        {
+            return Ok(await DadaSimulation(orderCode, "/api/order/finish"));
+        }
+        /// <summary>
+        /// 达达模拟取消订单
+        /// </summary>
+        /// <param name="orderCode"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> DadaCancel([FromQuery]string orderCode)
+        {
+            return Ok(await DadaSimulation(orderCode, "/api/order/cancel", "取消订单"));
+        }
+        /// <summary>
+        /// 达达模拟订单过期
+        /// </summary>
+        /// <param name="orderCode"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> DadaExpire([FromQuery]string orderCode)
+        {
+            return Ok(await DadaSimulation(orderCode, "/api/order/expire"));
+        }
+        /// <summary>
+        /// 模拟达达
+        /// </summary>
+        /// <param name="orderCode"></param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        private async Task<string> DadaSimulation(string orderCode, string url, string msg = null)
+        {
+            var appData = HttpContext.RequestServices.GetService<AppData>();
+            var trans = new DadaTrans { Timestamp = UtilHelper.ConvertDateTimeToInt(DateTime.Now) };
+            trans.App_key = appData.DadaAppKey;
+            trans.App_secret = appData.DadaAppSecret;
+            trans.Source_id = appData.DadaSourceId;
+            trans.Body = JsonConvert.SerializeObject(new { order_id = orderCode, reason = msg });
+            trans.Generator();
+            using (var hc = new HttpClient())
+            {
+                var p = JsonConvert.SerializeObject(trans, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                var body = new StringContent(p);
+                body.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var result = await hc.PostAsync(appData.DadaDomain + url, body);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+        /// <summary>
+        /// 达达获取取消原因
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> DadaCancelReason()
+        {
+            using (var hc = new HttpClient())
+            {
+                var appData = HttpContext.RequestServices.GetService<AppData>();
+                var trans = new DadaTrans { Timestamp = UtilHelper.ConvertDateTimeToInt(DateTime.Now) };
+                trans.App_key = appData.DadaAppKey;
+                trans.App_secret = appData.DadaAppSecret;
+                trans.Source_id = appData.DadaSourceId;
+                trans.Body = "";
+                trans.Generator();
+                var p = JsonConvert.SerializeObject(trans, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                var body = new StringContent(p);
+                body.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var result = await hc.PostAsync(appData.DadaDomain + "/api/order/cancel/reasons", body);
+                return Ok(await result.Content.ReadAsStringAsync());
+            }
+        }
+        /// <summary>
+        /// 达达获取城市列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> DadaCityList()
+        {
+            using (var hc = new HttpClient())
+            {
+                var appData = HttpContext.RequestServices.GetService<AppData>();
+                var trans = new DadaTrans { Timestamp = UtilHelper.ConvertDateTimeToInt(DateTime.Now) };
+                trans.App_key = appData.DadaAppKey;
+                trans.App_secret = appData.DadaAppSecret;
+                trans.Source_id = appData.DadaSourceId;
+                trans.Body = "";
+                trans.Generator();
+                var p = JsonConvert.SerializeObject(trans, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                var body = new StringContent(p);
+                body.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var result = await hc.PostAsync(appData.DadaDomain + "/api/cityCode/list", body);
+                return Ok(await result.Content.ReadAsStringAsync());
+            }
+        }
+
+        #endregion
     }
 }

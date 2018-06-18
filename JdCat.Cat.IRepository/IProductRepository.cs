@@ -6,7 +6,7 @@ using JdCat.Cat.Model.Data;
 
 namespace JdCat.Cat.IRepository
 {
-    public interface IProductRepository : IBaseRepository<Product>
+    public interface IProductRepository : IBusinessRepository<Product>
     {
         /// <summary>
         /// 根据商户获取商品类别列表

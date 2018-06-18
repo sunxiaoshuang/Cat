@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +8,14 @@ namespace JdCat.Cat.Common
 {
     public class AppData
     {
+        private static JsonSerializerSettings jsonSetting = new JsonSerializerSettings
+        {
+            DateFormatString = "yyyy-MM-dd HH:mm:ss",
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+        public static JsonSerializerSettings JsonSetting { get => jsonSetting; }
+
         /// <summary>
         /// API请求的地址
         /// </summary>
@@ -35,6 +45,10 @@ namespace JdCat.Cat.Common
         /// </summary>
         public string OrderUrl { get; set; }
         /// <summary>
+        /// 运行环境
+        /// </summary>
+        public string RunMode { get; set; }
+        /// <summary>
         /// 达达接口域名
         /// </summary>
         public string DadaDomain { get; set; }
@@ -47,8 +61,16 @@ namespace JdCat.Cat.Common
         /// </summary>
         public string DadaAppSecret { get; set; }
         /// <summary>
-        /// 绑定到开发者账号中的某个商户编号
+        /// 绑定到开发者账号中的某个商户Id
         /// </summary>
         public string DadaSourceId { get; set; }
+        /// <summary>
+        /// 门店编号
+        /// </summary>
+        public string DadaShopNo { get; set; }
+        /// <summary>
+        /// 回调URL
+        /// </summary>
+        public string DadaCallback { get; set; }
     }
 }

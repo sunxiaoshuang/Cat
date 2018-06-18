@@ -35,8 +35,11 @@ namespace JdCat.Cat.Model
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderProduct> OrderProducts { get; set; }
         public DbSet<City> Citys { get; set; }
+        public DbSet<DadaCallBack> DadaCallBacks { get; set; }
+        public DbSet<DadaReturn> DadaReturns { get; set; }
+        public DbSet<DadaCancelReason> DadaCancelReasons { get; set; }
+        public DbSet<DadaLiquidatedDamages> DadaLiquidatedDamageses { get; set; }
 
-        //        public DbSet<TestModel> TestModels { get; set; }
         /// <summary>
         /// 添加FluentAPI配置
         /// </summary>
@@ -56,7 +59,7 @@ namespace JdCat.Cat.Model
                 .HasDefaultValueSql("'F-' + CAST(YEAR(GETDATE()) AS varchar) + dbo.fn_right_padding(NEXT VALUE FOR shared.FormatNumbers, 9)");
             modelBuilder.Entity<Order>()
                 .Property(a => a.OrderCode)
-                .HasDefaultValueSql("'Cat-' + CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 10)");
+                .HasDefaultValueSql("CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 6) + CAST(floor(rand()*100000) as varchar(5))");
 
 
             var typesToRegister = Assembly.GetExecutingAssembly().GetTypes().Where(q => q.GetInterface(typeof(IEntityTypeConfiguration<>).FullName) != null);

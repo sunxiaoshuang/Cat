@@ -28,7 +28,7 @@
         },
         // 加载完成
         loaded: function () {
-            appObj.$loading.hide();
+            appObj.$loading && appObj.$loading.hide();
         },
         // 模态框，加载页面，使用template加载视图模版，可以取到模态框返回值
         view: function () {

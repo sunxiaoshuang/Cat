@@ -58,6 +58,8 @@ namespace JdCat.Cat.Repository
             Context.Attach(entity);
             entity.DadaAppKey = business.DadaAppKey;
             entity.DadaAppSecret = business.DadaAppSecret;
+            entity.DadaSourceId = business.DadaSourceId;
+            entity.DadaShopNo = business.DadaShopNo;
             entity.CityCode = business.CityCode;
             entity.CityName = business.CityName;
             return Context.SaveChanges() > 0;

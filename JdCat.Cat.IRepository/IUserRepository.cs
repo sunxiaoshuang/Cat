@@ -6,7 +6,7 @@ using JdCat.Cat.Model.Data;
 
 namespace JdCat.Cat.IRepository
 {
-    public interface IUserRepository : IBaseRepository<User>
+    public interface IUserRepository : IBusinessRepository<User>
     {
         /// <summary>
         /// 根据openId获取用户

@@ -13,6 +13,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
+using JdCat.Cat.Common.Models;
 
 namespace JdCat.Cat.Web.App_Code
 {
@@ -34,33 +35,21 @@ namespace JdCat.Cat.Web.App_Code
             using (var scope = host.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<CatDbContext>();
-                var util = scope.ServiceProvider.GetService<UtilHelper>();
-                var setting = scope.ServiceProvider.GetService<JsonSerializerSettings>();
-                var appData = scope.ServiceProvider.GetService<AppData>();
                 var cityList = scope.ServiceProvider.GetService<List<City>>();
+                var dadaHelper = scope.ServiceProvider.GetService<DadaHelper>();
                 using (var hc = new HttpClient())
                 {
-                    var req = new DadaTrans { Timestamp = util.ConvertDateTimeToInt(DateTime.Now) };
-                    req.App_key = appData.DadaAppKey;
-                    req.App_secret = appData.DadaAppSecret;
-                    req.Source_id = appData.DadaSourceId;
-                    req.Generator();
-                    req.Signature = util.MD5Encrypt(req.Signature).ToUpper();
-                    var p = JsonConvert.SerializeObject(req, setting);
-                    var body = new StringContent(p);
-                    body.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                    var result = await hc.PostAsync(appData.DadaDomain + "/api/cityCode/list", body);
-                    var content = await result.Content.ReadAsStringAsync();
+                    var content = await dadaHelper.RequestAsync("/api/cityCode/list");
                     var json = JObject.Parse(content);
                     var status = json["status"].Value<string>();
-                    if(status == "fail")
+                    if (status == "fail")
                     {
                         var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Log", "Error", DateTime.Now.ToString("yyyyMMdd") + ".txt");
                         using (var stream = File.AppendText(filePath))
                         {
-                            stream.WriteLine($"{Environment.NewLine}\r\n城市编码重置异常[{DateTime.Now:yyyy-MM-dd HH:ss:mm}]：{json["msg"].Value<string>()}：");
+                            stream.WriteLine($"{Environment.NewLine}\r\n【{DateTime.Now:yyyy-MM-dd HH:ss:mm}】城市编码重置异常：{json["msg"].Value<string>()}");
                         }
-                        cityList = context.Citys.ToList();
+                        cityList.AddRange(context.Citys.AsNoTracking().ToList());
                     }
                     else
                     {
@@ -75,8 +64,48 @@ namespace JdCat.Cat.Web.App_Code
                         context.SaveChanges();
                     }
                 }
-
             }
         }
+
+        /// <summary>
+        /// 重置城市编码库
+        /// </summary>
+        public async Task ResetCancelReasonAsync()
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetService<CatDbContext>();
+                var reasonList = scope.ServiceProvider.GetService<List<DadaCancelReason>>();
+                var dadaHelper = scope.ServiceProvider.GetService<DadaHelper>();
+                using (var hc = new HttpClient())
+                {
+                    var content = await dadaHelper.RequestAsync("/api/order/cancel/reasons");
+                    var json = JObject.Parse(content);
+                    var status = json["status"].Value<string>();
+                    if (status == "fail")
+                    {
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Log", "Error", DateTime.Now.ToString("yyyyMMdd") + ".txt");
+                        using (var stream = File.AppendText(filePath))
+                        {
+                            stream.WriteLine($"{Environment.NewLine}\r\n【{DateTime.Now:yyyy-MM-dd HH:ss:mm}】达达订单取消原因重置异常：{json["msg"].Value<string>()}");
+                        }
+                        reasonList.AddRange(context.DadaCancelReasons.AsNoTracking().ToList());
+                    }
+                    else
+                    {
+                        context.Database.ExecuteSqlCommand("delete dbo.[DadaCancelReason]");
+                        var list = json["result"].Value<JArray>();
+                        foreach (var reason in list)
+                        {
+                            var entity = new DadaCancelReason() { FlagId = reason["id"].Value<int>(), Reason = reason["reason"].Value<string>() };
+                            context.DadaCancelReasons.Add(entity);
+                            reasonList.Add(entity);
+                        }
+                        context.SaveChanges();
+                    }
+                }
+            }
+        }
+
     }
 }

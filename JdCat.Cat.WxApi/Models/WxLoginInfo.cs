@@ -29,5 +29,6 @@ namespace JdCat.Cat.WxApi.Models
     {
         public int Skey { get; set; }
         public User Userinfo { get; set; }
+        public Business Business { get; set; }
     }
 }

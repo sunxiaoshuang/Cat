@@ -8,6 +8,7 @@ using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Repository;
+using JdCat.Cat.Web.App_Code;
 using JdCat.Cat.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,11 +49,11 @@ namespace JdCat.Cat.Web
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddSingleton(new UtilHelper());
             services.AddSingleton(new List<City>());
+            services.AddSingleton(new List<DadaCancelReason>());
             // 系统参数
             var appData = Configuration.GetSection("appData");
-            services.AddSingleton(new AppData
+            var config = new AppData
             {
                 ApiUri = appData["apiUri"],
                 FileUri = appData["fileUri"],
@@ -61,16 +62,25 @@ namespace JdCat.Cat.Web
                 Cookie = appData["cookie"],
                 Connection = Configuration.GetConnectionString("CatContext"),
                 OrderUrl = appData["orderUrl"],
+                RunMode = appData["runMode"],
                 DadaDomain = appData["dadaDomain"],
                 DadaAppKey = appData["dadaAppKey"],
                 DadaAppSecret = appData["dadaAppSecret"],
-                DadaSourceId = appData["dadaSourceId"]
-            });
-            services.AddSingleton(new JsonSerializerSettings {
+                DadaSourceId = appData["dadaSourceId"],
+                DadaShopNo = appData["dadaShopNo"],
+                DadaCallback = appData["dadaCallback"]
+            };
+            services.AddSingleton(config);
+            // 序列化参数
+            var setting = new JsonSerializerSettings
+            {
                 DateFormatString = "yyyy-MM-dd HH:mm:ss",
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            });
+            };
+            services.AddSingleton(setting);
+            // 达达请求
+            services.AddSingleton(new DadaHelper(config, setting));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

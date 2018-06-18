@@ -1,9 +1,10 @@
 ﻿; (function ($) {
     var typeName = ["外卖", "堂食"], paymentName = ["", "线上支付"], deliveryName = ["第三方平台", "自己配送", "自提"],
         statusName = {
-            "1": "已付款", "2": "已拒单", "4": "待配送", "8": "待配送", "16": "配送中", "32": "配送异常", "64": "已送达", "128": "用户已确认收货", "256": "未付款", "512": "已评价", "1024": "已关闭"
+            "1": "已付款", "2": "已拒单", "4": "待配送", "8": "待配送", "16": "配送中", "32": "配送异常", "64": "已送达", "128": "用户已确认收货", "256": "未付款", "512": "已评价", "1024": "已关闭", "2048": "配送已取消"
         };
-    new Vue({
+    var vueReason = null;
+    var app = new Vue({
         el: "#app",
         data: {
             buttons: [
@@ -17,21 +18,23 @@
                 { name: "已关闭", type: 1024, selected: false },
                 { name: "已完成", type: 128, selected: false },
             ],
-            orderList: [
-                { id: 0, orderCode: "85412654545812", createTime: "2018-12-31 11:34:27", category: 0, paymentType: 1, status: 1, price: 552.65, receiverAddress: "湖北省武汉市武汉经济技术开发区神龙大道69号", receiverName: "张三", phone: "17355698852", expend: false },
-                { id: 1, orderCode: "80012015204551", createTime: "2018-05-22 06:11:00", category: 0, paymentType: 1, status: 2, price: 25633.65, expend: false },
-                { id: 2, orderCode: "56333221478992", createTime: "2012-02-09 23:47:27", category: 0, paymentType: 1, status: 4, price: 7855200.65, expend: false },
-            ],
+            orderList: [],
             pageObj: {
                 pageIndex: 1,
                 pageSize: 20,
                 pageCount: 0,
                 recordCount: 0
             },
-            curType: null
+            curType: null,              // 当前选择的订单状态
+            sendTypes: [
+                { name: "达达配送", selected: false, type: 0 },
+                { name: "自己配送", selected: false, type: 1 }
+            ],
+            curOrder: null,             // 当前选择配送的订单
+            curSendType: null
         },
         methods: {
-            initPageObj: function(){
+            initPageObj: function () {
                 this.pageObj.pageIndex = 1;
                 this.pageObj.pageSize = 20;
                 this.pageObj.pageCount = 0;
@@ -50,14 +53,14 @@
                         $.alert(msg);
                     });
             },
-            changeType: function(item) {
+            changeType: function (item) {
                 this.buttons.forEach(obj => { obj.selected = false; });
                 item.selected = true;
                 this.curType = item;
                 this.initPageObj();
                 this.loadData();
             },
-            expend: function(order) {
+            expend: function (order) {
                 order.expend = !order.expend;
             },
             prevPage: function () {
@@ -76,18 +79,8 @@
                 this.loadData();
             },
             receive: function (order) {
-                axios.post("/order/receive/" + order.id)
-                    .then(function (res) {
-                        if (res.data.success) {
-                            $.alert(res.data.msg, "success");
-                            order.status = 4;
-                        } else {
-                            $.alert(res.data.msg);
-                        }
-                    })
-                    .catch(function (err) {
-                        $.alert(err);
-                    });
+                $("#modal-sendType").modal({ backdrop: "static" });
+                this.curOrder = order;
             },
             reject: function (order) {
                 $.view({
@@ -99,6 +92,9 @@
                             <div class='col-xs-12'>
                                 <textarea class='form-control'></textarea>
                             </div>
+                            <div class='col-xs-12'>
+                                <h5 class='text-danger'>提示：订单取消后，订单金额将会在一天后退回</h5>
+                            </div>
                         </div>`,
                     submit: function (e, $modal) {
                         var reason = $modal.find("textarea").val();
@@ -106,7 +102,7 @@
                             $.alert("请输入拒绝原因");
                             return false;
                         }
-                        axios.post("/order/reject/" + order.id)
+                        axios.get("/order/reject/" + order.id + "?msg=" + reason)
                             .then(function (res) {
                                 if (res.data.success) {
                                     $.alert(res.data.msg, "success");
@@ -121,24 +117,104 @@
                     }
                 });
             },
-            thirdSend: function (order) {
-
+            cancel: function (order) {                                  // 取消配送
+                $.view({
+                    title: "取消原因",
+                    saveText: "确定",
+                    footDisplay: true,
+                    template: `
+                        <div class='row' id='vueReason'>
+                            <label class='label-control col-xs-12 nowarp'>选择原因：</label>
+                            <div class='col-xs-12'>
+                                <select class='form-control' v-model='flagId'>
+                                    <option v-for='reason in reasonList' :value='reason.flagId'>{{reason.reason}}</option>
+                                </select>
+                            </div>
+                            <hr class='clearfix' />
+                            <label class='label-control col-xs-2 nowarp'>备注：</label>
+                            <div class='col-xs-12'>
+                                <textarea class='form-control' placeholder='输入其他原因' v-model='reason'></textarea>
+                            </div>
+                            <div class='col-xs-12'>
+                                <h5 class='text-danger'>提示：配送取消后，将会产生一定的违约金</h5>
+                            </div>
+                        </div>`,
+                    load: function () {
+                        vueReason = new Vue({
+                            el: "#vueReason",
+                            data: {
+                                reasonList: pageObj.reasonList,
+                                flagId: 1,
+                                reason: null
+                            }
+                        });
+                        this.on("hidden.bs.modal", function () {
+                            if (!vueReason) return;
+                            vueReason.$destroy();
+                            vueReason = null;
+                        });
+                    },
+                    submit: function () {
+                        axios.get(`/order/cancel/${order.id}?flagId=${vueReason.flagId}&reason=${vueReason.reason}`)
+                            .then(function (res) {
+                                if (res.data.success) {
+                                    $.alert(res.data.msg, "success");
+                                    order.status = res.data.data;
+                                } else {
+                                    $.alert(res.data.msg);
+                                }
+                            })
+                            .catch(function (err) {
+                                $.alert(err);
+                            });
+                        return true;
+                    }
+                });
             },
-            selfSend: function (order) {
-
+            selectSendType: function (item) {                           // 选择配送类别
+                this.sendTypes.forEach(a => a.selected = false);
+                item.selected = true;
+                this.curSendType = item;
+            },
+            submitSend: function () {                                   // 提交配送
+                var self = this;
+                if (!this.curSendType) {
+                    $.alert("请选择配送方式");
+                    return;
+                }
+                if (!this.curOrder) {
+                    $.alert("操作错误，请重新选择要配送的订单");
+                    return;
+                }
+                $.loading();
+                $("#modal-sendType").modal("hide");
+                axios.get(`/order/send/${this.curOrder.id}?type=${this.curSendType.type}`)
+                    .then(function (res) {
+                        $.loaded();
+                        if (res.data.success) {
+                            $.alert("操作成功", "success");
+                            self.curOrder.status = res.data.data;
+                        } else {
+                            $.alert(res.data.msg);
+                        }
+                    })
+                    .catch(function (err) {
+                        $.loaded();
+                        $.alert(err);
+                    });
             }
         },
         filters: {
-            category: function(type) {
+            category: function (type) {
                 return typeName[type];
             },
-            paymentType: function(type) {
+            paymentType: function (type) {
                 return paymentName[type];
             },
-            status: function(type) {
+            status: function (type) {
                 return statusName[type];
             },
-            deliveryType: function(type) {
+            deliveryType: function (type) {
                 return deliveryName[type];
             }
         },
@@ -155,4 +231,10 @@
         });
         return list;
     }
+
+    $("#modal-sendType").on("hidden.bs.modal", () => {
+        app.sendTypes.forEach(a => a.selected = false);
+        app.curSendType = null;
+    });
+
 })(jQuery);

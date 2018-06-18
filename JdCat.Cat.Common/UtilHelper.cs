@@ -14,7 +14,7 @@ namespace JdCat.Cat.Common
         /// </summary>  
         /// <param name="time">时间</param>  
         /// <returns>long</returns>  
-        public long ConvertDateTimeToInt(DateTime time)
+        public static long ConvertDateTimeToInt(DateTime time)
         {
             var startTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
             var t = (time.Ticks - startTime.Ticks) / 10000;
@@ -26,7 +26,7 @@ namespace JdCat.Cat.Common
         /// </summary>        
         /// <param name="timeStamp"></param>
         /// <returns></returns>        
-        public DateTime ConvertStringToDateTime(string timeStamp)
+        public static DateTime ConvertStringToDateTime(string timeStamp)
         {
             var dtStart = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
             var lTime = long.Parse(timeStamp + "0000");
@@ -42,7 +42,7 @@ namespace JdCat.Cat.Common
         /// </summary>
         /// <param name="input">需要加密的字符串</param>
         /// <returns></returns>
-        public string Base64Encrypt(string input)
+        public static string Base64Encrypt(string input)
         {
             return Base64Encrypt(input, new UTF8Encoding());
         }
@@ -53,7 +53,7 @@ namespace JdCat.Cat.Common
         /// <param name="input">需要加密的字符串</param>
         /// <param name="encode">字符编码</param>
         /// <returns></returns>
-        public string Base64Encrypt(string input, Encoding encode)
+        public static string Base64Encrypt(string input, Encoding encode)
         {
             return Convert.ToBase64String(encode.GetBytes(input));
         }
@@ -63,7 +63,7 @@ namespace JdCat.Cat.Common
         /// </summary>
         /// <param name="input">需要解密的字符串</param>
         /// <returns></returns>
-        public string Base64Decrypt(string input)
+        public static string Base64Decrypt(string input)
         {
             return Base64Decrypt(input, new UTF8Encoding());
         }
@@ -74,7 +74,7 @@ namespace JdCat.Cat.Common
         /// <param name="input">需要解密的字符串</param>
         /// <param name="encode">字符的编码</param>
         /// <returns></returns>
-        public string Base64Decrypt(string input, Encoding encode)
+        public static string Base64Decrypt(string input, Encoding encode)
         {
             return encode.GetString(Convert.FromBase64String(input));
         }
@@ -88,7 +88,7 @@ namespace JdCat.Cat.Common
         /// <param name="key">8位字符的密钥字符串</param>
         /// <param name="iv">8位字符的初始化向量字符串</param>
         /// <returns></returns>
-        public string DESEncrypt(string data, string key, string iv)
+        public static string DESEncrypt(string data, string key, string iv)
         {
             byte[] byKey = System.Text.ASCIIEncoding.ASCII.GetBytes(key);
             byte[] byIV = System.Text.ASCIIEncoding.ASCII.GetBytes(iv);
@@ -113,7 +113,7 @@ namespace JdCat.Cat.Common
         /// <param name="key">8位字符的密钥字符串(需要和加密时相同)</param>
         /// <param name="iv">8位字符的初始化向量字符串(需要和加密时相同)</param>
         /// <returns></returns>
-        public string DESDecrypt(string data, string key, string iv)
+        public static string DESDecrypt(string data, string key, string iv)
         {
             byte[] byKey = Encoding.ASCII.GetBytes(key);
             byte[] byIV = Encoding.ASCII.GetBytes(iv);
@@ -142,7 +142,7 @@ namespace JdCat.Cat.Common
         /// </summary>
         /// <param name="input">需要加密的字符串</param>
         /// <returns></returns>
-        public string MD5Encrypt(string input)
+        public static string MD5Encrypt(string input)
         {
             return MD5Encrypt(input, new UTF8Encoding());
         }
@@ -153,7 +153,7 @@ namespace JdCat.Cat.Common
         /// <param name="input">需要加密的字符串</param>
         /// <param name="encode">字符的编码</param>
         /// <returns></returns>
-        public string MD5Encrypt(string input, Encoding encode)
+        public static string MD5Encrypt(string input, Encoding encode)
         {
             var md5 = new MD5CryptoServiceProvider();
             var bytResult = md5.ComputeHash(encode.GetBytes(input));
@@ -167,7 +167,7 @@ namespace JdCat.Cat.Common
         /// </summary>
         /// <param name="sr"></param>
         /// <returns></returns>
-        public string MD5Encrypt(Stream stream)
+        public static string MD5Encrypt(Stream stream)
         {
             MD5 md5serv = MD5.Create();
             byte[] buffer = md5serv.ComputeHash(stream);
@@ -183,7 +183,7 @@ namespace JdCat.Cat.Common
         /// <param name="input"></param>
         /// <param name="encode"></param>
         /// <returns></returns>
-        public string MD5Encrypt16(string input, Encoding encode)
+        public static string MD5Encrypt16(string input, Encoding encode)
         {
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             string result = BitConverter.ToString(md5.ComputeHash(encode.GetBytes(input)), 4, 8);
@@ -194,7 +194,7 @@ namespace JdCat.Cat.Common
 
         #region 3DES 加密解密
 
-        public string DES3Encrypt(string data, string key)
+        public static string DES3Encrypt(string data, string key)
         {
             TripleDESCryptoServiceProvider DES = new TripleDESCryptoServiceProvider
             {
@@ -209,7 +209,7 @@ namespace JdCat.Cat.Common
             return Convert.ToBase64String(DESEncrypt.TransformFinalBlock(Buffer, 0, Buffer.Length));
         }
 
-        public string DES3Decrypt(string data, string key)
+        public static string DES3Decrypt(string data, string key)
         {
             TripleDESCryptoServiceProvider DES = new TripleDESCryptoServiceProvider();
 
@@ -233,9 +233,9 @@ namespace JdCat.Cat.Common
         }
 
         #endregion
-        
+
         #region DESEnCode DES加密
-        public string DESEnCode(string pToEncrypt, string sKey)
+        public static string DESEnCode(string pToEncrypt, string sKey)
         {
             DESCryptoServiceProvider des = new DESCryptoServiceProvider();
             byte[] inputByteArray = Encoding.GetEncoding("UTF-8").GetBytes(pToEncrypt);
@@ -262,7 +262,7 @@ namespace JdCat.Cat.Common
         #endregion
 
         #region DESDeCode DES解密
-        public string DESDeCode(string pToDecrypt, string sKey)
+        public static string DESDeCode(string pToDecrypt, string sKey)
         {
             DESCryptoServiceProvider des = new DESCryptoServiceProvider();
 
@@ -287,7 +287,7 @@ namespace JdCat.Cat.Common
         #endregion
 
         #region AES-128-CBC
-        public string AESDecrypt(string input, string key, string iv)
+        public static string AESDecrypt(string input, string key, string iv)
         {
             var encryptedData = Convert.FromBase64String(input);
             var rijndaelCipher = new RijndaelManaged

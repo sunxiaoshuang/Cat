@@ -37,8 +37,7 @@ namespace JdCat.Cat.Web.Controllers
             string address,
             string phone,
             string mark,
-            string license,
-            [FromServices]UtilHelper helper)
+            string license)
         {
             var result = new JsonData();
             using (var client = new HttpClient())
@@ -71,7 +70,7 @@ namespace JdCat.Cat.Web.Controllers
                 {
                     var userInfo = new Business() {
                         Name = name,
-                        Password = helper.MD5Encrypt(pwd),
+                        Password = UtilHelper.MD5Encrypt(pwd),
                         Code = code,
                         Email = email,
                         InvitationCode = invitationCode,
