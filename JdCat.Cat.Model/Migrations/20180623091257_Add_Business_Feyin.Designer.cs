@@ -12,9 +12,10 @@ using System;
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180623091257_Add_Business_Feyin")]
+    partial class Add_Business_Feyin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -243,30 +244,6 @@ namespace JdCat.Cat.Model.Migrations
                         .IsUnique();
 
                     b.ToTable("DadaReturn","dbo");
-                });
-
-            modelBuilder.Entity("JdCat.Cat.Model.Data.FeyinDevice", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ApiKey");
-
-                    b.Property<int>("BusinessId");
-
-                    b.Property<string>("Code");
-
-                    b.Property<DateTime?>("CreateTime");
-
-                    b.Property<string>("MemberCode");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("BusinessId");
-
-                    b.ToTable("FeyinDevice","dbo");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Order", b =>
@@ -656,14 +633,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.Order", "Order")
                         .WithOne("DadaReturn")
                         .HasForeignKey("JdCat.Cat.Model.Data.DadaReturn", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("JdCat.Cat.Model.Data.FeyinDevice", b =>
-                {
-                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
-                        .WithMany("FeyinDevices")
-                        .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

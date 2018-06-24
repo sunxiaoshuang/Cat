@@ -42,5 +42,23 @@ namespace JdCat.Cat.IRepository
         /// <param name="source"></param>
         /// <returns></returns>
         Task<string> UploadLogoAsync(string url, int businessId, string filename, string source);
+        /// <summary>
+        /// 保存飞印商户编码与apikey
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        bool SaveFeyin(Business business);
+        /// <summary>
+        /// 获取商户打印机列表
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        IEnumerable<FeyinDevice> GetPrinters(int businessId);
+        /// <summary>
+        /// 绑定打印设备
+        /// </summary>
+        /// <param name="business"></param>
+        /// <param name="device"></param>
+        bool BindPrintDevice(Business business, FeyinDevice device);
     }
 }

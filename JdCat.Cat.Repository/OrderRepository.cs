@@ -98,6 +98,7 @@ namespace JdCat.Cat.Repository
             var order = new Order { ID = id };
             Context.Attach(order);
             order.Status = OrderStatus.Achieve;
+            order.AchieveTime = DateTime.Now;
             return Context.SaveChanges() > 0;
         }
 

@@ -97,25 +97,40 @@
                     <div class="modal-content">\
                         <div class="modal-header {alertColor}">\
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
-                            <h5 class="modal-title">{pic}{title}</h5>\
+                            <h5 class="modal-title {titleColor}">{pic}{title}</h5>\
                         </div>\
                         <div class="modal-body">{msg}</div>\
                         <div class="modal-footer">\
                             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>\
-                            <button type="button" class="btn {submitStyle} {submitDisplay}">确定</button>\
+                            <button type="button" class="btn {submitStyle} {submitDisplay}">{submitText}</button>\
                         </div>\
                     </div>\
                 </div >\
             </div >';
             var $body = $(document.body);
-            $.confirm = function (title, msg, submit, cancel, pic, alertColor, submitStyle) {
-                var obj = {
-                    title: title, msg: msg,
-                    submitDisplay: !submit ? "hide" : "",
-                    alertColor: alertColor || "",
-                    submitStyle: submitStyle || "btn-primary",
-                    pic: "<i class='fa " + (pic || "fa-question-circle-o") + "'></i> "
-                };
+            $.confirm = function (title, msg, submit, cancel, pic, alertColor, submitStyle, submitText, titleColor) {
+                var p_1 = [].slice.call(arguments, 1), obj;
+                if ($.isObject(p_1)) {
+                    obj = $.extend({}, {
+                        title: p_1.title || "提示",
+                        titleColor: p_1.titleColor || "text-primary",
+                        submitStyle: !p_1.submit ? "hide" : "",
+                        alertColor: p_1.alertColor || "",
+                        submitStyle: p_1.submitStyle || "btn-primary",
+                        pic: "<i class='fa " + (p_1.pic || "fa-question-circle-o") + "'></i>",
+                        submitText: p_1.submitText || "确定"
+                    })
+                } else {
+                    obj = {
+                        title: title, msg: msg,
+                        titleColor: titleColor || "text-primary",
+                        submitDisplay: !submit ? "hide" : "",
+                        alertColor: alertColor || "",
+                        submitStyle: submitStyle || "btn-primary",
+                        pic: "<i class='fa " + (pic || "fa-question-circle-o") + "'></i> ",
+                        submitText: submitText || "确定"
+                    };
+                }
                 var html = template.format(obj);
                 $modal = $(html).appendTo($body);
                 $modal.modal({ backdrop: "static" });
@@ -137,16 +152,19 @@
             $.confirm.apply(this, arguments);
         },
         warning: function (msg, submit, cancel) {
-            $.confirm("警告", msg, submit, cancel, "fa-warning text-warning", "bg-warning", "btn-warning");
+            $.confirm("警告", msg, submit, cancel, "fa-warning text-warning", "bg-warning", "btn-warning", null, "text-warning");
         },
         info: function (msg, submit, cancel) {
-            $.confirm("提示", msg, submit, cancel, "fa-info-circle text-info", "bg-info", "btn-info");
+            $.confirm("提示", msg, submit, cancel, "fa-info-circle text-info", "bg-info", "btn-info", null, "text-info");
         },
         danger: function (msg, submit, cancel) {
-            $.confirm("错误", msg, submit, cancel, "fa-times-circle text-danger", "bg-danger", "btn-danger");
+            $.confirm("错误", msg, submit, cancel, "fa-times-circle text-danger", "bg-danger", "btn-danger", null, "text-danger");
         },
         success: function (msg, submit, cancel) {
-            $.confirm("提示", msg, submit, cancel, "fa-check-circle text-success", "bg-success", "btn-success");
+            $.confirm("提示", msg, submit, cancel, "fa-check-circle text-success", "bg-success", "btn-success", null, "text-success");
+        },
+        primary: function (msg, submit, cancel) {
+            $.confirm("提示", msg, submit, cancel, "fa-check-circle text-primary", "bg-primary", "btn-primary", null, "text-primary");
         },
         alert: function (msg, status) {
             status = status || "error";

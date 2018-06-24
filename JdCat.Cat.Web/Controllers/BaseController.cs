@@ -38,15 +38,17 @@ namespace JdCat.Cat.Web.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
+            var type = context.HttpContext.Request.Query["appType"].ToString();
+            type = type == "" ? "app" : type;
             // 取用户会话信息
             var user = HttpContext.Session.GetString(AppData.Session);
             if (string.IsNullOrEmpty(user))
             {
-                // 不存在则去用户cookie，如果也不存在则跳转到登录页
+                // 不存在则取用户cookie，如果也不存在则跳转到登录页
                 var id = HttpContext.Request.Cookies[AppData.Cookie];
                 if (string.IsNullOrEmpty(id))
                 {
-                    context.Result = new RedirectResult("~/Login");
+                    context.Result = new RedirectResult("~/Login?type=" + type);
                 }
                 else
                 {

@@ -102,14 +102,22 @@ namespace JdCat.Cat.Web.Controllers
                 }
                 result.Success = Service.SendSuccess(order, back);
                 result.Msg = result.Success ? "配送成功" : "接单异常或者已经接单";
-                result.Data = order.Status;
+                result.Data = new
+                {
+                    Mode = DeliveryMode.Third,
+                    order.Status
+                };
             }
             else
             {
                 // 自己配送
                 result.Success = Service.SendOrderSelf(id);
                 result.Msg = result.Success ? "操作成功" : "接单异常或者已经接单";
-                result.Data = OrderStatus.Distribution;
+                result.Data = new
+                {
+                    Mode = DeliveryMode.Own,
+                    Status = OrderStatus.Distribution,
+                };
             }
             return Json(result);
         }
@@ -125,6 +133,7 @@ namespace JdCat.Cat.Web.Controllers
                 Success = Service.Achieve(id)
             };
             result.Msg = result.Success ? "配送完成" : "订单不存在";
+            result.Data = OrderStatus.Achieve;
             return Json(result);
         }
 
@@ -139,16 +148,25 @@ namespace JdCat.Cat.Web.Controllers
         {
             var result = new JsonData();
             var order = Service.Get(a => a.ID == id);
-            var back = await helper.CancelOrderAsync(order.OrderCode, Business, flagId, reason);
-            // 取消不成功
-            if (!back.IsSuccess())
+            if (order.DeliveryMode == DeliveryMode.Third)
             {
-                result.Msg = back.msg;
-                return Json(result);
+                var back = await helper.CancelOrderAsync(order.OrderCode, Business, flagId, reason);
+                // 取消不成功
+                if (!back.IsSuccess())
+                {
+                    result.Msg = back.msg;
+                    return Json(result);
+                }
+                result.Success = Service.CancelSuccess(order, back);
+                result.Data = OrderStatus.CallOff;
             }
-            result.Success = Service.CancelSuccess(order, back);
+            else
+            {
+                order.Status = OrderStatus.Receipted;
+                result.Success = Service.Commit() > 0;
+                result.Data = OrderStatus.Receipted;
+            }
             result.Msg = "配送取消成功";
-            result.Data = OrderStatus.CallOff;
             return Json(result);
         }
 

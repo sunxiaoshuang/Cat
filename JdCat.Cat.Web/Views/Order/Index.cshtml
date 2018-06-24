@@ -100,6 +100,11 @@
                                             取消配送
                                         </button>
                                     </div>
+                                    <div class="kui-button m-right-xs" v-if="order.deliveryMode == 1 && order.status == 16">
+                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="achieve(order)">
+                                            自送已到达
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr v-show="order.expend">

@@ -1,0 +1,111 @@
+﻿
+@{
+    ViewData["Title"] = "Feyin";
+}
+
+@section Styles {
+
+}
+@section Scripts {
+    <script>
+        var pageObj = {
+            business: JSON.parse('@Html.Raw(ViewBag.business)'),
+            printers: JSON.parse('@Html.Raw(ViewBag.printers)' || '[]')
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/js/business/feyin.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/business/feyin.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">开发设置</span>
+                    </h3>
+                </div>
+            </div>
+            <div class="panel-body form-horizontal">
+                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.feyinMemberCode)}">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">商户编码</span>
+                    </label>
+                    <div class="col-xs-4 col-md-3">
+                        <input type="text" class="form-control" v-bind:disabled="!modifyState" v-model.trim="entity.feyinMemberCode" />
+                    </div>
+                </div>
+                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.feyinApiKey)}">
+                    <label class="control-label col-xs-2 col-md-1 col-xs-offset-1">
+                        <span class="require">API密钥</span>
+                    </label>
+                    <div class="col-xs-4 col-md-3">
+                        <input type="text" class="form-control" v-bind:disabled="!modifyState" v-model.trim="entity.feyinApiKey" />
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer col-md-offset-2 col-md-offset-2 col-md-6 col-xs-10">
+                <div class="kui-button">
+                    <button type="button" class="btn btn-primary" style="font-size: 85%; width: 70px" v-show="!modifyState" v-on:click="modify()">
+                        修改
+                    </button>
+                    <button type="button" class="btn btn-primary" style="font-size: 85%; width: 70px" v-show="modifyState" v-on:click="save()">
+                        保存
+                    </button>
+                    <button type="button" class="btn btn-primary" style="font-size: 85%; width: 70px" v-show="modifyState" v-on:click="cancel()">
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">绑定打印机</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="col-md-6 col-xs-12">
+                        <div class="kui-button" style="margin-bottom: 10px;">
+                            <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" @@click="addBind()">
+                                <i class="fa fa-plus"></i> 添加绑定
+                            </button>
+                        </div>
+                        <table class="table table-hover table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>打印机名称</th>
+                                    <th>打印机编码</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(printer, index) in list">
+                                    <td class="text-center">{{index + 1}}</td>
+                                    <td>{{printer.name}}</td>
+                                    <td>{{printer.code}}</td>
+                                    <td><a class="jdcat-link" href="javascript:void(0);" @@click="unbind(printer)">解除绑定</a></td>
+                                </tr>
+                            </tbody>
+                            <tfoot v-if="list.length == 0">
+                                <tr>
+                                    <td colspan="4">
+                                        暂未绑定任何打印机
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

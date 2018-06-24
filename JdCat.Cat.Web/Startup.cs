@@ -68,7 +68,10 @@ namespace JdCat.Cat.Web
                 DadaAppSecret = appData["dadaAppSecret"],
                 DadaSourceId = appData["dadaSourceId"],
                 DadaShopNo = appData["dadaShopNo"],
-                DadaCallback = appData["dadaCallback"]
+                DadaCallback = appData["dadaCallback"],
+                FeyinAppId = appData["feyinAppId"],
+                FeyinMemberCode= appData["feyinMemberCode"],
+                FeyinApiKey = appData["feyinApiKey"]
             };
             services.AddSingleton(config);
             // 序列化参数
@@ -81,6 +84,14 @@ namespace JdCat.Cat.Web
             services.AddSingleton(setting);
             // 达达请求
             services.AddSingleton(new DadaHelper(config, setting));
+            // 飞印
+            var feyin = new FeYinHelper
+            {
+                AppId = config.FeyinAppId,
+                MemberCode = config.FeyinMemberCode,
+                ApiKey = config.FeyinApiKey
+            };
+            services.AddSingleton(feyin);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

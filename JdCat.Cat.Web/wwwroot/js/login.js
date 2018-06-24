@@ -27,7 +27,11 @@
                 $btnLogin.removeAttr("disabled");
                 return;
             }
-            window.location.href = "/";
+            if (pageObj.type == "print") {
+                window.location.href = "/Print";
+            } else {
+                window.location.href = "/";
+            }
         });
         return false;
     });

@@ -112,21 +112,22 @@ body {
 }
 
 #wrapper {
-    width: 100%;
+    min-width: 1440px;
+    height: 100%;
 }
 
 #page-wrapper {
     padding: 15px 15px;
-    min-height: 600px;
     background: #EDEDED;
 }
 
 #page-inner {
+    position: relative;
     width: 100%;
     margin: 0;
     background-color: transparent;
     padding: 0;
-    min-height: 600px;
+    height: calc(100% - 60px);
 }
 
 .header .container-fluid {
@@ -163,8 +164,8 @@ h4 {
 
 p {
     font-size: 16px;
+    padding-left: 10px;
     line-height: 25px;
-    padding-top: 20px;
 }
 
 .navbar-side {
@@ -191,6 +192,7 @@ p {
 }
 
 .top-navbar {
+
     position: fixed;
     width: 100%;
     z-index: 300;
@@ -199,9 +201,66 @@ p {
     box-shadow: 0 3px 3px rgba(0, 0, 0, 0.05);
 }
 
+#navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #ea7042;
+    color: #fff;
+    z-index: 300;
+    box-shadow: 0 0 5px 0 #000;
+}
+
+    #navbar .navbar-brand {
+        color: #fff;
+    }
+
+    #navbar #nav-bar-userinfo {
+        float: right;
+        list-style: none;
+        color: #fff;
+    }
+
+        #navbar #nav-bar-userinfo li {
+            position: relative;
+            float: left;
+            height: 60px;
+            line-height: 60px;
+            padding-left: 20px;
+            padding-right: 20px;
+            color: #fff;
+        }
+
+            #navbar #nav-bar-userinfo li a {
+                color: #fff;
+                text-decoration: none;
+            }
+
+                #navbar #nav-bar-userinfo li a:hover {
+                    color: #eee;
+                }
+
+.msg-tip {
+    position: absolute;
+    background: #fff;
+    color: red;
+    border-radius: 50%;
+    padding: 1px 3px;
+    left: 35px;
+    top: 10px;
+    line-height: 15px;
+    font-size: .6em;
+}
+
+.navbar-brand {
+    padding: 10px 15px;
+}
+
 .navbar-side {
     z-index: 1;
-    position: fixed;
+    position: absolute;
     width: 260px;
     top: 60px;
 }
@@ -210,9 +269,9 @@ p {
     position: relative;
     top: 55px;
     box-shadow: 0 0 10px #757575;
-    -moz-box-shadow: 0 0 10px #757575;
-    -webkit-box-shadow: 0 0 10px #757575;
+    height: 100%;
 }
+
 
 .top-navbar .nav > li > a:hover, .top-navbar .nav > li > a:focus {
     text-decoration: none;
@@ -816,6 +875,7 @@ ul.nav.nav-second-level.collapse.in {
 .navbar-side {
     border: none;
     background: #3E3E3E;
+    height: 100%;
 }
 
 .top-navbar {
@@ -958,36 +1018,13 @@ ul.dropdown-menu.dropdown-messages li a div {
 
 #mainframe {
     border: none;
+    min-width: 1300px;
+    height: 100%;
     width: 100%;
     padding: 0;
     margin: 0;
     overflow: hidden;
 }
-
-@media(max-height: 768px) {
-    #mainframe {
-        height: 560px;
-    }
-}
-
-@media(max-height: 900px) {
-    #mainframe {
-        height: 750px;
-    }
-}
-
-@media(max-height: 1080px) {
-    #mainframe {
-        height: 850px;
-    }
-}
-
-@media(min-height: 1080px) {
-    #mainframe {
-        height: 900px;
-    }
-}
-
 
 .margin-top-100 {
     margin-top: 100px;
@@ -1813,4 +1850,11 @@ ul.select-type {
 
 .nowarp {
     white-space: nowrap;
+}
+
+.jdcat-link {
+    color: #ea7042;
+}
+.jdcat-link:hover {
+    color: #ec5e28;
 }

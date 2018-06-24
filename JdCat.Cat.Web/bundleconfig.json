@@ -132,5 +132,11 @@
     "inputFiles": [
       "wwwroot/js/business/dada.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/business/feyin.min.js",
+    "inputFiles": [
+      "wwwroot/js/business/feyin.js"
+    ]
   }
 ]

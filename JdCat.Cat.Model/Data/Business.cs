@@ -107,6 +107,21 @@ namespace JdCat.Cat.Model.Data
         /// 配送范围
         /// </summary>
         public double Range { get; set; } = 0;
+
+        /// <summary>
+        /// 飞印商户编码
+        /// </summary>
+        public string FeyinMemberCode { get; set; }
+        /// <summary>
+        /// 飞印API密钥
+        /// </summary>
+        public string FeyinApiKey { get; set; }
+        /// <summary>
+        /// 飞印临时请求得到的Token
+        /// </summary>
+        [NotMapped]
+        public string FeyinToken { get; set; }
+
         /// <summary>
         /// 产品列表集合
         /// </summary>
@@ -119,5 +134,9 @@ namespace JdCat.Cat.Model.Data
         /// 商户订单集合
         /// </summary>
         public virtual ICollection<Order> Orders { get; set; }
+        /// <summary>
+        /// 飞印打印机集合
+        /// </summary>
+        public virtual ICollection<FeyinDevice> FeyinDevices { get; set; }
     }
 }

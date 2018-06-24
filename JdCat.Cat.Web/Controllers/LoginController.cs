@@ -26,6 +26,7 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult Index()
         {
             ViewBag.CompanyName = _appData.Name;
+            ViewBag.type = Request.Query["type"];
             return View();
         }
 

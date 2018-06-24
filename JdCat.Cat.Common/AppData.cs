@@ -72,5 +72,17 @@ namespace JdCat.Cat.Common
         /// 回调URL
         /// </summary>
         public string DadaCallback { get; set; }
+        /// <summary>
+        /// 飞印应用id
+        /// </summary>
+        public string FeyinAppId { get; set; }
+        /// <summary>
+        /// 飞印商户编码
+        /// </summary>
+        public string FeyinMemberCode { get; set; }
+        /// <summary>
+        /// 飞印API密钥
+        /// </summary>
+        public string FeyinApiKey { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace JdCat.Cat.Repository
         }
         public bool SaveBase(Business business)
         {
-            var entity = new Business { ID = business.ID};
+            var entity = new Business { ID = business.ID };
             Context.Attach(entity);
             entity.Name = business.Name;
             entity.Email = business.Email;
@@ -85,6 +85,28 @@ namespace JdCat.Cat.Repository
                 }
                 return await msg.Content.ReadAsStringAsync();
             }
+        }
+
+        public bool SaveFeyin(Business business)
+        {
+            var entity = new Business { ID = business.ID };
+            Context.Attach(entity);
+            entity.FeyinApiKey = business.FeyinApiKey;
+            entity.FeyinMemberCode = business.FeyinMemberCode;
+            return Context.SaveChanges() > 0;
+        }
+
+        public IEnumerable<FeyinDevice> GetPrinters(int businessId)
+        {
+            return Context.FeyinDevices.Where(a => a.BusinessId == businessId).ToList();
+        }
+        public bool BindPrintDevice(Business business, FeyinDevice device)
+        {
+            device.MemberCode = business.FeyinMemberCode;
+            device.ApiKey = business.FeyinApiKey;
+            device.BusinessId = business.ID;
+            Context.FeyinDevices.Add(device);
+            return Context.SaveChanges() > 0;
         }
     }
 }

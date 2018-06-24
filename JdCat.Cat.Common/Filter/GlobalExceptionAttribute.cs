@@ -23,7 +23,7 @@ namespace JdCat.Cat.Common.Filter
             var filePath = Path.Combine(_env.ContentRootPath, "Log", "Error", DateTime.Now.ToString("yyyyMMdd") + ".txt");
             using (var stream = File.AppendText(filePath))
             {
-                stream.WriteLine($"{Environment.NewLine}\r\n【{DateTime.Now:yyyy-MM-dd HH:ss:mm}】服务器异常：{context.Exception}");
+                stream.WriteLine($"{Environment.NewLine}\r\n【{DateTime.Now:yyyy-MM-dd HH:mm:ss}】服务器异常：{context.Exception}");
             }
 
             var json = new ErrorResponse(context.Exception.Message) {DeveloperMessage = context.Exception};

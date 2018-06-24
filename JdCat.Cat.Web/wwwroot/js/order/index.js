@@ -11,9 +11,8 @@
                 { name: "全部订单", type: 0, selected: true },
                 { name: "待付款", type: 256, selected: false },
                 { name: "待接单", type: 1, selected: false },
-                { name: "已接单", type: 4, selected: false },
-                { name: "待配送", type: 8, selected: false },
-                { name: "配送中", type: 16, selected: false },
+                { name: "已接单", type: 2052, selected: false },
+                //{ name: "配送中", type: 16, selected: false },
                 { name: "待确认", type: 64, selected: false },
                 { name: "已关闭", type: 1024, selected: false },
                 { name: "已完成", type: 128, selected: false },
@@ -135,7 +134,7 @@
                             <div class='col-xs-12'>
                                 <textarea class='form-control' placeholder='输入其他原因' v-model='reason'></textarea>
                             </div>
-                            <div class='col-xs-12'>
+                            <div class='col-xs-12' v-if='tipShow'>
                                 <h5 class='text-danger'>提示：配送取消后，将会产生一定的违约金</h5>
                             </div>
                         </div>`,
@@ -145,7 +144,8 @@
                             data: {
                                 reasonList: pageObj.reasonList,
                                 flagId: 1,
-                                reason: null
+                                reason: null,
+                                tipShow: order.deliveryMode == 0
                             }
                         });
                         this.on("hidden.bs.modal", function () {
@@ -171,6 +171,23 @@
                     }
                 });
             },
+            achieve: function (order) {                                 // 商家自己配送的订单，自己操作配送完成
+                $.primary("确保订单已经送达？", function () {
+                    axios.get("/order/achieve/" + order.id)
+                        .then(function (res) {
+                            if (res.data.success) {
+                                $.alert(res.data.msg, "success");
+                                order.status = res.data.data;
+                            } else {
+                                $.alert(res.data.msg);
+                            }
+                        })
+                        .catch(function (err) {
+                            $.alert(err);
+                        });
+                    return true;
+                });
+            },
             selectSendType: function (item) {                           // 选择配送类别
                 this.sendTypes.forEach(a => a.selected = false);
                 item.selected = true;
@@ -193,7 +210,8 @@
                         $.loaded();
                         if (res.data.success) {
                             $.alert("操作成功", "success");
-                            self.curOrder.status = res.data.data;
+                            self.curOrder.status = res.data.data.status;
+                            self.curOrder.deliveryMode = res.data.data.mode;
                         } else {
                             $.alert(res.data.msg);
                         }

@@ -129,7 +129,7 @@ namespace JdCat.Cat.Web.App_Code
         /// <returns></returns>
         public async Task<string> AddTip(string orderCode, double tips, string cityCode, string info)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
     }

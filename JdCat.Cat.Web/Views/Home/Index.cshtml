@@ -3,8 +3,8 @@
 }
 @section Styles {
     <environment include="Development">
-        <link rel="stylesheet" src="~/css/index.css" asp-append-version="true" />
-        <link rel="stylesheet" src="~/lib/metisMenu/metisMenu.css" />
+        <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/lib/metisMenu/metisMenu.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" src="~/css/index.min.css" asp-append-version="true" />
@@ -13,7 +13,8 @@
     <style>
         body {
             background: #3E3E3E;
-            overflow: hidden;
+            overflow-y: hidden;
+            height: 100%;
         }
     </style>
 }
@@ -35,81 +36,37 @@
 }
 
 <div id="wrapper">
-    <nav class="navbar navbar-default top-navbar" role="navigation">
+    <nav id="navbar">
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="~/">
-                <strong><i class="icon fa fa-plane"></i> 简单猫商家中心</strong>
+                <strong><img src="~/images/logo1.png" width="40" />简单猫商家中心</strong>
             </a>
-
-            <div id="sideNav">
-                <i class="fa fa-bars icon"></i>
-            </div>
         </div>
 
-        <ul class="nav navbar-top-links navbar-right margin-right-5">
+        <ul id="nav-bar-userinfo">
 
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+            <li>
+                <a href="javascript:void(0);">
                     @ViewBag.UserName（@ViewBag.Code）
                 </a>
             </li>
 
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                    <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down"></i>
+            <li>
+                <a href="javascript:void(0);">
+                    <i class="fa fa-bell fa-fw"></i>
+                    <span class="msg-tip">21</span>
                 </a>
-                <ul class="dropdown-menu dropdown-alerts">
-                    <li>
-                        <a href="#">
-                            <div>
-                                <i class="fa fa-twitter fa-fw"></i> 3 New Followers
-                                <span class="pull-right text-muted small">12 min</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a href="#">
-                            <div>
-                                <i class="fa fa-envelope fa-fw"></i> Message Sent
-                                <span class="pull-right text-muted small">4 min</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a class="text-center" href="#">
-                            <strong>See All Alerts</strong>
-                            <i class="fa fa-angle-right"></i>
-                        </a>
-                    </li>
-                </ul>
             </li>
 
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                    <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+            <li>
+                <a href="~/Login/logout">
+                    <i class="fa fa-sign-out">退出</i>
                 </a>
-                <ul class="dropdown-menu dropdown-user">
-                    <li>
-                        <a href="#/Business"><i class="fa fa-gear fa-fw"></i> 设置</a>
-                    </li>
-                    <li class="divider"></li>
-                    <li>
-                        <a asp-action="logout" asp-controller="Login"><i class="fa fa-sign-out fa-fw"></i> 退出</a>
-                    </li>
-                </ul>
             </li>
         </ul>
     </nav>
 
-    <nav class="navbar-default navbar-side" role="navigation">
+    <nav class="navbar-side" role="navigation">
         <div class="sidebar-collapse">
             <ul class="nav" id="main-menu">
                 <li>
@@ -176,6 +133,9 @@
                         <li>
                             <a href="#/Business/Dada">达达设置</a>
                         </li>
+                        <li>
+                            <a href="#/Business/Feyin">打印机设置</a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -183,14 +143,10 @@
     </nav>
     <div id="page-wrapper">
         <div id="page-inner">
-            <div class="board">
-                <div class="panel panel-primary">
-                    <iframe id="mainframe"></iframe>
-                </div>
-            </div>
+            <iframe id="mainframe" border="0"></iframe>
         </div>
-        <footer style="margin-left: 20px;">
-            <p>版权 &copy; @DateTime.Now.Year 简单猫科技（武汉）有限公司</p>
+        <footer style="margin-left: 0 0 0 260px; clear: both;">
+            <p>版权 &copy; 2018 简单猫科技（武汉）有限公司</p>
         </footer>
     </div>
     <audio id="audio-new" style="display: none;" src="~/video/Receipt_z.ogg"></audio>
