@@ -36,9 +36,17 @@ namespace JdCat.Cat.Repository
             return null;
         }
 
-        public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query)
+        public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone)
         {
             var queryable = Context.Orders.Include(a => a.Products).Where(a => a.BusinessId == business.ID);
+            if(!string.IsNullOrEmpty(code))
+            {
+                queryable = queryable.Where(a => a.OrderCode.Contains(code));
+            }
+            if (!string.IsNullOrEmpty(phone))
+            {
+                queryable = queryable.Where(a => a.Phone.Contains(phone));
+            }
             if (status.HasValue)
             {
                 queryable = queryable.Where(a => (a.Status & status) > 0);
@@ -90,6 +98,7 @@ namespace JdCat.Cat.Repository
             Context.Attach(order);
             order.Status = OrderStatus.Distribution;
             order.DeliveryMode = DeliveryMode.Own;
+            order.DistributionTime = DateTime.Now;
             return Context.SaveChanges() > 0;
         }
 
@@ -155,6 +164,16 @@ namespace JdCat.Cat.Repository
                 }
             }
             Context.SaveChanges();
+        }
+
+        public IEnumerable<FeyinDevice> GetPrinters(Business business)
+        {
+            return Context.FeyinDevices.Where(a => a.BusinessId == business.ID).ToList();
+        }
+
+        public Order GetOrderIncludeProduct(int id)
+        {
+            return Context.Orders.Include(a => a.Products).SingleOrDefault(a => a.ID == id);
         }
 
     }

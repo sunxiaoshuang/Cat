@@ -1,6 +1,6 @@
 ﻿; (function ($) {
-    var bindView;
-    new Vue({
+    var bindView, 
+    app = new Vue({
         el: "#app",
         data: {
             showError: false,
@@ -76,6 +76,7 @@
                             .then(function (res) {
                                 if (res.data.success) {
                                     $.alert(res.data.msg, "success");
+                                    app.list.push(res.data.data);
                                 } else {
                                     $.alert(res.data.msg);
                                 }
@@ -88,8 +89,21 @@
                 });
             },
             unbind: function (printer) {
+                var self = this;
                 $.primary("解除绑定后，打印机将不可打印小票，确定解除吗？", function () {
-
+                    axios.get("/business/unbind/" + printer.id)
+                        .then(function (res) {
+                            if (res.data.success) {
+                                $.alert(res.data.msg, "success");
+                                self.list.remove(printer);
+                            } else {
+                                $.alert(res.data.msg);
+                            }
+                        })
+                        .catch(function (msg) {
+                            $.alert(msg);
+                        });
+                    return true;
                 });
             }
         }

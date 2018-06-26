@@ -65,23 +65,15 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> SaveBase([FromQuery]int isChangeLogo, [FromBody]Business business)
         {
             var result = new JsonData();
-
-            if (string.IsNullOrEmpty(business.LogoSrc))
-            {
-                result.Msg = "请上传商户LOGO";
-                return Ok(result);
-            }
             if (isChangeLogo == 1)
             {
                 // 上传LOGO
-                var filename = Guid.NewGuid().ToString().ToLower() + ".jpg";
-                var msg = await Service.UploadLogoAsync(AppData.ApiUri + "/Logo", Business.ID, filename, business.LogoSrc);
-                if (msg != "ok")
-                {
-                    result.Msg = msg;
-                    return Json(result);
-                }
-                business.LogoSrc = filename;
+                business.LogoSrc = await Service.UploadAsync(AppData.ApiUri + "/Upload/Logo", Business.ID, business.LogoSrc);
+            }
+            if (business.BusinessLicenseImage.Contains("data:image"))
+            {
+                // 上传营业执照
+                business.BusinessLicenseImage = await Service.UploadAsync(AppData.ApiUri + "/Upload/License", Business.ID, business.BusinessLicenseImage);
             }
 
 
@@ -101,6 +93,7 @@ namespace JdCat.Cat.Web.Controllers
             Business.Range = business.Range;
             Business.LogoSrc = business.LogoSrc;
             Business.BusinessLicense = business.BusinessLicense;
+            Business.BusinessLicenseImage = business.BusinessLicenseImage;
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }
@@ -166,49 +159,78 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="device"></param>
         /// <param name="helper"></param>
         /// <returns></returns>
-        public async Task<IActionResult> AddBind([FromQuery]FeyinDevice device, [FromServices]FeYinHelper helper)
+        public async Task<IActionResult> AddBind([FromQuery]FeyinDevice device)
         {
             var result = new JsonData();
-            if(Business.FeyinMemberCode == helper.MemberCode)
-            {
-                // 如果商户使用的是系统注册的商户，则直接采用服务中注册的类绑定设备
-                var ret = await helper.BindDevice(device.Code);
-                result.Success = ret.ErrCode == null || ret.ErrCode == 0;
-                result.Msg = ret.ErrMsg;
-            }
-            else
-            {
-                // 否则创建一个服务类
-                var util = new FeYinHelper
-                {
-                    MemberCode = Business.FeyinMemberCode,
-                    ApiKey = Business.FeyinApiKey,
-                    Token = Business.FeyinToken
-                };
+            var helper = GetPrintHelper();
 
-                var ret = await util.BindDevice(device.Code);
-                result.Success = ret.ErrCode == null || ret.ErrCode == 0;
-                result.Msg = ret.ErrMsg;
+            var ret = await helper.BindDevice(device.Code);
+            result.Success = ret.ErrCode == null || ret.ErrCode == 0;
+            result.Msg = ret.ErrMsg;
 
-                if (Business.FeyinToken != util.Token)
-                {
-                    // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
-                    Business.FeyinToken = util.Token;
-                    HttpContext.Session.Set(AppData.Session, Business);
-                }
+            if (Business.FeyinToken != helper.Token)
+            {
+                // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
+                Business.FeyinToken = helper.Token;
+                HttpContext.Session.Set(AppData.Session, Business);
             }
+
+
             if (!result.Success)
             {
                 // 绑定不成功
                 return Json(result);
             }
             result.Success = Service.BindPrintDevice(Business, device);
-            if(!result.Success)
+            if (!result.Success)
             {
                 result.Msg = "绑定失败，请刷新后重试";
             }
             result.Data = device;
             result.Msg = "设备绑定成功";
+            return Json(result);
+        }
+        /// <summary>
+        /// 绑定打印机
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="helper"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> UnBind(int id)
+        {
+            var result = new JsonData();
+            var device = Service.Set<FeyinDevice>().SingleOrDefault(a => a.ID == id);
+            if (device == null)
+            {
+                result.Msg = "设备可以已经被删除，请刷新后重试";
+                return Json(result);
+            }
+            var helper = GetPrintHelper();
+
+            var ret = await helper.UnBindDevice(device.Code);
+            result.Success = ret.ErrCode == null || ret.ErrCode == 0;
+            result.Msg = ret.ErrMsg;
+
+            if (Business.FeyinToken != helper.Token)
+            {
+                // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
+                Business.FeyinToken = helper.Token;
+                HttpContext.Session.Set(AppData.Session, Business);
+            }
+
+            if (!result.Success)
+            {
+                // 解绑失败不成功
+                return Json(result);
+            }
+
+            Service.Set<FeyinDevice>().Remove(device);
+            result.Success = Service.Commit() > 0;
+            if (!result.Success)
+            {
+                result.Msg = "解除绑定失败，请刷新后重试";
+            }
+            result.Msg = "解除绑定绑定成功";
             return Json(result);
         }
 

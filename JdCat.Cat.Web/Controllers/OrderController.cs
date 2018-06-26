@@ -19,6 +19,7 @@ namespace JdCat.Cat.Web.Controllers
     {
         public OrderController(AppData appData, IOrderRepository service) : base(appData, service)
         {
+
         }
 
         /// <summary>
@@ -28,6 +29,7 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult Index([FromServices]List<DadaCancelReason> reasonList)
         {
             ViewBag.reasonList = JsonConvert.SerializeObject(reasonList, AppData.JsonSetting);
+            ViewBag.deviceList = JsonConvert.SerializeObject(Service.GetPrinters(Business), AppData.JsonSetting);
             return View();
         }
 
@@ -39,11 +41,11 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="setting"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult GetOrder([FromQuery]int status, [FromBody]PagingQuery query)
+        public IActionResult GetOrder([FromQuery]int status, [FromQuery]string code, [FromQuery]string phone, [FromBody]PagingQuery query)
         {
             var result = new JsonData();
             var state = status == 0 ? null : (OrderStatus?)status;
-            var list = Service.GetOrder(Business, state, query);
+            var list = Service.GetOrder(Business, state, query, code, phone);
             result.Data = new
             {
                 list,
@@ -167,6 +169,30 @@ namespace JdCat.Cat.Web.Controllers
                 result.Data = OrderStatus.Receipted;
             }
             result.Msg = "配送取消成功";
+            return Json(result);
+        }
+
+        public async Task<IActionResult> Print(int id, [FromQuery]string device_no)
+        {
+            var result = new JsonData();
+            var helper = GetPrintHelper();
+            var order = Service.GetOrderIncludeProduct(id);
+            var ret = await helper.Print(device_no, order);
+            result.Success = ret.ErrCode == null || ret.ErrCode == 0;
+            result.Msg = ret.ErrMsg;
+            if (Business.FeyinToken != helper.Token)
+            {
+                // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
+                Business.FeyinToken = helper.Token;
+                HttpContext.Session.Set(AppData.Session, Business);
+            }
+
+            if (!result.Success)
+            {
+                // 打印失败
+                return Json(result);
+            }
+            result.Msg = "正在打印小票，请稍等";
             return Json(result);
         }
 

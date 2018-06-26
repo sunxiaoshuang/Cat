@@ -18,7 +18,7 @@
                     $.alert("请上传商户LOGO");
                     return;
                 }
-                if (!entity.name || !entity.address || !entity.contact || !entity.mobile || !entity.freight || !entity.businessLicense) {
+                if (!entity.name || !entity.address || !entity.contact || !entity.mobile || !entity.freight || !entity.businessLicense || !entity.businessLicenseImage) {
                     $.alert("请将信息填写完整");
                     this.showError = true;
                     return;
@@ -44,15 +44,38 @@
             },
             remove: function () {
                 this.entity.logoSrc = null;
+            },
+            uploadBusinessLicense: function () {
+                $("#fileLicense").click();
+            },
+            changeBusinessLicense: function (e) {
+                var file = e.target.files[0], self = this;
+                if (!file) {
+                    this.entity.businessLicenseImage = null;
+                    return;
+                }
+                var read = new FileReader();
+                read.onload = function (e) {
+                    self.entity.businessLicenseImage = e.target.result;
+                    console.log(e.target.result);
+                };
+                read.readAsDataURL(file);
             }
         },
         computed: {
             logo: function () {
                 var input = this.entity.logoSrc;
                 if (!input) return input;
-                if (input.indexOf("data:image/jpeg;base64") > -1) return input;
+                if (input.indexOf("data:image") > -1) return input;
                 return `${appConfig.apiUrl}/File/Logo/${pageObj.business.id}/${input}`;
+            },
+            license: function () {
+                var input = this.entity.businessLicenseImage;
+                if (!input) return input;
+                if (input.indexOf("data:image") > -1) return input;
+                return `${appConfig.apiUrl}/File/License/${pageObj.business.id}/${input}`;
             }
+
         },
         filters: {
 

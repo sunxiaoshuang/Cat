@@ -22,9 +22,15 @@ namespace JdCat.Cat.FileService.Models
             {
                 Directory.CreateDirectory(logoPath);
             }
+            var licensePath = Path.Combine(dir, "wwwroot", _licencePath);
+            if (!Directory.Exists(licensePath))
+            {
+                Directory.CreateDirectory(licensePath);
+            }
         }
         public static string _defaultPath = "/File/Product";
         public static string _logoPath = "File/Logo";
+        public static string _licencePath = "File/License";
         public int BusinessId { get; set; }
         public string Name { get; set; }
         public string Image400 { get; set; }
@@ -69,18 +75,44 @@ namespace JdCat.Cat.FileService.Models
                 file.Write(imageBytes, 0, imageBytes.Length);
             }
         }
-        public void SaveLogo(IHostingEnvironment environment)
+        public string SaveLogo(IHostingEnvironment environment)
         {
-            var dir = Path.Combine(environment.WebRootPath, _logoPath, BusinessId + "");
+            return Save(_logoPath, environment);
+        }
+        public string SaveLicense(IHostingEnvironment environment)
+        {
+            return Save(_licencePath, environment);
+        }
+
+        #region 私有
+        ///
+        private string Save(string parentPath, IHostingEnvironment environment)
+        {
+            var dir = Path.Combine(environment.WebRootPath, parentPath, BusinessId + "");
+            var extension = ".jpg";
+            var content = string.Empty;
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
-            using (var file = new FileStream(Path.Combine(dir, Name), FileMode.OpenOrCreate, FileAccess.Write))
+            if (Image400.Contains("data:image/png;base64"))
             {
-                byte[] imageBytes = Convert.FromBase64String(Image400.Replace("data:image/jpeg;base64,", ""));
+                extension = ".png";
+                content = Image400.Replace("data:image/png;base64,", "");
+            }
+            else
+            {
+                content = Image400.Replace("data:image/jpeg;base64,", "");
+            }
+            var filename = Name + extension;
+            using (var file = new FileStream(Path.Combine(dir, filename), FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                byte[] imageBytes = Convert.FromBase64String(content);
                 file.Write(imageBytes, 0, imageBytes.Length);
             }
+            return filename;
         }
+
+        #endregion
     }
 }

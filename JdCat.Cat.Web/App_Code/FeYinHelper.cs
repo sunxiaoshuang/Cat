@@ -58,6 +58,7 @@ namespace JdCat.Cat.Web.App_Code
             content.Append($"<left>下单时间：{order.CreateTime:yyyy-MM-dd HH:mm:ss}\n");
             content.Append("********************************\n");
             content.Append("************购买商品************\n");
+            //content.Append($"******{DateTime.Now:yyyy-MM-dd HH:mm:ss}*******\n");
             if (order.Products == null || order.Products.Count == 0)
             {
                 content.Append("<Font# Bold=1 Width=1 Height=1>无任何商品</Font#>\n");
@@ -92,7 +93,7 @@ namespace JdCat.Cat.Web.App_Code
             return await Request(url, new
             {
                 device_no,
-                msg_no = "",//order.OrderCode,
+                msg_no = Guid.NewGuid().ToString(),//order.OrderCode,
                 appid = appId,
                 msg_content = content.ToString()
             });

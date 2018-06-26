@@ -96,7 +96,7 @@
                             <div class="product-content">
                                 <div class="product-img" v-bind:class="{'hide': product.images.length == 0}">
                                     <div>
-                                        <img :src="getImage(product)" :alt="product.name" style="width: 100%;" />
+                                        <img :src="getImage(product)" :alt="product.name" class="img-thumbnail" />
                                     </div>
                                 </div>
                                 <div v-bind:class="{'hide': product.images.length > 0}" class="product-no-img">

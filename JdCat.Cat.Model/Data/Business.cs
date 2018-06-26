@@ -52,6 +52,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string BusinessLicense { get; set; }
         /// <summary>
+        /// 营业执照地址
+        /// </summary>
+        public string BusinessLicenseImage { get; set; }
+        /// <summary>
         /// 邀请码
         /// </summary>
         public string InvitationCode { get; set; }

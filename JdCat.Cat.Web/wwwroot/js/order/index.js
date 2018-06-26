@@ -18,6 +18,7 @@
                 { name: "已完成", type: 128, selected: false },
             ],
             orderList: [],
+            deviceList: pageObj.deviceList,
             pageObj: {
                 pageIndex: 1,
                 pageSize: 20,
@@ -30,7 +31,10 @@
                 { name: "自己配送", selected: false, type: 1 }
             ],
             curOrder: null,             // 当前选择配送的订单
-            curSendType: null
+            printerCode: localStorage.getItem("defaultPrinter"),          // 当前选择的打印机编码
+            curSendType: null,
+            search_code: "",
+            search_phone: "",
         },
         methods: {
             initPageObj: function () {
@@ -41,7 +45,7 @@
             },
             loadData: function () {
                 var self = this;
-                axios.post(`/order/getorder?status=${this.curType.type}`, this.pageObj)
+                axios.post(`/order/getorder?status=${this.curType.type}&code=${this.search_code}&phone=${this.search_phone}`, this.pageObj)
                     .then(function (res) {
                         self.orderList = handerData(res.data.data.list);
                         self.pageObj.recordCount = res.data.data.rows;
@@ -220,6 +224,26 @@
                         $.loaded();
                         $.alert(err);
                     });
+            },
+            changePrinter: function () {
+                localStorage.setItem("defaultPrinter", this.printerCode);       // 每次选择打印机后，将当前选择的打印机编码存储在本地
+            },
+            print: function (order) {
+                axios.get(`/order/print/${order.id}?device_no=${this.printerCode}`)
+                    .then(function (res) {
+                        if (res.data.success) {
+                            $.alert(res.data.msg, "success");
+                        } else {
+                            $.alert(res.data.msg);
+                        }
+                    })
+                    .catch(function (err) {
+                        $.alert(err);
+                    });
+            },
+            search: function () {
+                this.initPageObj();
+                this.loadData();
             }
         },
         filters: {

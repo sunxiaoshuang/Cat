@@ -26,9 +26,10 @@ namespace JdCat.Cat.IRepository
         /// <param name="business">商户对象</param>
         /// <param name="status">订单状态</param>
         /// <param name="query">分页参数</param>
+        /// <param name="code">订单编号</param>
+        /// <param name="phone">用户手机号</param>
         /// <returns></returns>
-
-        IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query);
+        IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone);
         /// <summary>
         /// 商户接单
         /// </summary>
@@ -72,5 +73,17 @@ namespace JdCat.Cat.IRepository
         /// <param name="back"></param>
         /// <returns></returns>
         bool CancelSuccess(Order order, DadaResult<DadaLiquidatedDamages> back);
+        /// <summary>
+        /// 获取商户绑定的打印机
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        IEnumerable<FeyinDevice> GetPrinters(Business business);
+        /// <summary>
+        /// 获取订单，包含产品集合
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Order GetOrderIncludeProduct(int id);
     }
 }

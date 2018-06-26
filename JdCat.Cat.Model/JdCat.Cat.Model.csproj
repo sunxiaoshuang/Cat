@@ -25,6 +25,7 @@
     <Compile Remove="Migrations\20180607090649_Add_Order.cs" />
     <Compile Remove="Migrations\20180613012133_Modify_Business_Contact.cs" />
     <Compile Remove="Migrations\20180623093402_Add_FeyinDevice.cs" />
+    <Compile Remove="Migrations\20180626020528_Modify_Add_.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -40,6 +40,7 @@ namespace JdCat.Cat.Repository
             entity.Range = business.Range;
             entity.LogoSrc = business.LogoSrc;
             entity.BusinessLicense = business.BusinessLicense;
+            entity.BusinessLicenseImage = business.BusinessLicenseImage;
             return Context.SaveChanges() > 0;
         }
 
@@ -65,7 +66,7 @@ namespace JdCat.Cat.Repository
             return Context.SaveChanges() > 0;
         }
 
-        public async Task<string> UploadLogoAsync(string url, int businessId, string filename, string source)
+        public async Task<string> UploadAsync(string url, int businessId, string source)
         {
 
             using (var hc = new HttpClient())
@@ -73,17 +74,13 @@ namespace JdCat.Cat.Repository
                 var param = JsonConvert.SerializeObject(new
                 {
                     BusinessId = businessId,
-                    Name = filename,
+                    Name = Guid.NewGuid().ToString().ToLower(),
                     Image400 = source
                 });
                 var httpcontent = new StringContent(param);
                 httpcontent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 var msg = await hc.PostAsync(url, httpcontent);
-                if (msg.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    return "ok";
-                }
-                return await msg.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<string>(await msg.Content.ReadAsStringAsync());
             }
         }
 

@@ -34,14 +34,13 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         bool SaveDada(Business business);
         /// <summary>
-        /// 上传商户LOGO
+        /// 上传文件
         /// </summary>
         /// <param name="url"></param>
         /// <param name="businessId"></param>
-        /// <param name="filename"></param>
         /// <param name="source"></param>
         /// <returns></returns>
-        Task<string> UploadLogoAsync(string url, int businessId, string filename, string source);
+        Task<string> UploadAsync(string url, int businessId, string source);
         /// <summary>
         /// 保存飞印商户编码与apikey
         /// </summary>

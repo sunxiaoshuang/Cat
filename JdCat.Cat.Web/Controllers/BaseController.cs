@@ -8,12 +8,14 @@ using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Repository;
+using JdCat.Cat.Web.App_Code;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -98,6 +100,25 @@ namespace JdCat.Cat.Web.Controllers
             ViewBag.apiUrl = AppData.FileUri;
             ViewBag.CompanyName = AppData.Name;
         }
+
+        protected FeYinHelper GetPrintHelper()
+        {
+            var helper = HttpContext.RequestServices.GetService<FeYinHelper>();
+            if (Business.FeyinMemberCode == helper.MemberCode)
+            {
+                return helper;
+            }
+            else
+            {
+                return new FeYinHelper
+                {
+                    MemberCode = Business.FeyinMemberCode,
+                    ApiKey = Business.FeyinApiKey,
+                    Token = Business.FeyinToken
+                };
+            }
+        }
+
         //public override void OnActionExecuted(ActionExecutedContext context)
         //{
         //    ViewBag.CompanyName = AppData.Name;
