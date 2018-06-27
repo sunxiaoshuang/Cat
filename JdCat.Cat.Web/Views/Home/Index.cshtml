@@ -7,14 +7,13 @@
         <link rel="stylesheet" href="~/lib/metisMenu/metisMenu.css" />
     </environment>
     <environment exclude="Development">
-        <link rel="stylesheet" src="~/css/index.min.css" asp-append-version="true" />
-        <link rel="stylesheet" src="~/lib/metisMenu/metisMenu.min.css" />
+        <link rel="stylesheet" href="~/css/index.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/lib/metisMenu/metisMenu.min.css" />
     </environment>
     <style>
         body {
             background: #3E3E3E;
-            overflow-y: hidden;
-            height: 100%;
+            overflow: hidden;
         }
     </style>
 }
@@ -36,42 +35,77 @@
 }
 
 <div id="wrapper">
-    <nav id="navbar">
+    <nav class="navbar navbar-default top-navbar" role="navigation">
         <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
             <a class="navbar-brand" href="~/">
-                <strong><img src="~/images/logo1.png" width="40" />简单猫商家中心</strong>
+                <strong><img src="~/images/logo1.png" width="40" /> 简单猫商家中心</strong>
             </a>
+
+            <div id="sideNav">
+                <i class="fa fa-bars icon"></i>
+            </div>
         </div>
 
-        <ul id="nav-bar-userinfo">
+        <ul class="nav navbar-top-links navbar-right margin-right-5">
 
-            <li>
-                <a href="javascript:void(0);">
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                     @ViewBag.UserName（@ViewBag.Code）
                 </a>
             </li>
 
-            <li>
-                <a href="javascript:void(0);">
-                    <i class="fa fa-bell fa-fw"></i>
-                    <span class="msg-tip">21</span>
+            <li class="dropdown" id="msg">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                    <i class="fa fa-bell fa-fw"></i> 
+                    <span class="small" v-html="list.length"></span>
+                    <i class="fa fa-caret-down fa-fw"></i>
                 </a>
+                <ul class="dropdown-menu dropdown-alerts">
+                    <cat-order-msg v-for="msg in list" :msg="msg"></cat-order-msg>
+                    <li v-show="list.length === 0">
+                        <a class="text-primary">
+                            没有新订单
+                        </a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a class="text-center" href="#/Order">
+                            <strong>所有订单</strong>
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
-            <li>
-                <a href="~/Login/logout">
-                    <i class="fa fa-sign-out">退出</i>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                    <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                 </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li>
+                        <a href="#/Business"><i class="fa fa-gear fa-fw"></i> 设置</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a asp-action="logout" asp-controller="Login"><i class="fa fa-sign-out fa-fw"></i> 退出</a>
+                    </li>
+                </ul>
             </li>
         </ul>
     </nav>
 
-    <nav class="navbar-side" role="navigation">
+    <nav class="navbar-default navbar-side" role="navigation">
         <div class="sidebar-collapse">
             <ul class="nav" id="main-menu">
                 @*<li>
-                    <a href="#/Product"><i class="fa fa-home"></i> 首页</a>
-                </li>*@
+                        <a href="#/Product"><i class="fa fa-home"></i> 首页</a>
+                    </li>*@
                 <li>
                     <a class="active-menu" href="#/Product"><i class="fa fa-desktop"></i> 商品管理</a>
                 </li>
@@ -136,6 +170,9 @@
                         <li>
                             <a href="#/Business/Feyin">打印机设置</a>
                         </li>
+                        <li>
+                            <a href="#/Business/Pwd">修改密码</a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -143,10 +180,14 @@
     </nav>
     <div id="page-wrapper">
         <div id="page-inner">
-            <iframe id="mainframe" border="0"></iframe>
+            <div class="board" style="height: 100%;">
+                <div class="panel panel-primary" style="height: 100%;">
+                    <iframe id="mainframe"></iframe>
+                </div>
+            </div>
         </div>
-        <footer style="margin-left: 0 0 0 260px; clear: both;">
-            <p>版权 &copy; 2018 简单猫科技（武汉）有限公司</p>
+        <footer style="margin-left: 20px;">
+            <p>版权 &copy; @DateTime.Now.Year 简单猫科技（武汉）有限公司</p>
         </footer>
     </div>
     <audio id="audio-new" style="display: none;" src="~/video/Receipt_z.ogg"></audio>

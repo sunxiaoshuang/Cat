@@ -138,5 +138,11 @@
     "inputFiles": [
       "wwwroot/js/business/feyin.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/business/pwd.min.js",
+    "inputFiles": [
+      "wwwroot/js/business/pwd.js"
+    ]
   }
 ]

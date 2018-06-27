@@ -234,5 +234,32 @@ namespace JdCat.Cat.Web.Controllers
             return Json(result);
         }
 
+        public IActionResult Pwd()
+        {
+            ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
+            return View();
+        }
+
+        public IActionResult ModifyPassword([FromQuery]string newPwd, [FromQuery]string oldPwd)
+        {
+            var result = new JsonData();
+            if (Business.Password != UtilHelper.MD5Encrypt(oldPwd))
+            {
+                result.Msg = "原始密码错误";
+                return Json(result);
+            }
+            Business.Password = UtilHelper.MD5Encrypt(newPwd);
+            result.Success = Service.UpdatePassword(Business);
+            if (!result.Success)
+            {
+                result.Msg = "密码修改错误，请刷新后重试";
+                return Json(result);
+            }
+            HttpContext.Session.Set(AppData.Session, Business);
+
+            result.Msg = "修改成功";
+            return Json(result);
+        }
+
     }
 }

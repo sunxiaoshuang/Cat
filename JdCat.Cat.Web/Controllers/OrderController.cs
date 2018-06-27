@@ -26,10 +26,11 @@ namespace JdCat.Cat.Web.Controllers
         /// 订单列表页
         /// </summary>
         /// <returns></returns>
-        public IActionResult Index([FromServices]List<DadaCancelReason> reasonList)
+        public IActionResult Index([FromQuery]string code, [FromServices]List<DadaCancelReason> reasonList)
         {
             ViewBag.reasonList = JsonConvert.SerializeObject(reasonList, AppData.JsonSetting);
             ViewBag.deviceList = JsonConvert.SerializeObject(Service.GetPrinters(Business), AppData.JsonSetting);
+            ViewBag.code = code + "";
             return View();
         }
 

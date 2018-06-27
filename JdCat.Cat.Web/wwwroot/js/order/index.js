@@ -33,7 +33,7 @@
             curOrder: null,             // 当前选择配送的订单
             printerCode: localStorage.getItem("defaultPrinter"),          // 当前选择的打印机编码
             curSendType: null,
-            search_code: "",
+            search_code: pageObj.code,
             search_phone: "",
         },
         methods: {

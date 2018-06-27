@@ -105,5 +105,14 @@ namespace JdCat.Cat.Repository
             Context.FeyinDevices.Add(device);
             return Context.SaveChanges() > 0;
         }
+
+        public bool UpdatePassword(Business business)
+        {
+            var entity = new Business { ID = business.ID };
+            Context.Attach(entity);
+            entity.Password = business.Password;
+            return Context.SaveChanges() > 0;
+        }
+
     }
 }

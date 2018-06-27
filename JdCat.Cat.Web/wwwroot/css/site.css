@@ -280,7 +280,7 @@ p {
 }
 
 .nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
-    background-color: #656565;
+    background-color: #ea7042;
     border-color: #F36A5A;
     color: #fff !important;
 }
@@ -741,7 +741,7 @@ div#sideNav:hover {
         font-size: 20px;
         font-weight: 700;
         line-height: 30px;
-        background: #3E3E3E;
+        background: #ea7042;
     }
 
 .navbar-brand b {

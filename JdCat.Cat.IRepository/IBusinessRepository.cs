@@ -59,5 +59,10 @@ namespace JdCat.Cat.IRepository
         /// <param name="business"></param>
         /// <param name="device"></param>
         bool BindPrintDevice(Business business, FeyinDevice device);
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <param name="business"></param>
+        bool UpdatePassword(Business business);
     }
 }

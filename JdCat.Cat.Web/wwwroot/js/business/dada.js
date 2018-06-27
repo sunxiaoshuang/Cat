@@ -24,7 +24,7 @@
                     .then(function (res) {
                         $.loaded();
                         if (!res.data.success) {
-                            $.alert(response.data.msg);
+                            $.alert(res.data.msg);
                             return;
                         }
                         $.alert("保存成功", "success");

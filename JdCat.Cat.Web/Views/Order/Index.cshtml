@@ -16,6 +16,7 @@
         var pageObj = {
             reasonList: JSON.parse('@Html.Raw(ViewBag.reasonList)'),
             deviceList: JSON.parse('@Html.Raw(ViewBag.deviceList)' || '[]'),
+            code: '@ViewBag.code'
         }
     </script>
     <environment include="Development">

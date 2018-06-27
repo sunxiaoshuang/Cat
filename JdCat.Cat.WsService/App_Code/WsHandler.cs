@@ -83,8 +83,9 @@ namespace JdCat.Cat.WsService.App_Code
         /// <summary>
         /// 发送新订单任务提醒
         /// </summary>
-        /// <param name="id"></param>
-        public async Task OrderNotifyAsync(int id)
+        /// <param name="id">商户id</param>
+        /// <param name="id">订单编号</param>
+        public async Task OrderNotifyAsync(int id, string code)
         {
             if (!SocketDictionary.ContainsKey(id)) return;
             var ws = SocketDictionary[id];
@@ -95,7 +96,8 @@ namespace JdCat.Cat.WsService.App_Code
             }
             try
             {
-                await ws.SendAsync(new ArraySegment<byte>(msg, 0, msg.Count()), WebSocketMessageType.Text, true, CancellationToken.None);
+                var content = System.Text.Encoding.Default.GetBytes(code);
+                await ws.SendAsync(new ArraySegment<byte>(content, 0, content.Count()), WebSocketMessageType.Text, true, CancellationToken.None);
             }
             catch (WebSocketException)
             {

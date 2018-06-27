@@ -59,21 +59,60 @@
             }
         }
     };
+
+    // 菜单切换
     window.onhashchange = function () {
         pageObj.method.hashchange();
     }
     pageObj.method.hashchange();
 
+    // 新订单提醒
     var ws = new WebSocket(pageData.orderUrl + "?id=" + pageData.business.id);
     var newOrder = document.getElementById("audio-new");
-    ws.onmessage = function () {
+    ws.onmessage = function (res) {
+        var time = new Date();
+        msg.list.push({ code: res.data, time: time.getHours() + ":" + time.getMinutes()});
         newOrder.play();
     };
     ws.onopen = function (a) {
-        console.log("服务已连接", a)
+        console.log("服务已连接", a);
     }
     ws.onclose = function (a) {
-        console.log(a.reason);
+        $.primary(a.reason || "新订单提醒异常");
     }
+
+    var msg = new Vue({
+        el: "#msg",
+        data: {
+            list: [
+                //{ code: "Cat-20180610033000000006", time: "18:21" },
+                //{ code: "Cat-201806170000000086", time: "09:10" },
+                //{ code: "Cat-20180610000000210205", time: "21:01" },
+                //{ code: "2018061800008755798", time: "06:48" }
+            ]
+        },
+        components: {
+            "cat-order-msg": {
+                data: function () {
+                    return {};
+                },
+                methods: {
+                    navigate: function () {
+                        msg.list.remove(this.msg);
+                    }
+                },
+                props: ["msg"],
+                template: `
+                        <li>
+                            <a :href="'#/Order?code=' + msg.code" @click="navigate()">
+                                <div>
+                                    <i class="fa fa-info-circle fa-fw text-primary"></i> 您有一个新订单
+                                    <span class="pull-right text-muted small">{{msg.time}}</span>
+                                </div>
+                            </a>
+                        </li>`
+            }
+        }
+    });
     
 }(jQuery));
