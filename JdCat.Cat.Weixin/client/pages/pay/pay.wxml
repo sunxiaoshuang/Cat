@@ -1,4 +1,4 @@
-<view class = "payMain">
+<view class = "payMain" disable-scroll="true">
     <view class = "userInfo">
         <view class = "address">
             <view class = "addressIcon">
@@ -17,15 +17,32 @@
         <view class = "arriveTime"></view>
     </view>
     <view  class = "orderInfo">
-        <view class = "order">订单</view>
-        <scroll-view scroll-y="true"  class = "">
-            
+        <view class = "order">订单详情：</view>
+        <scroll-view scroll-y="true"  class = "orderView">
+            <block wx:for="{{products}}" wx:for-item="product" wx:key="product">
+                <block wx:for="{{product.Formats}}" wx:for-item="format" wx:key="format">
+                    <view class="food" wx:if="{{format.Count!=0 && format.Count!=undefined}}">
+                        <view class="foodName">{{product.Formats.length == 1?product.Name:product.Name+'('+format.Name +')'}}</view>
+                        <view class="foodCount">x{{format.Count}}</view>
+                        <view class="foodPrice">￥{{format.Price*format.Count}}</view>
+                    </view>
+                </block>
+            </block>
         </scroll-view>
+        <view class = "deliver">
+            <view>配送费</view>
+            <view>￥4</view>
+        </view>
+        <view class = "totalPrice">
+            <view>实付款</view>
+            <view class="price">￥132</view>
+        </view>
     </view>
     <view class = "mark">
         <view>买家留言：</view>
+        <input type="text" placeholder="口味偏好等要求（请勿填写手机号）"></input>
     </view>
-    <view class = "commit">
-    
+    <view class="commit">
+      <button type="primary">付款</button>
     </view>
 </view>

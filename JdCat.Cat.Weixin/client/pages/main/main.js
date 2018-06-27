@@ -471,6 +471,8 @@ Page({
     );
   },
   pay:function(){
+    var products = this.data.cartList;
+    wx.setStorageSync('products', products);
     wx.navigateTo({
       url: '../pay/pay'
     })

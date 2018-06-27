@@ -634,7 +634,7 @@ page{
   line-height: 100rpx;
   color: white;
   font-size: 30rpx;
-  background: #CCCCCC;
+  background: #EA7042;
 }
 #orderPage .cost{
   margin-top: 10rpx;
@@ -722,6 +722,9 @@ page{
   align-items: center;
   height: 50rpx;
   margin-right: 20rpx;
+}
+.cart-view{
+  max-height: 400rpx;
 }
 .cart{
   position: relative;

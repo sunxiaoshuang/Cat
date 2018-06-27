@@ -110,7 +110,7 @@
     <view bindtap="closeCartDialog" class="cart-mask"></view>
     <view class="cart-contain" animation="{{animationData}}">
         <view class="cart-clear" bindtap="clearCart">清空购物车</view>
-        <scroll-view>
+        <scroll-view class="cart-view">
             <block wx:for="{{cartList}}" wx:for-item="product" wx:key="product">
                 <block wx:for="{{product.Formats}}" wx:for-item="format" wx:key="format">
                     <view class="cart" wx:if="{{format.Count!=0 && format.Count!=undefined}}">
