@@ -59,7 +59,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 送货方式
         /// </summary>
-        public DeliveryMode DeliveryMode { get; set; }
+        public DeliveryMode DeliveryMode { get; set; } = DeliveryMode.Third;
         /// <summary>
         /// 微信支付订单号
         /// </summary>
@@ -67,7 +67,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 订单状态
         /// </summary>
-        public OrderStatus Status { get; set; }
+        public OrderStatus Status { get; set; } = OrderStatus.NotPay;
         /// <summary>
         /// 订单类别
         /// </summary>

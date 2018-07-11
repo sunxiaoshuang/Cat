@@ -57,6 +57,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 订单配送已取消
         /// </summary>
-        CallOff = 2048
+        CallOff = 2048,
+        /// <summary>
+        /// 支付超时
+        /// </summary>
+        Overtime = 4096
     }
 }

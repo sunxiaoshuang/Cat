@@ -130,6 +130,22 @@
                         <input type="text" :value="entity.invitationCode" class="form-control" disabled />
                     </div>
                 </div>
+                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.lng)}">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">商铺经度</span>
+                    </label>
+                    <div class="col-xs-4 col-md-3">
+                        <input type="number" maxlength="30" v-model.trim="entity.lng" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.lat)}">
+                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                        <span class="require">商品纬度</span>
+                    </label>
+                    <div class="col-xs-4 col-md-3">
+                        <input type="number" maxlength="30" v-model.trim="entity.lat" class="form-control" />
+                    </div>
+                </div>
                 <div class="form-group">
                     <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
                         配送范围

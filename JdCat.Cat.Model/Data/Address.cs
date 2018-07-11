@@ -56,14 +56,14 @@ namespace JdCat.Cat.Model.Data
         /// 邮编
         /// </summary>
         public string PostalCode { get; set; }
+        /// 修改时间
+        /// </summary>
+        public DateTime ModifyTime { get; set; }
         /// <summary>
         /// 用户id
         /// </summary>
         public int UserId { get; set; }
         /// <summary>
-        /// 修改时间
-        /// </summary>
-        public DateTime ModifyTime { get; set; }
         /// <summary>
         /// 用户
         /// </summary>

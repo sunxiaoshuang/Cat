@@ -1,2 +1,39 @@
-<!--pages/order/order.wxml-->
-<text>pages/order/order.wxml</text>
+<wxs module="calc" src="../wxs/calc/order.wxs"></wxs>
+<wxs module="common" src="../wxs/filters/common.wxs"></wxs>
+<view class="container">
+    <view class="order" wx:for="{{list}}" wx:for-item="order" wx:key="id" bindtap="navigate" data-index="{{index}}">
+        <view class="order-title">
+            <view class="order-code">
+                <text>下单时间：{{common.formatDate(order.createTime)}}</text>
+            </view>
+            <view class="right-icon">
+                <image src="../../images/icon/right-1.png" />
+            </view>
+            <view class="order-status">{{calc.orderStatus(order)}}</view>
+        </view>
+        <view class="order-product">
+            <view class="product" wx:for="{{order.products}}" wx:key="id">
+                <view class="name">
+                    <text>{{item.name}}</text>
+                </view>
+                <view class="quantity">
+                    <text>×{{item.quantity}}</text>
+                </view>
+            </view>
+        </view>
+        <view class="order-total">
+            <text>共{{calc.productQuantity(order)}}件商品，实付款￥{{order.price}}</text>
+        </view>
+        <view class="order-operate">
+            <button class="primary" plain="{{true}}" wx:if="{{calc.orderStatus(order) == '未付款'}}" catchtap="sure" data-index="{{index}}">去付款</button>
+            <!-- <button class="primary" plain="true">再来一单</button> -->
+        </view>
+    </view>
+    <view class="footer" wx:if="{{list.length > 5 && isEnd}}">
+        <text>仅显示最近一年的外卖订单</text>
+    </view>
+    <view wx:if="{{list.length == 0}}" class="no-order">
+        <text>没有任何订单</text>
+        <button class="primary" plain="{{true}}" style="margin: 0;" bindtap="mainPage">去下单</button>
+    </view>
+</view>

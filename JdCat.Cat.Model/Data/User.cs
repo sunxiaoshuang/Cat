@@ -73,6 +73,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public virtual ICollection<Order> Orders { get; set; }
         /// <summary>
+        /// 购物车集合
+        /// </summary>
+        public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; }
+        /// <summary>
         /// 微信的会话密钥
         /// </summary>
         [NotMapped]

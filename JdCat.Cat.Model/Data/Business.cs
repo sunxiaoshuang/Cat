@@ -68,6 +68,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string Secret { get; set; }
         /// <summary>
+        /// 商户号
+        /// </summary>
+        public string MchId { get; set; }
+        /// <summary>
+        /// 商户密钥
+        /// </summary>
+        public string MchKey { get; set; }
+        /// <summary>
         /// 门店id
         /// </summary>
         public string StoreId { get; set; }
@@ -125,6 +133,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         [NotMapped]
         public string FeyinToken { get; set; }
+        /// <summary>
+        /// 商铺位置经度
+        /// </summary>
+        public double Lng { get; set; }
+        /// <summary>
+        /// 商铺位置纬度
+        /// </summary>
+        public double Lat { get; set; }
 
         /// <summary>
         /// 产品列表集合
@@ -142,5 +158,9 @@ namespace JdCat.Cat.Model.Data
         /// 飞印打印机集合
         /// </summary>
         public virtual ICollection<FeyinDevice> FeyinDevices { get; set; }
+        /// <summary>
+        /// 购物车集合
+        /// </summary>
+        public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; }
     }
 }

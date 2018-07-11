@@ -1,13 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace JdCat.Cat.Common
 {
     public class UtilHelper
     {
+        static UtilHelper()
+        {
+            var dirLogInfo = Path.Combine(Directory.GetCurrentDirectory(), "Log", "Info");
+            if (!Directory.Exists(dirLogInfo))
+            {
+                Directory.CreateDirectory(dirLogInfo);
+            }
+        }
 
         /// <summary>  
         /// 将c# DateTime时间格式转换为Unix时间戳格式  
@@ -281,7 +294,7 @@ namespace JdCat.Cat.Common
             cs.FlushFinalBlock();
 
             StringBuilder ret = new StringBuilder();
-            
+
             return Encoding.Default.GetString(ms.ToArray());
         }
         #endregion
@@ -304,5 +317,86 @@ namespace JdCat.Cat.Common
         }
         #endregion
         #endregion
+
+        /// <summary>
+        /// 将对象格式化为xml流媒体
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="o"></param>
+        public static void XmlSerializeInternal(Stream stream, object o)
+        {
+            if (o == null) throw new ArgumentNullException("o");
+            var serializer = new XmlSerializer(o.GetType());
+            var settings = new XmlWriterSettings
+            {
+                Indent = true,
+                NewLineChars = "\r\n",
+                Encoding = Encoding.UTF8,
+                IndentChars = " "
+            };
+            using (var writer = XmlWriter.Create(stream, settings))
+            {
+                serializer.Serialize(writer, o);
+                writer.Close();
+            }
+        }
+
+        private static Dictionary<Type, IEnumerable<PropertyInfo>> dicProperty = new Dictionary<Type, IEnumerable<PropertyInfo>>();
+        /// <summary>
+        /// 读取xml字符串，返回指定对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="xml"></param>
+        /// <returns></returns>
+        public static T ReadXml<T>(string xml) where T : class, new()
+        {
+            var document = XDocument.Parse(xml);
+            var root = document.Root;
+            var type = typeof(T);
+            var entity = new T();
+            IEnumerable<PropertyInfo> properties = null;
+            if (dicProperty.ContainsKey(type))
+            {
+                properties = dicProperty[type];
+            }
+            else
+            {
+                properties = type.GetProperties();
+                dicProperty.Add(type, properties);
+            }
+            foreach (var item in root.Elements())
+            {
+                var property = properties.FirstOrDefault(a => a.Name == item.Name);
+                if (property == null) continue;
+                property.SetValue(entity, item.Value);
+            }
+            return entity;
+        }
+
+        /// <summary>
+        /// 记录系统日志，路径：Log/Info
+        /// </summary>
+        /// <param name="content"></param>
+        public static void Log(string content)
+        {
+            var filepath =Path.Combine(Directory.GetCurrentDirectory(), "Log", "Info", DateTime.Now.ToString("yyyyMMdd") + ".txt");
+            if (!File.Exists(filepath))
+            {
+                File.Create(filepath).Close();
+            }
+            content += "\r\n " + Environment.NewLine;
+            File.AppendAllText(filepath, content);
+        }
+
+        /// <summary>
+        /// 获取时间戳
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static long GetTimestamp(DateTime dateTime)
+        {
+            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return (dateTime.Ticks - dt.Ticks) / 10000;
+        }
     }
 }

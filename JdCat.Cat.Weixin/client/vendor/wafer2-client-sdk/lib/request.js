@@ -2,6 +2,7 @@ var constants = require('./constants');
 var utils = require('./utils');
 var Session = require('./session');
 var loginLib = require('./login');
+var config = require('../../../config');
 
 var noop = function noop() {};
 
@@ -37,7 +38,9 @@ function request(options) {
         var message = '请求传参应为 object 类型，但实际传了 ' + (typeof options) + ' 类型';
         throw new RequestError(constants.ERR_INVALID_PARAMS, message);
     }
-
+    if(options.url.toLowerCase().indexOf("https") !== 0){
+        options.url = config.service.requestUrl + options.url;
+    }
     var requireLogin = options.login;
     var success = options.success || noop;
     var fail = options.fail || function (err) {
@@ -115,7 +118,13 @@ function request(options) {
 
 };
 
+function payment(options){
+    
+};
+
+
 module.exports = {
     RequestError: RequestError,
     request: request,
+    payment: payment
 };

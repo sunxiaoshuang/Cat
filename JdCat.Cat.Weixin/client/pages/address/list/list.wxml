@@ -6,9 +6,9 @@
         <image style= src="/images/icon/right-1.png"></image>
     </navigator>
     <view class="touch-item {{item.isTouchMove ? 'touch-move-active' : ''}} {{index == 0 ? 'border-top' : ''}}" 
-    wx:for="{{list}}" bindtouchstart="touchstart" bindtouchmove="touchmove" data-index="{{index}}">
+    wx:for="{{list}}" wx:key="id" bindtouchstart="touchstart" bindtouchmove="touchmove" data-index="{{index}}">
         <view class="content address-item">
-            <view class="address-info">
+            <view class="address-info" catchtap="select" data-index="{{index}}">
                 <text>
                     <text class="bold">{{item.receiver}} </text>
                     <text class="gray small">   {{item.phone}}

@@ -26,6 +26,13 @@
     <Compile Remove="Migrations\20180613012133_Modify_Business_Contact.cs" />
     <Compile Remove="Migrations\20180623093402_Add_FeyinDevice.cs" />
     <Compile Remove="Migrations\20180626020528_Modify_Add_.cs" />
+    <Compile Remove="Migrations\20180629140340_Add_ShoppingCart_Business.cs" />
+    <Compile Remove="Migrations\20180629141510_Add_ShoppingCart_Business.cs" />
+    <Compile Remove="Migrations\20180629141638_Add_ShoppingCart_Business.cs" />
+    <Compile Remove="Migrations\20180629141825_Add_ShoppingCart_Business.cs" />
+    <Compile Remove="Migrations\20180629142229_Add_ShoppingCart_BusinessId.cs" />
+    <Compile Remove="Migrations\20180703070601_Modify_Order_Attribute.cs" />
+    <Compile Remove="Migrations\20180703071306_Modify_Order_Attribute2.cs" />
   </ItemGroup>
 
   <ItemGroup>

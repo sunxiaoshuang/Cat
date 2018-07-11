@@ -28,8 +28,9 @@ namespace JdCat.Cat.IRepository
         /// <param name="query">分页参数</param>
         /// <param name="code">订单编号</param>
         /// <param name="phone">用户手机号</param>
+        /// <param name="userId">用户id</param>
         /// <returns></returns>
-        IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone);
+        IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null);
         /// <summary>
         /// 商户接单
         /// </summary>

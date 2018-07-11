@@ -94,6 +94,8 @@ namespace JdCat.Cat.Web.Controllers
             Business.LogoSrc = business.LogoSrc;
             Business.BusinessLicense = business.BusinessLicense;
             Business.BusinessLicenseImage = business.BusinessLicenseImage;
+            Business.Lng = business.Lng;
+            Business.Lat = business.Lat;
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }
@@ -102,7 +104,7 @@ namespace JdCat.Cat.Web.Controllers
         {
             var result = new JsonData
             {
-                Success = Service.SaveSmall(new Business { ID = Business.ID, AppId = business.AppId, Secret = business.Secret })
+                Success = Service.SaveSmall(business)
             };
             if (!result.Success)
             {
@@ -110,6 +112,8 @@ namespace JdCat.Cat.Web.Controllers
             }
             Business.AppId = business.AppId;
             Business.Secret = business.Secret;
+            Business.MchId = business.MchId;
+            Business.MchKey = business.MchKey;
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }

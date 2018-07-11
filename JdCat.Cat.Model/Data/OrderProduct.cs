@@ -46,9 +46,5 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public int? FormatId { get; set; }
         public virtual ProductFormat Format { get; set; }
-        /// <summary>
-        /// 订单商品属性集合
-        /// </summary>
-        public virtual ICollection<OrderProductAttribute> Attributes { get; set; }
     }
 }

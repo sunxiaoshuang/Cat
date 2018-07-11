@@ -1,0 +1,22 @@
+var defaultImageSrc = "/images/logo-2.png"
+var product = {
+
+    productImage: function (product, businessId) {
+
+        if (!product) return defaultImageSrc;
+        if(product.images.length == 0)return defaultImageSrc;
+
+        return "http://f.jiandanmao.cn/File/Product/" + businessId + "/100x75/" + product.images[0].name + "." + product.images[0].extensionName;
+    },
+    orderProductImage: function(product, businessId){
+        if (!product) return defaultImageSrc;
+        if(!product.src)return defaultImageSrc;
+
+        return "http://f.jiandanmao.cn/File/Product/" + businessId + "/100x75/" + product.src;
+    }
+}
+
+module.exports = {
+    productImage: product.productImage,
+    orderProductImage: product.orderProductImage
+}

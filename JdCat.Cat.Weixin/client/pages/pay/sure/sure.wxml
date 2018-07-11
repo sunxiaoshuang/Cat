@@ -1,0 +1,37 @@
+<wxs module="calc" src="../../wxs/calc/order.wxs"></wxs>
+<wxs module="common" src="../../wxs/filters/common.wxs"></wxs>
+<wxs module="productFilter" src="../../wxs/filters/product.wxs"></wxs>
+<view class="container">
+    <view class="remain">
+        <view class="time">
+            <text>支付剩余时间：{{common.secondFormat(remainderTime)}}</text>
+        </view>
+        <view class="price">
+            <text>￥{{order.price}}</text>
+        </view>
+        <view class="code">
+            <text>订单编号：{{order.orderCode}}</text>
+        </view>
+    </view>
+    <view class="payMode">
+        <view class="mode">
+            <view class="payImg">
+                <image src="/images/wxpay-2.png" />
+            </view>
+            <view class="payName">
+                <text>微信支付</text>
+            </view>
+            <view class="selected">
+                <radio checked="{{true}}" />
+            </view>
+        </view>
+    </view>
+    <view class="info">
+        <text>{{order.receiverName}}</text>
+        <text>{{order.phone}}</text>
+        <text>{{order.receiverAddress}}</text>
+    </view>
+    <view class="commit">
+        <button type="primary" bindtap="submit">确认支付</button>
+    </view>
+</view>

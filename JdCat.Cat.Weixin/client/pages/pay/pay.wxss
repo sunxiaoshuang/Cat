@@ -4,6 +4,7 @@
   flex-direction: column;
   width: 100%;
   align-items:stretch;
+  font-size: 30rpx;
 }
 .userInfo{
   display: flex;
@@ -13,7 +14,7 @@
   display: flex;
   flex-direction:row;
   padding: 20rpx;
-  border-bottom: 1rpx solid #888
+  border-bottom: 1rpx solid #ECECEC;
 }
 .addressIcon{
   width: 80rpx;
@@ -24,10 +25,38 @@
   height: 50rpx;
   display: flex;
 }
-.addressInfo{
+.addressInfo {
   display: flex;
-  flex-direction: column;
+  min-width: 50rpx;
+  flex-flow: row nowrap;
+  align-items: stretch;
+}
+.addressInfo .info {
+  width: 100%;
+  display: flex;
   flex-grow: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 30rpx 0 70rpx;
+}
+.addressInfo .info .detail {
+  font-size: 35rpx;
+  text-align: center;
+  font-weight: bold;
+}
+.addressInfo .info .user {
+  font-size: 30rpx;
+  text-align: center;
+}
+.addressInfo .right {
+  width: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.addressInfo image {
+  width: 50rpx;
+  height: 50rpx;
 }
 .addressUser{
   display: flex;
@@ -53,33 +82,50 @@
   display: flex;
   flex-direction: column;
   padding: 20rpx;
-  border-bottom: 1rpx solid #888;
+  border-bottom: 1rpx solid #ECECEC;
   font-size: 30rpx;
 }
 .orderView{
-  max-height: 300rpx;
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  height: 70rpx;
+  border-bottom: 1rpx solid #ECECEC;
+  background: white;
+  min-height: 300rpx;
 }
 .food{
   display: flex;
   justify-content:space-between;
 }
 .foodName{
-  width: 50%;
+  width: 440rpx;
+  font-size: 30rpx;
 }
 .foodCount{
-  flex-grow:1;
+  width: 140rpx;
+  flex-flow: 1;
+  font-size: 30rpx;
+  text-align: left;
 }
 .foodPrice{
-  flex-grow:1;
-  text-align: end;
+  width: 140rpx;
+  font-size: 30rpx;
+  text-align: right;
 }
 .deliver{
   display: flex;
   justify-content:space-between;
+  border-bottom: 1rpx solid #ECECEC;
+  padding: 20rpx;
 }
 .totalPrice{
   display: flex;
   justify-content:space-between;
+  border-bottom: 1rpx solid #ECECEC;
+  padding: 20rpx;
 }
 .price{
   color: red
@@ -87,10 +133,31 @@
 .mark{
   font-size: 30rpx;
   padding: 20rpx;
-  border-bottom: 1rpx solid #888;
+  border-bottom: 1rpx solid #ECECEC;
 }
 .commit{
   width: 100%;
   position: absolute;
+  background-color: #f36c21;
+  z-index: 100;
   bottom: 0;
+}
+.select-address {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+}
+.select-address button {
+  border: 1px solid #f36c21;
+  border-radius: 20rpx;
+  width: 350rpx;
+  font-size: 30rpx;
+  color: #f36c21;
+}
+.quantity {
+  display: flex;
+  width: 100rpx;
+  flex-flow: row nowrap;
+
 }

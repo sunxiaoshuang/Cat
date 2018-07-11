@@ -3,6 +3,7 @@ var login = require('./lib/login');
 var Session = require('./lib/session');
 var request = require('./lib/request');
 var Tunnel = require('./lib/tunnel');
+var Utils = require('./lib/utils');
 
 var exports = module.exports = {
     login: login.login,
@@ -14,9 +15,12 @@ var exports = module.exports = {
     getSession: Session.get,
     setSession: Session.set,
     request: request.request,
+    payment: request.payment,
     RequestError: request.RequestError,
 
     Tunnel: Tunnel,
+
+    utils: Utils
 };
 
 // 导出错误类型码

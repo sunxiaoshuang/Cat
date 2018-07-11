@@ -78,17 +78,14 @@
         console.log("服务已连接", a);
     }
     ws.onclose = function (a) {
-        $.primary(a.reason || "新订单提醒异常");
+        $.primary(a.reason || "新订单提醒异常，请刷新后重试");
     }
 
     var msg = new Vue({
         el: "#msg",
         data: {
             list: [
-                //{ code: "Cat-20180610033000000006", time: "18:21" },
-                //{ code: "Cat-201806170000000086", time: "09:10" },
-                //{ code: "Cat-20180610000000210205", time: "21:01" },
-                //{ code: "2018061800008755798", time: "06:48" }
+
             ]
         },
         components: {

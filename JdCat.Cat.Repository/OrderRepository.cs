@@ -32,13 +32,20 @@ namespace JdCat.Cat.Repository
         }
         public Order CreateOrder(Order order)
         {
-
-            return null;
+            Context.Orders.Add(order);
+            if (Context.SaveChanges() == 0)
+            {
+                throw new Exception("订单创建失败");
+            }
+            // 清空购物车
+            Context.Database.ExecuteSqlCommand("delete dbo.ShoppingCart where userid={0} and businessid={1}", order.UserId, order.BusinessId);
+            return order;
         }
 
-        public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone)
+        public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null)
         {
-            var queryable = Context.Orders.Include(a => a.Products).Where(a => a.BusinessId == business.ID);
+            var lastTime = DateTime.Now.AddYears(-1);
+            var queryable = Context.Orders.Include(a => a.Products).Where(a => a.BusinessId == business.ID && a.CreateTime > lastTime);
             if(!string.IsNullOrEmpty(code))
             {
                 queryable = queryable.Where(a => a.OrderCode.Contains(code));
@@ -47,12 +54,16 @@ namespace JdCat.Cat.Repository
             {
                 queryable = queryable.Where(a => a.Phone.Contains(phone));
             }
+            if(userId != null)
+            {
+                queryable = queryable.Where(a => a.UserId == userId.Value);
+            }
             if (status.HasValue)
             {
                 queryable = queryable.Where(a => (a.Status & status) > 0);
             }
             query.RecordCount = queryable.Count();
-            return queryable.OrderBy(a => a.CreateTime).Skip(query.Skip).Take(query.PageSize).ToList();
+            return queryable.OrderByDescending(a => a.CreateTime).Skip(query.Skip).Take(query.PageSize).ToList();
         }
 
         public bool Receive(int orderId)

@@ -27,6 +27,11 @@ namespace JdCat.Cat.WxApi.Controllers
             this.Service = service;
         }
 
+        public override JsonResult Json(object data)
+        {
+            return base.Json(data, AppData.JsonSetting);
+        }
+
 
     }
 }

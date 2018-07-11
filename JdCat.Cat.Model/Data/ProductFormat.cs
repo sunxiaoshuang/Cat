@@ -61,5 +61,9 @@ namespace JdCat.Cat.Model.Data
         /// 订单商品集合
         /// </summary>
         public virtual ICollection<OrderProduct> OrderProducts { get; set; }
+        /// <summary>
+        /// 购物车中规格集合
+        /// </summary>
+        public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; }
     }
 }

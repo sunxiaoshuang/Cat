@@ -10,31 +10,14 @@ Page({
     list: [],
     startX: 0,
     startY: 0, 
-    items: [{
-        isTouchMove: false,
-        content: "孙小双"
-      },
-      {
-        isTouchMove: false,
-        content: "李怡然"
-      },
-      {
-        isTouchMove: false,
-        content: "李娟娟"
-      },
-      {
-        isTouchMove: false,
-        content: "尹晓畅"
-      }
-    ]
+    items: []
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
-
+    this.data.flag = options.flag;
   },
 
   /**
@@ -42,19 +25,25 @@ Page({
    */
   onShow: function () {
     var userinfo = qcloud.getSession().userinfo;
-    var self = this;
-    qcloud.request({
-      url: `${config.service.requestUrl}/user/getAddress/${userinfo.id}`,
-      success: function (res) {
-        self.setData({
-          list: res.data
-        });
-        wx.setStorageSync('addresses', res.data);
-      },
-      fail: function (err) {
-        util.showModel("错误", "请检查网络连接");
-      }
-    });
+    var self = this, addressList = wx.getStorageSync("addressList");
+    if(!addressList) {
+      qcloud.request({
+        url: `/user/getAddress/${userinfo.id}`,
+        success: function (res) {
+          self.setData({
+            list: res.data
+          });
+          wx.setStorageSync('addressList', res.data);
+        },
+        fail: function (err) {
+          util.showModel("错误", "请检查网络连接");
+        }
+      });
+    } else {
+      self.setData({
+        list: addressList
+      });
+    }
   },
 
   /**
@@ -119,6 +108,7 @@ Page({
           util.showError("删除失败，请重试");
           return;
         }
+        wx.setStorageSync("addressList", self.data.list);
         self.setData({
           list: self.data.list
         })
@@ -130,6 +120,20 @@ Page({
     wx.navigateTo({
       url: "/pages/address/edit/edit?id=" + id
     })
+  },
+  select: function(e){
+    if(this.data.flag != "select") return;
+    var address = this.data.list[e.currentTarget.dataset.index];
+    var business = qcloud.getSession().business;
+    var distance = util.calcDistance(address, business);
+    if(business.freight - distance / 1000 < 0) {
+      util.showError("地址超出商家配送范围");
+      return;
+    }
+    wx.setStorageSync("selectAddress", address);
+    wx.navigateBack({
+      delta: 1
+    });
   }
 
 })

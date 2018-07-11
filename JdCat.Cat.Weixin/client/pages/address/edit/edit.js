@@ -39,17 +39,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    var id = options.id;
-    var self = this;
+    var id = options.id, 
+        self = this, 
+        addressList = wx.getStorageSync("addressList");
     if(id){
-      qcloud.request({
-        url: `${config.service.requestUrl}/user/addressDetail/${id}`,
-        success: function(res){
-          self.setData({
-            entity: res.data,
-            isModify: true
-          });
-        }
+      self.setData({
+        entity: addressList.filter(a => a.id == id)[0],
+        isModify: true
       });
     }
   },
@@ -96,7 +92,6 @@ Page({
     wx.chooseLocation({
       success: function (res) {
         if (res.errMsg != "chooseLocation:ok") return;
-        console.log(res);
         var address = self.data.entity;
         address.mapInfo = res.address;
         address.lng = res.longitude;
@@ -127,9 +122,9 @@ Page({
     }
     util.showBusy("loading");
     if(this.data.isModify){
-      url = config.service.requestUrl + "/user/updateAddress/" + self.data.entity.id;
+      url = "/user/updateAddress/" + self.data.entity.id;
     } else {
-      url = config.service.requestUrl + "/user/address/" + userId;
+      url = "/user/address/" + userId;
     }
     qcloud.request({
       url: url,
@@ -138,8 +133,22 @@ Page({
       login: !this.data.isModify,
       success: function(res){
         wx.hideToast();
-        if(res.data == "ok"){
+        if(res.data.success){
           util.showSuccess("保存成功");
+          var addressList = wx.getStorageSync("addressList"), index, address;
+          addressList.forEach((a, b) => {
+            if(a.id == res.data.data.id){
+              address = a;
+              index = b;
+              return false;
+            }
+          });
+          if(!address){
+            addressList.push(res.data.data);
+          } else {
+            addressList.splice(index, 1, res.data.data);
+          }
+          wx.setStorageSync("addressList", addressList);
           setTimeout(() => wx.navigateBack({
             delta: 1
           }), 1500);

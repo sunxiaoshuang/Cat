@@ -86,5 +86,9 @@ namespace JdCat.Cat.Model.Data
         /// 产品修改时间
         /// </summary>
         public DateTime? ModifyTime { get; set; }
+        /// <summary>
+        /// 购物车集合
+        /// </summary>
+        public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; }
     }
 }

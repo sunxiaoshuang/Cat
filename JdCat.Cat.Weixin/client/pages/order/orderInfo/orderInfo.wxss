@@ -1,0 +1,103 @@
+.container {
+    align-items: stretch;
+    background-color: #ECECEC;
+}
+
+.order-info {
+    padding: 20rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: #fff;
+    margin-bottom: 20rpx;
+}
+.order-info .order-header {
+    line-height: 50rpx;
+    font-weight: bold;
+    flex-grow: 1;
+    border-bottom: 1px solid #ECECEC;
+    padding-bottom: 20rpx;
+}
+.order-info .order-body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+.order-info .order-body .order-item {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+.order-info .order-body .order-title {
+    width: 150rpx;
+    font-size: 90%;
+    line-height: 50rpx;
+    color: #aaa;
+    text-align: left;
+    white-space: nowrap;
+}
+.order-info .order-body .order-content {
+    width: 550rpx;
+    text-align: left;
+    line-height: 50rpx;
+    font-size: 90%;
+}
+.order-code {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+
+.order-info .order-body .order-product {
+    font-size: 90%;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    margin-top: 10rpx;
+}
+
+.order-info .order-body .order-product .product-image {
+    width: 120rpx;
+    height: 90rpx;
+}
+.order-info .order-body .order-product .product-image image {
+    width: 100rpx;
+    height: 90rpx;
+}
+.order-info .order-body .order-product .product-name {
+    display: flex;
+    flex-direction: column;
+    width: 500rpx;
+}
+.order-info .order-body .order-product .product-price {
+    display: flex;
+    flex-direction: column;
+    width: 100rpx;
+    text-align: right;
+}
+button {
+    width: 140rpx;
+    font-size: 85%;
+    border: 1px solid #fdaa8a;
+    padding-left: 5rpx;
+    padding-right: 5rpx;
+    padding-top: 8rpx;
+    padding-bottom: 8rpx;
+    line-height: 1.4;
+    background-color: #fff;
+    border-radius: 5rpx;
+    margin: 0;
+    margin-left: 20rpx;
+    margin-top: 20rpx;
+}
+.copy {
+    margin-left: 0;
+    margin-top: 4rpx;
+    padding-left: 3rpx;
+    padding-right: 3rpx;
+    padding-top: 3rpx;
+    padding-bottom: 3rpx;
+    width: 80rpx;
+    line-height: 1;
+    height: 36rpx;
+}

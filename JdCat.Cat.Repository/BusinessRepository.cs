@@ -41,6 +41,8 @@ namespace JdCat.Cat.Repository
             entity.LogoSrc = business.LogoSrc;
             entity.BusinessLicense = business.BusinessLicense;
             entity.BusinessLicenseImage = business.BusinessLicenseImage;
+            entity.Lng = business.Lng;
+            entity.Lat = business.Lat;
             return Context.SaveChanges() > 0;
         }
 
@@ -50,6 +52,8 @@ namespace JdCat.Cat.Repository
             Context.Attach(entity);
             entity.AppId = business.AppId;
             entity.Secret = business.Secret;
+            entity.MchId = business.MchId;
+            entity.MchKey = business.MchKey;
             return Context.SaveChanges() > 0;
         }
 

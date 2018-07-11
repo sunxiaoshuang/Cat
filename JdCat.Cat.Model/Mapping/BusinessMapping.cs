@@ -25,6 +25,11 @@ namespace JdCat.Cat.Model.Mapping
                 .WithOne(a => a.Business)
                 .HasForeignKey(a => a.BusinessId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasMany(a => a.ShoppingCarts)
+                .WithOne(a => a.Business)
+                .HasForeignKey(a => a.BusinessId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }

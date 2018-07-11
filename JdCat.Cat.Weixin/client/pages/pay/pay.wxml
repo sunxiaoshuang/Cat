@@ -1,48 +1,61 @@
-<view class = "payMain" disable-scroll="true">
-    <view class = "userInfo">
-        <view class = "address">
-            <view class = "addressIcon">
-            <image class="icon"src="/images/icon/address-2.png"></image>
-            </view>
-            <view class = "addressInfo">
-                <view class="addressUser">
-                  <view class = "name">收货人：{{address.receiver}}</view>
-                  <view class = "phoneHolder">
-                    <view class = "phone">{{address.phone}} ></view>
-                  </view>
+<view class="payMain" disable-scroll="true">
+    <view class="address">
+        <view class="select-address" wx:if="{{!address}}">
+            <button plain="true" bindtap="selectAddress">
+                <image src="../../images/icon/plus-4.png" style="width: 30rpx;height: 30rpx;" />
+                <text>选择收货地址</text>
+            </button>
+        </view>
+        <view class="addressInfo" wx:else bindtap="selectAddress">
+            <view class="info">
+                <view class="detail">
+                    <text>{{address.mapInfo}} {{address.detailInfo}}</text>
                 </view>
-                <view class = "addressdetail">收货地址：{{address.mapInfo}}{{address.detailInfo}}</view>
+                <view class="user">
+                    <text>
+                        {{address.receiver}}（{{address.gender == 1 ? "先生" : "女士"}}） {{address.phone}}
+                    </text>
+                </view>
+            </view>
+            <view class="right">
+                <image src="../../images/icon/right-1.png" />
             </view>
         </view>
-        <view class = "arriveTime"></view>
     </view>
-    <view  class = "orderInfo">
-        <view class = "order">订单详情：</view>
-        <scroll-view scroll-y="true"  class = "orderView">
-            <block wx:for="{{products}}" wx:for-item="product" wx:key="product">
-                <block wx:for="{{product.Formats}}" wx:for-item="format" wx:key="format">
-                    <view class="food" wx:if="{{format.Count!=0 && format.Count!=undefined}}">
-                        <view class="foodName">{{product.Formats.length == 1?product.Name:product.Name+'('+format.Name +')'}}</view>
-                        <view class="foodCount">x{{format.Count}}</view>
-                        <view class="foodPrice">￥{{format.Price*format.Count}}</view>
-                    </view>
-                </block>
-            </block>
-        </scroll-view>
-        <view class = "deliver">
-            <view>配送费</view>
-            <view>￥4</view>
-        </view>
-        <view class = "totalPrice">
-            <view>实付款</view>
-            <view class="price">￥132</view>
+    <view class="orderInfo">
+        <view wx:for="{{cartList}}" wx:for-item="cart" wx:key="id" class="food">
+            <view class="foodName">
+                {{cart.name}}
+                <text style="font-size: 80%; color: #aaa;">
+                    {{cart.description ? ("（" + cart.description + "）") : ""}}
+                </text>
+            </view>
+            <view class="foodCount">×{{cart.quantity}}</view>
+            <view class="foodPrice">￥{{cart.price * cart.quantity}}</view>
         </view>
     </view>
-    <view class = "mark">
+    <view class="deliver">
+        <view>配送费</view>
+        <view>￥ {{freight}}</view>
+    </view>
+    <view class="deliver">
+        <view>餐具数量</view>
+        <picker bindchange="bindPickerChange" value="{{index}}" range="{{tablewareQuantitys}}">
+            <view class="quantity">
+                <text class="nowrap" style="width: 100rpx;">{{tablewareQuantity}}人</text>
+                <image src="../../images/icon/right-1.png" class="icon" />
+            </view>
+        </picker>
+    </view>
+    <view class="totalPrice">
+        <view>实付款</view>
+        <view class="price">￥ {{total}}</view>
+    </view>
+    <view class="mark">
         <view>买家留言：</view>
-        <input type="text" placeholder="口味偏好等要求（请勿填写手机号）"></input>
+        <textarea type="text" bindblur="blurRemark" style="margin-left: 30rpx;" placeholder="口味偏好等要求（请勿填写手机号）"></textarea>
     </view>
     <view class="commit">
-      <button type="primary">付款</button>
+        <button type="primary" bindtap="submit">提交订单</button>
     </view>
 </view>

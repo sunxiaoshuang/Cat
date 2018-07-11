@@ -57,9 +57,5 @@ namespace JdCat.Cat.Model.Data
         /// 商品对象
         /// </summary>
         public virtual Product Product { get; set; }
-        /// <summary>
-        /// 订单商品集合
-        /// </summary>
-        public virtual ICollection<OrderProductAttribute> OrderProductAttributes { get; set; }
     }
 }

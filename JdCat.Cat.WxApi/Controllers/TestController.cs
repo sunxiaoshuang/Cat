@@ -52,7 +52,6 @@ namespace JdCat.Cat.WxApi.Controllers
                     Description = "测试订单数据",
                     Product = product,
                     Format =  product.Formats.ElementAt(0),
-                    Attributes = new List<OrderProductAttribute>{ new OrderProductAttribute { Attribute = product.Attributes.ElementAt(0) } },
                     Name = product.Name,
                     Price = product.Formats.ElementAt(0).Price,
                     Quantity = 1,

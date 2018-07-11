@@ -84,5 +84,17 @@ namespace JdCat.Cat.Common
         /// 飞印API密钥
         /// </summary>
         public string FeyinApiKey { get; set; }
+        /// <summary>
+        /// 支付服务商AppId
+        /// </summary>
+        public string ServerAppId { get; set; }
+        /// <summary>
+        /// 支付服务商Key
+        /// </summary>
+        public string ServerKey { get; set; }
+        /// <summary>
+        /// 支付服务商号
+        /// </summary>
+        public string ServerMchId { get; set; }
     }
 }

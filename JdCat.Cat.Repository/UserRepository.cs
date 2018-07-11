@@ -83,6 +83,57 @@ namespace JdCat.Cat.Repository
             entity.ModifyTime = DateTime.Now;
             return Context.SaveChanges() > 0;
         }
-
+        public IEnumerable<ShoppingCart> GetCarts(int userId, int businessId)
+        {
+            return Context.ShoppingCarts.Where(a => a.UserId == userId && a.BusinessId == businessId).ToList();
+        }
+        public ShoppingCart CreateCart(ShoppingCart cart)
+        {
+            Context.ShoppingCarts.Add(cart);
+            Context.SaveChanges();
+            return cart;
+        }
+        public ShoppingCart UpdateCart(ShoppingCart cart)
+        {
+            var entity = new ShoppingCart { ID = cart.ID };
+            Context.Attach(entity);
+            entity.Quantity = cart.Quantity;
+            Context.SaveChanges();
+            return cart;
+        }
+        public void DeleteCart(ShoppingCart cart)
+        {
+            Context.ShoppingCarts.Remove(cart);
+            Context.SaveChanges();
+        }
+        public bool UpdateCartQuantity(int id, int quantity)
+        {
+            var cart = new ShoppingCart { ID = id };
+            if (quantity <= 0)
+            {
+                Context.ShoppingCarts.Remove(cart);
+            }
+            else
+            {
+                Context.ShoppingCarts.Attach(cart);
+                cart.Quantity = quantity;
+            }
+            return Context.SaveChanges() > 0;
+        }
+        public bool ClearCart(int userId, int businessId)
+        {
+            return Context.Database.ExecuteSqlCommand("delete dbo.ShoppingCart where userid={0} and businessid={1}", userId, businessId) > 0;
+            
+        }
+        public Order CreateOrder(Order order)
+        {
+            Context.Orders.Add(order);
+            if(Context.SaveChanges() == 0)
+            {
+                throw new Exception("订单创建失败");
+            }
+            ClearCart(order.UserId.Value, order.BusinessId.Value);
+            return order;
+        }
     }
 }

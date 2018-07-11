@@ -109,7 +109,15 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<bool>("IsAutoReceipt");
 
+                    b.Property<double>("Lat");
+
+                    b.Property<double>("Lng");
+
                     b.Property<string>("LogoSrc");
+
+                    b.Property<string>("MchId");
+
+                    b.Property<string>("MchKey");
 
                     b.Property<string>("Mobile");
 
@@ -369,26 +377,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("OrderProduct","dbo");
                 });
 
-            modelBuilder.Entity("JdCat.Cat.Model.Data.OrderProductAttribute", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("AttributeId");
-
-                    b.Property<DateTime?>("CreateTime");
-
-                    b.Property<int>("OrderProductId");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("AttributeId");
-
-                    b.HasIndex("OrderProductId");
-
-                    b.ToTable("OrderProductAttribute","dbo");
-                });
-
             modelBuilder.Entity("JdCat.Cat.Model.Data.Product", b =>
                 {
                     b.Property<int>("ID")
@@ -587,6 +575,44 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("SettingProductAttribute","dbo");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ShoppingCart", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("FormatId");
+
+                    b.Property<string>("Name");
+
+                    b.Property<decimal?>("Price");
+
+                    b.Property<int>("ProductId");
+
+                    b.Property<int>("Quantity");
+
+                    b.Property<string>("Src");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.HasIndex("FormatId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ShoppingCart","dbo");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.User", b =>
                 {
                     b.Property<int>("ID")
@@ -699,19 +725,6 @@ namespace JdCat.Cat.Model.Migrations
                         .HasForeignKey("ProductId");
                 });
 
-            modelBuilder.Entity("JdCat.Cat.Model.Data.OrderProductAttribute", b =>
-                {
-                    b.HasOne("JdCat.Cat.Model.Data.ProductAttribute", "Attribute")
-                        .WithMany("OrderProductAttributes")
-                        .HasForeignKey("AttributeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("JdCat.Cat.Model.Data.OrderProduct", "OrderProduct")
-                        .WithMany("Attributes")
-                        .HasForeignKey("OrderProductId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("JdCat.Cat.Model.Data.Product", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
@@ -769,6 +782,27 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.SettingProductAttribute", "Parent")
                         .WithMany("Childs")
                         .HasForeignKey("ParentId");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ShoppingCart", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany("ShoppingCarts")
+                        .HasForeignKey("BusinessId");
+
+                    b.HasOne("JdCat.Cat.Model.Data.ProductFormat", "Format")
+                        .WithMany("ShoppingCarts")
+                        .HasForeignKey("FormatId");
+
+                    b.HasOne("JdCat.Cat.Model.Data.Product", "Product")
+                        .WithMany("ShoppingCarts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("JdCat.Cat.Model.Data.User", "User")
+                        .WithMany("ShoppingCarts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

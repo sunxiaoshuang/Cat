@@ -1,0 +1,30 @@
+var common = {
+    formatDate: function(str){
+        if(!str)return "";
+        var milliseconds = parseInt(getRegExp("\d+", "g").exec(str));
+        var time = getDate(milliseconds);
+
+        var year = time.getFullYear();
+        var month = (time.getMonth() + 1).toString();
+        month = month.length == 1 ? ("0" + month) : month;
+        var day = time.getDate().toString();
+        day = day.length == 1 ? ("0" + day) : day;
+        var hour = time.getHours().toString();
+        hour = hour.length == 1 ? ("0" + hour) : hour;
+        var minus = time.getMinutes().toString();
+        minus = minus.length == 1 ? ("0" + minus) : minus;
+        var second = time.getSeconds().toString();
+        second = second.length == 1 ? ("0" + second) : second;
+
+        return year + "-" + month + "-" + day + " " + hour + ":" + minus + ":" + second;
+    },
+    secondFormat: function(time){       // 将秒转化为分秒
+        var minus = Math.floor(time / 60).toString();
+        minus.length == 1 && (minus = "0" + minus);
+        var second = (time % 60).toString();
+        second.length == 1 && (second = "0" + second);
+        return minus + ":" + second;
+    }
+}
+
+module.exports = common;

@@ -7,10 +7,12 @@
     "pages/order/order",
     "pages/userinfo/userinfo",
     "pages/address/list/list",
+    "pages/order/orderInfo/orderInfo",
     "pages/address/edit/edit",
     "pages/addCgi/addCgi",
     "pages/test/test",
-    "pages/pay/pay"
+    "pages/pay/pay",
+    "pages/pay/sure/sure"
   ],
   "window":{
     "backgroundColor":"#f36c21",

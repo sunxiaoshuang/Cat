@@ -1,0 +1,66 @@
+
+.container {
+    width: 100%;
+    align-items: stretch;
+    background-color: #ececec;
+}
+
+.remain {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    align-items: center;
+    padding: 20rpx;
+}
+.remain .time {
+    font-size: 80%;
+    color: #bbb;
+}
+.remain .price {
+    font-size: 110%;
+}
+.remain .code {
+    font-size: 80%;
+    color: #bbb;
+}
+.payMode {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    align-items: stretch;
+    padding: 20rpx;
+    margin-top: 20rpx;
+}
+.payMode .mode {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    height: 60rpx;
+}
+.payMode .mode .payImg {
+    width: 100rpx;
+    line-height: 60rpx;
+}
+.payMode .mode .payImg image {
+    width: 40rpx;
+    height: 40rpx;
+}
+.payMode .mode .payName {
+    flex-grow: 1;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    align-items: center;
+    padding: 20rpx;
+    margin-top: 20rpx;
+}
+.commit{
+  width: 100%;
+  position: absolute;
+  background-color: #f36c21;
+  z-index: 100;
+  bottom: 0;
+}

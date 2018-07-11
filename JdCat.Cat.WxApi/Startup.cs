@@ -45,12 +45,16 @@ namespace JdCat.Cat.WxApi
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<ISessionDataRepository, SessionDataRepository>();
             // 系统参数
             var appData = Configuration.GetSection("appData");
             services.AddSingleton(new AppData
             {
-                OrderUrl = appData["orderUrl"]
+                OrderUrl = appData["orderUrl"],
+                ServerAppId = appData["serverAppId"],
+                ServerKey = appData["serverKey"],
+                ServerMchId = appData["serverMchId"]
             });
         }
         

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using JdCat.Cat.Common;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
 using Microsoft.AspNetCore.Cors;
@@ -14,7 +15,6 @@ using Newtonsoft.Json;
 namespace JdCat.Cat.WxApi.Controllers
 {
     [Route("api/[controller]")]
-//    [EnableCors("AllowDomain")]
     public class ProductController : BaseController<IProductRepository, Product>
     {
 
@@ -22,24 +22,12 @@ namespace JdCat.Cat.WxApi.Controllers
         {
 
         }
-        // GET api/values
-        [HttpGet]
-        public string Get([FromServices]IHostingEnvironment env)
+
+        [HttpGet("menus/{id}")]
+        public IActionResult GetMenus(int id)
         {
-            return "api test success";
+            return Json(Service.GetTypes(new Business() { ID = id }));
         }
 
-        [HttpGet]
-        [Route("menus")]
-        public string GetMenus(int businessId)
-        {
-            var business = new Business() { ID = businessId };
-            var types = Service.GetTypes(business);
-            JsonSerializerSettings settings = new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
-            return JsonConvert.SerializeObject(types, settings);
-        }
     }
 }
