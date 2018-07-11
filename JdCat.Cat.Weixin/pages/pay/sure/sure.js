@@ -67,7 +67,7 @@ Page({
         if (res.data.success) {
           wx.requestPayment(qcloud.utils.extend({}, res.data.data, {
             success: function (res) {
-              console.log(res);
+              util.showError(res);
             },
             fail: function(err){
               util.showError(err);
