@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace JdCat.Cat.WxApi.Models
+namespace JdCat.Cat.Common.Models
 {
     /// <summary>
     /// 微信统一支付接口参数类
@@ -70,7 +70,7 @@ namespace JdCat.Cat.WxApi.Models
         /// <summary>
         /// 通知地址
         /// </summary>
-        public string notify_url { get; set; } = "https://www.jiandanmao.cn/api/order/ret";
+        public string notify_url { get; set; } = "https://www.jiandanmao.cn/api/order/paySuccess";
         /// <summary>
         /// 用户标识
         /// </summary>

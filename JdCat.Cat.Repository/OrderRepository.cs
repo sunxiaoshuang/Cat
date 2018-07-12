@@ -187,12 +187,23 @@ namespace JdCat.Cat.Repository
             return Context.Orders.Include(a => a.Products).SingleOrDefault(a => a.ID == id);
         }
 
-        public bool UpdatePassword(Business business)
+        public Order PaySuccess(WxPaySuccess ret)
         {
-            var entity = new Business { ID = business.ID };
-            Context.Attach(entity);
-            entity.Password = business.Password;
-            return Context.SaveChanges() > 0;
+            var order = Context.Orders.Single(a => a.OrderCode == ret.out_trade_no);
+            if (order.Status == OrderStatus.NotPay)
+            {
+                order.WxPayCode = ret.transaction_id;
+                order.PayTime = DateTime.Now;
+                order.Status = OrderStatus.Payed;
+                var business = Context.Businesses.Single(a => a.ID == order.BusinessId);
+                if (business.IsAutoReceipt)
+                {
+                    order.Status = OrderStatus.Receipted;
+                }
+                Context.SaveChanges();
+                return order;
+            }
+            return null;
         }
 
     }

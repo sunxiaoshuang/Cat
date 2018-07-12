@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace JdCat.Cat.WxApi.Models
+namespace JdCat.Cat.Common.Models
 {
     /// <summary>
     /// 微信调起支付API签名列表类

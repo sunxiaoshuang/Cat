@@ -81,6 +81,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public PaymentType PaymentType { get; set; } = PaymentType.OnLine;
         /// <summary>
+        /// 支付时间
+        /// </summary>
+        public DateTime? PayTime { get; set; }
+        /// <summary>
         /// 配送时间
         /// </summary>
         public DateTime? DistributionTime { get; set; }

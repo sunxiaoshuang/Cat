@@ -23,7 +23,8 @@
     flex-grow: 1;
     align-items: flex-start;
     padding-left: 15rpx;
-    /* font-size: 85%; */
+    font-size: 85%;
+    white-space: nowrap;
     color: #f36c1b;
 }
 

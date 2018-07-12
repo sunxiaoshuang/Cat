@@ -17,12 +17,29 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    var order = wx.getStorageSync("orderDetail");
+    var order = wx.getStorageSync("orderDetail"), self = this;
     var business = qcloud.getSession().business;
+    if(!order) {
+      var id = options.id;
+      qcloud.request({
+        url: "/order/single/" + id,
+        method: "GET",
+        success: function(res) {
+          self.setData({
+            order: res.data,
+            businessId: business.id
+          });
+          self.calcTime();
+        }
+      });
+      return;
+    }
+
     this.setData({
       order: order,
       businessId: business.id
     });
+    wx.setStorageSync("orderDetail", null);
   },
 
   /**
@@ -36,9 +53,14 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+    this.calcTime();
+  },
+  calcTime: function() {
+    if(!this.data.order) return;
     // 每次显示界面，重新计算剩余时间
     clearInterval(this.data.timeId);
-    var overSecond = Math.floor(+/\d+/g.exec(this.data.order.createTime)[0] / 1000) + 60 * 300;
+    if(this.data.order.status != 256) return;
+    var overSecond = Math.floor(+/\d+/g.exec(this.data.order.createTime)[0] / 1000) + 60 * 15;
     var nowSecond = Date.parse(new Date()) / 1000;
     var remainderTime = overSecond - nowSecond;
     var self = this;
@@ -58,6 +80,7 @@ Page({
     });
   },
   submit: function () {
+    var self = this;
     util.showBusy("loading");
     var user = qcloud.getSession().userinfo;
     qcloud.request({
@@ -67,7 +90,23 @@ Page({
         if (res.data.success) {
           wx.requestPayment(qcloud.utils.extend({}, res.data.data, {
             success: function (res) {
-              util.showError(res);
+              if(res.errMsg == "requestPayment:ok"){
+                // qcloud.request({
+                //   url: "/order/paySuccess/" + self.data.order.id,
+                //   method: "GET",
+                //   success: function(res){
+                //     if(res.data.success) {
+                //       wx.setStorageSync("orderDetail", res.data.data);
+                //       wx.navigateTo({
+                //         url: '/pages/order/orderInfo/orderInfo'
+                //       });
+                //     }
+                //   }
+                // });
+                wx.navigateTo({
+                  url: '/pages/order/orderInfo/orderInfo?id=' + self.data.order.id
+                });
+              }
             },
             fail: function(err){
               util.showError(err);

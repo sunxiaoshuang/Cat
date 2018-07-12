@@ -83,9 +83,9 @@ namespace JdCat.Cat.Repository
             entity.ModifyTime = DateTime.Now;
             return Context.SaveChanges() > 0;
         }
-        public IEnumerable<ShoppingCart> GetCarts(int userId, int businessId)
+        public IEnumerable<ShoppingCart> GetCarts(int userId)
         {
-            return Context.ShoppingCarts.Where(a => a.UserId == userId && a.BusinessId == businessId).ToList();
+            return Context.ShoppingCarts.Where(a => a.UserId == userId).ToList();
         }
         public ShoppingCart CreateCart(ShoppingCart cart)
         {

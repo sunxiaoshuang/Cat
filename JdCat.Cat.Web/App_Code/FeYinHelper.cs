@@ -56,7 +56,6 @@ namespace JdCat.Cat.Web.App_Code
             content.Append("<center><Font# Bold=1 Width=2 Height=2>简单猫外卖</Font#>\n");
             content.Append("\n\n");
             content.Append($"<left>下单时间：{order.CreateTime:yyyy-MM-dd HH:mm:ss}\n");
-            content.Append("********************************\n");
             content.Append("************购买商品************\n");
             //content.Append($"******{DateTime.Now:yyyy-MM-dd HH:mm:ss}*******\n");
             if (order.Products == null || order.Products.Count == 0)
@@ -82,7 +81,7 @@ namespace JdCat.Cat.Web.App_Code
                     content.Append($"<Font# Bold=1 Width=1 Height=1>{name}</Font#>\n");
                 }
                 //content.Append($"*************其他*************");
-                content.Append("********************************\n");
+                content.Append("--------------------------------\n");
                 content.Append($"<right>总价：{order.Price.Value.ToString("f2")}\n");
                 content.Append("--------------------------------\n");
                 content.Append($"<left><Font# Bold=1 Width=2 Height=2>{order.ReceiverAddress}</Font#>\n");

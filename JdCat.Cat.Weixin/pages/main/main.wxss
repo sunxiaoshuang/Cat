@@ -524,10 +524,10 @@ page {
   font-size: 25rpx;
 }
 
-.item-food-numb .item-add,
-.item-food-numb .item-remove {
-  width: 47rpx;
-  height: 47rpx;
+.item-add,
+.item-remove {
+  width: 52rpx;
+  height: 52rpx;
   border: none;
 }
 
@@ -948,12 +948,12 @@ page {
   height: 30rpx;
 }
 .item-food-numb image {
-  width: 38rpx;
-  height: 38rpx;
+  width: 47rpx;
+  height: 47rpx;
 }
 .item-food-numb .item-add image {
-  width: 40rpx;
-  height: 40rpx;
+  width: 50rpx;
+  height: 50rpx;
 }
 .item-food-text {
   flex-grow: 1;

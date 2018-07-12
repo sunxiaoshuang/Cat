@@ -86,5 +86,11 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         Order GetOrderIncludeProduct(int id);
+        /// <summary>
+        /// 订单支付成功
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Order PaySuccess(WxPaySuccess ret);
     }
 }

@@ -16,12 +16,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    var order = wx.getStorageSync("orderDetail");
-    var business = qcloud.getSession().business;
-    this.setData({
-      order: order,
-      businessId: business.id
-    });
+    this.loadData(options.id);
   },
 
   /**
@@ -35,8 +30,41 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+    this.calcTime();
+  },
+  loadData: function(id){
+    var order = wx.getStorageSync("orderDetail"), self = this;
+    var business = qcloud.getSession().business;
+    if(!order) {
+      qcloud.request({
+        url: "/order/single/" + id,
+        method: "GET",
+        success: function(res) {
+          self.setData({
+            order: res.data,
+            businessId: business.id
+          });
+          self.calcTime();
+        }
+      });
+      return;
+    }
+
+    this.setData({
+      order: order,
+      businessId: business.id
+    });
+    wx.setStorageSync("orderDetail", null);
+  },
+  onPullDownRefresh: function(){
+    this.loadData(this.data.order.id);
+    wx.stopPullDownRefresh();
+  },
+  calcTime: function() {
     // 每次显示界面，重新计算剩余时间
+    if(!this.data.order)return;
     clearInterval(this.data.timeId);
+    if(this.data.order.status != 256)return;
     var overSecond = Math.floor(+/\d+/g.exec(this.data.order.createTime)[0] / 1000) + 60 * 15;
     var nowSecond = Date.parse(new Date()) / 1000;
     var remainderTime = overSecond - nowSecond;

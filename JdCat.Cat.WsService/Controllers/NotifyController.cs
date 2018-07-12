@@ -19,9 +19,9 @@ namespace JdCat.Cat.WsService.Controllers
         /// <param name="wsList"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id, [FromQuery]string code, [FromServices]WsHandler wsHandler)
+        public async Task<IActionResult> Get(int id, [FromQuery]string code, [FromQuery]int status, [FromServices]WsHandler wsHandler)
         {
-            await wsHandler.OrderNotifyAsync(id, code);
+            await wsHandler.OrderNotifyAsync(id, code, status);
             return Ok("新订单通知成功");
         }
     }

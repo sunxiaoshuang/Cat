@@ -40,9 +40,8 @@ namespace JdCat.Cat.IRepository
         /// 根据用户获取购物车列表
         /// </summary>
         /// <param name="userId">用户id</param>
-        /// <param name="businessId">商户id</param>
         /// <returns></returns>
-        IEnumerable<ShoppingCart> GetCarts(int userId, int businessId);
+        IEnumerable<ShoppingCart> GetCarts(int userId);
         /// <summary>
         /// 创建购物车
         /// </summary>

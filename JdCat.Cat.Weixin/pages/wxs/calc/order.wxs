@@ -34,7 +34,7 @@ var order = {
         if(name == "未付款") {
             var reg = getRegExp("\d+", "g");
             var time = Date.parse(getDate()) - parseInt(reg.exec(order.createTime));
-            if(time > 300 * 60 * 1000) {          // 如果下单时间已经超过5分钟，则显示订单已取消
+            if(time > 15 * 60 * 1000) {          // 如果下单时间已经超过5分钟，则显示订单已取消
                 name = status["4096"];
             }
         }

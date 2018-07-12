@@ -87,7 +87,7 @@ Page({
       success: function (res) {
         if(res.data.success){
           self.data.cartList = [];
-          wx.setStorageSync('cartList', null);
+          wx.setStorageSync('cartList', []);
           wx.setStorageSync("orderDetail", res.data.data);
           wx.navigateTo({
             url: '/pages/pay/sure/sure'

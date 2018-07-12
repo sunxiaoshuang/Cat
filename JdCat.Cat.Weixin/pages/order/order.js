@@ -98,9 +98,9 @@ Page({
   },
   navigate: function (e) {
     var order = this.data.list[e.currentTarget.dataset.index];
-    wx.setStorageSync("orderDetail", order);
+    // wx.setStorageSync("orderDetail", order);
     wx.navigateTo({
-      url: "/pages/order/orderInfo/orderInfo"
+      url: "/pages/order/orderInfo/orderInfo?id=" + order.id
     });
   },
   mainPage: function(){
@@ -110,9 +110,8 @@ Page({
   },
   sure: function(e){
     var order = this.data.list[e.currentTarget.dataset.index];
-    wx.setStorageSync("orderDetail", order);
     wx.navigateTo({
-      url: "/pages/pay/sure/sure"
+      url: "/pages/pay/sure/sure?id=" + order.id
     });
   }
 })

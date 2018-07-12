@@ -71,7 +71,8 @@
     var newOrder = document.getElementById("audio-new");
     ws.onmessage = function (res) {
         var time = new Date();
-        msg.list.push({ code: res.data, time: time.getHours() + ":" + time.getMinutes()});
+        var arr = res.data.split("|");
+        msg.list.push({ code: arr[0], status: arr[1], time: time.getHours() + ":" + time.getMinutes()});
         newOrder.play();
     };
     ws.onopen = function (a) {

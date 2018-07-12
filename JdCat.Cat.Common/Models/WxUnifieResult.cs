@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JdCat.Cat.WxApi.Models
+namespace JdCat.Cat.Common.Models
 {
     /// <summary>
     /// 微信统一支付后返回结果类
