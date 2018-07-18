@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
+using JdCat.Cat.Common;
 
 namespace JdCat.Cat.Repository
 {
@@ -46,7 +48,7 @@ namespace JdCat.Cat.Repository
         }
         public int Update(T entity, IEnumerable<string> fieldNames = null, bool commit = true)
         {
-            if(fieldNames == null || fieldNames.Count() == 0)
+            if (fieldNames == null || fieldNames.Count() == 0)
             {
                 _context.Entry(entity).State = EntityState.Modified;
             }
@@ -73,5 +75,22 @@ namespace JdCat.Cat.Repository
         {
             return _context.Set<T>().FirstOrDefault(predicate) != null;
         }
+
+        public List<TModel> ExecuteReader<TModel>(string search) where TModel : new()
+        {
+            var conn = Context.Database.GetDbConnection();
+            conn.Open();
+            var command = conn.CreateCommand();
+            command.CommandText = search;
+            command.CommandType = CommandType.Text;
+            var reader = command.ExecuteReader();
+            var dt = new DataTable();
+            dt.Load(reader);
+            conn.Close();
+            return dt.GetList<TModel>();
+        }
+
+
+
     }
 }

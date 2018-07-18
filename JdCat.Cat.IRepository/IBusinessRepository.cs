@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Report;
 
 namespace JdCat.Cat.IRepository
 {
@@ -21,6 +22,8 @@ namespace JdCat.Cat.IRepository
         /// <param name="business"></param>
         /// <returns></returns>
         bool SaveBase(Business business);
+        bool ChangeAutoReceipt(Business business, bool state);
+        bool ChangeClose(Business business, bool state);
         /// <summary>
         /// 保存小程序信息
         /// </summary>
@@ -64,5 +67,24 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="business"></param>
         bool UpdatePassword(Business business);
+
+        #region 报表类方法
+        /// <summary>
+        /// 获取指定日期内商户的每日订单统计
+        /// </summary>
+        /// <param name="business"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <returns></returns>
+        List<Report_Order> GetOrderTotal(Business business, DateTime startTime, DateTime endTime);
+        /// <summary>
+        /// 获取指定日期内的商品统计
+        /// </summary>
+        /// <param name="business"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        List<Report_Product> GetProductTotal(Business business, DateTime date);
+
+        #endregion
     }
 }

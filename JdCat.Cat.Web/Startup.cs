@@ -36,7 +36,6 @@ namespace JdCat.Cat.Web
                 // 注册全局异常过滤器
                 options.Filters.Add<GlobalExceptionAttribute>();
             });
-            services.AddMvc();
             // 配置会话应用状态
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
@@ -70,7 +69,7 @@ namespace JdCat.Cat.Web
                 DadaShopNo = appData["dadaShopNo"],
                 DadaCallback = appData["dadaCallback"],
                 FeyinAppId = appData["feyinAppId"],
-                FeyinMemberCode= appData["feyinMemberCode"],
+                FeyinMemberCode = appData["feyinMemberCode"],
                 FeyinApiKey = appData["feyinApiKey"]
             };
             services.AddSingleton(config);

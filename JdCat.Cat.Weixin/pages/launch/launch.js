@@ -11,7 +11,7 @@ Page({
       success: function (userinfo) {
         setTimeout(() => {
           wx.switchTab({
-            url: "/pages/order/order"
+            url: "/pages/main/main"
           });
           // wx.navigateTo({
           //   url: "/pages/test/test"

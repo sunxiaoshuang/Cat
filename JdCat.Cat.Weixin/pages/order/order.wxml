@@ -15,6 +15,7 @@
             <view class="product" wx:for="{{order.products}}" wx:key="id">
                 <view class="name">
                     <text>{{item.name}}</text>
+                    <text wx:if="{{!!item.description}}" style="font-size: 80%; color: #aaa;">（{{item.description}}）</text>
                 </view>
                 <view class="quantity">
                     <text>×{{item.quantity}}</text>

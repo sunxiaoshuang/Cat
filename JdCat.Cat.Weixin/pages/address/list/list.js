@@ -111,7 +111,7 @@ Page({
         wx.setStorageSync("addressList", self.data.list);
         self.setData({
           list: self.data.list
-        })
+        });
       }
     });
   },
@@ -123,12 +123,14 @@ Page({
   },
   select: function(e){
     if(this.data.flag != "select") return;
-    var address = this.data.list[e.currentTarget.dataset.index];
     var business = qcloud.getSession().business;
-    var distance = util.calcDistance(address, business);
-    if(business.freight - distance / 1000 < 0) {
-      util.showError("地址超出商家配送范围");
-      return;
+    var address = this.data.list[e.currentTarget.dataset.index];
+    if(business.range > 0) { 
+      var distance = util.calcDistance(address, business);
+      if(business.range - distance / 1000 < 0) {
+        util.showError("地址超出商家配送范围");
+        return;
+      }
     }
     wx.setStorageSync("selectAddress", address);
     wx.navigateBack({

@@ -115,7 +115,7 @@
                                             自送已到达
                                         </button>
                                     </div>
-                                    <div class="kui-button m-right-xs" v-if="order.status == 4 || order.status == 8">
+                                    <div class="kui-button m-right-xs" v-if="order.status == 4 || order.status == 8 || order.status == 16">
                                         <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="print(order)">
                                             打印小票
                                         </button>

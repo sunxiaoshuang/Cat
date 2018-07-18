@@ -73,9 +73,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("AppId");
 
+                    b.Property<string>("BusinessEndTime");
+
                     b.Property<string>("BusinessLicense");
 
                     b.Property<string>("BusinessLicenseImage");
+
+                    b.Property<string>("BusinessStartTime");
 
                     b.Property<string>("CityCode");
 
@@ -109,6 +113,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<bool>("IsAutoReceipt");
 
+                    b.Property<bool>("IsClose");
+
                     b.Property<double>("Lat");
 
                     b.Property<double>("Lng");
@@ -118,6 +124,8 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<string>("MchId");
 
                     b.Property<string>("MchKey");
+
+                    b.Property<decimal>("MinAmount");
 
                     b.Property<string>("Mobile");
 
@@ -131,9 +139,11 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Secret");
 
+                    b.Property<string>("SpecialImage");
+
                     b.Property<string>("StoreId")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("'JD-' + dbo.fn_right_padding(NEXT VALUE FOR shared.StoreNumbers, 6)");
+                        .HasDefaultValueSql("'JD' + dbo.fn_right_padding(NEXT VALUE FOR shared.StoreNumbers, 6)");
 
                     b.HasKey("ID");
 
@@ -306,7 +316,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("OrderCode")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 6) + CAST(floor(rand()*100000) as varchar(5))");
+                        .HasDefaultValueSql("CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 6) + dbo.fn_right_padding(CAST(floor(rand()*100000) as varchar(5)), 5)");
 
                     b.Property<DateTime?>("PayTime");
 
@@ -461,7 +471,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Code")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("'F-' + CAST(YEAR(GETDATE()) AS varchar) + dbo.fn_right_padding(NEXT VALUE FOR shared.FormatNumbers, 9)");
+                        .HasDefaultValueSql("'F' + CAST(YEAR(GETDATE()) AS varchar) + dbo.fn_right_padding(NEXT VALUE FOR shared.FormatNumbers, 9)");
 
                     b.Property<DateTime?>("CreateTime");
 

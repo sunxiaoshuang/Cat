@@ -1,4 +1,4 @@
-<view class="payMain" disable-scroll="true">
+<scroll-view class="payMain" scroll-y="true">
     <view class="address">
         <view class="select-address" wx:if="{{!address}}">
             <button plain="true" bindtap="selectAddress">
@@ -53,9 +53,12 @@
     </view>
     <view class="mark">
         <view>买家留言：</view>
-        <textarea type="text" bindblur="blurRemark" style="margin-left: 30rpx;" placeholder="口味偏好等要求（请勿填写手机号）"></textarea>
+        <input type="text" cursor-spacing="10" bindblur="blurRemark" style="padding-left: 30rpx;" placeholder="口味偏好等要求（请勿填写手机号）"></input>
+    </view>
+    <view style="height: 300px;">
+        
     </view>
     <view class="commit">
         <button type="primary" bindtap="submit">提交订单</button>
     </view>
-</view>
+</scroll-view>

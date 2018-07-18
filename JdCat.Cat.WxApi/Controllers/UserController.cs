@@ -185,9 +185,9 @@ namespace JdCat.Cat.WxApi.Controllers
         /// <param name="businessId"></param>
         /// <returns></returns>
         [HttpGet("carts/{id}")]
-        public IActionResult GetCarts(int id, [FromQuery]int businessId)
+        public IActionResult GetCarts(int id)
         {
-            return Json(Service.GetCarts(id, businessId));
+            return Json(Service.GetCarts(id));
         }
 
         /// <summary>

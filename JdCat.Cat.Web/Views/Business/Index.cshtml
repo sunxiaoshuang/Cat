@@ -41,193 +41,261 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <span class="title">商户信息设置</span>
+                        <span class="title">商户管理</span>
                     </h3>
                 </div>
             </div>
             <div class="panel-body form-horizontal">
+
                 <div class="form-group">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">商户LOGO</span>
+                    <label class="control-label col-xs-2 col-md-1 col-xs-offset-1">
+                        <span class="require">是否暂停营业</span>
                     </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <div v-bind:class="{ 'hide': !entity.logoSrc}">
-                            <img style="width: 200px; height: 150px;margin-right: 20px;" :src="logo" class="img-thumbnail img-responsive" id="img" />
-                            <i class="fa fa-times-circle-o" style="color: #808080;cursor: pointer;font-size: 1.5em;" title="删除" v-on:click="remove()"></i>
-                        </div>
-                        <div class="cat-upload" v-on:click="selectFile()" v-bind:class="{ 'hide': !!entity.logoSrc}">
-                            <div class="icon-upload">
-                                <span class="fa fa-cloud-upload"></span>
-                            </div>
-                            <div class="note-upload">
-                                <span>点击上传</span>
-                            </div>
-                            <input type="file" id="file" style="display: none;" />
+                    <div class="col-xs-4 col-md-3">
+                        <div class="switch">
+                            <input type="checkbox" data-on-text="启动" data-off-text="停止" id="cbClose" />
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">商户编码</span>
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <input type="text" :value="entity.storeId" class="form-control" disabled />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1 col-md-1">
-                        登录账号
-                    </label>
-                    <div class="col-xs-4 col-md-3">
-                        <input type="text" :value="entity.code" class="form-control" disabled />
-                    </div>
-                </div>
-                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.name)}">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">商品名称</span>
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <input type="text" maxlength="30" v-model.trim="entity.name" class="form-control" />
-                    </div>
-                </div>
-                @*<div class="form-group">
-            <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                邮箱
-            </label>
-            <div class=" col-xs-4 col-md-3">
-                <input type="email" v-model.trim="entity.email" class="form-control" />
-            </div>
-        </div>*@
-                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.address)}">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">地址</span>
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <input type="text" v-model.trim="entity.address" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.contact)}">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">联系人</span>
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <input type="text" maxlength="30" v-model.trim="entity.contact" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.mobile)}">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">联系人电话</span>
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <input type="text" maxlength="30" v-model.trim="entity.mobile" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        邀请码
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <input type="text" :value="entity.invitationCode" class="form-control" disabled />
-                    </div>
-                </div>
-                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.lng)}">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">商铺经度</span>
-                    </label>
-                    <div class="col-xs-4 col-md-3">
-                        <input type="number" maxlength="30" v-model.trim="entity.lng" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.lat)}">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">商品纬度</span>
-                    </label>
-                    <div class="col-xs-4 col-md-3">
-                        <input type="number" maxlength="30" v-model.trim="entity.lat" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        配送范围
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <div class="input-group">
-                            <input type="number" v-model.trim="entity.range" class="form-control" />
-                            <span class="input-group-addon">公里</span>
-                        </div>
-                    </div>
-                    <div class="col-xs-2">
-                        <label class="control-label text-primary">
-                            0=无限制
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                    <label class="control-label col-xs-2 col-md-1 col-xs-offset-1">
                         <span class="require">是否自动接单</span>
                     </label>
-                    <div class=" col-xs-4 col-md-3">
+                    <div class="col-xs-4 col-md-3">
                         <div class="switch">
                             <input type="checkbox" data-on-text="启动" data-off-text="停止" id="switch" />
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">外卖运费</span>
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <div class="input-group">
-                            <input type="number" v-model.trim="entity.freight" class="form-control" />
-                            <span class="input-group-addon"><i class="fa fa-jpy"></i></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.businessLicense)}">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">营业执照编号</span>
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <input type="text" v-model.trim="entity.businessLicense" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group" v-bind:class="{'has-error': (showError && !entity.businessLicense)}">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        <span class="require">上传营业执照</span>
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <img :src="license" v-show="entity.businessLicenseImage" class="img-thumbnail img-responsive" />
-                        <input type="file" id="fileLicense" class="hide" @@change="changeBusinessLicense($event)" />
-                        <div class="kui-button">
-                            <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" v-on:click="uploadBusinessLicense()">
-                                上传
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                        商户备注
-                    </label>
-                    <div class=" col-xs-4 col-md-3">
-                        <textarea type="text" maxlength="30" rows="5" v-model.trim="entity.description" class="form-control"></textarea>
-                    </div>
-                </div>
             </div>
-            <div class="panel-footer text-center">
-                <div class="kui-button">
-                    <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" v-on:click="save()">
-                        保存
-                    </button>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="title">商户信息</span>
+                        </h3>
+                    </div>
                 </div>
-                <div class="kui-button">
-                    <button type="button" class="btn kui-button-primary" style="width: 100px" v-on:click="ret()">
-                        返回
-                    </button>
+                <div class="panel-body form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">商户LOGO</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <div v-bind:class="{ 'hide': !entity.logoSrc}">
+                                <img style="width: 200px; height: 150px;margin-right: 20px;" :src="logo" class="img-thumbnail img-responsive" id="img" />
+                                <i class="fa fa-times-circle-o" style="color: #808080;cursor: pointer;font-size: 1.5em;" title="删除" v-on:click="remove()"></i>
+                            </div>
+                            <div class="cat-upload" v-on:click="selectFile()" v-bind:class="{ 'hide': !!entity.logoSrc}">
+                                <div class="icon-upload">
+                                    <span class="fa fa-cloud-upload"></span>
+                                </div>
+                                <div class="note-upload">
+                                    <span>点击上传</span>
+                                </div>
+                                <input type="file" id="file" style="display: none;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">商户编码</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <input type="text" :value="entity.storeId" class="form-control" disabled />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1 col-md-1">
+                            登录账号
+                        </label>
+                        <div class="col-xs-4 col-md-3">
+                            <input type="text" :value="entity.code" class="form-control" disabled />
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="{'has-error': (showError && !entity.name)}">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">商品名称</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <input type="text" maxlength="30" v-model.trim="entity.name" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="{'has-error': (showError && !entity.address)}">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">地址</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <input type="text" v-model.trim="entity.address" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="{'has-error': (showError && !entity.contact)}">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">联系人</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <input type="text" maxlength="30" v-model.trim="entity.contact" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="{'has-error': (showError && !entity.mobile)}">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">联系人电话</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <input type="text" maxlength="30" v-model.trim="entity.mobile" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            邀请码
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <input type="text" :value="entity.invitationCode" class="form-control" disabled />
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="{'has-error': (showError && !entity.lng)}">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">商铺经度</span>
+                        </label>
+                        <div class="col-xs-4 col-md-3">
+                            <input type="number" maxlength="30" v-model.trim="entity.lng" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="{'has-error': (showError && !entity.lat)}">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">商铺纬度</span>
+                        </label>
+                        <div class="col-xs-4 col-md-3">
+                            <input type="number" maxlength="30" v-model.trim="entity.lat" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            配送范围
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <div class="input-group">
+                                <input type="number" v-model.trim="entity.range" class="form-control" />
+                                <span class="input-group-addon">公里</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-2">
+                            <label class="control-label text-primary">
+                                0=无限制
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">外卖运费</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <div class="input-group">
+                                <input type="number" v-model.trim="entity.freight" class="form-control" />
+                                <span class="input-group-addon"><i class="fa fa-jpy"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">起送金额</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <div class="input-group">
+                                <input type="number" v-model.trim="entity.minAmount" class="form-control" />
+                                <span class="input-group-addon"><i class="fa fa-jpy"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">经营开始时间</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <div class="input-group">
+                                <select class="businessTime" v-model="startHour">
+                                    <option v-for="(item, $index) in 24" :value='$index.toString().length == 1 ? ("0" + $index) : $index'>{{$index.toString().length == 1 ? ("0" + $index) : $index}}</option>
+                                </select>
+                                <select class="businessTime" v-model="startMinus">
+                                    <option v-for="(item, $index) in 60" :value='$index.toString().length == 1 ? ("0" + $index) : $index'>{{$index.toString().length == 1 ? ("0" + $index) : $index}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">经营结束时间</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <div class="input-group">
+                                <select class="businessTime" v-model="endHour">
+                                    <option v-for="(item, $index) in 24">{{$index.toString().length == 1 ? ("0" + $index) : $index}}</option>
+                                </select>
+                                <select class="businessTime" v-model="endMinus">
+                                    <option v-for="(item, $index) in 60">{{$index.toString().length == 1 ? ("0" + $index) : $index}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="{'has-error': (showError && !entity.businessLicense)}">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">营业执照编号</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <input type="text" v-model.trim="entity.businessLicense" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="{'has-error': (showError && !entity.businessLicenseImage)}">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">上传营业执照</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <img :src="license" v-show="entity.businessLicenseImage" class="img-thumbnail img-responsive" />
+                            <input type="file" id="fileLicense" class="hide" @@change="changeBusinessLicense($event)" />
+                            <div class="kui-button">
+                                <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" v-on:click="uploadBusinessLicense()">
+                                    上传
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" v-bind:class="{'has-error': (showError && !entity.specialImage)}">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">特殊资质</span>
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <span style="color: red;">（请上传食品经营许可证、餐饮服务许可证等有效证件）</span><br />
+                            <img :src="specialImage" v-show="entity.specialImage" class="img-thumbnail img-responsive" />
+                            <input type="file" id="fileSpecialImage" class="hide" @@change="changeSpecialImage($event)" />
+                            <div class="kui-button">
+                                <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" v-on:click="uploadSpecialImage()">
+                                    上传
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            商户备注
+                        </label>
+                        <div class=" col-xs-4 col-md-3">
+                            <textarea type="text" maxlength="30" rows="5" v-model.trim="entity.description" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer text-center">
+                    <div class="kui-button">
+                        <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" v-on:click="save()">
+                            保存
+                        </button>
+                    </div>
+                    <div class="kui-button">
+                        <button type="button" class="btn kui-button-primary" style="width: 100px" v-on:click="ret()">
+                            返回
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     <div style="height: 100px;"></div>
 </div>
 

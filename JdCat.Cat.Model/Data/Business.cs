@@ -56,6 +56,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string BusinessLicenseImage { get; set; }
         /// <summary>
+        /// 特殊资质
+        /// </summary>
+        public string SpecialImage { get; set; }
+        /// <summary>
         /// 邀请码
         /// </summary>
         public string InvitationCode { get; set; }
@@ -141,6 +145,22 @@ namespace JdCat.Cat.Model.Data
         /// 商铺位置纬度
         /// </summary>
         public double Lat { get; set; }
+        /// <summary>
+        /// 经营开始时间
+        /// </summary>
+        public string BusinessStartTime { get; set; } = "06:00";
+        /// <summary>
+        /// 经营结束时间
+        /// </summary>
+        public string BusinessEndTime { get; set; } = "21:00";
+        /// <summary>
+        /// 起送金额
+        /// </summary>
+        public decimal MinAmount { get; set; }
+        /// <summary>
+        /// 是否打烊
+        /// </summary>
+        public bool IsClose { get; set; }
 
         /// <summary>
         /// 产品列表集合

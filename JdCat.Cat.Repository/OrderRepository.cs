@@ -147,10 +147,11 @@ namespace JdCat.Cat.Repository
                         break;
                     case DadaStatus.Distribution:
                         order.Status = OrderStatus.Distribution;
+                        order.DistributionTime = DateTime.Now;
                         break;
                     case DadaStatus.Finish:
                         order.Status = OrderStatus.Achieve;
-                        order.DistributionTime = DateTime.Now;
+                        order.AchieveTime = DateTime.Now;
                         break;
                     case DadaStatus.Cancel:
                         order.Status = OrderStatus.CallOff;

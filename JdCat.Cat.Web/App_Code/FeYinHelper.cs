@@ -79,10 +79,18 @@ namespace JdCat.Cat.Web.App_Code
                     name += "* " + product.Quantity;
                     name += "    " + product.Price.Value.ToString("f2");
                     content.Append($"<Font# Bold=1 Width=1 Height=1>{name}</Font#>\n");
+                    if(!string.IsNullOrEmpty( product.Description))
+                    {
+                        content.Append($"<Font# Bold=0 Width=1 Height=1>（{product.Description}）</Font#>\n");
+                    }
                 }
                 //content.Append($"*************其他*************");
                 content.Append("--------------------------------\n");
                 content.Append($"<right>总价：{order.Price.Value.ToString("f2")}\n");
+                if(!string.IsNullOrEmpty(order.Remark))
+                {
+                    content.Append($"<left>备注：{order.Remark}\n");
+                }
                 content.Append("--------------------------------\n");
                 content.Append($"<left><Font# Bold=1 Width=2 Height=2>{order.ReceiverAddress}</Font#>\n");
                 content.Append($"<Font# Bold=1 Width=2 Height=2>{order.Phone}</Font#>\n");

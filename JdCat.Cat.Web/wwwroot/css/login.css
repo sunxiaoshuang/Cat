@@ -14,7 +14,7 @@
 }
 
 .margin-top-100{
-    margin-top: 140px;
+    margin-top: 200px;
 }
 .margin-top-10{
     margin-top: 10px;
@@ -22,7 +22,7 @@
 
 .login-container {
     margin: 0 auto;
-    width: 300px;
+    width: 400px;
 }
 
 .login-label {
@@ -40,6 +40,7 @@
 }
 .login-input {
     border: 1px solid #ccc;
+    height: 45px;
 }
 .login-input:focus {
     border: 1px solid #ea7042;
@@ -81,4 +82,7 @@
 
 .registe-div {
     float: right;
+}
+.btn-block {
+    height: 45px;
 }

@@ -15,11 +15,36 @@ page {
 }
 
 .head {
-  justify-content: space-around;
+  flex-flow: row nowrap;
+  justify-content: space-between;
   display: flex;
   width: 100%;
-  height: 80rpx;
-  background: #f36c1b;
+  height: 170rpx;
+  background: #555;
+  padding: 10rpx 20rpx;
+}
+.head .logo {
+  height: 200rpx;
+  width: 180rpx;
+}
+.head .logo image {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 10rpx;
+}
+.head .business-content {
+   flex-grow: 1; 
+   /* align-items: stretch;  */
+  padding: 0 20rpx 0 10rpx;
+  color: #fff;
+}
+.head .business-content .name {
+  font-weight: 800;
+}
+.head .business-content .description {
+  margin-top: 10rpx;
+  font-size: 70%;
+  line-height: 1;
 }
 
 .head-location-icon {
@@ -27,6 +52,7 @@ page {
   top: 12rpx;
   height: 25rpx;
   width: 25rpx;
+  
 }
 
 .head-location-text {
@@ -104,17 +130,20 @@ page {
   flex-grow: 1;
 }
 .cart-clear {
-  font-size: 30rpx;
+  font-size: 90%;
   color: #ACACAC;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  height: 50rpx;
-  margin-right: 20rpx;
+  height: 70rpx;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 20rpx;
 }
 
 .cart-view {
-  max-height: 400rpx;
+  max-height: 600rpx;
 }
 
 .cart {
@@ -123,7 +152,7 @@ page {
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
-  height: 70rpx;
+  height: 140rpx;
   border-bottom: 1rpx solid #ECECEC;
   background: white;
 }
@@ -514,8 +543,8 @@ page {
 }
 
 .item-food-numb {
-  height: 40rpx;
-  width: 140rpx;
+  height: 60rpx;
+  width: 150rpx;
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
@@ -526,8 +555,8 @@ page {
 
 .item-add,
 .item-remove {
-  width: 52rpx;
-  height: 52rpx;
+  width: 62rpx;
+  height: 62rpx;
   border: none;
 }
 
@@ -552,7 +581,7 @@ page {
   height: 70rpx;
   width: 180rpx;
   line-height: 70rpx;
-  font-size: 30rpx;
+  /* font-size: 30rpx; */
   text-align: center;
 }
 
@@ -563,6 +592,7 @@ page {
 
 .swiper {
   height: 100%;
+  margin-top: 20rpx;
 }
 
 .orderMain {
@@ -578,13 +608,15 @@ page {
 }
 
 #restaurantPage {
-  background: withe;
+  background: #f0f0f0;
 }
 
 .orderPage-sideBar {
-  width: 150rpx;
+  width: 170rpx;
   height: 100%;
-  background: #fff;
+  font-size: 90%;
+  background-color: #f8f8f8;
+  margin-right: 20rpx;
 }
 
 .menuList {
@@ -594,20 +626,24 @@ page {
 }
 
 .menuList .menu {
-  height: 100rpx;
-  width: 150rpx;
+  height: 130rpx;
+  width: 170rpx;
   position: relative;
   text-align: left;
-  line-height: 100rpx;
+  display: flex;
+  align-items: center;
   padding-left: 10rpx;
   font-size: 90%;
   border-bottom: 1rpx dashed #ECECEC;
   border-left: 3px solid transparent;
-  white-space: nowrap;
+  padding-right: 20rpx;
 }
 
 .selected.menu {
-  border-left: 3px solid #EA7042; 
+  border-left: 3px solid #f36c1b; 
+  background-color: #fff;
+  color: #f36c1b;
+  text-align: center;
 }
 
 .foodList {
@@ -630,7 +666,7 @@ page {
   padding: 15rpx;
   height: 25rpx;
   line-height: 25rpx;
-  font-size: 25rpx;
+  font-size: 110%;
   color: #EA7042;
 }
 
@@ -645,8 +681,9 @@ page {
 .food {
   position: relative;
   display: flex;
+  flex-grow: 1;
   align-items: flex-start;
-  height: 170rpx;
+  min-height: 155rpx;
   border-bottom: 1rpx solid #ECECEC;
   background: white;
 }
@@ -663,7 +700,7 @@ page {
 .food .img {
   margin-top: 10rpx;
   width: 120rpx;
-  height: 90rpx;
+  height: 120rpx;
 }
 
 .food-info {
@@ -673,17 +710,20 @@ page {
 }
 
 .food .name {
-  font-size: 30rpx;
+  /* font-size: 110%; */
+  font-weight: 800;
 }
 
 .food .sales {
   font-size: 25rpx;
   color: #ACACAC;
+  line-height: 25rpx;
 }
 
 .food .price {
-  font-size: 30rpx;
+  /* font-size: 30rpx; */
   color: red;
+  font-weight: 800;
 }
 
 .food-numb {
@@ -698,7 +738,7 @@ page {
 }
 
 .single-format {
-  width: 130rpx;
+  width: 150rpx;
   display: flex;
   justify-content: flex-end;
 }
@@ -709,13 +749,16 @@ page {
 }
 
 .selectFormat {
-  width: 130rpx;
+  width: 120rpx;
   border-radius: 15rpx;
   text-align: center;
+  line-height: 35rpx;
+  height: 35rpx;
   color: #fff;
-  background: #f36c1b;
+  background-color: #f36c1b;
   justify-content: flex-end;
-  font-size: 120%;
+  font-size: 110%;
+  padding: 5rpx 10rpx;
 }
 
 .formtCount {
@@ -761,10 +804,11 @@ page {
 
 .footer {
   display: flex;
-  position: absolute;
+  position: fixed;
   right: 0;
   left: 0;
-  bottom: 150rpx;
+  bottom: 0rpx;
+  width: 100%;
 }
 
 .footer .img {
@@ -778,17 +822,17 @@ page {
   justify-content: center;
 }
 
-#orderPage .howMuch {
+.howMuch {
   position: relative;
   flex: 1;
   font-size: 28rpx;
-  background: white;
+  background-color: #fff;
   line-height: 100rpx;
   padding-left: 130rpx;
 }
 
 .footer .pay {
-  width: 200rpx;
+  width: 250rpx;
   text-align: center;
   line-height: 100rpx;
   color: white;
@@ -796,13 +840,25 @@ page {
   background: #f36c1b;
 }
 
-#orderPage .cost {
-  margin-top: 20rpx;
+.cost {
+  width: 200rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.cost-price {
   color: red;
+  margin-top: 5rpx;
   font-size: 50rpx;
   line-height: 50rpx;
   height: 50rpx;
-  width: 100rpx;
+}
+.cost-peisong {
+  font-size: 25rpx;
+  line-height: 25rpx;
+  height: 25rpx;
+  color: #aaa;
+  margin-top: 10rpx;
 }
 
 .footer.active .free {
@@ -930,7 +986,7 @@ page {
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
-  min-height: 60rpx;
+  height: 60rpx;
   padding: 10rpx 0;
   border-radius: 0 0 7px 7px;
 }
@@ -948,25 +1004,72 @@ page {
   height: 30rpx;
 }
 .item-food-numb image {
-  width: 47rpx;
-  height: 47rpx;
+  width: 60rpx;
+  height: 60rpx;
 }
 .item-food-numb .item-add image {
-  width: 50rpx;
-  height: 50rpx;
+  width: 60rpx;
+  height: 60rpx;
 }
 .item-food-text {
-  flex-grow: 1;
+  width: 50rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
   white-space: nowrap;
 }
 
 
 .single-format image {
-  width: 45rpx;
-  height: 45rpx;
+  width: 60rpx;
+  height: 60rpx;
 }
 .single-format .item-add image {
-  width: 47rpx;
-  height: 47rpx;
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.cart-quantity {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+  white-space: nowrap;
+  text-align: center;
+  background-color: red;
+  line-height: 1.2;
+  font-size: 80%;
+  color: #fff;
+}
+.notPay {
+  background-color: #ddd !important;
+}
+
+.item-info {
+  display: flex;
+  margin-top: 20rpx;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  height: 60rpx;
+  background-color: #fff;
+  font-size: 90%;
+  padding: 10rpx;
+}
+.item-info .item-image {
+  width: 100rpx;
+  line-height: 60rpx;
+}
+.item-info .item-image image {
+  width: 60rpx;
+  height: 60rpx;
+}
+.item-info .item-content {
+  flex-grow: 1;
+  line-height: 60rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

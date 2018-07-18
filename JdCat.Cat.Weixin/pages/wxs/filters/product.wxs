@@ -1,4 +1,4 @@
-var defaultImageSrc = "/images/logo-2.png"
+var defaultImageSrc = "/images/logo-2.png";
 var product = {
 
     productImage: function (product, businessId) {
@@ -13,10 +13,20 @@ var product = {
         if(!product.src)return defaultImageSrc;
 
         return "http://f.jiandanmao.cn/File/Product/" + businessId + "/100x75/" + product.src;
+    },
+    logoImage: function(url, businessId){
+        if(!url)return null;
+        return "http://f.jiandanmao.cn/File/Logo/" + businessId + "/" + url; 
+    },
+    licenseImage: function(url, businessId){
+        if(!url)return null;
+        return "http://f.jiandanmao.cn/File/License/" + businessId + "/" + url; 
     }
-}
+};
 
 module.exports = {
     productImage: product.productImage,
-    orderProductImage: product.orderProductImage
-}
+    orderProductImage: product.orderProductImage,
+    logoImage: product.logoImage,
+    licenseImage: product.licenseImage
+};

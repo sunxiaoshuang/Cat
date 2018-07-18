@@ -5,13 +5,18 @@
             <text>{{userInfo.nickName}}</text>
         </view>
     </view>
-    <view wx:else class="user-login">
-        <button bindgetuserinfo="bindGetUserInfo" class="btn-none" open-type="getUserInfo">
-            点击登录
-        </button>
+    <view wx:else style="width: 100%;">
+        <view class="user-login">
+            <button bindgetuserinfo="bindGetUserInfo" plain="{{true}}" class="btn-none" open-type="getUserInfo">
+                点击登录
+            </button>
+        </view>
+        <view style="text-align: center;">
+            <text >您还没有登录，登录后享受全部功能</text>
+        </view>
     </view>
     <view class="user-phone" wx:if="{{userInfo.isRegister && !userInfo.isPhone}}">
-        <button bindgetphonenumber="bindGetPhoneNumber" class="btn-bind-phone" open-type="getPhoneNumber">
+        <button bindgetphonenumber="bindGetPhoneNumber" plain="{{true}}" class="btn-bind-phone" open-type="getPhoneNumber">
             一键绑定手机，成为会员
         </button>
     </view>
@@ -21,7 +26,7 @@
             <text>地址管理</text>
             <image src="/images/icon/right-1.png"></image>
         </navigator>
-        <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="navigate">
+        <navigator url="/pages/order/order" open-type="switchTab" class="navigate">
             <image src="/images/icon/user-order-2.png"></image>
             <text>我的订单</text>
             <image src="/images/icon/right-1.png"></image>

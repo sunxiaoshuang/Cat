@@ -54,6 +54,11 @@
     height: 50rpx;
     padding-left: 90rpx;
 }
+.order .order-product .product .name {
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
 
 .order .order-total {
     display: flex;

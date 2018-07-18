@@ -8,7 +8,7 @@ Page({
    */
   data: {
     swiperTitle: [{
-      text: "点菜",
+      text: "点单",
       id: 1
     }, {
       text: "评价",
@@ -17,6 +17,9 @@ Page({
       text: "商家",
       id: 3
     }],
+    logo: "",
+    businessId: config.businessId,
+    freight: 0,
     menu: [],
     productList: [],
     cartList: [],
@@ -28,16 +31,26 @@ Page({
     animationData: "",
     location: "",
     foodToView: "scroll21",
+    cartQuantity: 0,
     scrollTop: 0,
     formatIndex: 0,
     productIndex: 0, // 选择的商品在列表中的序号
-    curQuantity: 0
+    curQuantity: 0,
+    isShowFoot: true,
+    submitText: "去结算",
+    isBalance: true,  // 是否可以结算
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
     var that = this;
+    var business = qcloud.getSession().business;
+    this.setData({
+      freight: business.freight,
+      logo: business.logoSrc,
+      business: business
+    });
     util.showBusy("loading");
     // 首次加载时，将获取商品信息，并将其缓存
     qcloud.request({
@@ -116,77 +129,24 @@ Page({
         });
       }
     });
-
-
-
-    // qcloud.request({
-    //   url: "/product/menus/" + config.businessId,
-    //   method: "GET",
-    //   success: function (res) {
-    //     // 1. 首先加载商户产品
-    //     var menuArr = [];
-    //     var productArr = [];
-    //     for (var i in res.data) {
-    //       var menuItem = res.data[i];
-    //       menuArr.push(menuItem);
-    //       menuItem.products.forEach(function (product, index) {
-    //         product.quantity = 0;         // 购物车中该商品的总数
-    //         product.viewIndex = index;
-    //         product.menuId = menuItem.id;
-    //         productArr.push(product);
-    //       });
-    //     };
-    //     productArr.forEach(function (product, index) {
-    //       // 初始化时，默认规格、属性均选择第一个
-    //       product.formats[0].selected = true;
-    //       product.price = product.formats[0].price;
-    //       if(product.attributes.length > 0){
-    //         product.attributes.forEach(function(attr){
-    //           if(attr.item1) {
-    //             attr.selectedValue = attr.item1;
-    //             attr.item1 = {name: attr.item1, selected: true};
-    //           }
-    //           attr.item2 && (attr.item2 = {name: attr.item2, selected: false});
-    //           attr.item3 && (attr.item3 = {name: attr.item3, selected: false});
-    //           attr.item4 && (attr.item4 = {name: attr.item4, selected: false});
-    //           attr.item5 && (attr.item5 = {name: attr.item5, selected: false});
-    //           attr.item6 && (attr.item6 = {name: attr.item6, selected: false});
-    //           attr.item7 && (attr.item7 = {name: attr.item7, selected: false});
-    //           attr.item8 && (attr.item8 = {name: attr.item8, selected: false});
-    //         });
-    //       }
-    //     });
-    //     // 2. 然后加载用户购物车
-    //     var user = qcloud.getSession().userinfo;
-    //     qcloud.request({
-    //       url: `/user/carts/${user.id}?businessId=${config.businessId}`,
-    //       method: "GET",
-    //       success: function (res) {
-    //         wx.hideToast();
-    //         if (res.data.length > 0) {
-    //           // 3. 将购物车与商品关联，得出已经选择商品的数量
-    //           res.data.forEach(function (obj) {
-    //             var products = productArr.filter(a => a.id == obj.productId);
-    //             if (!products.length === 0) return;
-    //             products[0].quantity += obj.quantity;
-    //           });
-    //         }
-
-    //         // 4. 渲染视图
-    //         that.setData({
-    //           productList: productArr,
-    //           menu: menuArr,
-    //           businessId: config.businessId,
-    //           cartList: res.data
-    //           // location: wx.getStorageSync('location')
-    //         });
-    //       }
-    //     });
-
-    //   }
-    // });
   },
   onShow: function () {
+    var business = qcloud.getSession().business;
+    var submitText = "去结算", isBalance = true, now = new Date();
+    var startTime = business.businessStartTime.split(":"), 
+      endTime = business.businessEndTime.split(":");
+    var nowStamp = Date.parse(now), 
+      startStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +startTime[0], +startTime[1], 0)),
+      endStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +endTime[0], +endTime[1], 0));
+    if(nowStamp <= startStamp || nowStamp >= endStamp || business.isClose) {
+      submitText = "已暂停营业";
+      isBalance = false;
+    }
+    console.log(business);
+    this.setData({
+      submitText: submitText,
+      isBalance: isBalance
+    });
     this.loadData();
   },
   loadData: function () {
@@ -194,36 +154,52 @@ Page({
     if (!menuArr) return;
     var productArr = wx.getStorageSync("businessProduct");
     var cartList = wx.getStorageSync("cartList");
+    var cartQuantity = 0;
     if (cartList.length > 0) {
       cartList.forEach(function (obj) {
         var products = productArr.filter(a => a.id == obj.productId);
         if (!products.length === 0) return;
         products[0].quantity += obj.quantity;
+        cartQuantity += obj.quantity;
       });
     }
+    
     this.setData({
       productList: productArr,
       menu: menuArr,
-      businessId: config.businessId,
-      cartList: cartList
+      cartList: cartList,
+      cartQuantity: cartQuantity
     });
 
+  },
+  catLicense: function(){
+    wx.navigateTo({
+      url: "/pages/main/license/license"
+    });
+  },
+  callPhone: function(){
+    var business = qcloud.getSession().business;
+    wx.makePhoneCall({
+      phoneNumber: business.mobile
+    });
   },
   pullBar: function () {
     this.setData({
       pullBar: !this.data.pullBar
-    })
+    });
   },
   turnPage: function (e) {
     this.setData({
-      currentPage: e.currentTarget.dataset.index
-    })
+      currentPage: e.currentTarget.dataset.index,
+      isShowFoot: e.currentTarget.dataset.index == 0
+    });
   },
   turnTitle: function (e) {
     if (e.detail.source == "touch") {
       this.setData({
-        currentPage: e.detail.current
-      })
+        currentPage: e.detail.current,
+        isShowFoot: e.detail.current == 0
+      });
     }
   },
   turnMenu: function (e) {
@@ -232,12 +208,13 @@ Page({
     this.setData({
       selected: e.currentTarget.dataset.index,
       foodToView: currentToView
-    })
+    });
   },
   closeCartDialog: function () {
     this.showCartAnimation(false);
   },
   showCart: function () {
+    if(this.data.showCart) return;
     this.showCartAnimation(true);
   },
   clearCart: function (e) {
@@ -254,6 +231,7 @@ Page({
             productList: self.data.productList,
             cartList: [],
             curQuantity: 0,
+            cartQuantity: 0
           });
         } else {
           util.showModel("提示", res.data.msg);
@@ -306,13 +284,16 @@ Page({
     }
   },
   pay: function () {
+    if(!this.data.isBalance) {
+      return;
+    }
     if (this.data.cartList.length === 0) {
       util.showError("请选择需要的商品再结算");
       return;
     }
     wx.navigateTo({
       url: '/pages/pay/pay'
-    })
+    });
   },
   showFormat: function (e) { // 显示规格、属性选择框
     this.data.productIndex = e.currentTarget.dataset.index;
@@ -329,6 +310,21 @@ Page({
   },
   attch1: function () {},
   add: function (e) { // 添加商品
+    var user = qcloud.getSession().userinfo;
+    if(!user.isRegister) {
+      wx.showModal({
+        title: "提示",
+        content: "请先登录系统，才能开始点单哦",
+        showCancel: false,
+        confirmText: "去登陆",
+        success: function() {
+          wx.switchTab({
+            url: "/pages/user/user"
+          });
+        }
+      });
+      return;
+    }
     var index = e.currentTarget.dataset.index;
     if (Object.prototype.toString.call(index) == "[object Number]") {
       this.data.productIndex = index;
@@ -403,6 +399,7 @@ Page({
             productList: self.data.productList,
             cartList: self.data.cartList,
           });
+          self.calcCartQuantity();
         } else {
           util.showError(res.msg);
         }
@@ -435,6 +432,7 @@ Page({
             productList: self.data.productList,
             cartList: self.data.cartList,
           });
+          self.calcCartQuantity();
         } else {
           util.showError(res.msg);
         }
@@ -503,6 +501,7 @@ Page({
           productList: self.data.productList,
           cartList: self.data.cartList
         });
+        self.calcCartQuantity();
       },
       fail: function (error) {
         util.showModel("错误", "请求错误，请检查网络连接");
@@ -536,5 +535,12 @@ Page({
       });
     }
     return description;
+  },
+  calcCartQuantity: function(){
+    var cartQuantity = 0;
+    this.data.cartList.forEach(a => cartQuantity += a.quantity);
+    this.setData({
+      cartQuantity: cartQuantity
+    });
   }
 })

@@ -98,9 +98,13 @@ namespace JdCat.Cat.WxApi.Controllers
                 sub_mch_id = business.MchId,
                 sub_openid = user.OpenId,
                 out_trade_no = order.OrderCode,
-                total_fee = 1, //(int)Math.Round(order.Price.Value * 100, 0),
+                total_fee = (int)Math.Round(order.Price.Value * 100, 0),
                 key = appData.ServerKey
             };
+            if(business.ID == 1)
+            {
+                option.total_fee = 1;
+            }
             option.Generator();
             var xml = string.Empty;
             using (MemoryStream stream = new MemoryStream())

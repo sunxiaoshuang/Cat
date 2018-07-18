@@ -1,0 +1,5 @@
+<wxs module="productFilter" src="../../wxs/filters/product.wxs"></wxs>
+<view class="container">
+    <image src="{{productFilter.licenseImage(business.businessLicenseImage, business.id)}}" mode="widthFix" style="width: 100%" />
+    <image src="{{productFilter.licenseImage(business.specialImage, business.id)}}" mode="widthFix" style="width: 100%" />
+</view>

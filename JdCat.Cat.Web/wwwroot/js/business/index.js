@@ -1,12 +1,16 @@
 ﻿; (function ($) {
-    
+
     var data = new Vue({
         el: "#app",
         data: {
             entity: pageObj.business,
             cityList: pageObj.cityList,
             showError: false,
-            isChangeLogo: false
+            isChangeLogo: false,
+            startHour: !pageObj.business.businessStartTime ? "06" : pageObj.business.businessStartTime.split(":")[0],
+            startMinus: !pageObj.business.businessStartTime ? "00" : pageObj.business.businessStartTime.split(":")[1],
+            endHour: !pageObj.business.businessEndTime ? "21" : pageObj.business.businessEndTime.split(":")[0],
+            endMinus: !pageObj.business.businessEndTime ? "00" : pageObj.business.businessEndTime.split(":")[1],
         },
         methods: {
             ret: function () {
@@ -18,11 +22,14 @@
                     $.alert("请上传商户LOGO");
                     return;
                 }
-                if (!entity.name || !entity.address || !entity.contact || !entity.mobile || !entity.freight || !entity.businessLicense || !entity.businessLicenseImage || !entity.lng || !entity.lat) {
+                if (!entity.name || !entity.address || !entity.contact || !entity.mobile || !entity.freight || !entity.businessLicense || !entity.businessLicenseImage || !entity.lng || !entity.lat || !entity.specialImage) {
                     $.alert("请将信息填写完整");
                     this.showError = true;
                     return;
                 }
+                entity.businessStartTime = this.startHour + ":" + this.startMinus;
+                entity.businessEndTime = this.endHour + ":" + this.endMinus;
+
                 this.showError = false;
                 $.loading();
                 axios.post("/business/savebase?isChangeLogo=" + (this.isChangeLogo ? 1 : 0), entity)
@@ -48,6 +55,9 @@
             uploadBusinessLicense: function () {
                 $("#fileLicense").click();
             },
+            uploadSpecialImage: function () {
+                $("#fileSpecialImage").click();
+            },
             changeBusinessLicense: function (e) {
                 var file = e.target.files[0], self = this;
                 if (!file) {
@@ -57,7 +67,18 @@
                 var read = new FileReader();
                 read.onload = function (e) {
                     self.entity.businessLicenseImage = e.target.result;
-                    console.log(e.target.result);
+                };
+                read.readAsDataURL(file);
+            },
+            changeSpecialImage: function (e) {
+                var file = e.target.files[0], self = this;
+                if (!file) {
+                    this.entity.specialImage = null;
+                    return;
+                }
+                var read = new FileReader();
+                read.onload = function (e) {
+                    self.entity.specialImage = e.target.result;
                 };
                 read.readAsDataURL(file);
             }
@@ -74,6 +95,12 @@
                 if (!input) return input;
                 if (input.indexOf("data:image") > -1) return input;
                 return `${appConfig.apiUrl}/File/License/${pageObj.business.id}/${input}`;
+            },
+            specialImage: function () {
+                var input = this.entity.specialImage;
+                if (!input) return input;
+                if (input.indexOf("data:image") > -1) return input;
+                return `${appConfig.apiUrl}/File/License/${pageObj.business.id}/${input}`;
             }
 
         },
@@ -84,9 +111,37 @@
 
     $('#switch').bootstrapSwitch({
         onSwitchChange: function (e, state) {
+            if (data.entity.isAutoReceipt === state) return;
             data.entity.isAutoReceipt = state;
+            $.loading();
+            axios.get(`/business/changeAutoReceipt?isAutoReceipt=${state}`)
+                .then(function (res) {
+                $.loaded();
+                if (!res.data.success) {
+                    $.alert(res.data.msg);
+                    return;
+                }
+                $.alert(state ? "开启自动接单成功" : "关闭自动接单成功", "success");
+            });
         }
     }).bootstrapSwitch("state", data.entity.isAutoReceipt);
+
+    $('#cbClose').bootstrapSwitch({
+        onSwitchChange: function (e, state) {
+            if (data.entity.isClose === state) return;
+            data.entity.isClose = state;
+            $.loading();
+            axios.get(`/business/changeClose?isClose=${state}`)
+                .then(function (res) {
+                    $.loaded();
+                    if (!res.data.success) {
+                        $.alert(res.data.msg);
+                        return;
+                    }
+                    $.alert(state ? "开启营业模式成功" : "店铺暂停营业", "success");
+                });
+        }
+    }).bootstrapSwitch("state", data.entity.isClose);
 
 
     // 裁剪图片

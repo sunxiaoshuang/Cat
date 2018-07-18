@@ -17,11 +17,19 @@
 }
 .user-login {
     display: flex;
+    flex-grow: 1;
     align-items: flex-end;
     justify-content: center;
     height: 100px;
     width: 100%;
     padding-bottom: 10px;
+    background-color: #f36c21;
+}
+.user-login button {
+    background-color: #fff;
+    padding: 0 20rpx;
+    color: #f36c21;
+    border: none;
 }
 .btn-area > navigator {
     display: flex;
@@ -37,12 +45,14 @@
 .user-phone {
     width: 100%;
     border: none;
+    border-bottom: 1px solid #eee;
 }
-.btn-bind-phone {
-    border: 1px solid #f36c21;
-    border-color: #fff;
+button.btn-bind-phone {
+    border: none;
     padding: 5px;
     font-size: 80%;
     color: #f36c21;
-    background-color: #fff;
+}
+.navigate text {
+    font-size: 100%;
 }

@@ -75,6 +75,11 @@ namespace JdCat.Cat.Web.Controllers
                 // 上传营业执照
                 business.BusinessLicenseImage = await Service.UploadAsync(AppData.ApiUri + "/Upload/License", Business.ID, business.BusinessLicenseImage);
             }
+            if (business.SpecialImage.Contains("data:image"))
+            {
+                // 上传特殊资质
+                business.SpecialImage = await Service.UploadAsync(AppData.ApiUri + "/Upload/License", Business.ID, business.SpecialImage);
+            }
 
 
             result.Success = Service.SaveBase(business);
@@ -87,17 +92,57 @@ namespace JdCat.Cat.Web.Controllers
             Business.Address = business.Address;
             Business.Contact = business.Contact;
             Business.Mobile = business.Mobile;
-            Business.IsAutoReceipt = business.IsAutoReceipt;
             Business.Freight = business.Freight;
             Business.Description = business.Description;
             Business.Range = business.Range;
             Business.LogoSrc = business.LogoSrc;
             Business.BusinessLicense = business.BusinessLicense;
             Business.BusinessLicenseImage = business.BusinessLicenseImage;
+            Business.SpecialImage = business.SpecialImage;
             Business.Lng = business.Lng;
             Business.Lat = business.Lat;
+            Business.BusinessStartTime = business.BusinessStartTime;
+            Business.BusinessEndTime = business.BusinessEndTime;
+            Business.MinAmount = business.MinAmount;
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
+        }
+
+        public IActionResult ChangeAutoReceipt([FromQuery]bool isAutoReceipt)
+        {
+            var result = new JsonData
+            {
+                Success = Service.ChangeAutoReceipt(Business, isAutoReceipt)
+            };
+            Business.IsAutoReceipt = isAutoReceipt;
+            if (result.Success)
+            {
+                HttpContext.Session.Set(AppData.Session, Business);
+                result.Msg = "操作成功";
+            }
+            else
+            {
+                result.Msg = "操作失败";
+            }
+            return Json(result);
+        }
+        public IActionResult ChangeClose([FromQuery]bool isClose)
+        {
+            var result = new JsonData
+            {
+                Success = Service.ChangeClose(Business, isClose)
+            };
+            Business.IsClose = isClose;
+            if (result.Success)
+            {
+                HttpContext.Session.Set(AppData.Session, Business);
+                result.Msg = "操作成功";
+            }
+            else
+            {
+                result.Msg = "操作失败";
+            }
+            return Json(result);
         }
 
         public IActionResult SaveSmall([FromBody]Business business)

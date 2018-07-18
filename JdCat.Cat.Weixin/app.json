@@ -3,6 +3,7 @@
     "pages/launch/launch",
     "pages/user/user",
     "pages/main/main",
+    "pages/main/license/license",
     "pages/index/index",
     "pages/order/order",
     "pages/userinfo/userinfo",
@@ -17,7 +18,7 @@
   "window":{
     "backgroundColor":"#f36c21",
     "backgroundTextStyle":"light",
-    "navigationBarBackgroundColor": "#f36c21",
+    "navigationBarBackgroundColor": "#f36c1b",
     "navigationBarTitleText": "简单猫科技（武汉）有限公司",
     "navigationBarTextStyle":"#fff",
     "enablePullDownRefresh": true

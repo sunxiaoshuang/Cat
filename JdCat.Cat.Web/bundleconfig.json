@@ -144,5 +144,18 @@
     "inputFiles": [
       "wwwroot/js/business/pwd.js"
     ]
+  },
+  // 营业统计
+  {
+    "outputFileName": "wwwroot/css/report/index.min.css",
+    "inputFiles": [
+      "wwwroot/css/report/index.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/index.js"
+    ]
   }
 ]

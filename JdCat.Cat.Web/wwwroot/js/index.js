@@ -1,4 +1,5 @@
-﻿(function ($) {
+﻿
+(function ($) {
     "use strict";
     var mainApp = {
 
@@ -68,11 +69,12 @@
 
     // 新订单提醒
     var ws = new WebSocket(pageData.orderUrl + "?id=" + pageData.business.id);
-    var newOrder = document.getElementById("audio-new");
+    var newOrder = document.getElementById("newOrder");
+    
     ws.onmessage = function (res) {
         var time = new Date();
         var arr = res.data.split("|");
-        msg.list.push({ code: arr[0], status: arr[1], time: time.getHours() + ":" + time.getMinutes()});
+        msg.list.push({ code: arr[0], status: arr[1], time: time.getHours() + ":" + time.getMinutes() });
         newOrder.play();
     };
     ws.onopen = function (a) {
@@ -112,5 +114,16 @@
             }
         }
     });
+
+    //$.primary($.browser.versions.mobile);
+    //if ($.browser.versions.mobile) {
+        $('body').one('click', function () {
+            newOrder.play();
+            setTimeout(function () {
+                newOrder.pause();
+                newOrder.currentTime = 0;
+            }, 20);
+        });
+    //}
     
 }(jQuery));

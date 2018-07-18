@@ -91,19 +91,7 @@ Page({
           wx.requestPayment(qcloud.utils.extend({}, res.data.data, {
             success: function (res) {
               if(res.errMsg == "requestPayment:ok"){
-                // qcloud.request({
-                //   url: "/order/paySuccess/" + self.data.order.id,
-                //   method: "GET",
-                //   success: function(res){
-                //     if(res.data.success) {
-                //       wx.setStorageSync("orderDetail", res.data.data);
-                //       wx.navigateTo({
-                //         url: '/pages/order/orderInfo/orderInfo'
-                //       });
-                //     }
-                //   }
-                // });
-                wx.navigateTo({
+                wx.redirectTo({
                   url: '/pages/order/orderInfo/orderInfo?id=' + self.data.order.id
                 });
               }

@@ -85,7 +85,7 @@ namespace JdCat.Cat.Common.Models
         /// <summary>
         /// 订单来源编号（该字段可以显示在达达app订单详情页面，支持字母和数字，最大长度为30）
         /// </summary>
-        public string origin_mark_no { get; set; } = "JdCat001";
+        public string origin_mark_no { get; set; } = "简单猫科技";
         /// <summary>
         /// 是否使用保价费
         /// </summary>

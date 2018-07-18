@@ -58,12 +58,12 @@ namespace JdCat.Cat.Web.Controllers
             //    result.Success = false;
             //    return Json(result);
             //}
-            else if (service.Exists(a => (a.InvitationCode == invitationCode)))
-            {
-                result.Msg = "该邀请码已被使用";
-                result.Success = false;
-                return Json(result);
-            }
+            //else if (service.Exists(a => (a.InvitationCode == invitationCode)))
+            //{
+            //    result.Msg = "该邀请码已被使用";
+            //    result.Success = false;
+            //    return Json(result);
+            //}
             else
             {
                 var userInfo = new Business()
