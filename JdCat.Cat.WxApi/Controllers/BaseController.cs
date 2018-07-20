@@ -18,7 +18,7 @@ namespace JdCat.Cat.WxApi.Controllers
 {
     public class BaseController<T, TEntity> : Controller
         where TEntity : BaseEntity, new()
-        where T : IBusinessRepository<TEntity>
+        where T : IBaseRepository<TEntity>
     {
         protected T Service { get; }
 

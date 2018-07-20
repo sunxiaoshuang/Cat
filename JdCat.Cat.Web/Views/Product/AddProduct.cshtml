@@ -101,7 +101,7 @@
                             <div class="row">
                                 <div class="col-xs-2" v-bind:class="{ 'hide': entity.formats.length === 1 }">
                                     <span class="require">规格：</span>
-                                    <input type="text" class="form-control" v-model="item.name" />
+                                    <input type="text" class="form-control" placeholder="如：大份/小份" v-model="item.name" />
                                 </div>
                                 <div class="col-xs-2">
                                     <span class="require">价格：</span>
@@ -223,6 +223,9 @@
 <div class="cover-wrap">
     <div>
         <div id="clipArea" style="margin:10px;height: 520px;"></div>
+        <div class="area-close">
+            <i class="fa fa-times-circle-o" id="btn-closeArea"></i>
+        </div>
         <div class="save-warp">
             <button id="clipBtn">保存封面</button>
         </div>

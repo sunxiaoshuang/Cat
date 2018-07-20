@@ -89,7 +89,11 @@
             }
             $.post("/product/existproduct/" + $parent.data("id"), null, function (data) {
                 if (data.data) {
-                    $.danger("类别下存在商品，不允许删除");
+                    $.primary("类别下存在商品，删除后类别下所有的商品将不属于任何分类，确定删除吗？", function () {
+                        $parent.removeClass("edit").addClass("remove");
+                        $parent.hide();
+                        return true;
+                    });
                     return;
                 }
                 $parent.removeClass("edit").addClass("remove");
@@ -118,7 +122,7 @@
         el: "#category",
         data: {
             list: pageData.types,
-            productCount: pageHandler.count(pageData.types),
+            productCount: "",//pageHandler.count(pageData.types),
             allSelected: true
         },
         methods: {

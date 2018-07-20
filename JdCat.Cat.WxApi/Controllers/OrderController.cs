@@ -69,11 +69,7 @@ namespace JdCat.Cat.WxApi.Controllers
         [HttpPost("createOrder")]
         public IActionResult CreateOrder([FromBody]Order order)
         {
-            var result = new JsonData();
-            order = Service.CreateOrder(order);
-            result.Success = true;
-            result.Msg = "创建订单成功";
-            result.Data = order;
+            var result = Service.CreateOrder(order);
             return Json(result, JsSetting);
         }
 
@@ -187,7 +183,7 @@ namespace JdCat.Cat.WxApi.Controllers
                     {
                         using (var hc = new HttpClient())
                         {
-                            await hc.GetAsync($"{appData.OrderUrl}/api/notify/{order.BusinessId}?code={order.OrderCode}&status={(int)order.Status}");
+                            await hc.GetAsync($"{appData.OrderUrl}/api/notify/{order.BusinessId}?code={order.OrderCode}");
                         }
                     });
                 }

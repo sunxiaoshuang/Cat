@@ -12,9 +12,10 @@ using System;
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180720074118_Modify_Business_Dada")]
+    partial class Modify_Business_Dada
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,8 +137,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<DateTime?>("RegisterDate");
 
                     b.Property<string>("Secret");
-
-                    b.Property<int>("ServiceProvider");
 
                     b.Property<string>("SpecialImage");
 
@@ -307,8 +306,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int>("DeliveryMode");
 
                     b.Property<DateTime?>("DistributionTime");
-
-                    b.Property<string>("ErrorReason");
 
                     b.Property<decimal?>("Freight");
 

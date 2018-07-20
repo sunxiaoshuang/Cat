@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace JdCat.Cat.IRepository
 {
-    public interface IOrderRepository : IBusinessRepository<Order>
+    public interface IOrderRepository : IBaseRepository<Order>
     {
         Order Get(int id);
         /// <summary>
@@ -19,7 +19,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="order"></param>
         /// <returns></returns>
-        Order CreateOrder(Order order);
+        JsonData CreateOrder(Order order);
         /// <summary>
         /// 获取订单
         /// </summary>
@@ -49,7 +49,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="id">订单id</param>
         /// <returns></returns>
-        bool SendOrderSelf(int id);
+        bool SendOrderSelf(int id, Order order = null);
         /// <summary>
         /// 订单送达
         /// </summary>
@@ -92,5 +92,11 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         Order PaySuccess(WxPaySuccess ret);
+        /// <summary>
+        /// 根据订单编码获取订单
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        Order GetOrderByCode(string code);
     }
 }

@@ -105,6 +105,21 @@
                         });
                     return true;
                 });
+            },
+            printerDefault: function (printer) {
+                if (this.entity.defaultPrinterDevice === printer.code) return;
+                this.entity.defaultPrinterDevice = printer.code;
+                axios.get("/business/setDefaultPrinter?code=" + printer.code)
+                    .then(function (res) {
+                        if (res.data.success) {
+                            $.alert(res.data.msg, "success");
+                        } else {
+                            $.alert(res.data.msg);
+                        }
+                    })
+                    .catch(function (msg) {
+                        $.alert(msg);
+                    });
             }
         }
     });

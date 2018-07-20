@@ -71,6 +71,13 @@ namespace JdCat.Cat.WxApi.Controllers
                 }
             });
         }
+
+        [HttpGet("business/{id}")]
+        public IActionResult GetBusiness(int id)
+        {
+            return Json(Service.Set<Business>().First(a => a.ID == id));
+        }
+
         [HttpPut("info")]
         public IActionResult PutGrantInfo([FromBody]User user)
         {

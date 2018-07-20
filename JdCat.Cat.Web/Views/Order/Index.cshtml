@@ -126,6 +126,11 @@
                                 <td></td>
                                 <td colspan="7">
                                     <hr />
+                                    <div class="row" v-if="!!order.errorReason">
+                                        <div class="col-md-6 bg-danger">
+                                            <label class="text-danger">{{order.errorReason}}</label>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-md-12">
                                             <label class="text-primary">配送信息</label>

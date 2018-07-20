@@ -76,7 +76,8 @@ namespace JdCat.Cat.Web.Controllers
                     Address = address,
                     Mobile = phone,
                     BusinessLicense = license,
-                    Description = mark
+                    Description = mark,
+                    ServiceProvider = Model.Enum.ServiceProvider.Self
                 };
                 userInfo.FeyinMemberCode = appData.FeyinMemberCode;
                 userInfo.FeyinApiKey = appData.FeyinApiKey;

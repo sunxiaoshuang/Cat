@@ -15,14 +15,18 @@
             background: #3E3E3E;
             overflow: hidden;
         }
+        .text-danger {
+            color: #a94442 !important;
+        }
     </style>
 }
 @section Scripts {
     <script>
         var pageData = {
-            business: JSON.parse('@Html.Raw(ViewBag.entity)'),
+            business: JSON.parse('@Html.Raw(ViewBag.entity)'.replace(/\n/g, "\\\\n")),
             orderUrl: '@Html.Raw(ViewBag.orderUrl)'
         };
+        pageData.business.description = pageData.business.description.replace(/\\n/g, "\n");
     </script>
     <environment include="Development">
         <script src="~/lib/metisMenu/metisMenu.js"></script>
@@ -69,7 +73,7 @@
                 <ul class="dropdown-menu dropdown-alerts">
                     <cat-order-msg v-for="msg in list" :msg="msg"></cat-order-msg>
                     <li v-show="list.length === 0">
-                        <a class="text-primary">
+                        <a class="text-primary fa-warning">
                             没有新订单
                         </a>
                     </li>
@@ -194,5 +198,7 @@
     </div>
 </div>
 
-<audio id="newOrder" src="~/video/Receipt_z.ogg"></audio>
+<audio id="newOrder" src="~/video/1.mp3"></audio>
+<audio id="autoOrder" src="~/video/2.mp3"></audio>
+<audio id="exceptionOrder" src="~/video/3.mp3"></audio>
 

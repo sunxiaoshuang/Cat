@@ -104,6 +104,7 @@ namespace JdCat.Cat.Web.Controllers
             Business.BusinessStartTime = business.BusinessStartTime;
             Business.BusinessEndTime = business.BusinessEndTime;
             Business.MinAmount = business.MinAmount;
+            Business.ServiceProvider = business.ServiceProvider;
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }
@@ -174,8 +175,8 @@ namespace JdCat.Cat.Web.Controllers
             {
                 result.Msg = "保存失败，请刷新后重试";
             }
-            Business.DadaAppKey = business.DadaAppKey;
-            Business.DadaAppSecret = business.DadaAppSecret;
+            //Business.DadaAppKey = business.DadaAppKey;
+            //Business.DadaAppSecret = business.DadaAppSecret;
             Business.DadaSourceId = business.DadaSourceId;
             Business.DadaShopNo = business.DadaShopNo;
             Business.CityCode = business.CityCode;
@@ -279,16 +280,26 @@ namespace JdCat.Cat.Web.Controllers
             {
                 result.Msg = "解除绑定失败，请刷新后重试";
             }
-            result.Msg = "解除绑定绑定成功";
+            result.Msg = "解除绑定成功";
             return Json(result);
         }
 
+        /// <summary>
+        /// 修改密码页面
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Pwd()
         {
             ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
             return View();
         }
 
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <param name="newPwd"></param>
+        /// <param name="oldPwd"></param>
+        /// <returns></returns>
         public IActionResult ModifyPassword([FromQuery]string newPwd, [FromQuery]string oldPwd)
         {
             var result = new JsonData();
@@ -307,6 +318,26 @@ namespace JdCat.Cat.Web.Controllers
             HttpContext.Session.Set(AppData.Session, Business);
 
             result.Msg = "修改成功";
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 设置默认打印机
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult SetDefaultPrinter([FromQuery]string code)
+        {
+            var result = new JsonData();
+            Business.DefaultPrinterDevice = code;
+            result.Success =  Service.SetDefaultPrinter(Business);
+
+            if (!result.Success)
+            {
+                result.Msg = "设置失败，请刷新后重试";
+                return Json(result);
+            }
+            result.Msg = "设置成功";
+            HttpContext.Session.Set(AppData.Session, Business);
             return Json(result);
         }
 

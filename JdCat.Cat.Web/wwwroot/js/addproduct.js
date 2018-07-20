@@ -246,6 +246,10 @@
         }
     });
 
+    $("#btn-closeArea").click(function () {
+        $('.cover-wrap').fadeOut();
+    });
+
     // 压缩图片
     function compress(img, theW, theH, realW, realH) {
         var canvas = document.createElement("canvas");

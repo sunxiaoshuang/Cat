@@ -38,19 +38,13 @@ Page({
     curQuantity: 0,
     isShowFoot: true,
     submitText: "去结算",
-    isBalance: true,  // 是否可以结算
+    isBalance: true, // 是否可以结算
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
     var that = this;
-    var business = qcloud.getSession().business;
-    this.setData({
-      freight: business.freight,
-      logo: business.logoSrc,
-      business: business
-    });
     util.showBusy("loading");
     // 首次加载时，将获取商品信息，并将其缓存
     qcloud.request({
@@ -130,24 +124,40 @@ Page({
       }
     });
   },
+  onShareAppMessage: function(){
+      var session = qcloud.getSession();
+      console.log(session)
+      return {
+          title: session.business.name,
+          path: "/pages/main/main?userid=" + session.userinfo.id
+      };
+  },
   onShow: function () {
-    var business = qcloud.getSession().business;
-    var submitText = "去结算", isBalance = true, now = new Date();
-    var startTime = business.businessStartTime.split(":"), 
-      endTime = business.businessEndTime.split(":");
-    var nowStamp = Date.parse(now), 
-      startStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +startTime[0], +startTime[1], 0)),
-      endStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +endTime[0], +endTime[1], 0));
-    if(nowStamp <= startStamp || nowStamp >= endStamp || business.isClose) {
-      submitText = "已暂停营业";
-      isBalance = false;
-    }
-    console.log(business);
-    this.setData({
-      submitText: submitText,
-      isBalance: isBalance
-    });
-    this.loadData();
+    var self = this;
+    setTimeout(function () {
+
+      var business = qcloud.getSession().business;
+      var submitText = "去结算",
+        isBalance = true,
+        now = new Date();
+      var startTime = business.businessStartTime.split(":"),
+        endTime = business.businessEndTime.split(":");
+      var nowStamp = Date.parse(now),
+        startStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +startTime[0], +startTime[1], 0)),
+        endStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +endTime[0], +endTime[1], 0));
+      if (nowStamp <= startStamp || nowStamp >= endStamp || business.isClose) {
+        submitText = "已暂停营业";
+        isBalance = false;
+      }
+      self.setData({
+        submitText: submitText,
+        isBalance: isBalance,
+        business: business,
+        freight: business.freight,
+        logo: business.logoSrc
+      });
+      self.loadData();
+    }, 1000);
   },
   loadData: function () {
     var menuArr = wx.getStorageSync("businessMenu");
@@ -155,29 +165,32 @@ Page({
     var productArr = wx.getStorageSync("businessProduct");
     var cartList = wx.getStorageSync("cartList");
     var cartQuantity = 0;
+    var existCart = [];   // 存储购物车与商品可以匹配的记录
     if (cartList.length > 0) {
       cartList.forEach(function (obj) {
         var products = productArr.filter(a => a.id == obj.productId);
-        if (!products.length === 0) return;
+        if (products.length === 0) return;
+        existCart.push(obj);
         products[0].quantity += obj.quantity;
         cartQuantity += obj.quantity;
       });
     }
-    
+    wx.setStorageSync("cartList", existCart);
+
     this.setData({
       productList: productArr,
       menu: menuArr,
-      cartList: cartList,
+      cartList: existCart,
       cartQuantity: cartQuantity
     });
 
   },
-  catLicense: function(){
+  catLicense: function () {
     wx.navigateTo({
       url: "/pages/main/license/license"
     });
   },
-  callPhone: function(){
+  callPhone: function () {
     var business = qcloud.getSession().business;
     wx.makePhoneCall({
       phoneNumber: business.mobile
@@ -214,8 +227,7 @@ Page({
     this.showCartAnimation(false);
   },
   showCart: function () {
-    if(this.data.showCart) return;
-    this.showCartAnimation(true);
+    this.showCartAnimation(!this.data.showCart);
   },
   clearCart: function (e) {
     var self = this;
@@ -247,44 +259,46 @@ Page({
 
   },
   showCartAnimation: function (isShow) {
-
-    var animation = wx.createAnimation({
-      duration: 200,
-      timingFunction: "ease-out",
-      delay: 0
-    });
-
-    this.animation = animation;
-
-    animation.opacity(0).translateX(-100).step();
-
     this.setData({
-      animationData: animation.export()
-    })
+      showCart: isShow
+    });
+    // var animation = wx.createAnimation({
+    //   duration: 200,
+    //   timingFunction: "ease-out",
+    //   delay: 0
+    // });
 
-    setTimeout(function () {
+    // this.animation = animation;
 
-      animation.opacity(1).translateX(0).step();
+    // animation.opacity(0).translateX(-100).step();
 
-      this.setData({
-        animationData: animation
-      })
+    // this.setData({
+    //   animationData: animation.export()
+    // })
 
-      if (!isShow) {
-        this.setData({
-          showCart: false
-        });
-      }
-    }.bind(this), 200)
+    // setTimeout(function () {
 
-    if (isShow) {
-      this.setData({
-        showCart: true
-      });
-    }
+    //   animation.opacity(1).translateX(0).step();
+
+    //   this.setData({
+    //     animationData: animation
+    //   })
+
+    //   if (!isShow) {
+    //     this.setData({
+    //       showCart: false
+    //     });
+    //   }
+    // }.bind(this), 200)
+
+    // if (isShow) {
+    //   this.setData({
+    //     showCart: true
+    //   });
+    // }
   },
   pay: function () {
-    if(!this.data.isBalance) {
+    if (!this.data.isBalance) {
       return;
     }
     if (this.data.cartList.length === 0) {
@@ -311,13 +325,13 @@ Page({
   attch1: function () {},
   add: function (e) { // 添加商品
     var user = qcloud.getSession().userinfo;
-    if(!user.isRegister) {
+    if (!user.isRegister) {
       wx.showModal({
         title: "提示",
         content: "请先登录系统，才能开始点单哦",
         showCancel: false,
         confirmText: "去登陆",
-        success: function() {
+        success: function () {
           wx.switchTab({
             url: "/pages/user/user"
           });
@@ -455,7 +469,6 @@ Page({
     else product.quantity--;
 
     format = product.formats.filter(a => a.selected)[0];
-
     // 处理购物车描述
     description = this.calcDescription(product);
 
@@ -476,6 +489,7 @@ Page({
         price: format.price,
         productId: product.id,
         formatId: format.id,
+        packingQuantity: format.packingQuantity,
         description: description,
         userId: qcloud.getSession().userinfo.id,
         businessId: config.businessId
@@ -536,7 +550,7 @@ Page({
     }
     return description;
   },
-  calcCartQuantity: function(){
+  calcCartQuantity: function () {
     var cartQuantity = 0;
     this.data.cartList.forEach(a => cartQuantity += a.quantity);
     this.setData({

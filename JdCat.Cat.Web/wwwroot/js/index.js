@@ -70,19 +70,37 @@
     // 新订单提醒
     var ws = new WebSocket(pageData.orderUrl + "?id=" + pageData.business.id);
     var newOrder = document.getElementById("newOrder");
-    
+    var autoOrder = document.getElementById("autoOrder");
+    var exceptionOrder = document.getElementById("exceptionOrder");
+
     ws.onmessage = function (res) {
         var time = new Date();
-        var arr = res.data.split("|");
-        msg.list.push({ code: arr[0], status: arr[1], time: time.getHours() + ":" + time.getMinutes() });
-        newOrder.play();
+        var code = res.data;
+        axios.get("/order/MessageHandler?code=" + code)
+            .then(function (res) {
+                if (res.data.data === 1) {
+                    newOrder.play();
+                } else if (res.data.data === 2) {
+                    autoOrder.play();
+                } else if (res.data.data === 3) {
+                    exceptionOrder.play();
+                }
+
+                msg.list.push({ code: code, time: time.getHours() + ":" + time.getMinutes(), tip: res.data.success });
+            })
+            .catch(function (msg) {
+                $.alert(msg);
+            });
+
+
+        
     };
     ws.onopen = function (a) {
         console.log("服务已连接", a);
-    }
+    };
     ws.onclose = function (a) {
         $.primary(a.reason || "新订单提醒异常，请刷新后重试");
-    }
+    };
 
     var msg = new Vue({
         el: "#msg",
@@ -105,8 +123,8 @@
                 template: `
                         <li>
                             <a :href="'#/Order?code=' + msg.code" @click="navigate()">
-                                <div>
-                                    <i class="fa fa-info-circle fa-fw text-primary"></i> 您有一个新订单
+                                <div :class="msg.tip ? '' : 'text-danger'">
+                                    <i class="fa" :class="msg.tip ? 'fa-info-circle fa-fw text-primary' : 'fa-warning text-danger'"></i> {{msg.tip ? '您有一个新订单' : '异常订单'}}
                                     <span class="pull-right text-muted small">{{msg.time}}</span>
                                 </div>
                             </a>
@@ -117,13 +135,19 @@
 
     //$.primary($.browser.versions.mobile);
     //if ($.browser.versions.mobile) {
-        $('body').one('click', function () {
-            newOrder.play();
-            setTimeout(function () {
-                newOrder.pause();
-                newOrder.currentTime = 0;
-            }, 20);
-        });
+    $('body').one('click', function () {
+        newOrder.play();
+        autoOrder.play();
+        exceptionOrder.play();
+        setTimeout(function () {
+            newOrder.pause();
+            newOrder.currentTime = 0;
+            autoOrder.pause();
+            autoOrder.currentTime = 0;
+            exceptionOrder.pause();
+            exceptionOrder.currentTime = 0;
+        }, 20);
+    });
     //}
-    
+
 }(jQuery));

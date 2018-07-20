@@ -33,6 +33,16 @@
     <Compile Remove="Migrations\20180629142229_Add_ShoppingCart_BusinessId.cs" />
     <Compile Remove="Migrations\20180703070601_Modify_Order_Attribute.cs" />
     <Compile Remove="Migrations\20180703071306_Modify_Order_Attribute2.cs" />
+    <Compile Remove="Migrations\20180719083326_Modify_ProductType_ProductId.cs" />
+    <Compile Remove="Migrations\20180719083547_Modify_ProductType_ProductId.cs" />
+    <Compile Remove="Migrations\20180719083709_Modify_ProductType_ProductId.cs" />
+    <Compile Remove="Migrations\20180719083746_Modify_ProductType_ProductId.cs" />
+    <Compile Remove="Migrations\20180719083831_Modify_ProductType_ProductId.cs" />
+    <Compile Remove="Migrations\20180719084629_Modify_ProductType_ProductId.cs" />
+    <Compile Remove="Migrations\20180719084915_Modify_ProductType_ProductId.cs" />
+    <Compile Remove="Migrations\20180719084949_Modify_ProductType_ProductId.cs" />
+    <Compile Remove="Migrations\20180719085129_Modify_ProductType_ProductId.cs" />
+    <Compile Remove="Migrations\20180719085939_Modify_ProductType_ProductId.cs" />
   </ItemGroup>
 
   <ItemGroup>

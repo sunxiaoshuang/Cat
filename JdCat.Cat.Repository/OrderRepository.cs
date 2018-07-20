@@ -30,16 +30,33 @@ namespace JdCat.Cat.Repository
         {
 
         }
-        public Order CreateOrder(Order order)
+        public JsonData CreateOrder(Order order)
         {
+            var result = new JsonData();
+            var business = Context.Businesses.Single(a => a.ID == order.BusinessId);
+            if (business.IsClose)
+            {
+                result.Msg = "本店已暂定营业";
+                return result;
+            }
+            var now = DateTime.Now;
+            var startTime = new DateTime(now.Year, now.Month, now.Day, int.Parse(business.BusinessStartTime.Split(':')[0]), int.Parse(business.BusinessStartTime.Split(':')[1]), 0);
+            var endTime = new DateTime(now.Year, now.Month, now.Day, int.Parse(business.BusinessEndTime.Split(':')[0]), int.Parse(business.BusinessEndTime.Split(':')[1]), 0);
+            if(startTime > now || endTime < now)
+            {
+                result.Msg = $"本店营业时间：{business.BusinessStartTime}-{business.BusinessEndTime}";
+                return result;
+            }
             Context.Orders.Add(order);
             if (Context.SaveChanges() == 0)
             {
                 throw new Exception("订单创建失败");
             }
+            result.Data = order;
+            result.Success = true;
             // 清空购物车
             Context.Database.ExecuteSqlCommand("delete dbo.ShoppingCart where userid={0} and businessid={1}", order.UserId, order.BusinessId);
-            return order;
+            return result;
         }
 
         public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null)
@@ -92,6 +109,8 @@ namespace JdCat.Cat.Repository
             Context.DadaReturns.Add(back.result);
             order.Status = OrderStatus.DistributorReceipt;
             order.DeliveryMode = DeliveryMode.Third;
+            order.DistributionTime = DateTime.Now;
+            order.ErrorReason = "";
             return Context.SaveChanges() > 0;
         }
 
@@ -103,13 +122,17 @@ namespace JdCat.Cat.Repository
             return Context.SaveChanges() > 0;
         }
 
-        public bool SendOrderSelf(int id)
+        public bool SendOrderSelf(int id, Order order = null)
         {
-            var order = new Order { ID = id };
-            Context.Attach(order);
+            if (order == null)
+            {
+                order = new Order { ID = id };
+                Context.Attach(order);
+            }
             order.Status = OrderStatus.Distribution;
             order.DeliveryMode = DeliveryMode.Own;
             order.DistributionTime = DateTime.Now;
+            order.ErrorReason = "";
             return Context.SaveChanges() > 0;
         }
 
@@ -196,15 +219,20 @@ namespace JdCat.Cat.Repository
                 order.WxPayCode = ret.transaction_id;
                 order.PayTime = DateTime.Now;
                 order.Status = OrderStatus.Payed;
-                var business = Context.Businesses.Single(a => a.ID == order.BusinessId);
-                if (business.IsAutoReceipt)
-                {
-                    order.Status = OrderStatus.Receipted;
-                }
+                //var business = Context.Businesses.Single(a => a.ID == order.BusinessId);
+                //if (business.IsAutoReceipt)
+                //{
+                //    order.Status = OrderStatus.Receipted;
+                //}
                 Context.SaveChanges();
                 return order;
             }
             return null;
+        }
+
+        public Order GetOrderByCode(string code)
+        {
+            return Context.Orders.Include(a => a.Products).SingleOrDefault(a => a.OrderCode == code);
         }
 
     }

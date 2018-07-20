@@ -24,6 +24,11 @@ namespace JdCat.Cat.Model.Enum
         /// 已下架
         /// </summary>
         [Description("已下架")]
-        NotSale = 2
+        NotSale = 2,
+        /// <summary>
+        /// 已删除
+        /// </summary>
+        [Description("已删除")]
+        Delete = 3
     }
 }

@@ -159,7 +159,8 @@
         </view>
         <view class="free" wx:if="{{cartList.length==0}}"></view>
     </view>
-    <view class="pay {{!isBalance ? 'notPay' : 'pay'}}" bindtap="pay">{{submitText}}</view>
+    <view class="pay {{!isBalance ? 'notPay' : 'pay'}}" bindtap="pay" wx:if="{{calc.cartTotalPrice(cartList) >= business.minAmount}}">{{submitText}}</view>
+    <view class="pay notPay" wx:else>￥{{business.minAmount}} 起送</view>
 </view>
 <view class="cart-dialog" wx:if="{{showCart}}">
     <view bindtap="closeCartDialog" class="cart-mask"></view>

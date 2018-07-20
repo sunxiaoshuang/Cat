@@ -109,6 +109,7 @@
         }
     });
 
+
     $('#switch').bootstrapSwitch({
         onSwitchChange: function (e, state) {
             if (data.entity.isAutoReceipt === state) return;
@@ -138,7 +139,7 @@
                         $.alert(res.data.msg);
                         return;
                     }
-                    $.alert(state ? "开启营业模式成功" : "店铺暂停营业", "success");
+                    $.alert(state ? "暂停营业中" : "开启营业模式成功", "success");
                 });
         }
     }).bootstrapSwitch("state", data.entity.isClose);
@@ -167,6 +168,9 @@
             data.entity.logoSrc = dataURL;
             data.isChangeLogo = true;
         }
+    });
+    $("#btn-closeArea").click(function () {
+        $('.cover-wrap').fadeOut();
     });
 })(jQuery);
 

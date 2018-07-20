@@ -5,7 +5,7 @@ using JdCat.Cat.Model.Data;
 
 namespace JdCat.Cat.IRepository
 {
-    public interface ISessionDataRepository : IBusinessRepository<SessionData>
+    public interface ISessionDataRepository : IBaseRepository<SessionData>
     {
         /// <summary>
         /// 设置登录Session

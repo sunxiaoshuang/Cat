@@ -112,6 +112,17 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         /// <summary>
+        /// 删除分类
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IActionResult DelType(int id)
+        {
+            
+            return null;
+        }
+
+        /// <summary>
         /// 添加商品
         /// </summary>
         /// <returns></returns>
@@ -202,7 +213,7 @@ namespace JdCat.Cat.Web.Controllers
                 }
                 if (product.Images.Count > 0)
                 {
-                    Service.DeleteImage(product.Images.First(), AppData.ApiUri, Business.ID);
+                    //Service.DeleteImage(product.Images.First(), AppData.ApiUri, Business.ID);
                     Service.DeleteImage(product.Images.First());
                 }
                 product.Images = new List<ProductImage> { file };
@@ -237,10 +248,9 @@ namespace JdCat.Cat.Web.Controllers
         [HttpPost]
         public IActionResult DelProduct(int id)
         {
-            var appData = HttpContext.RequestServices.GetService<AppData>();
             var result = new JsonData
             {
-                Success = Service.DeleteProduct(AppData.ApiUri, id)
+                Success = Service.DeleteProduct(id)
             };
             return Json(result);
         }
@@ -295,7 +305,7 @@ namespace JdCat.Cat.Web.Controllers
         [HttpPut]
         public IActionResult BatchRemove([FromBody] IEnumerable<int> ids)
         {
-            var result = new JsonData { Success = Service.DeleteProduct(AppData.ApiUri, ids.ToArray()) };
+            var result = new JsonData { Success = Service.DeleteProduct(ids.ToArray()) };
             result.Msg = result.Success ? "批量删除成功" : "没有找到删除的商品，可以已经被删除了";
             return Json(result);
         }

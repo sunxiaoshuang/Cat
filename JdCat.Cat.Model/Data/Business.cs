@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JdCat.Cat.Model.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
@@ -95,14 +96,14 @@ namespace JdCat.Cat.Model.Data
         /// 运费
         /// </summary>
         public decimal? Freight { get; set; } = 4;
-        /// <summary>
-        /// 达达商户标识
-        /// </summary>
-        public string DadaAppKey { get; set; }
-        /// <summary>
-        /// 达达商户密码
-        /// </summary>
-        public string DadaAppSecret { get; set; }
+        ///// <summary>
+        ///// 达达商户标识
+        ///// </summary>
+        //public string DadaAppKey { get; set; }
+        ///// <summary>
+        ///// 达达商户密码
+        ///// </summary>
+        //public string DadaAppSecret { get; set; }
         /// <summary>
         /// 商户编号
         /// </summary>
@@ -133,6 +134,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string FeyinApiKey { get; set; }
         /// <summary>
+        /// 默认打印设备
+        /// </summary>
+        public string DefaultPrinterDevice { get; set; }
+        /// <summary>
         /// 飞印临时请求得到的Token
         /// </summary>
         [NotMapped]
@@ -161,6 +166,10 @@ namespace JdCat.Cat.Model.Data
         /// 是否打烊
         /// </summary>
         public bool IsClose { get; set; }
+        /// <summary>
+        /// 配送服务商
+        /// </summary>
+        public ServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
         /// 产品列表集合

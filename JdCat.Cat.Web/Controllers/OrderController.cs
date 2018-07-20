@@ -88,7 +88,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="id"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public async Task<IActionResult> Send(int id, [FromQuery]int type, [FromServices]IHostingEnvironment environment, [FromServices]DadaHelper helper)
+        public async Task<IActionResult> Send(int id, [FromQuery]int type, [FromServices]DadaHelper helper)
         {
             var result = new JsonData();
 
@@ -101,6 +101,8 @@ namespace JdCat.Cat.Web.Controllers
                 if (!back.IsSuccess())
                 {
                     result.Msg = back.msg;
+                    order.ErrorReason = back.msg;
+                    Service.Commit();
                     return Json(result);
                 }
                 result.Success = Service.SendSuccess(order, back);
@@ -173,11 +175,87 @@ namespace JdCat.Cat.Web.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// 打印小票
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="device_no"></param>
+        /// <returns></returns>
         public async Task<IActionResult> Print(int id, [FromQuery]string device_no)
+        {
+            var order = Service.GetOrderIncludeProduct(id);
+            var result = await Print(order, device_no);
+            return Json(result);
+        }
+
+        /// <summary>
+        /// ws消息处理
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> MessageHandler([FromQuery]string code, [FromServices]DadaHelper helper)
+        {
+            // Data记录语音提示方式，Msg记录提示语
+            var result = new JsonData();
+            if (!Business.IsAutoReceipt)
+            {
+                result.Success = true;
+                result.Data = 1;
+                result.Msg = "商家不自动接单";
+                return Json(result);
+            }
+
+            var order = Service.GetOrderByCode(code);
+            switch (Business.ServiceProvider)
+            {
+                case ServiceProvider.None:
+                    order.Status = OrderStatus.Receipted;
+                    result.Data = 2;
+                    result.Success = Service.Commit() > 0;
+                    break;
+                case ServiceProvider.Self:
+                    // 自己配送
+                    result.Success = Service.SendOrderSelf(order.ID, order);
+                    result.Data = 2;
+                    result.Msg = "自动接单成功，配送方式：自己配送";
+                    break;
+                case ServiceProvider.Dada:
+                    // 达达配送
+                    var back = await helper.SendOrderAsync(order, Business);
+                    // 创建达达订单未成功
+                    if (!back.IsSuccess())
+                    {
+                        result.Data = 3;
+                        result.Msg = back.msg;
+                        order.Status = OrderStatus.Receipted;
+                        order.ErrorReason = back.msg;
+                        Service.Commit();
+                    }
+                    else
+                    {
+                        result.Success = Service.SendSuccess(order, back);
+                        result.Data = 2;
+                        result.Msg = "自动接单成功，配送方式：达达配送";
+                    }
+                    break;
+                default:
+                    break;
+            }
+            // 打印小票
+            var json = await Print(order, Business.DefaultPrinterDevice);
+            if (!json.Success)
+            {
+                result.Success = false;
+                result.Msg += "|" + json.Msg;
+            }
+
+            return Json(result);
+        }
+
+
+        private async Task<JsonData> Print(Order order, string device_no)
         {
             var result = new JsonData();
             var helper = GetPrintHelper();
-            var order = Service.GetOrderIncludeProduct(id);
             var ret = await helper.Print(device_no, order);
             result.Success = ret.ErrCode == null || ret.ErrCode == 0;
             result.Msg = ret.ErrMsg;
@@ -191,11 +269,12 @@ namespace JdCat.Cat.Web.Controllers
             if (!result.Success)
             {
                 // 打印失败
-                return Json(result);
+                return result;
             }
             result.Msg = "正在打印小票，请稍等";
-            return Json(result);
+            return result;
         }
+
 
     }
 }

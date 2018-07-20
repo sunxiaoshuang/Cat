@@ -13,14 +13,14 @@
             },
             save: function () {
                 var entity = this.entity;
-                if (!entity.dadaAppKey || !entity.dadaAppSecret || !entity.cityCode || !entity.dadaSourceId) {
+                if (!entity.cityCode || !entity.dadaSourceId || !entity.dadaShopNo) {
                     $.alert("请将信息填写完整");
                     this.showError = true;
                     return;
                 }
                 this.showError = false;
                 $.loading();
-                axios.post("/business/savedada", { dadaAppKey: entity.dadaAppKey, dadaAppSecret: entity.dadaAppSecret, dadaSourceId: entity.dadaSourceId, dadaShopNo: entity.dadaShopNo, cityCode: entity.cityCode, cityName: entity.cityName })
+                axios.post("/business/savedada", { dadaSourceId: entity.dadaSourceId, dadaShopNo: entity.dadaShopNo, cityCode: entity.cityCode, cityName: entity.cityName })
                     .then(function (res) {
                         $.loaded();
                         if (!res.data.success) {

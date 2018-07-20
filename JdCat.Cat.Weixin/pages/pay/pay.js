@@ -17,14 +17,14 @@ Page({
       freight = qcloud.getSession().business.freight;
     cartList.forEach(a => {
       total += a.price * a.quantity;
-      tablewareQuantity += a.quantity;
+      tablewareQuantity += a.packingQuantity * a.quantity;
     });
     this.setData({
       cartList: cartList,
       freight: freight,
       total: total + freight,
       tablewareQuantity: tablewareQuantity
-    })
+    });
   },
   onShow: function () {
     var address = wx.getStorageSync("selectAddress");
@@ -93,7 +93,7 @@ Page({
             url: '/pages/pay/sure/sure'
           });
         } else {
-          util.showModel(res.data.msg);
+          util.showError(res.data.msg);
         }
       },
       fail: function (err) {

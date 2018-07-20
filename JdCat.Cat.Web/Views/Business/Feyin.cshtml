@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "Feyin";
+    ViewData["Title"] = "打印机设置";
 }
 
 @section Styles {
@@ -9,9 +9,10 @@
 @section Scripts {
     <script>
         var pageObj = {
-            business: JSON.parse('@Html.Raw(ViewBag.business)'),
+            business: JSON.parse('@Html.Raw(ViewBag.business)'.replace(/\n/g, "\\\\n")),
             printers: JSON.parse('@Html.Raw(ViewBag.printers)' || '[]')
         };
+        pageObj.business.description = pageObj.business.description.replace(/\\n/g, "\n");
     </script>
     <environment include="Development">
         <script src="~/js/business/feyin.js"></script>
@@ -89,11 +90,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(printer, index) in list">
+                                <tr v-for="(printer, index) in list" class="printer">
                                     <td class="text-center">{{index + 1}}</td>
-                                    <td>{{printer.name}}</td>
+                                    <td>{{printer.name}}<span class="badge pull-right" v-show="entity.defaultPrinterDevice == printer.code">默认</span></td>
                                     <td>{{printer.code}}</td>
-                                    <td><a class="jdcat-link" href="javascript:void(0);" @@click="unbind(printer)">解除绑定</a></td>
+                                    <td>
+                                        <a class="jdcat-link" href="javascript:void(0);" @@click="unbind(printer)">解除绑定</a>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <a class="jdcat-link printer-default" href="javascript:void(0);" @@click="printerDefault(printer)">设为默认</a>
+                                    </td>
                                 </tr>
                             </tbody>
                             <tfoot v-if="list.length == 0">

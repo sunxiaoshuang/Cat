@@ -48,6 +48,7 @@ namespace JdCat.Cat.Repository
             entity.BusinessStartTime = business.BusinessStartTime;
             entity.BusinessEndTime = business.BusinessEndTime;
             entity.MinAmount = business.MinAmount;
+            entity.ServiceProvider = business.ServiceProvider;
             return Context.SaveChanges() > 0;
         }
         public bool ChangeAutoReceipt(Business business, bool state)
@@ -80,8 +81,8 @@ namespace JdCat.Cat.Repository
         {
             var entity = new Business { ID = business.ID };
             Context.Attach(entity);
-            entity.DadaAppKey = business.DadaAppKey;
-            entity.DadaAppSecret = business.DadaAppSecret;
+            //entity.DadaAppKey = business.DadaAppKey;
+            //entity.DadaAppSecret = business.DadaAppSecret;
             entity.DadaSourceId = business.DadaSourceId;
             entity.DadaShopNo = business.DadaShopNo;
             entity.CityCode = business.CityCode;
@@ -137,6 +138,14 @@ namespace JdCat.Cat.Repository
             return Context.SaveChanges() > 0;
         }
 
+        public bool SetDefaultPrinter(Business business)
+        {
+            var entity = new Business { ID = business.ID };
+            Context.Attach(entity);
+            entity.DefaultPrinterDevice = business.DefaultPrinterDevice;
+            return Context.SaveChanges() > 0;
+        }
+
         public List<Report_Order> GetOrderTotal(Business business, DateTime startTime, DateTime endTime)
         {
             return ExecuteReader<Report_Order>($@"select CreateTime, SUM(Price) Price, COUNT(*) Quantity from 
@@ -146,12 +155,13 @@ group by CreateTime");
 
         public List<Report_Product> GetProductTotal(Business business, DateTime date)
         {
-            return ExecuteReader<Report_Product>($@"select b.ID, b.Name, SUM(a.Quantity) Quantity from dbo.[OrderProduct] a
-	inner join dbo.[Product] b on a.ProductId = b.ID
-where b.BusinessId = 1 and CONVERT(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
-group by b.ID, b.Name
-order by Quantity desc
-");
+            return ExecuteReader<Report_Product>($@"
+            select top 10 b.ID, b.Name, SUM(a.Quantity) Quantity from dbo.[OrderProduct] a
+	            inner join dbo.[Product] b on a.ProductId = b.ID
+            where b.BusinessId = 1 and CONVERT(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
+            group by b.ID, b.Name
+            order by Quantity desc
+            ");
         }
 
     }

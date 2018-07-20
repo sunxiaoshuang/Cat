@@ -24,6 +24,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public int Quantity { get; set; }
         /// <summary>
+        /// 所选规格包装盒数量
+        /// </summary>
+        public int PackingQuantity { get; set; }
+        /// <summary>
         /// 金额
         /// </summary>
         public decimal? Price { get; set; }

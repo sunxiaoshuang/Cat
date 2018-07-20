@@ -11,6 +11,7 @@ namespace JdCat.Cat.Model.Mapping
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
+
             builder.HasMany(a => a.Images)
                 .WithOne(a => a.Product)
                 .HasForeignKey(a => a.ProductId)

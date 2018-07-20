@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using JdCat.Cat.Common;
 using System.Linq.Expressions;
+using JdCat.Cat.Model.Enum;
 
 namespace JdCat.Cat.Repository
 {
@@ -20,14 +21,49 @@ namespace JdCat.Cat.Repository
         public ProductRepository(CatDbContext context) : base(context)
         {
         }
-        public IEnumerable<ProductType> GetTypes(Business business)
+        public IEnumerable<ProductType> GetTypes(Business business, ProductStatus? status = null)
         {
-            return Context.ProductTypes
-                .Include("Products")
+            //var types = Context.Products
+            //    .Include(a => a.ProductType)
+            //    .Include(a => a.Attributes)
+            //    .Include(a => a.Formats)
+            //    .Include(a => a.Images)
+            //    .Where(a => a.Status == ProductStatus.Sale && a.BusinessId == business.ID)
+            //    .GroupBy(a => a.ProductType).ToList();
+            //var list = new List<ProductType>();
+            //types.ForEach(a =>
+            //{
+            //    list.Add(a.Key);
+            //});
+            //return list;
+
+            var list = Context.ProductTypes
+                .Include(a => a.Products)
                 .Include("Products.Attributes")
                 .Include("Products.Formats")
                 .Include("Products.Images")
-                .Where(a => a.BusinessId == business.ID).OrderBy(a => a.Sort).ToList();
+                .Where(a => a.BusinessId == business.ID)
+                .OrderBy(a => a.Sort).ToList();
+            list.ForEach(a => {
+                var delList = new List<Product>();
+                foreach (var item in a.Products)
+                {
+                    if (item.Status == ProductStatus.Delete)
+                    {
+                        delList.Add(item);
+                        continue;
+                    }
+                    if (status != null)
+                    {
+                        if(item.Status != status)
+                        {
+                            delList.Add(item);
+                        }
+                    }
+                }
+                delList.ForEach(b => a.Products.Remove(b));
+            });
+            return list;
         }
         public IEnumerable<ProductType> AddTypes(IEnumerable<ProductType> types)
         {
@@ -54,7 +90,7 @@ namespace JdCat.Cat.Repository
         }
         public void RemoveTypes(IEnumerable<int> ids)
         {
-            var list = Context.ProductTypes.Where(a => ids.Contains(a.ID));
+            var list = Context.ProductTypes.Include(a => a.Products).Where(a => ids.Contains(a.ID));
             Context.ProductTypes.RemoveRange(list);
         }
         public bool ExistProduct(int id)
@@ -95,7 +131,7 @@ namespace JdCat.Cat.Repository
                 .Include(a => a.Formats)
                 .Include(a => a.Images)
                 .Include(a => a.Attributes)
-                .Where(a => a.BusinessId == business.ID);
+                .Where(a => a.BusinessId == business.ID && a.Status != ProductStatus.Delete);
             if (typeId.HasValue)
             {
                 query = query.Where(a => a.ProductTypeId == typeId.Value);
@@ -111,22 +147,22 @@ namespace JdCat.Cat.Repository
                 .Include(a => a.Attributes)
                 .First(a => a.ID == id);
         }
-        public bool DeleteProduct(string apiUrl, params int[] ids)
+        public bool DeleteProduct(params int[] ids)
         {
             var products = Context.Products
-                .Include(a => a.Formats)
-                .Include(a => a.Images)
-                .Include(a => a.Attributes)
+                //.Include(a => a.Formats)
+                //.Include(a => a.Images)
+                //.Include(a => a.Attributes)
                 .Where(a => ids.Contains(a.ID)).ToList();
             if (products.Count == 0) return false;
             foreach (var product in products)
             {
-                if (product.Images.Count > 0)
-                {
-                    DeleteImage(product.Images.First(), apiUrl, product.BusinessId);
-                }
+                //if (product.Images.Count > 0)
+                //{
+                //    DeleteImage(product.Images.First(), apiUrl, product.BusinessId);
+                //}
+                product.Status = ProductStatus.Delete;
             }
-            Context.Products.RemoveRange(products);
             return Context.SaveChanges() > 0;
         }
         public void DeleteImage(ProductImage image, string apiUrl, int businessId)

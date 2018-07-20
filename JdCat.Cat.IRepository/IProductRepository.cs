@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 
 namespace JdCat.Cat.IRepository
 {
-    public interface IProductRepository : IBusinessRepository<Product>
+    public interface IProductRepository : IBaseRepository<Product>
     {
         /// <summary>
         /// 根据商户获取商品类别列表
         /// </summary>
         /// <param name="business"></param>
+        /// <param name="status">商品状态</param>
         /// <returns></returns>
-        IEnumerable<ProductType> GetTypes(Business business);
+        IEnumerable<ProductType> GetTypes(Business business, ProductStatus? status = null);
         /// <summary>
         /// 新增商品类别
         /// </summary>
@@ -71,10 +73,9 @@ namespace JdCat.Cat.IRepository
         /// <summary>
         /// 删除商品
         /// </summary>
-        /// <param name="apiUrl">图片服务器的地址</param>
         /// <param name="ids">商品id</param>
         /// <returns></returns>
-        bool DeleteProduct(string apiUrl, params int[] ids);
+        bool DeleteProduct(params int[] ids);
         /// <summary>
         /// 删除产品图片
         /// </summary>

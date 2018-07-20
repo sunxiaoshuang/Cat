@@ -629,21 +629,25 @@ page {
   height: 130rpx;
   width: 170rpx;
   position: relative;
-  text-align: left;
   display: flex;
+  box-sizing: border-box;
   align-items: center;
   padding-left: 10rpx;
   font-size: 90%;
   border-bottom: 1rpx dashed #ECECEC;
   border-left: 3px solid transparent;
-  padding-right: 20rpx;
+  padding-right: 10rpx;
+  text-align: center;
+  
+}
+.menuList .menu text {
+  width: 100%;
 }
 
 .selected.menu {
   border-left: 3px solid #f36c1b; 
   background-color: #fff;
   color: #f36c1b;
-  text-align: center;
 }
 
 .foodList {
@@ -683,9 +687,10 @@ page {
   display: flex;
   flex-grow: 1;
   align-items: flex-start;
-  min-height: 155rpx;
+  min-height: 140rpx;
   border-bottom: 1rpx solid #ECECEC;
   background: white;
+  padding: 10rpx 0;
 }
 
 .food::before {
@@ -718,6 +723,7 @@ page {
   font-size: 25rpx;
   color: #ACACAC;
   line-height: 25rpx;
+  min-height: 40rpx;
 }
 
 .food .price {
@@ -727,11 +733,10 @@ page {
 }
 
 .food-numb {
-  height: 40rpx;
+  height: 100%;
   width: 130rpx;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 95rpx;
+  /* display: flex; */
+  align-self: flex-end;
   margin-right: 30rpx;
   line-height: 40rpx;
   font-size: 25rpx;
@@ -746,6 +751,7 @@ page {
 .multi-format {
   display: flex;
   flex-direction: row;
+  margin-bottom: 6rpx;
 }
 
 .selectFormat {
@@ -1033,8 +1039,8 @@ page {
 
 .cart-quantity {
   position: absolute;
-  top: -10rpx;
-  right: -10rpx;
+  top: 0;
+  right: 4rpx;
   width: 30rpx;
   height: 30rpx;
   border-radius: 50%;
@@ -1044,6 +1050,7 @@ page {
   line-height: 1.2;
   font-size: 80%;
   color: #fff;
+  z-index: 10000;
 }
 .notPay {
   background-color: #ddd !important;
@@ -1060,12 +1067,13 @@ page {
   padding: 10rpx;
 }
 .item-info .item-image {
-  width: 100rpx;
+  width: 60rpx;
   line-height: 60rpx;
 }
 .item-info .item-image image {
-  width: 60rpx;
-  height: 60rpx;
+  width: 40rpx;
+  height: 40rpx;
+  margin-top: 10rpx;
 }
 .item-info .item-content {
   flex-grow: 1;

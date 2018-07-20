@@ -192,7 +192,6 @@ p {
 }
 
 .top-navbar {
-
     position: fixed;
     width: 100%;
     z-index: 300;
@@ -838,13 +837,22 @@ div#sideNav:hover {
         padding-left: 55px;
     }
 
-.sidebar-collapse, .sidebar-collapse .nav {
-    background: none;
+.sidebar-collapse {
+    height: 100%;
+    overflow: auto;
 }
 
-    .sidebar-collapse .nav {
-        padding: 0;
+    .sidebar-collapse, .sidebar-collapse .nav {
+        background: none;
     }
+
+        .sidebar-collapse .nav {
+            padding: 0;
+        }
+
+        .sidebar-collapse > .nav {
+            padding-bottom: 60px;
+        }
 
         .sidebar-collapse .nav > li > a {
             color: #B8B8B8;
@@ -853,13 +861,13 @@ div#sideNav:hover {
             font-size: 16px;
         }
 
-    .sidebar-collapse > .nav > li > a {
-        padding: 18px 10px;
-    }
+        .sidebar-collapse > .nav > li > a {
+            padding: 18px 10px;
+        }
 
-    .sidebar-collapse > .nav > li {
-        border-bottom: 1px solid rgba(107, 108, 109, 0.19);
-    }
+        .sidebar-collapse > .nav > li {
+            border-bottom: 1px solid rgba(107, 108, 109, 0.19);
+        }
 
 ul.nav.nav-second-level.collapse.in {
     background: #131212;
@@ -1255,6 +1263,70 @@ input[type="checkbox"] + .custom-checkbox, input[type="checkbox"]:disabled + .cu
     line-height: 11px;
 }
 
+
+
+input[type="radio"] {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    width: 14px;
+    height: 14px;
+    margin-top: -7px;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.radio label, .checkbox label {
+    min-height: 20px;
+    margin-bottom: 0;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.label-checkbox {
+    position: relative;
+    display: block;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+    .label-checkbox input[type="radio"] {
+        margin-left: 0;
+    }
+
+.kui-checkbox input[type="radio"] + .custom-checkbox {
+    margin-right: 6px;
+}
+
+.kui-checkbox input[type="radio"] + .custom-checkbox, .kui-checkbox input[type="radio"]:disabled + .custom-checkbox {
+    border-radius: 1px;
+}
+
+input[type="radio"] + .custom-checkbox {
+    width: 14px;
+    height: 14px;
+    font-family: fontAwesome;
+    text-align: center;
+    vertical-align: middle;
+    content: "";
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.0470588) 0px 1px 2px;
+    margin: -3px 2px 0px 0px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(160, 160, 160);
+    border-image: initial;
+}
+
+input[type="radio"] + .custom-checkbox, input[type="radio"]:disabled + .custom-checkbox {
+    position: relative;
+    display: inline-block;
+    line-height: 11px;
+}
+
+
+
+
 .kui-button {
     display: inline-block;
     position: relative;
@@ -1295,13 +1367,13 @@ input[type="checkbox"] + .custom-checkbox, input[type="checkbox"]:disabled + .cu
     border-radius: 1px;
 }
 
-input[type="checkbox"]:checked + .custom-checkbox::before {
+input[type="checkbox"]:checked + .custom-checkbox::before, input[type="radio"]:checked + .custom-checkbox::before {
     font-size: 12px;
     color: #fff;
     content: "\f00c";
 }
 
-input[type="checkbox"]:checked + .custom-checkbox {
+input[type="checkbox"]:checked + .custom-checkbox, input[type="radio"]:checked + .custom-checkbox {
     background-color: #ea7042;
     border-color: #ea7042;
 }
@@ -1855,6 +1927,35 @@ ul.select-type {
 .jdcat-link {
     color: #ea7042;
 }
-.jdcat-link:hover {
-    color: #ec5e28;
+
+    .jdcat-link:hover {
+        color: #ec5e28;
+    }
+
+.cover-wrap > div {
+    position: relative;
+}
+
+.area-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #fff;
+    font-size: 2em;
+}
+
+    .area-close .fa {
+        cursor: pointer;
+    }
+
+.printer td:last-child {
+    width: 200px;
+}
+
+.printer .printer-default {
+    display: none;
+}
+
+.printer:hover .printer-default {
+    display: inline;
 }

@@ -8,7 +8,7 @@ using JdCat.Cat.Model.Report;
 
 namespace JdCat.Cat.IRepository
 {
-    public interface IBusinessRepository : IBusinessRepository<Business>
+    public interface IBusinessRepository : IBaseRepository<Business>
     {
         /// <summary>
         /// 获取商户对象，不要跟踪状态
@@ -67,6 +67,12 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="business"></param>
         bool UpdatePassword(Business business);
+        /// <summary>
+        /// 设置默认打印机编码
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        bool SetDefaultPrinter(Business business);
 
         #region 报表类方法
         /// <summary>

@@ -101,6 +101,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string CityCode { get; set; }
         /// <summary>
+        /// 订单错误原因，记录配送失败原因以及其他各种原因
+        /// </summary>
+        public string ErrorReason { get; set; }
+        /// <summary>
         /// 用户id
         /// </summary>
         public int? UserId { get; set; }

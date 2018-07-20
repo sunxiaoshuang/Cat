@@ -18,6 +18,7 @@ namespace JdCat.Cat.Common.Models
         /// 订单所在城市区号
         /// </summary>
         public string city_code { get; set; } = "027";
+        //public string order_mark_no { get; set; } = "84939486593";//Guid.NewGuid().ToString().Substring(0, 15).Replace("-", "");
         /// <summary>
         /// 订单金额
         /// </summary>
@@ -85,7 +86,7 @@ namespace JdCat.Cat.Common.Models
         /// <summary>
         /// 订单来源编号（该字段可以显示在达达app订单详情页面，支持字母和数字，最大长度为30）
         /// </summary>
-        public string origin_mark_no { get; set; } = "简单猫科技";
+        public string origin_mark_no { get; set; } = "JdCat";
         /// <summary>
         /// 是否使用保价费
         /// </summary>

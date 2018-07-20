@@ -12,9 +12,10 @@ using System;
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180720042825_Modify_Business_DefaultPrinterDevice")]
+    partial class Modify_Business_DefaultPrinterDevice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,6 +92,10 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<DateTime?>("CreateTime");
 
+                    b.Property<string>("DadaAppKey");
+
+                    b.Property<string>("DadaAppSecret");
+
                     b.Property<string>("DadaShopNo");
 
                     b.Property<string>("DadaSourceId");
@@ -136,8 +141,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<DateTime?>("RegisterDate");
 
                     b.Property<string>("Secret");
-
-                    b.Property<int>("ServiceProvider");
 
                     b.Property<string>("SpecialImage");
 
@@ -307,8 +310,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int>("DeliveryMode");
 
                     b.Property<DateTime?>("DistributionTime");
-
-                    b.Property<string>("ErrorReason");
 
                     b.Property<decimal?>("Freight");
 

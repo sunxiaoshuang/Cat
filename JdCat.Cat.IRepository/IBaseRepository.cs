@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace JdCat.Cat.IRepository
 {
-    public interface IBusinessRepository<T> where T : class, new()
+    public interface IBaseRepository<T> where T : class, new()
     {
         /// <returns></returns>
         IQueryable<T> GetAll(Expression<Func<T, bool>> predicate = null);

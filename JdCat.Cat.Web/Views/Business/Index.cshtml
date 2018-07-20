@@ -18,8 +18,9 @@
 @section Scripts {
     <script>
         var pageObj = {
-            business: JSON.parse('@Html.Raw(ViewBag.business)')
+            business: JSON.parse('@Html.Raw(ViewBag.business)'.replace(/\n/g, "\\\\n"))
         };
+        pageObj.business.description = pageObj.business.description.replace(/\\n/g, "\n");
     </script>
     <script src="~/js/lib/iscroll-zoom.min.js"></script>
     <script src="~/js/lib/lrz.all.bundle.min.js"></script>
@@ -236,6 +237,27 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1 col-xs-offset-1">
+                            <span class="require">配送方式</span>
+                        </label>
+                        <div class="col-xs-4 col-md-3">
+                            <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                                <label class="label-checkbox">
+                                    <input type="radio" name="serviceProvider" value="1" v-model="entity.serviceProvider">
+                                    <span class="custom-checkbox"></span>
+                                    自己配送
+                                </label>
+                            </div>
+                            <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                                <label class="label-checkbox">
+                                    <input type="radio" name="serviceProvider" value="2" v-model="entity.serviceProvider">
+                                    <span class="custom-checkbox"></span>
+                                    达达配送
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group" v-bind:class="{'has-error': (showError && !entity.businessLicense)}">
                         <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
                             <span class="require">营业执照编号</span>
@@ -304,6 +326,9 @@
 <div class="cover-wrap">
     <div>
         <div id="clipArea" style="margin:10px;height: 520px;"></div>
+        <div class="area-close">
+            <i class="fa fa-times-circle-o" id="btn-closeArea"></i>
+        </div>
         <div class="save-warp">
             <button id="clipBtn">保存封面</button>
         </div>

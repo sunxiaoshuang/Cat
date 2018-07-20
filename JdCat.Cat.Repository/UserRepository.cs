@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace JdCat.Cat.Repository
@@ -86,6 +87,10 @@ namespace JdCat.Cat.Repository
         public IEnumerable<ShoppingCart> GetCarts(int userId)
         {
             return Context.ShoppingCarts.Where(a => a.UserId == userId).ToList();
+            //return Context.ShoppingCarts.FromSql($@"
+            //        select a.* from dbo.ShoppingCart a
+            //            inner join dbo.Product b on a.ProductId=b.Id and b.Status={(int)ProductStatus.Sale}
+            //            where UserId={userId}").ToList();
         }
         public ShoppingCart CreateCart(ShoppingCart cart)
         {

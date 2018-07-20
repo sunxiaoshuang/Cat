@@ -39,7 +39,7 @@
         <view>￥ {{freight}}</view>
     </view>
     <view class="deliver">
-        <view>餐具数量</view>
+        <view>包装盒数量</view>
         <picker bindchange="bindPickerChange" value="{{index}}" range="{{tablewareQuantitys}}">
             <view class="quantity">
                 <text class="nowrap" style="width: 100rpx;">{{tablewareQuantity}}人</text>

@@ -10,7 +10,7 @@ using JdCat.Cat.Common;
 
 namespace JdCat.Cat.Repository
 {
-    public class BaseRepository<T> : IBusinessRepository<T> where T : BaseEntity, new()
+    public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity, new()
     {
         private readonly CatDbContext _context;
         public CatDbContext Context => _context;
