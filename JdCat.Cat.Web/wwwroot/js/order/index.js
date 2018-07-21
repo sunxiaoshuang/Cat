@@ -268,9 +268,14 @@
     });
 
     function handerData(list) {
-        list.map(function (obj) {
-            obj.expend = false;
-        });
+        if (list.length === 1) {
+            list[0].expend = true;
+        }
+        else {
+            list.map(function (obj) {
+                obj.expend = false;
+            });
+        }
         return list;
     }
 
