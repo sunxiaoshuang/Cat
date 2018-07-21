@@ -127,8 +127,10 @@
                                 <td colspan="7">
                                     <hr />
                                     <div class="row" v-if="!!order.errorReason">
-                                        <div class="col-md-6 bg-danger">
-                                            <label class="text-danger">{{order.errorReason}}</label>
+                                        <div class="col-md-6">
+                                            <div class="alert alert-danger">
+                                                <label class="text-danger">{{order.errorReason}}</label>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row">
