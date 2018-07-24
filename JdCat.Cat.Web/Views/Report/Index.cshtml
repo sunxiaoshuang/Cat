@@ -15,7 +15,8 @@
     <script>
         var pageData = {
             list: JSON.parse('@Html.Raw(ViewBag.list)'),
-            products: JSON.parse('@Html.Raw(ViewBag.products)')
+            products: JSON.parse('@Html.Raw(ViewBag.products)'),
+            productPrices: JSON.parse('@Html.Raw(ViewBag.productPrices)')
         };
     </script>
     <environment include="Development">
@@ -58,7 +59,7 @@
                 </div>
                 <div class="panel-heading margin-top-20">
                     <h3 class="panel-title">
-                        <span class="title">今日销售商品</span>
+                        <span class="title">今日TOP 10</span>
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -67,7 +68,7 @@
                             <thead>
                                 <tr>
                                     <th width="100" class="text-center">排名</th>
-                                    <th>名称</th>
+                                    <th>商品名称</th>
                                     <th width="150">销售数量</th>
                                 </tr>
                             </thead>
@@ -78,6 +79,26 @@
                                     </td>
                                     <td v-text="item.name"></td>
                                     <td v-text="item.quantity"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="report-table col-md-6 col-xs-12">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th width="100" class="text-center">排名</th>
+                                    <th>商品名称</th>
+                                    <th width="150">销售金额</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in productPrices">
+                                    <td class="text-center">
+                                        <span v-text="index + 1"></span>
+                                    </td>
+                                    <td v-text="item.name"></td>
+                                    <td v-html="currency(item.amount)"></td>
                                 </tr>
                             </tbody>
                         </table>

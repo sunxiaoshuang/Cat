@@ -34,14 +34,14 @@
                 <div class="cate-tree" id="category" style="min-height: 456px;">
                     <div class="all-line" v-bind:class="{ 'selected': allSelected }" v-on:click="allClick()">
                         <span>全部商品</span>
-                        <span class="all-cnt">{{ productCount }}</span>
+                        <span class="all-cnt" v-text="productCount"></span>
                     </div>
 
                     <div class="cate-panel" v-for="item in list" v-bind:class="{ 'selected': item.selected }" v-on:click="typeClick(item)">
                         <div class="cate-title" :data-id="item.id">
                             <div class="cate-name relative">
-                                {{ item.name }}
-                                <span class="cate-cnt">{{ item.count }}</span>
+                                <span v-text="item.name"></span>
+                                <span class="cate-cnt" v-text="item.count"></span>
                             </div>
                         </div>
                     </div>
@@ -106,22 +106,22 @@
                                 </div>
                                 <div class="product-data">
                                     <div class="product-name">
-                                        <span style="font-size: 16px;font-weight:800;">{{product.name}}</span>
+                                        <span style="font-size: 16px;font-weight:800;" v-text="product.name"></span>
                                     </div>
                                     <div class="product-format">
                                         <ul class="list-group">
                                             <li class="relative" v-for="format in product.formats">
                                                 <div class="li-item" v-if="product.formats.length > 1">
                                                     <p class="bold">规格：</p>
-                                                    <p>{{format.name}}</p>
+                                                    <p v-text="format.name"></p>
                                                 </div>
                                                 <div class="li-item">
                                                     <p><i class="fa fa-cny"></i></p>
-                                                    <p>{{format.price | currency}}</p>
+                                                    <p v-html="format.price"></p>
                                                 </div>
                                                 <div class="li-item">
                                                     <p class="bold">库存：</p>
-                                                    <p>{{format.stock | stock}}</p>
+                                                    <p v-html="stock(format.stock)"></p>
                                                 </div>
                                             </li>
                                         </ul>
@@ -131,22 +131,21 @@
                                     <p style="display:flex;">
                                         <span style="line-height:1.1;min-height: 30px;">
                                             <span class="bold">描述：</span>
-                                            {{product.description}}
+                                            <span v-text="product.description"></span>
                                         </span>
                                     </p>
                                     <hr style="margin: 5px 0;" />
                                     <p style="display:flex; height: 30px">
                                         <span style="line-height:1.1;">
                                             <span class="bold">属性：</span>
-                                            {{product.attributes | attribute}}
+                                            <span v-html="attribute(product.attributes)"></span>
                                         </span>
                                     </p>
                                 </div>
                                 <div class="product-operate pull-right">
                                     <p style="text-align: center;">
                                         <div class="kui-button m-right-xs">
-                                            <button type="button" v-on:click="toggleStatus(product)" style="width: 100px" class="btn btn-sm kui-button-primary">
-                                                {{product.status == 1 ? "下架" : "上架"}}
+                                            <button type="button" v-on:click="toggleStatus(product)" style="width: 100px" class="btn btn-sm kui-button-primary" v-text='product.status == 1 ? "下架" : "上架"'>
                                             </button>
                                         </div>
                                     </p>
@@ -175,7 +174,7 @@
                         </li>
                         <li v-for="num in pageCount" v-bind:class="{'active': num === pageIndex}" v-on:click="page(num)">
                             <a>
-                                <span>{{num}}</span>
+                                <span v-text="num"></span>
                             </a>
                         </li>
                         <li v-bind:class="{'disabled': pageIndex === pageCount}" v-on:click="next()">

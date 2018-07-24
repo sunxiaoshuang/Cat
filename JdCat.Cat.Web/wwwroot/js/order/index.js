@@ -244,9 +244,7 @@
             search: function () {
                 this.initPageObj();
                 this.loadData();
-            }
-        },
-        filters: {
+            },
             category: function (type) {
                 return typeName[type];
             },

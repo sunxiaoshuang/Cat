@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
@@ -30,7 +31,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="phone">用户手机号</param>
         /// <param name="userId">用户id</param>
         /// <returns></returns>
-        IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null);
+        IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null);
         /// <summary>
         /// 商户接单
         /// </summary>

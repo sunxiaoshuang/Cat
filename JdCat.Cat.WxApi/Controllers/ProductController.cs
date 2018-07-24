@@ -26,7 +26,7 @@ namespace JdCat.Cat.WxApi.Controllers
         [HttpGet("menus/{id}")]
         public IActionResult GetMenus(int id)
         {
-            return Json(Service.GetTypes(new Business() { ID = id }));
+            return Json(Service.GetTypes(new Business() { ID = id }, Model.Enum.ProductStatus.Sale));
         }
 
     }

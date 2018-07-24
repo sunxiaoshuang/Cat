@@ -39,7 +39,7 @@
                     </label>
                     <div class="col-xs-3">
                         <select id="ddlType" name="type" class="form-control" v-model="entity.productTypeId">
-                            <option v-for="item in typeList" v-bind:value="item.id">{{item.name}}</option>
+                            <option v-for="item in typeList" v-bind:value="item.id" v-text="item.name"></option>
                         </select>
                     </div>
                     <div class="col-xs-2">
@@ -95,7 +95,7 @@
                         <div style="border: 1px solid #ccc;padding: 20px;margin-bottom: 5px;" v-for="item in entity.formats">
                             <div class="row">
                                 <div class="col-xs-10">
-                                    <span>规格编码：{{item.code}}</span>
+                                    规格编码：<span v-text="item.code"></span>
                                 </div>
                             </div>
                             <div class="row">
@@ -143,7 +143,7 @@
                                 <div class="arrow"></div>
                                 <ul class="content">
                                     <li v-for="attr in attrList">
-                                        <span v-on:click="selectAttr(item, attr)">{{attr.name}}</span>
+                                        <span v-on:click="selectAttr(item, attr)" v-text="attr.name"></span>
                                     </li>
                                 </ul>
                             </div>
@@ -164,7 +164,7 @@
                                     <div class="arrow"></div>
                                     <ul class="content">
                                         <li v-for="name in item.container.list">
-                                            <span v-on:click="selectDetail(item, name, item.container.detailIndex)">{{name}}</span>
+                                            <span v-on:click="selectDetail(item, name, item.container.detailIndex)" v-text="name"></span>
                                         </li>
                                     </ul>
                                 </div>

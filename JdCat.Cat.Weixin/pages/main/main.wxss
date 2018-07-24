@@ -617,6 +617,7 @@ page {
   font-size: 90%;
   background-color: #f8f8f8;
   margin-right: 20rpx;
+  
 }
 
 .menuList {
@@ -1001,13 +1002,13 @@ page {
   position: absolute;
   right: 10rpx;
   top: 5rpx;
-  width: 30rpx;
-  height: 30rpx;
+  width: 50rpx;
+  height: 50rpx;
 }
 
 .detail-main .close image {
-  width: 30rpx;
-  height: 30rpx;
+  width: 50rpx;
+  height: 50rpx;
 }
 .item-food-numb image {
   width: 60rpx;

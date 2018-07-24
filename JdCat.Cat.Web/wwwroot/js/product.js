@@ -314,6 +314,15 @@
                 if (productList.pageIndex === productList.pageCount) return;
                 productList.pageIndex = productList.pageIndex + 1;
                 loadData();
+            },
+            stock: function (num) {
+                return num < 0 ? "无限" : num;
+            },
+            attribute: function (attrs) {
+                if (!attrs || attrs.length === 0) return "";
+                var name = "";
+                attrs.forEach(function (obj) { name += obj.name + "/"; });
+                return name.substr(0, name.length - 1);
             }
         }
     });

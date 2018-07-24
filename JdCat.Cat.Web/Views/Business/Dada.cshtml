@@ -45,7 +45,7 @@
                     </label>
                     <div class=" col-xs-4 col-md-3">
                         <select class="form-control" v-model="entity.cityCode" @@change="changeOption($event)">
-                            <option v-for="city in cityList" :value="city.code">{{city.name}}</option>
+                            <option v-for="city in cityList" :value="city.code" v-text="city.name"></option>
                         </select>
                     </div>
                 </div>

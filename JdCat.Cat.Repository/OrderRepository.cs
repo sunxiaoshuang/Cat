@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -59,10 +60,14 @@ namespace JdCat.Cat.Repository
             return result;
         }
 
-        public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null)
+        public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null)
         {
             var lastTime = DateTime.Now.AddYears(-1);
             var queryable = Context.Orders.Include(a => a.Products).Where(a => a.BusinessId == business.ID && a.CreateTime > lastTime);
+            if(expression != null)
+            {
+                queryable = queryable.Where(expression);
+            }
             if(!string.IsNullOrEmpty(code))
             {
                 queryable = queryable.Where(a => a.OrderCode.Contains(code));

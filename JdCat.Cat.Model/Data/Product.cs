@@ -49,7 +49,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 产品状态
         /// </summary>
-        public ProductStatus Status { get; set; } = ProductStatus.Init;
+        public ProductStatus Status { get; set; } = ProductStatus.Sale;
         /// <summary>
         /// 上架时间
         /// </summary>

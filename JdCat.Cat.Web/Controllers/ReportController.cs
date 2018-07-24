@@ -38,7 +38,8 @@ namespace JdCat.Cat.Web.Controllers
             orders = orders.OrderBy(a => a.CreateTime).ToList();
 
             ViewBag.list = JsonConvert.SerializeObject(orders, AppData.JsonSetting);
-            ViewBag.products = JsonConvert.SerializeObject(Service.GetProductTotal(Business, time), AppData.JsonSetting);
+            ViewBag.products = JsonConvert.SerializeObject(Service.GetProductTop10(Business, time), AppData.JsonSetting);
+            ViewBag.productPrices = JsonConvert.SerializeObject(Service.GetProductPriceTop10(Business, time), AppData.JsonSetting);
             return View();
         }
 

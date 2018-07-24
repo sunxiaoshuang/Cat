@@ -42,11 +42,20 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="setting"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult GetOrder([FromQuery]int status, [FromQuery]string code, [FromQuery]string phone, [FromBody]PagingQuery query)
+        public IActionResult GetOrder([FromQuery]int status, [FromQuery]string code, [FromQuery]string phone, [FromQuery]DateTime? startDate, [FromQuery]DateTime? endDate, [FromBody]PagingQuery query)
         {
             var result = new JsonData();
             var state = status == 0 ? null : (OrderStatus?)status;
-            var list = Service.GetOrder(Business, state, query, code, phone);
+            IEnumerable<Order> list = null;
+            if (startDate != null && endDate != null)
+            {
+                list = Service.GetOrder(Business, state, query, code, phone, expression: a => a.CreateTime >= startDate && a.CreateTime < endDate.Value.AddDays(1));
+            }
+            else
+            {
+                var nowDate = DateTime.Now.ToString("yyyy-MM-dd");
+                list = Service.GetOrder(Business, state, query, code, phone, expression: a => a.CreateTime.Value.ToString("yyyy-MM-dd") == nowDate);
+            }
             result.Data = new
             {
                 list,
@@ -55,6 +64,8 @@ namespace JdCat.Cat.Web.Controllers
             result.Success = true;
             return Json(result);
         }
+
+
 
         /// <summary>
         /// 接单
@@ -189,6 +200,16 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         /// <summary>
+        /// 历史订单
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult History()
+        {
+
+            return View();
+        }
+
+        /// <summary>
         /// ws消息处理
         /// </summary>
         /// <returns></returns>
@@ -251,7 +272,12 @@ namespace JdCat.Cat.Web.Controllers
             return Json(result);
         }
 
-
+        /// <summary>
+        /// 打印
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="device_no"></param>
+        /// <returns></returns>
         private async Task<JsonData> Print(Order order, string device_no)
         {
             var result = new JsonData();
@@ -274,7 +300,6 @@ namespace JdCat.Cat.Web.Controllers
             result.Msg = "正在打印小票，请稍等";
             return result;
         }
-
 
     }
 }

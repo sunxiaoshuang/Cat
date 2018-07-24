@@ -19,7 +19,10 @@ var order = {
         var total = 0;
         cartList.forEach(function(a) {
             total += a.quantity * a.price;
+
         });
+        total = total.toFixed(2);
+        total = parseFloat(total);
         return total;
     },
     productQuantity: function(order){

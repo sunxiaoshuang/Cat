@@ -61,6 +61,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 支付超时
         /// </summary>
-        Overtime = 4096
+        Overtime = 4096,
+        /// <summary>
+        /// 无效订单
+        /// </summary>
+        Invalid = 2 + 32 + 256 + 1024 + 4096
     }
 }

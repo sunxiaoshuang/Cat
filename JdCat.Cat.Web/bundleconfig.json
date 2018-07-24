@@ -157,5 +157,12 @@
     "inputFiles": [
       "wwwroot/js/report/index.js"
     ]
+  },
+  // 历史订单
+  {
+    "outputFileName": "wwwroot/js/order/history.min.js",
+    "inputFiles": [
+      "wwwroot/js/order/history.js"
+    ]
   }
 ]

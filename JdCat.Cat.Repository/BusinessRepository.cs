@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using JdCat.Cat.Model.Report;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -153,14 +154,26 @@ namespace JdCat.Cat.Repository
 group by CreateTime");
         }
 
-        public List<Report_Product> GetProductTotal(Business business, DateTime date)
+        public List<Report_Product> GetProductTop10(Business business, DateTime date)
         {
             return ExecuteReader<Report_Product>($@"
             select top 10 b.ID, b.Name, SUM(a.Quantity) Quantity from dbo.[OrderProduct] a
 	            inner join dbo.[Product] b on a.ProductId = b.ID
+				inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
             where b.BusinessId = 1 and CONVERT(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
             group by b.ID, b.Name
             order by Quantity desc
+            ");
+        }
+        public List<Report_ProductPrice> GetProductPriceTop10(Business business, DateTime date)
+        {
+            return ExecuteReader<Report_ProductPrice>($@"
+            select top 10 b.ID, b.Name, SUM(a.Quantity * a.Price) Amount from dbo.[OrderProduct] a
+	            inner join dbo.[Product] b on a.ProductId = b.ID
+				inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
+            where b.BusinessId = 1 and CONVERT(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
+            group by b.ID, b.Name
+            order by Amount desc
             ");
         }
 

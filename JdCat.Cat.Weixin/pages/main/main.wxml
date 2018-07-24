@@ -18,7 +18,7 @@
     </view>
     <view class="business-content">
         <view class="name">
-            <text>{{business.name}}</text> 
+            <text>{{business.name}}</text>
         </view>
         <view class="description">
             <text>{{business.description}}</text>
@@ -36,14 +36,17 @@
     <swiper class="swiper" current="{{currentPage}}" bindchange="turnTitle">
         <swiper-item id="orderPage">
             <view class="orderMain">
-                <scroll-view class="orderPage-sideBar" bindscrolltolower="lower" scroll-y="true">
-                    <block wx:for="{{menu}}" wx:key="">
-                        <view class="menuList">
-                            <view class="menu {{index==selected?'selected':''}}" data-index="{{index}}" catchtap="turnMenu">
-                                <text>{{item.name}}</text>
-                            </view>
+                <scroll-view class="orderPage-sideBar" bindscrolltolower="lower" scroll-y="{{true}}">
+                    <view class="menuList" wx:for="{{menu}}" wx:key="">
+                        <view class="menu {{index==selected?'selected':''}}" data-index="{{index}}" catchtap="turnMenu">
+                            <text>{{item.name}}</text>
                         </view>
-                    </block>
+                    </view>
+                    <view class="menuList">
+                        <view class="menu">
+                            <text> </text>
+                        </view>
+                    </view>
                 </scroll-view>
                 <view class="foodListMain">
                     <!-- <view class="selectedMenu">{{menu[selected].name}}</view> -->
@@ -113,9 +116,7 @@
                 <view class="item-image">
                     <image src="../../images/icon/safe-1.png" />
                 </view>
-                <view class="item-content">
-                    查看商家资质
-                </view>
+                <view class="item-content">查看商家资质</view>
                 <view class="item-image">
                     <image src="../../images/icon/right-1.png" />
                 </view>
@@ -124,17 +125,13 @@
                 <view class="item-image">
                     <image src="../../images/icon/address-1.png" />
                 </view>
-                <view class="item-content">
-                    {{business.address}}
-                </view>
+                <view class="item-content">{{business.address}}</view>
             </view>
             <view class="item-info" bindtap="callPhone">
                 <view class="item-image">
                     <image src="../../images/icon/phone-1.png" />
                 </view>
-                <view class="item-content">
-                    联系方式：{{business.mobile}}
-                </view>
+                <view class="item-content">联系方式：{{business.mobile}}</view>
             </view>
             <view class="item-info">
                 <view class="item-image">
@@ -159,7 +156,9 @@
         </view>
         <view class="free" wx:if="{{cartList.length==0}}"></view>
     </view>
-    <view class="pay {{!isBalance ? 'notPay' : 'pay'}}" bindtap="pay" wx:if="{{calc.cartTotalPrice(cartList) >= business.minAmount}}">{{submitText}}</view>
+    <view class="pay {{!isBalance ? 'notPay' : 'pay'}}" bindtap="pay" wx:if="{{calc.cartTotalPrice(cartList) >= business.minAmount}}">
+        {{submitText}}
+    </view>
     <view class="pay notPay" wx:else>￥{{business.minAmount}} 起送</view>
 </view>
 <view class="cart-dialog" wx:if="{{showCart}}">

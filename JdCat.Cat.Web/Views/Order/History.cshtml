@@ -1,29 +1,28 @@
 ﻿
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "历史订单";
 }
 @section Styles {
     <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
         <link href="~/css/order/index.css" rel="stylesheet" />
     </environment>
     <environment exclude="Development">
-        <link href="~/css/order/index.min.css" rel="stylesheet" asp-append-version="true" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link href="~/css/order/index.min.css" rel="stylesheet" />
     </environment>
 
 }
 @section Scripts {
-    <script>
-        var pageObj = {
-            reasonList: JSON.parse('@Html.Raw(ViewBag.reasonList)'),
-            deviceList: JSON.parse('@Html.Raw(ViewBag.deviceList)' || '[]'),
-            code: '@ViewBag.code'
-        }
-    </script>
     <environment include="Development">
-        <script src="~/js/order/index.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/order/history.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="~/js/order/index.min.js" asp-append-version="true"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/order/history.min.js" asp-append-version="true"></script>
     </environment>
 }
 <div class="mainframe" id="app">
@@ -32,45 +31,36 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <span class="title">今日订单</span>
+                        <span class="title">@ViewData["Title"]</span>
                     </h3>
                 </div>
             </div>
         </div>
         <div class="form-horizontal">
             <div class="form-group">
-                <label class="control-label col-md-1 text-left">订单编号：</label>
-                <div class="col-md-2">
-                    <input type="text" class="form-control" v-model.trim="search_code" @@keyup.enter="search()" />
-                </div>
-                <label class="control-label col-md-1">手机号：</label>
-                <div class="col-md-2">
-                    <input type="text" class="form-control" v-model.trim="search_phone" @@keyup.enter="search()" />
-                </div>
-                <div class="col-md-4">
-                    <button class="btn btn-primary" @@click="search()">
+                <label class="control-label col-md-1 text-right">选择日期：</label>
+                <div class="col-md-6">
+                    <div class="input-group pull-left" style="width: 200px;">
+                        <input type="text" class="form-control" value="@DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd")" id="txtStartDate" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                    <span class="pull-left" style="margin-top: 8px;padding: 0 10px;">至</span>
+                    <div class="input-group pull-left" style="width: 200px;">
+                        <input type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="txtEndDate" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                    <button class="btn btn-primary pull-left" style="margin-left: 20px;" @@click="search()">
                         <i class="fa fa-search"></i>
                         搜索
                     </button>
-                    @*<button class="btn btn-primary">
-                        <i class="fa fa-file-excel-o"></i>
-                        导出统计表格
-                    </button>*@
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-md-1 text-left col-xs-2">小票打印设备：</label>
-                <div class="col-md-2 col-xs-4">
-                    <select class="form-control" v-model="printerCode" @@change="changePrinter()">
-                        <option v-for="device in deviceList" :value="device.code">{{device.name}}</option>
-                    </select>
                 </div>
             </div>
         </div>
-        <div class="btn-group">
-            <button class="btn" v-bind:class="{ 'btn-primary': item.selected, 'btn-default': !item.selected}" v-for="item in buttons" v-text="item.name" @@click="changeType(item)"></button>
-        </div>
-        <table class="table table-order" style="min-width: 1160px;">
+        <table class="table table-bordered table-order" style="min-width: 1160px;">
             <thead>
                 <tr>
                     <th></th>
@@ -80,7 +70,6 @@
                     <th>支付方式</th>
                     <th>状态</th>
                     <th>金额</th>
-                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,7 +78,6 @@
                         <table class="table table-order">
                             <tr title="点击查看详情" @@click="expend(order)" class="tr-hover">
                                 <td>
-                                    @*<i class="fa fa-angle-right transition" v-bind:class="{'transition-down': order.expend}"></i>*@
                                     <span class="small text-primary" v-text="order.expend ? '收起' : '展开'"></span>
                                 </td>
                                 <td><i class="fa fa-warning text-danger" v-if="order.status == 1"></i><span :class="{'text-danger': order.status == 1}" v-text="order.orderCode"></span></td>
@@ -98,38 +86,6 @@
                                 <td v-html="paymentType(order.paymentType)"></td>
                                 <td v-html="status(order.status)"></td>
                                 <td><i class="fa fa-jpy"></i> <span v-text="order.price"></span></td>
-                                <td class="operate">
-                                    <div class="kui-button m-right-xs" v-if="order.status == 1">
-                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="receive(order)">
-                                            接单并配送
-                                        </button>
-                                    </div>
-                                    <div class="kui-button m-right-xs" v-if="order.status == 1">
-                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="reject(order)">
-                                            拒绝接单
-                                        </button>
-                                    </div>
-                                    <div class="kui-button m-right-xs" v-if="order.status == 4 || order.status == 2048">
-                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="receive(order)">
-                                            配送
-                                        </button>
-                                    </div>
-                                    <div class="kui-button m-right-xs" v-if="order.status == 8 || order.status == 16 || order.status == 32">
-                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="cancel(order)">
-                                            取消配送
-                                        </button>
-                                    </div>
-                                    <div class="kui-button m-right-xs" v-if="order.deliveryMode == 1 && order.status == 16">
-                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="achieve(order)">
-                                            自送已到达
-                                        </button>
-                                    </div>
-                                    <div class="kui-button m-right-xs" v-if="order.status == 4 || order.status == 8 || order.status == 16">
-                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="print(order)">
-                                            打印小票
-                                        </button>
-                                    </div>
-                                </td>
                             </tr>
                             <tr v-show="order.expend">
                                 <td></td>
@@ -242,25 +198,6 @@
                         </a>
                     </li>
                 </ul>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="modal-sendType" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h5 class="modal-title">选择配送方式</h5>
-                </div>
-                <div class="modal-body">
-                    <ul class="select-type">
-                        <li v-for="item in sendTypes" @@click="selectSendType(item)" :class="{'active': item.selected}"><img :src="item.selected ? '/images/pao-2.png': '/images/pao-1.png'" /> {{item.name}}</li>
-                    </ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" @@click="submitSend()">确定</button>
-                </div>
             </div>
         </div>
     </div>

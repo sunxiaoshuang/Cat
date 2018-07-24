@@ -91,9 +91,9 @@
                             </thead>
                             <tbody>
                                 <tr v-for="(printer, index) in list" class="printer">
-                                    <td class="text-center">{{index + 1}}</td>
-                                    <td>{{printer.name}}<span class="badge pull-right" v-show="entity.defaultPrinterDevice == printer.code">默认</span></td>
-                                    <td>{{printer.code}}</td>
+                                    <td class="text-center" v-text="index + 1"></td>
+                                    <td><span v-text="printer.name"></span><span class="badge pull-right" v-show="entity.defaultPrinterDevice == printer.code">默认</span></td>
+                                    <td v-text="printer.code"></td>
                                     <td>
                                         <a class="jdcat-link" href="javascript:void(0);" @@click="unbind(printer)">解除绑定</a>
                                         &nbsp;&nbsp;&nbsp;&nbsp;

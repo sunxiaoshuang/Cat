@@ -89,7 +89,9 @@ namespace JdCat.Cat.IRepository
         /// <param name="business"></param>
         /// <param name="date"></param>
         /// <returns></returns>
-        List<Report_Product> GetProductTotal(Business business, DateTime date);
+        List<Report_Product> GetProductTop10(Business business, DateTime date);
+
+        List<Report_ProductPrice> GetProductPriceTop10(Business business, DateTime date);
 
         #endregion
     }

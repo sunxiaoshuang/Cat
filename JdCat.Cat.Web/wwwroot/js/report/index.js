@@ -1,13 +1,17 @@
 ﻿
 (function () {
 
+    Vue.prototype.currency = function (input) {
+        return "￥ " + input;
+    };
 
     new Vue({
         el: "#app",
         data: {
             price: pageData.list.length > 0 ? pageData.list[pageData.list.length - 1].price : 0,
             quantity: pageData.list.length > 0 ? pageData.list[pageData.list.length - 1].quantity : 0,
-            products: pageData.products
+            products: pageData.products,
+            productPrices: pageData.productPrices
         }
     });
 
