@@ -20,7 +20,7 @@
         var pageObj = {
             business: JSON.parse('@Html.Raw(ViewBag.business)'.replace(/\n/g, "\\\\n"))
         };
-        pageObj.business.description = pageObj.business.description.replace(/\\n/g, "\n");
+        pageObj.business.description = (pageObj.business.description || "").replace(/\\n/g, "\n");
     </script>
     <script src="~/js/lib/iscroll-zoom.min.js"></script>
     <script src="~/js/lib/lrz.all.bundle.min.js"></script>

@@ -8,6 +8,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Drawing;
 
 namespace JdCat.Cat.Common
 {
@@ -398,5 +399,6 @@ namespace JdCat.Cat.Common
             DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             return (dateTime.Ticks - dt.Ticks) / 10000;
         }
+
     }
 }

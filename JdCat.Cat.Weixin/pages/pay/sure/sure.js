@@ -9,22 +9,23 @@ Page({
     order: {},
     businessId: "",
     timeId: 0,
-    remainderTime: 0
-
+    remainderTime: 0,
+    paying: false
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    var order = wx.getStorageSync("orderDetail"), self = this;
+    var order = wx.getStorageSync("orderDetail"),
+      self = this;
     var business = qcloud.getSession().business;
-    if(!order) {
+    if (!order) {
       var id = options.id;
       qcloud.request({
         url: "/order/single/" + id,
         method: "GET",
-        success: function(res) {
+        success: function (res) {
           self.setData({
             order: res.data,
             businessId: business.id
@@ -55,11 +56,11 @@ Page({
   onShow: function () {
     this.calcTime();
   },
-  calcTime: function() {
-    if(!this.data.order) return;
+  calcTime: function () {
+    if (!this.data.order) return;
     // 每次显示界面，重新计算剩余时间
     clearInterval(this.data.timeId);
-    if(this.data.order.status != 256) return;
+    if (this.data.order.status != 256) return;
     var overSecond = Math.floor(+/\d+/g.exec(this.data.order.createTime)[0] / 1000) + 60 * 15;
     var nowSecond = Date.parse(new Date()) / 1000;
     var remainderTime = overSecond - nowSecond;
@@ -81,22 +82,24 @@ Page({
   },
   submit: function () {
     var self = this;
-    util.showBusy("loading");
+    // util.showBusy("loading");
+    if (this.data.paying) return;
+    this.data.paying = true;
     var user = qcloud.getSession().userinfo;
     qcloud.request({
       url: `/order/unifiePayment/${this.data.order.id}?businessId=${this.data.businessId}&userId=${user.id}`,
       success: function (res) {
-        wx.hideToast();
+        // wx.hideToast();
         if (res.data.success) {
           wx.requestPayment(qcloud.utils.extend({}, res.data.data, {
             success: function (res) {
-              if(res.errMsg == "requestPayment:ok"){
+              if (res.errMsg == "requestPayment:ok") {
                 wx.redirectTo({
                   url: '/pages/order/orderInfo/orderInfo?id=' + self.data.order.id
                 });
               }
             },
-            fail: function(err){
+            fail: function (err) {
               util.showError(err);
             }
           }));
@@ -104,7 +107,10 @@ Page({
         } else {
           util.showError(res.data.msg);
         }
+        self.data.paying = false;
       }
     });
   }
-})
+
+
+});

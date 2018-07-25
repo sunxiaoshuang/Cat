@@ -16,7 +16,7 @@
         var pageObj = {
             business: JSON.parse('@Html.Raw(ViewBag.business)'.replace(/\n/g, "\\\\n"))
         };
-        pageObj.business.description = pageObj.business.description.replace(/\\n/g, "\n");
+        pageObj.business.description = (pageObj.business.description || "").replace(/\\n/g, "\n");
     </script>
     <environment include="Development">
         <script src="~/js/business/pwd.js"></script>

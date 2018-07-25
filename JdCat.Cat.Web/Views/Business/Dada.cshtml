@@ -18,7 +18,7 @@
             business: JSON.parse('@Html.Raw(ViewBag.business)'.replace(/\n/g, "\\\\n")),
             cityList: JSON.parse('@Html.Raw(ViewBag.cityList)')
         };
-        pageObj.business.description = pageObj.business.description.replace(/\\n/g, "\n");
+        pageObj.business.description = (pageObj.business.description || "").replace(/\\n/g, "\n");
     </script>
     <environment include="Development">
         <script src="~/js/business/dada.js"></script>

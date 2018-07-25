@@ -47,7 +47,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 商户备注
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = "欢迎光临";
         /// <summary>
         /// 营业执照
         /// </summary>

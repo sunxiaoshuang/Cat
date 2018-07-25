@@ -21,7 +21,7 @@
             <text>{{business.name}}</text>
         </view>
         <view class="description">
-            <text>{{business.description}}</text>
+            <text>公告：{{business.description}}</text>
         </view>
     </view>
 </view>
