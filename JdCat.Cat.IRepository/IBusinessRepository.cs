@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using JdCat.Cat.Common;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Report;
 
@@ -94,5 +95,42 @@ namespace JdCat.Cat.IRepository
         List<Report_ProductPrice> GetProductPriceTop10(Business business, DateTime date);
 
         #endregion
+
+        #region 营销类方法
+        /// <summary>
+        /// 根据id获取满减实体对象
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        SaleFullReduce GetFullReduceById(int id);
+        /// <summary>
+        /// 创建满减活动
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        JsonData CreateFullReduce(SaleFullReduce entity);
+        /// <summary>
+        /// 修改满减活动
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        JsonData UpdateFullReduce(SaleFullReduce entity);
+
+        /// <summary>
+        /// 获取商户满减活动列表
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        IEnumerable<SaleFullReduce> GetFullReduce(Business business, bool tracking = true);
+        /// <summary>
+        /// 删除营销活动
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        JsonData DeleteFullReduce(int id);
+
+
+        #endregion
+
     }
 }

@@ -12,6 +12,7 @@ Page({
   },
   bindGetUserInfo: function (e) {
     var self = this;
+    console.log(e);
     wx.getSetting({ // 如果用户允许授权，则将用户信息写入数据库
       success: function (res) {
         if (!res.authSetting["scope.userInfo"]) return;
@@ -74,5 +75,11 @@ Page({
         util.showModel("错误", "绑定失败，请检查网络连接");
       }
     });
+  },
+  callPhone: function(){
+    var business = qcloud.getSession().business;
+    wx.makePhoneCall({
+      phoneNumber: business.mobile
+    });
   }
-})
+});

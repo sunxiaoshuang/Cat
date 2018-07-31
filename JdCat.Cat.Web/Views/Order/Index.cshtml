@@ -70,14 +70,14 @@
         <div class="btn-group">
             <button class="btn" v-bind:class="{ 'btn-primary': item.selected, 'btn-default': !item.selected}" v-for="item in buttons" v-text="item.name" @@click="changeType(item)"></button>
         </div>
-        <table class="table table-order" style="min-width: 1160px;">
+        <table class="table table-order" style="min-width: 1000px;">
             <thead>
                 <tr>
                     <th></th>
                     <th>订单编号</th>
                     <th>下单时间</th>
                     <th>订单类型</th>
-                    <th>支付方式</th>
+                    @*<th>支付方式</th>*@
                     <th>状态</th>
                     <th>金额</th>
                     <th>操作</th>
@@ -85,17 +85,16 @@
             </thead>
             <tbody>
                 <tr v-for="order in orderList">
-                    <td colspan="8" style="padding: 0">
+                    <td colspan="7" style="padding: 0">
                         <table class="table table-order">
                             <tr title="点击查看详情" @@click="expend(order)" class="tr-hover">
                                 <td>
-                                    @*<i class="fa fa-angle-right transition" v-bind:class="{'transition-down': order.expend}"></i>*@
                                     <span class="small text-primary" v-text="order.expend ? '收起' : '展开'"></span>
                                 </td>
                                 <td><i class="fa fa-warning text-danger" v-if="order.status == 1"></i><span :class="{'text-danger': order.status == 1}" v-text="order.orderCode"></span></td>
                                 <td v-text="order.createTime"></td>
                                 <td v-html="category(order.category)"></td>
-                                <td v-html="paymentType(order.paymentType)"></td>
+                                @*<td v-html="paymentType(order.paymentType)"></td>*@
                                 <td v-html="status(order.status)"></td>
                                 <td><i class="fa fa-jpy"></i> <span v-text="order.price"></span></td>
                                 <td class="operate">
@@ -133,7 +132,7 @@
                             </tr>
                             <tr v-show="order.expend">
                                 <td></td>
-                                <td colspan="7">
+                                <td colspan="6">
                                     <hr />
                                     <div class="row" v-if="!!order.errorReason">
                                         <div class="col-md-6">

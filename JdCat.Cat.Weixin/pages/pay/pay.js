@@ -19,11 +19,21 @@ Page({
       total += a.price * a.quantity;
       tablewareQuantity += a.packingQuantity * a.quantity;
     });
+    var saleFullReduce = wx.getStorageSync("nowFullReduce"), isSaleFullReduce = true;
+    if(!saleFullReduce) {
+      saleFullReduce = {};
+      isSaleFullReduce = false;
+      total = qcloud.utils.getNumber(total + freight);
+    } else {
+      total = qcloud.utils.getNumber(total - saleFullReduce.reduceMoney + freight, 2);
+    }
     this.setData({
       cartList: cartList,
       freight: freight,
-      total: total + freight,
-      tablewareQuantity: tablewareQuantity
+      total: total,
+      tablewareQuantity: tablewareQuantity,
+      saleFullReduce: saleFullReduce,
+      isSaleFullReduce: isSaleFullReduce
     });
   },
   onShow: function () {
@@ -37,7 +47,7 @@ Page({
   selectAddress: function () {
     wx.navigateTo({
       url: "/pages/address/list/list?flag=select"
-    })
+    });
   },
   blurRemark: function(e){
     this.data.remark = e.detail.value;
@@ -67,6 +77,7 @@ Page({
       cityCode: business.cityCode,
       userId: user.id,
       businessId: business.id,
+      saleFullReduceId: this.data.saleFullReduce.id,
       products: []
     };
     this.data.cartList.forEach(a => {

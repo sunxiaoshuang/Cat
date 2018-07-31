@@ -41,6 +41,7 @@ namespace JdCat.Cat.Model
         public DbSet<DadaLiquidatedDamages> DadaLiquidatedDamageses { get; set; }
         public DbSet<FeyinDevice> FeyinDevices { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public DbSet<SaleFullReduce> SaleFullReduces { get; set; }
 
         /// <summary>
         /// 添加FluentAPI配置

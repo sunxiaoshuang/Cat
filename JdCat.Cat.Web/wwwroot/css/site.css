@@ -1026,7 +1026,7 @@ ul.dropdown-menu.dropdown-messages li a div {
 
 #mainframe {
     border: none;
-    min-width: 1300px;
+    min-width: 900px;
     height: 100%;
     width: 100%;
     padding: 0;
@@ -1477,6 +1477,7 @@ input[type="checkbox"] {
     color: #2a2a2a;
     background-color: #fafafa;
     border-color: #fafafa;
+    box-shadow: 0 1px 3px rgba(26,26,26,.1);
 }
 
 .text-primary {
@@ -1552,32 +1553,37 @@ input[type="checkbox"] {
 }
 
     .cover-wrap > div {
-        width: 900px;
+        width: 700px;
         height: 600px;
-        margin: 100px auto;
         background-color: #FFFFFF;
         overflow: hidden;
         border-radius: 4px;
     }
 
-    .cover-wrap .save-warp {
-        height: 56px;
-        line-height: 36px;
-        text-align: center;
-        padding-top: 8px;
+@media (min-width: 1200px) {
+    .cover-wrap > div {
+        margin: 100px auto;
     }
+}
 
-        .cover-wrap .save-warp button {
-            width: 120px;
-            height: 36px;
-            border-radius: 4px;
-            background-color: #ff8a00;
-            color: #FFFFFF;
-            font-size: 14px;
-            text-align: center;
-            line-height: 36px;
-            outline: none;
-        }
+.cover-wrap .save-warp {
+    height: 56px;
+    line-height: 36px;
+    text-align: center;
+    padding-top: 8px;
+}
+
+    .cover-wrap .save-warp button {
+        width: 120px;
+        height: 36px;
+        border-radius: 4px;
+        background-color: #ff8a00;
+        color: #FFFFFF;
+        font-size: 14px;
+        text-align: center;
+        line-height: 36px;
+        outline: none;
+    }
 
 .right-top {
     position: absolute;
@@ -1872,7 +1878,7 @@ input[type="checkbox"] {
     margin-left: 10px;
 }
 
-.product-operate p {
+.product-operate > div {
     padding: 0;
     margin: 0;
     font-size: 12px;
@@ -1958,4 +1964,21 @@ ul.select-type {
 
 .printer:hover .printer-default {
     display: inline;
+}
+
+
+@media (max-width: 1200px) {
+    .my-back1 {
+        display: none;
+    }
+}
+@media (min-width: 1200px) {
+    .my-back2 {
+        display: none;
+    }
+}
+@media (min-width: 1200px) {
+    .my-order1 {
+        display: none;
+    }
 }

@@ -1,0 +1,119 @@
+﻿
+@{
+    ViewData["Title"] = "满减营销";
+}
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    </environment>
+}
+@section Scripts {
+    <script>
+        var pageData = {
+            entity: JSON.parse('@Html.Raw(ViewBag.entity)' || "null")
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/sale/fullReduce.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/sale/fullReduce.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">满减活动</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="form-group" v-bind:class="{'has-error': (showError && !entity.name)}">
+                            <label class="control-label col-md-1">
+                                <span class="require">活动名称：</span>
+                            </label>
+                            <div class="col-xs-3">
+                                <input type="text" v-model.trim="entity.name" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group" v-bind:class="{'has-error': (showError && !(entity.startDate && entity.endDate) && !entity.isForeverValid)}">
+                            <label class="control-label col-md-1">
+                                <span class="require">活动时间：</span>
+                            </label>
+                            <div class="col-md-7">
+                                <div class="input-group pull-left" style="width: 150px;">
+                                    <input type="text" class="form-control" id="txtStartDate" :value="entity.startDate | date" />
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                                <span class="pull-left" style="margin-top: 8px;padding: 0 10px;">至</span>
+                                <div class="input-group pull-left" style="width: 150px;">
+                                    <input type="text" class="form-control" id="txtEndDate" :value="entity.endDate | date" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                <div class="kui-checkbox checkbox pull-left m-left-md m-right-md" style="margin-left: 20px;">
+                                    <label class="label-checkbox">
+                                        <input type="checkbox" v-model="entity.isForeverValid">
+                                        <span class="custom-checkbox"></span>
+                                        永久有效
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" v-bind:class="{'has-error': (showError && !(entity.minPrice && entity.reduceMoney))}">
+                            <label class="control-label col-md-1">
+                                <span class="require">活动规则：</span>
+                            </label>
+                            <div class="col-md-3">
+                                <span>消费满</span>
+                                <input type="number" v-model.trim="entity.minPrice" v-bind:disabled="entity.id > 0" class="form-control" style="display: inline;width: 100px;" />
+                                <span>元，订单立减</span>
+                                <input type="number" v-model.trim="entity.reduceMoney" v-bind:disabled="entity.id > 0" class="form-control" style="display: inline;width: 100px;" />
+                                <span>元。</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-1">
+                                <span>适用门店：</span>
+                            </label>
+                            <label class="control-label col-xs-2" style="text-align:left; font-weight:400;">
+                                <span>本店</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-md-offset-1 col-md-4">
+                            <div class="kui-button">
+                                <button type="button" class="btn btn-primary" v-bind:disabled="btnDisplay" style="font-size: 85%; width: 100px" v-on:click="create()">
+                                    保存
+                                </button>
+                            </div>
+                            <div class="kui-button">
+                                <button type="button" class="btn kui-button-primary" style="width: 100px" v-on:click="ret()">
+                                    返回
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;"></div>
+</div>

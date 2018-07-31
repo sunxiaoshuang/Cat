@@ -7,12 +7,12 @@ const formatTime = date => {
     const second = date.getSeconds()
 
     return [year, month, day].map(formatNumber).join('/') + ' ' + [hour, minute, second].map(formatNumber).join(':')
-}
+};
 
 const formatNumber = n => {
     n = n.toString()
     return n[1] ? n : '0' + n
-}
+};
 
 
 // 显示繁忙提示
@@ -20,18 +20,18 @@ var showBusy = text => wx.showToast({
     title: text,
     icon: 'loading',
     duration: 10000
-})
+});
 
 // 显示成功提示
 var showSuccess = text => wx.showToast({
     title: text,
     icon: 'success'
-})
+});
 // 显示失败提示
 var showError = text => wx.showToast({
     title: text,
     icon: 'none'
-})
+});
 
 // 显示失败提示
 var showModel = (title, content) => {
@@ -41,8 +41,8 @@ var showModel = (title, content) => {
         title,
         content: JSON.stringify(content),
         showCancel: false
-    })
-}
+    });
+};
 
 /**
  * 计算滑动角度
@@ -88,7 +88,7 @@ var calcDistance = (function(){
 // 正则
 var regExp = {
     phone: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/
-}
+};
 
 module.exports = {
     formatTime,
@@ -99,4 +99,4 @@ module.exports = {
     regExp,
     angle,
     calcDistance
-}
+};

@@ -1,0 +1,13 @@
+﻿
+@{
+    ViewData["Title"] = "优惠券列表";
+}
+
+@section Styles {
+    <environment include="Development">
+        <link href="~/css/sale/couponList.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/css/sale/couponList.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+}

@@ -42,12 +42,26 @@ var order = {
             }
         }
         return name;
+    },
+    precision: function(num, precision){
+        return parseFloat(num.toFixed(precision));
+    },
+    calcSaleText: function(cartList, fullReduceList){
+        if(fullReduceList.length === 0)return "";
+        var total = order.totalPrice(cartList), item;
+//         for(var len = fullReduceList.length, index = len - 1;index > -1;index--){
+//             // item = fullReduceList[index--];
+// console.log(index);
+//         }
+        return "dsdsdsds";
     }
-}
+};
 
 
 module.exports = {
     cartTotalPrice: order.totalPrice,
     productQuantity: order.productQuantity,
-    orderStatus: order.orderStatus
-}
+    orderStatus: order.orderStatus,
+    precision: order.precision,
+    calcSaleText: order.calcSaleText
+};

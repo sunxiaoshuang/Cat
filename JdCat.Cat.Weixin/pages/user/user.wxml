@@ -12,7 +12,7 @@
             </button>
         </view>
         <view style="text-align: center;">
-            <text >您还没有登录，登录后享受全部功能</text>
+            <text>您还没有登录，登录后享受全部功能</text>
         </view>
     </view>
     <view class="user-phone" wx:if="{{userInfo.isRegister && !userInfo.isPhone}}">
@@ -21,6 +21,11 @@
         </button>
     </view>
     <view class="btn-area" wx:if="{{userInfo.isRegister}}">
+        <navigator url="/pages/main/license/license" open-type="navigate" class="navigate">
+            <image src="/images/icon/zizhi-2.png"></image>
+            <text>商家资质</text>
+            <image src="/images/icon/right-1.png"></image>
+        </navigator>
         <navigator url="/pages/address/list/list" open-type="navigate" class="navigate">
             <image src="/images/icon/address-2.png"></image>
             <text>地址管理</text>
@@ -31,20 +36,25 @@
             <text>我的订单</text>
             <image src="/images/icon/right-1.png"></image>
         </navigator>
-        <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="navigate">
+        <view class="navigate" bindtap="callPhone">
             <image src="/images/icon/phone-2.png"></image>
             <text>联系商家</text>
             <image src="/images/icon/right-1.png"></image>
-        </navigator>
+        </view>
         <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="navigate">
             <image src="/images/icon/info-2.png"></image>
             <text>个人信息</text>
             <image src="/images/icon/right-1.png"></image>
         </navigator>
-        <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="navigate">
-            <image src="/images/icon/zizhi-2.png"></image>
-            <text>商家资质</text>
-            <image src="/images/icon/right-1.png"></image>
-        </navigator>
+    </view>
+    <view class="support">
+        <!-- <view class="image">
+            <image src="../../images/log.jpg" style="width: 100rpx;height: 100rpx;" />
+        </view> -->
+        <view class="note">
+            <text><text style="font-weight: 800; font-size: 120%;">简单猫科技</text> 提供技术支持</text>
+            <!-- <text>联系人：王浩</text> -->
+            <text>TEL:18986288527</text>
+        </view>
     </view>
 </view>

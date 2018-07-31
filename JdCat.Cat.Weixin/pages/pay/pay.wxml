@@ -47,6 +47,13 @@
             </view>
         </picker>
     </view>
+    <view class="deliver" wx:if="{{isSaleFullReduce}}">
+        <view style="display:flex;">
+            <image src="../../images/icon/jian-2.png" style="width: 40rpx;height: 40rpx;"></image>
+            <text>满减优惠</text>
+        </view>
+        <view class="price">- ￥{{saleFullReduce.reduceMoney}}</view>
+    </view>
     <view class="totalPrice">
         <view>实付款</view>
         <view class="price">￥ {{total}}</view>

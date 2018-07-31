@@ -9,6 +9,12 @@ namespace JdCat.Cat.IRepository
     public interface IUserRepository : IBaseRepository<User>
     {
         /// <summary>
+        /// 微信端取得商户对象
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Business WxGetBusiness(int id);
+        /// <summary>
         /// 根据openId获取用户
         /// </summary>
         /// <param name="openId"></param>

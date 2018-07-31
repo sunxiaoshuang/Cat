@@ -132,8 +132,6 @@ page {
 .cart-clear {
   font-size: 90%;
   color: #ACACAC;
-  display: flex;
-  justify-content: flex-end;
   align-items: center;
   height: 70rpx;
   background-color: #f0f0f0;
@@ -808,13 +806,27 @@ page {
   border-color: #B0B0B0;
   color: #B0B0B0;
 }
-
-.footer {
+.pageBottom {
   display: flex;
+  flex-flow: column;
   position: fixed;
   right: 0;
   left: 0;
   bottom: 0rpx;
+  width: 100%;
+}
+.pageBottom .saleActive {
+  border: 1px solid #ddd;
+  height: 40rpx;
+  font-size: 30rpx;
+  text-align: center;
+  background-color: #ffe1a8;
+  font-size: 70%;
+  /* opacity: .9; */
+  /* background: linear-gradient(to right, red, blue); */
+}
+.footer {
+  display: flex;
   width: 100%;
 }
 
@@ -1081,4 +1093,23 @@ page {
   line-height: 60rpx;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.sale {
+  height: 40rpx;
+}
+.sale .sale-item {
+  display: flex;
+  line-height: 40rpx;
+  height: 40rpx;
+  padding: 0;
+}
+.sale .sale-item .slide-image {
+  width: 40rpx;
+  height: 40rpx;
+  margin-left: 20rpx;
+}
+.sale .sale-item text {
+  flex-grow: 1;
+  padding-left: 20rpx;
+  font-size: 80%;
 }

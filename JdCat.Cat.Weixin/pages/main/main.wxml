@@ -25,6 +25,14 @@
         </view>
     </view>
 </view>
+<swiper autoplay="{{true}}" vertical="{{true}}" class="sale">
+    <block wx:for="{{fullReduceList}}" wx:key="id">
+        <swiper-item class="sale-item">
+            <image src="../../images/icon/jian-2.png" class="slide-image" />
+            <text>{{item.name}}</text>
+        </swiper-item>
+    </block>
+</swiper>
 <scroll-view class="mainContainer" disable-scroll="true">
     <view class="header">
         <block wx:for="{{swiperTitle}}" wx:key="">
@@ -44,7 +52,7 @@
                     </view>
                     <view class="menuList">
                         <view class="menu">
-                            <text> </text>
+                            <text></text>
                         </view>
                     </view>
                 </scroll-view>
@@ -121,11 +129,14 @@
                     <image src="../../images/icon/right-1.png" />
                 </view>
             </view>
-            <view class="item-info">
+            <view class="item-info" bindtap="catAddress">
                 <view class="item-image">
                     <image src="../../images/icon/address-1.png" />
                 </view>
                 <view class="item-content">{{business.address}}</view>
+                <view class="item-image">
+                    <image src="../../images/icon/right-1.png" />
+                </view>
             </view>
             <view class="item-info" bindtap="callPhone">
                 <view class="item-image">
@@ -144,22 +155,27 @@
         </swiper-item>
     </swiper>
 </scroll-view>
-<view class="footer {{cartList.length!=0?'active':''}}" wx:if="{{isShowFoot}}">
-    <view class="howMuch" bindtap="showCart">
-        <view class="img">
-            <image src="/images/icon/{{cartList.length == 0 ? 'cart-1.png' : 'cart-2.png'}}" style="width: 90rpx;height: 90rpx;"></image>
-            <view class="cart-quantity" wx:if="{{cartQuantity > 0}}">{{cartQuantity}}</view>
-        </view>
-        <view class="cost" wx:if="{{cartList.length!=0}}">
-            <text class="cost-price">￥{{calc.cartTotalPrice(cartList)}}</text>
-            <text class="cost-peisong">另需配送费￥{{freight}}</text>
-        </view>
-        <view class="free" wx:if="{{cartList.length==0}}"></view>
+<view class="pageBottom {{cartList.length!=0?'active':''}}" wx:if="{{isShowFoot}}">
+    <view class="saleActive" wx:if="{{cartList.length > 0 && fullReduceList.length > 0}}">
+        <text>{{saleText}}</text>
     </view>
-    <view class="pay {{!isBalance ? 'notPay' : 'pay'}}" bindtap="pay" wx:if="{{calc.cartTotalPrice(cartList) >= business.minAmount}}">
-        {{submitText}}
+    <view class="footer">
+        <view class="howMuch" bindtap="showCart">
+            <view class="img">
+                <image src="/images/icon/{{cartList.length == 0 ? 'cart-1.png' : 'cart-2.png'}}" style="width: 90rpx;height: 90rpx;"></image>
+                <view class="cart-quantity" wx:if="{{cartQuantity > 0}}">{{cartQuantity}}</view>
+            </view>
+            <view class="cost" wx:if="{{cartList.length!=0}}">
+                <text class="cost-price">￥{{calc.cartTotalPrice(cartList)}}</text>
+                <text class="cost-peisong">另需配送费￥{{freight}}</text>
+            </view>
+            <view class="free" wx:if="{{cartList.length==0}}"></view>
+        </view>
+        <view class="pay {{!isBalance ? 'notPay' : 'pay'}}" bindtap="pay" wx:if="{{calc.cartTotalPrice(cartList) >= business.minAmount}}">
+            {{submitText}}
+        </view>
+        <view class="pay notPay" wx:else>￥{{business.minAmount}} 起送</view>
     </view>
-    <view class="pay notPay" wx:else>￥{{business.minAmount}} 起送</view>
 </view>
 <view class="cart-dialog" wx:if="{{showCart}}">
     <view bindtap="closeCartDialog" class="cart-mask"></view>
@@ -181,7 +197,9 @@
                         {{cart.description ? ("（" + cart.description + "）") : ""}}
                     </text>
                 </view>
-                <view class="cart-food-price">￥{{cart.price * cart.quantity}}</view>
+                <view class="cart-food-price">
+                    ￥{{calc.precision(cart.price * cart.quantity, 2)}}
+                </view>
                 <view class="item-food-numb">
                     <view class="item-remove" bindtap="removeCart" data-index="{{index}}">
                         <image src="../../images/icon/minus-5.png" />
