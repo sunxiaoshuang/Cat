@@ -56,14 +56,14 @@ namespace JdCat.Cat.Repository
             result.Data = order;
             result.Success = true;
             // 清空购物车
-            Context.Database.ExecuteSqlCommand("delete dbo.ShoppingCart where userid={0} and businessid={1}", order.UserId, order.BusinessId);
+            Context.Database.ExecuteSqlCommand("delete dbo.ShoppingCart where userid={0}", order.UserId);
             return result;
         }
 
         public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null)
         {
             var lastTime = DateTime.Now.AddYears(-1);
-            var queryable = Context.Orders.Include(a => a.Products).Where(a => a.BusinessId == business.ID && a.CreateTime > lastTime);
+            var queryable = Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Where(a => a.BusinessId == business.ID && a.CreateTime > lastTime);
             if(expression != null)
             {
                 queryable = queryable.Where(expression);
@@ -213,7 +213,7 @@ namespace JdCat.Cat.Repository
 
         public Order GetOrderIncludeProduct(int id)
         {
-            return Context.Orders.Include(a => a.Products).SingleOrDefault(a => a.ID == id);
+            return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).SingleOrDefault(a => a.ID == id);
         }
 
         public Order PaySuccess(WxPaySuccess ret)

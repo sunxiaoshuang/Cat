@@ -98,6 +98,17 @@
                                     <div>
                                         <img :src="getImage(product)" :alt="product.name" class="img-thumbnail" />
                                     </div>
+                                    <p class="my-order1" style="font-size: 90%;">
+                                        <span v-on:click="editProduct(product)" style="color: #ea7042;">
+                                            <i class="fa fa-edit" style="color: #ea7042;"></i>
+                                            编辑
+                                        </span>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                        <span v-on:click="delProduct(product)" style="color: #ea7042;">
+                                            <i class="fa fa-remove" style="color: #ea7042;"></i>
+                                            删除
+                                        </span>
+                                    </p>
                                 </div>
                                 <div v-bind:class="{'hide': product.images.length > 0}" class="product-no-img">
                                     <div>
@@ -143,13 +154,13 @@
                                     </p>
                                 </div>
                                 <div class="product-operate pull-right">
-                                    <p style="text-align: center;">
+                                    <div style="text-align: center;">
                                         <div class="kui-button m-right-xs">
                                             <button type="button" v-on:click="toggleStatus(product)" style="width: 100px" class="btn btn-sm kui-button-primary" v-text='product.status == 1 ? "下架" : "上架"'>
                                             </button>
                                         </div>
-                                    </p>
-                                    <p style="text-align: center; margin-top: 20px;">
+                                    </div>
+                                    <div style="text-align: center; margin-top: 20px;">
                                         <span v-on:click="editProduct(product)">
                                             <i class="fa fa-edit"></i>
                                             编辑
@@ -159,7 +170,7 @@
                                             <i class="fa fa-remove"></i>
                                             删除
                                         </span>
-                                    </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

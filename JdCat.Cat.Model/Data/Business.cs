@@ -191,5 +191,9 @@ namespace JdCat.Cat.Model.Data
         /// 购物车集合
         /// </summary>
         public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; }
+        /// <summary>
+        /// 满减活动
+        /// </summary>
+        public ICollection<SaleFullReduce> SaleFullReduces { get; set; }
     }
 }

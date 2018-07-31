@@ -18,6 +18,7 @@ Page({
     ],
     isModify: false,
     phoneFocus: false,
+    toSetting: false,
     entity: {
       id: 0,
       receiver: "",
@@ -91,6 +92,7 @@ Page({
     var self = this;
     wx.chooseLocation({
       success: function (res) {
+        console.log(res);
         if (res.errMsg != "chooseLocation:ok") return;
         var address = self.data.entity;
         address.mapInfo = res.address;
@@ -99,6 +101,13 @@ Page({
         self.setData({
           entity: address
         });
+      },
+      fail: function(err){
+        if(self.data.toSetting) {
+          wx.openSetting();
+        } else {
+          self.data.toSetting = true;
+        }
       }
     });
   },

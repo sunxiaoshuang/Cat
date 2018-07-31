@@ -336,6 +336,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Remark");
 
+                    b.Property<int?>("SaleFullReduceId");
+
                     b.Property<int>("Status");
 
                     b.Property<int?>("TablewareQuantity");
@@ -351,6 +353,8 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("BusinessId");
+
+                    b.HasIndex("SaleFullReduceId");
 
                     b.HasIndex("UserId");
 
@@ -549,6 +553,38 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("ProductType","dbo");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SaleFullReduce", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<DateTime?>("EndDate");
+
+                    b.Property<bool>("IsDelete");
+
+                    b.Property<bool>("IsForeverValid");
+
+                    b.Property<decimal>("MinPrice");
+
+                    b.Property<DateTime?>("ModifyTime");
+
+                    b.Property<string>("Name");
+
+                    b.Property<decimal>("ReduceMoney");
+
+                    b.Property<DateTime?>("StartDate");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("SaleFullReduce","dbo");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.SessionData", b =>
                 {
                     b.Property<int>("ID")
@@ -718,6 +754,10 @@ namespace JdCat.Cat.Model.Migrations
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("JdCat.Cat.Model.Data.SaleFullReduce", "SaleFullReduce")
+                        .WithMany("Orders")
+                        .HasForeignKey("SaleFullReduceId");
+
                     b.HasOne("JdCat.Cat.Model.Data.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
@@ -781,6 +821,14 @@ namespace JdCat.Cat.Model.Migrations
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
                         .WithMany("ProductsTypes")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SaleFullReduce", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

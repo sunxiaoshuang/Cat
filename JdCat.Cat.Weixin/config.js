@@ -1,5 +1,5 @@
 
-var host = 'https://www.jiandanmao.cn';
+var host = 'https://api.jiandanmao.cn';
 
 var config = {
 

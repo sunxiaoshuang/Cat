@@ -47,13 +47,14 @@ namespace JdCat.Cat.Web.App_Code
         /// <summary>
         /// 打印小票
         /// </summary>
-        public async Task<FeyinModel> Print(string device_no, Order order)
+        public async Task<FeyinModel> Print(string device_no, Order order, Business business = null)
         {
             var url = $"https://api.open.feyin.net/msg";
+            var businessName = business == null ? "简单猫外卖" : business.Name;
             var content = new StringBuilder();
             content.Append("<left><Font# Bold=1 Width=2 Height=2>商家小票</Font#>\n");
             content.Append("--------------------------------\n");
-            content.Append("<center><Font# Bold=1 Width=2 Height=2>简单猫外卖</Font#>\n");
+            content.Append("<center><Font# Bold=1 Width=2 Height=2>"+ businessName + "</Font#>\n");
             content.Append("\n\n");
             content.Append($"<left>下单时间：{order.CreateTime:yyyy-MM-dd HH:mm:ss}\n");
             content.Append("************购买商品************\n");

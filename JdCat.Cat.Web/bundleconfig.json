@@ -164,5 +164,36 @@
     "inputFiles": [
       "wwwroot/js/order/history.js"
     ]
+  },
+  // 营销
+  {
+    "outputFileName": "wwwroot/css/sale/index.min.css",
+    "inputFiles": [
+      "wwwroot/css/sale/index.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/sale/fullReduce.min.js",
+    "inputFiles": [
+      "wwwroot/js/sale/fullReduce.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/sale/fullReduceList.min.js",
+    "inputFiles": [
+      "wwwroot/js/sale/fullReduceList.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/sale/coupon.min.css",
+    "inputFiles": [
+      "wwwroot/css/sale/coupon.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/sale/couponList.min.css",
+    "inputFiles": [
+      "wwwroot/css/sale/couponList.css"
+    ]
   }
 ]

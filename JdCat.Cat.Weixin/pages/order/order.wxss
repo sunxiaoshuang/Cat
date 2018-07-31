@@ -90,6 +90,12 @@
     margin: 0;
     margin-left: 20rpx;
 }
+.no-order button {
+    width: 200rpx;
+    background-color: #f36c1b;
+    color: #fff;    
+    font-size: 120%;
+}
 
 .footer {
     text-align: center;
@@ -97,12 +103,24 @@
     color: #bbbbbb;
     /* font-size: 80%; */
 }
-.no-order {
-    height: 500rpx;
+.order-footer {
+    min-height: 900rpx;
     width: 100%;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     background-color: #fff;
+}
+.no-order {
+    height: 700rpx;
+    width: 80%;
+    /* border: 1px solid #ccc; */
+    /* border-radius: 20rpx; */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    /* background-color: #f9f9f9; */
 }

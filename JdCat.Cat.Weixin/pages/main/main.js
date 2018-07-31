@@ -39,6 +39,8 @@ Page({
     isShowFoot: true,
     submitText: "去结算",
     isBalance: true, // 是否可以结算
+    fullReduceList: [],
+    saleText: ""
   },
   /**
    * 生命周期函数--监听页面加载
@@ -123,14 +125,23 @@ Page({
         });
       }
     });
+    // 加载满减活动
+    qcloud.request({
+      url: "/business/fullreduce/" + config.businessId,
+      method: "GET",
+      success: function(res){
+        that.setData({
+          fullReduceList: res.data
+        });
+      }
+    });
   },
-  onShareAppMessage: function(){
-      var session = qcloud.getSession();
-      console.log(session)
-      return {
-          title: session.business.name,
-          path: "/pages/main/main?userid=" + session.userinfo.id
-      };
+  onShareAppMessage: function () {
+    var session = qcloud.getSession();
+    return {
+      title: session.business.name,
+      path: "/pages/main/main?userid=" + session.userinfo.id
+    };
   },
   onShow: function () {
     var self = this;
@@ -165,7 +176,7 @@ Page({
     var productArr = wx.getStorageSync("businessProduct");
     var cartList = wx.getStorageSync("cartList");
     var cartQuantity = 0;
-    var existCart = [];   // 存储购物车与商品可以匹配的记录
+    var existCart = []; // 存储购物车与商品可以匹配的记录
     if (cartList.length > 0) {
       cartList.forEach(function (obj) {
         var products = productArr.filter(a => a.id == obj.productId);
@@ -183,11 +194,20 @@ Page({
       cartList: existCart,
       cartQuantity: cartQuantity
     });
-
+    this.calcSaleText();
   },
   catLicense: function () {
     wx.navigateTo({
       url: "/pages/main/license/license"
+    });
+  },
+  catAddress: function () {
+    var business = qcloud.getSession().business;
+    wx.openLocation({
+      latitude: business.lat,
+      longitude: business.lng,
+      name: business.name,
+      address: business.address
     });
   },
   callPhone: function () {
@@ -328,7 +348,7 @@ Page({
     if (!user.isRegister) {
       wx.showModal({
         title: "提示",
-        content: "请先登录系统，才能开始点单哦",
+        content: "请先登录系统，并绑定手机号，才能开始点单哦",
         showCancel: false,
         confirmText: "去登陆",
         success: function () {
@@ -337,6 +357,21 @@ Page({
           });
         }
       });
+      return;
+    }
+    if (!user.isPhone) {
+      wx.showModal({
+        title: "提示",
+        content: "为了给您提供更优质的服务，本店邀请您绑定手机号",
+        showCancel: false,
+        confirmText: "去绑定",
+        success: function () {
+          wx.switchTab({
+            url: "/pages/user/user"
+          });
+        }
+      });
+
       return;
     }
     var index = e.currentTarget.dataset.index;
@@ -532,8 +567,8 @@ Page({
     return 0;
   },
   calcDescription: function (product) { // 拿到商品的规格、属性组合
-    var product = product || this.data.productList[this.data.productIndex],
-      format = product.formats.filter(a => a.selected)[0],
+    product = product || this.data.productList[this.data.productIndex];
+    var format = product.formats.filter(a => a.selected)[0],
       attrs = product.attributes,
       description = "";
 
@@ -556,5 +591,35 @@ Page({
     this.setData({
       cartQuantity: cartQuantity
     });
+    this.calcSaleText();
+  },
+  calcSaleText: function(){
+    var cartList = this.data.cartList, fullReduceList = this.data.fullReduceList.slice(), nowItem;
+    if(cartList.length === 0 || fullReduceList.length === 0) return;
+    var total = 0, list = fullReduceList.reverse(), text = "";
+    cartList.forEach(function(a) {
+        total += a.quantity * a.price;
+    });
+    total = qcloud.utils.getNumber(total, 2);
+    list.some(function(item, index){
+      if(total >= item.minPrice){
+        text += "已满" + item.minPrice + "元，结算减" + item.reduceMoney + "元";
+        nowItem = item;
+        if(index > 0) {
+          var pre = list[index - 1];
+          var addMoney = qcloud.utils.getNumber(pre.minPrice - total, 2);
+          text += "；再加" + addMoney + "元，减" + pre.reduceMoney + "元";
+        }
+        return true;
+      }
+    });
+    if(!text){
+      var lastItem = list[list.length - 1];
+      text += "已购金额" + total + "元，再加" + qcloud.utils.getNumber(lastItem.minPrice - total, 2) + "元，减" + lastItem.reduceMoney + "元";
+    }
+    wx.setStorageSync("nowFullReduce", nowItem);
+    this.setData({
+      saleText: text
+    });
   }
-})
+});

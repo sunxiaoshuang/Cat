@@ -68,9 +68,9 @@ thead {
         width: 8em;
     }
 
-    .table-order td:nth-child(7) {
+    /*.table-order td:nth-child(7) {
         width: 10em;
-    }
+    }*/
 
 .table-order th:nth-child(1) {
     width: 3em;
@@ -96,9 +96,9 @@ thead {
     width: 8em;
 }
 
-.table-order th:nth-child(7) {
+/*.table-order th:nth-child(7) {
     width: 10em;
-}
+}*/
 
 .table-order {
     margin: 0;

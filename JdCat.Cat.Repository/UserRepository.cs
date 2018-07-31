@@ -16,6 +16,19 @@ namespace JdCat.Cat.Repository
         public UserRepository(CatDbContext context) : base(context)
         {
         }
+
+        public Business WxGetBusiness(int id)
+        {
+            return Context.Businesses.AsNoTracking().Single(a => a.ID == id);
+            //var noValid = business.SaleFullReduces.Where(a => !a.IsActiveValid());
+            //if(noValid.Count() > 0)
+            //{
+            //    foreach (var item in noValid)
+            //    {
+            //        business.SaleFullReduces.Remove(item);
+            //    }
+            //}
+        }
         /// <summary>
         /// 根据openId获取用户
         /// </summary>

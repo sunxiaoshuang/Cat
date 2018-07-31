@@ -282,7 +282,7 @@ namespace JdCat.Cat.Web.Controllers
         {
             var result = new JsonData();
             var helper = GetPrintHelper();
-            var ret = await helper.Print(device_no, order);
+            var ret = await helper.Print(device_no, order, Business);
             result.Success = ret.ErrCode == null || ret.ErrCode == 0;
             result.Msg = ret.ErrMsg;
             if (Business.FeyinToken != helper.Token)

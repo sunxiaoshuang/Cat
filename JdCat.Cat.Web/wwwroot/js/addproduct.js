@@ -183,7 +183,7 @@
             },
             detailFocus: function (e, item, index) {
                 item.container.detailOpacity = 1;
-                item.container.detailLeft = e.target.offsetLeft;
+                item.container.detailLeft = e.target.offsetLeft - 40;
                 item.container.detailTop = e.target.offsetTop + 40;
                 item.container.detailDisplay = true;
                 item.container.detailIndex = index;

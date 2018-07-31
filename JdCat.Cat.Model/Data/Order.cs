@@ -130,5 +130,10 @@ namespace JdCat.Cat.Model.Data
         /// 违约金
         /// </summary>
         public virtual ICollection<DadaLiquidatedDamages> DadaLiquidatedDamages { get; set; }
+        /// <summary>
+        /// 满减活动id
+        /// </summary>
+        public int? SaleFullReduceId { get; set; }
+        public virtual SaleFullReduce SaleFullReduce { get; set; }
     }
 }

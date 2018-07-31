@@ -83,15 +83,15 @@ namespace JdCat.Cat.WxApi.Controllers
             return Ok("ok");
         }
 
-        /// <summary>
-        /// 发送订单通知
-        /// </summary>
-        /// <param name="businessId"></param>
-        /// <returns></returns>
-        private async Task SendOrderNotify(int businessId)
-        {
+        ///// <summary>
+        ///// 发送订单通知
+        ///// </summary>
+        ///// <param name="businessId"></param>
+        ///// <returns></returns>
+        //private async Task SendOrderNotify(int businessId)
+        //{
 
-        }
+        //}
 
     }
 }

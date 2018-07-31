@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using JdCat.Cat.Common;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
@@ -160,7 +161,7 @@ group by CreateTime");
             select top 10 b.ID, b.Name, SUM(a.Quantity) Quantity from dbo.[OrderProduct] a
 	            inner join dbo.[Product] b on a.ProductId = b.ID
 				inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
-            where b.BusinessId = 1 and CONVERT(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
+            where b.BusinessId = {business.ID} and CONVERT(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
             group by b.ID, b.Name
             order by Quantity desc
             ");
@@ -171,11 +172,107 @@ group by CreateTime");
             select top 10 b.ID, b.Name, SUM(a.Quantity * a.Price) Amount from dbo.[OrderProduct] a
 	            inner join dbo.[Product] b on a.ProductId = b.ID
 				inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
-            where b.BusinessId = 1 and CONVERT(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
+            where b.BusinessId = {business.ID} and CONVERT(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
             group by b.ID, b.Name
             order by Amount desc
             ");
         }
 
+        public SaleFullReduce GetFullReduceById(int id)
+        {
+            return Context.SaleFullReduces.Single(a => a.ID == id);
+        }
+
+        public JsonData CreateFullReduce(SaleFullReduce entity)
+        {
+            var result = ValidateFullReduce(entity);
+            if (!result.Success)
+            {
+                return result;
+            }
+            entity.ModifyTime = DateTime.Now;
+            Context.SaleFullReduces.Add(entity);
+            result.Success = Context.SaveChanges() > 0;
+            if (!result.Success)
+            {
+                result.Msg = "创建失败，请刷新后重试";
+                return result;
+            }
+            result.Msg = "创建成功";
+            return result;
+        }
+        public JsonData UpdateFullReduce(SaleFullReduce entity)
+        {
+            var result = ValidateFullReduce(entity);
+            if (!result.Success)
+            {
+                return result;
+            }
+            var obj = new SaleFullReduce { ID = entity.ID, IsForeverValid = !entity.IsForeverValid };
+            Context.Attach(obj);
+            obj.ModifyTime = DateTime.Now;
+            obj.IsForeverValid = entity.IsForeverValid;
+            //obj.MinPrice = entity.MinPrice;
+            obj.StartDate = entity.StartDate;
+            obj.EndDate = entity.EndDate;
+            obj.Name = entity.Name;
+            //obj.ReduceMoney = entity.ReduceMoney;
+
+            result.Success = Context.SaveChanges() > 0;
+            if (!result.Success)
+            {
+                result.Msg = "修改失败，请刷新后重试";
+                return result;
+            }
+            result.Msg = "修改成功";
+            return result;
+        }
+
+        public IEnumerable<SaleFullReduce> GetFullReduce(Business business, bool tracking = true)
+        {
+            if (!tracking) return Context.SaleFullReduces.AsNoTracking().Where(a => a.BusinessId == business.ID && !a.IsDelete).OrderBy(a => a.ReduceMoney);
+            return Context.SaleFullReduces.Where(a => a.BusinessId == business.ID && !a.IsDelete).OrderBy(a => a.ReduceMoney);
+        }
+
+        private JsonData ValidateFullReduce(SaleFullReduce entity)
+        {
+            var result = new JsonData();
+            if (!entity.IsForeverValid)
+            {
+                if (entity.StartDate > entity.EndDate)
+                {
+                    result.Msg = "活动开始时间不能大于活动结束时间";
+                    return result;
+                }
+            }
+            if (entity.MinPrice <= 0)
+            {
+                result.Msg = "最低消费金额必须大于零";
+                return result;
+            }
+            if (entity.ReduceMoney <= 0)
+            {
+                result.Msg = "减少金额必须大于零";
+                return result;
+            }
+            result.Success = true;
+            return result;
+        }
+        public JsonData DeleteFullReduce(int id)
+        {
+            var entity = new SaleFullReduce { ID = id };
+            Context.Attach(entity);
+            entity.IsDelete = true;
+            var result = new JsonData { Success = Context.SaveChanges() > 0 };
+            if (result.Success)
+            {
+                result.Msg = "删除成功";
+            }
+            else
+            {
+                result.Msg = "删除失败，请刷新后重试";
+            }
+            return result;
+        }
     }
 }

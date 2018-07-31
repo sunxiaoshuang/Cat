@@ -27,7 +27,7 @@ navigator {
   display: flex;
   flex: 1;
 }
-navigator image {
+navigator image, .navigate image {
   width: 40rpx;
   height: 40rpx;
 }
