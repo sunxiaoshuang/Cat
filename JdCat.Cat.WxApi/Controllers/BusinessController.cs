@@ -41,5 +41,11 @@ namespace JdCat.Cat.WxApi.Controllers
             return Json(valid);
         }
 
+        [HttpGet("coupon/{id}")]
+        public IActionResult GetCoupon(int id)
+        {
+            return Json(Service.GetCouponValid(new Business { ID = id }));
+        }
+
     }
 }

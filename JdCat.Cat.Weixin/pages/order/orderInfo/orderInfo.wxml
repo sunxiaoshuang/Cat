@@ -42,6 +42,12 @@
                     <text>￥{{order.freight}}</text>
                 </text>
             </view>
+            <view class="order-item" wx:if="{{!!order.saleCouponUser}}">
+                <text class="order-content" style="flex-grow: 1;text-align: right;">
+                    <text>优惠券：</text>
+                    <text>- ￥{{order.saleCouponUser.value}}</text>
+                </text>
+            </view>
             <view class="order-item" wx:if="{{!!order.saleFullReduce}}">
                 <text class="order-content" style="flex-grow: 1;text-align: right;">
                     <text>满减优惠：</text>

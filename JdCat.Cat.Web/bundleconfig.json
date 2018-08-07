@@ -195,5 +195,31 @@
     "inputFiles": [
       "wwwroot/css/sale/couponList.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/sale/coupon.min.js",
+    "inputFiles": [
+      "wwwroot/js/sale/coupon.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/sale/couponList.min.js",
+    "inputFiles": [
+      "wwwroot/js/sale/couponList.js"
+    ]
+  },
+  // 会员
+  {
+    "outputFileName": "wwwroot/js/user/list.min.js",
+    "inputFiles": [
+      "wwwroot/js/user/list.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/user/list.min.css",
+    "inputFiles": [
+      "wwwroot/css/user/list.css"
+    ]
   }
+
 ]

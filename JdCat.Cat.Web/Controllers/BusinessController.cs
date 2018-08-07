@@ -56,7 +56,9 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult Feyin()
         {
             var printers = Service.GetPrinters(Business.ID);
-            ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
+            var business = (Business)Business.Clone();
+            business.FeyinApiKey = "";
+            ViewBag.business = JsonConvert.SerializeObject(business, AppData.JsonSetting);
             ViewBag.printers = JsonConvert.SerializeObject(printers, AppData.JsonSetting);
             return View();
         }

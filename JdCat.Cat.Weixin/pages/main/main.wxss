@@ -23,28 +23,34 @@ page {
   background: #555;
   padding: 10rpx 20rpx;
 }
+
 .head .logo {
   height: 200rpx;
   width: 180rpx;
 }
+
 .head .logo image {
   width: 160rpx;
   height: 160rpx;
   border-radius: 10rpx;
 }
+
 .head .business-content {
-   flex-grow: 1; 
-   /* align-items: stretch;  */
+  flex-grow: 1;
+  /* align-items: stretch;  */
   padding: 0 20rpx 0 10rpx;
   color: #fff;
 }
+
 .head .business-content .name {
   font-weight: 800;
 }
+
 .head .business-content .description {
   margin-top: 10rpx;
   font-size: 70%;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .head-location-icon {
@@ -52,7 +58,6 @@ page {
   top: 12rpx;
   height: 25rpx;
   width: 25rpx;
-  
 }
 
 .head-location-text {
@@ -129,6 +134,7 @@ page {
   background-color: rgba(15, 15, 26, 0.7);
   flex-grow: 1;
 }
+
 .cart-clear {
   font-size: 90%;
   color: #ACACAC;
@@ -615,7 +621,6 @@ page {
   font-size: 90%;
   background-color: #f8f8f8;
   margin-right: 20rpx;
-  
 }
 
 .menuList {
@@ -637,14 +642,14 @@ page {
   border-left: 3px solid transparent;
   padding-right: 10rpx;
   text-align: center;
-  
 }
+
 .menuList .menu text {
   width: 100%;
 }
 
 .selected.menu {
-  border-left: 3px solid #f36c1b; 
+  border-left: 3px solid #f36c1b;
   background-color: #fff;
   color: #f36c1b;
 }
@@ -690,6 +695,7 @@ page {
   border-bottom: 1rpx solid #ECECEC;
   background: white;
   padding: 10rpx 0;
+  width: 100%;
 }
 
 .food::before {
@@ -710,12 +716,17 @@ page {
 .food-info {
   padding-left: 15rpx;
   line-height: 48rpx;
-  flex: 1;
+  flex-grow: 1;
+  min-height: 88rpx;
 }
 
 .food .name {
   /* font-size: 110%; */
   font-weight: 800;
+  /* white-space: nowrap;
+  overflow: hidden;
+  text-overflow:ellipsis; */
+  /* max-width:170px; */
 }
 
 .food .sales {
@@ -725,25 +736,37 @@ page {
   min-height: 40rpx;
 }
 
-.food .price {
-  /* font-size: 30rpx; */
+.food .price, .food-numb .price {
+  font-size: 38rpx;
   color: red;
   font-weight: 800;
 }
 
+.food-block {
+  display: flex;
+  flex-grow: 1;
+  flex-flow: column;
+  align-items: stretch;
+}
+
 .food-numb {
   height: 100%;
-  width: 130rpx;
-  /* display: flex; */
-  align-self: flex-end;
-  margin-right: 30rpx;
+  /* width: 130rpx; */
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 35rpx;
+  /* margin-right: 30rpx; */
   line-height: 40rpx;
   font-size: 25rpx;
 }
 
 .single-format {
-  width: 150rpx;
+  /* width: 150rpx; */
+  flex-grow: 1;
   display: flex;
+  margin-right: 10rpx;
   justify-content: flex-end;
 }
 
@@ -751,6 +774,8 @@ page {
   display: flex;
   flex-direction: row;
   margin-bottom: 6rpx;
+  flex-grow: 1;
+  justify-content: flex-end;
 }
 
 .selectFormat {
@@ -772,9 +797,9 @@ page {
   width: 40rpx;
   background: red;
   border-radius: 50%;
-  
   color: #FFF;
   margin: -20rpx;
+  margin-right: 10rpx;
   text-align: center;
 }
 
@@ -806,6 +831,7 @@ page {
   border-color: #B0B0B0;
   color: #B0B0B0;
 }
+
 .pageBottom {
   display: flex;
   flex-flow: column;
@@ -815,6 +841,7 @@ page {
   bottom: 0rpx;
   width: 100%;
 }
+
 .pageBottom .saleActive {
   border: 1px solid #ddd;
   height: 40rpx;
@@ -825,6 +852,7 @@ page {
   /* opacity: .9; */
   /* background: linear-gradient(to right, red, blue); */
 }
+
 .footer {
   display: flex;
   width: 100%;
@@ -865,6 +893,7 @@ page {
   flex-direction: column;
   justify-content: space-between;
 }
+
 .cost-price {
   color: red;
   margin-top: 5rpx;
@@ -872,6 +901,7 @@ page {
   line-height: 50rpx;
   height: 50rpx;
 }
+
 .cost-peisong {
   font-size: 25rpx;
   line-height: 25rpx;
@@ -962,7 +992,6 @@ page {
   padding: 5rpx 15rpx;
 }
 
-
 .format-title {
   text-align: center;
   padding: 10rpx 0;
@@ -984,21 +1013,24 @@ page {
 .format-item {
   min-width: 100rpx;
   font-size: 90%;
-  color: #000;  
+  color: #000;
   margin-right: 20rpx;
   border: 2rpx solid #ACACAC;
   background: rgba(15, 15, 26, 0);
-  text-align: center; 
-  padding:5rpx;
+  text-align: center;
+  padding: 5rpx;
 }
+
 .format-item.active {
   color: #f36c1b;
   border: 2rpx solid #f36c1b;
 }
+
 .format-price {
   padding-left: 30rpx;
   color: #f36c1b;
 }
+
 .format-footer {
   background-color: #eee;
   display: flex;
@@ -1022,14 +1054,17 @@ page {
   width: 50rpx;
   height: 50rpx;
 }
+
 .item-food-numb image {
   width: 60rpx;
   height: 60rpx;
 }
+
 .item-food-numb .item-add image {
   width: 60rpx;
   height: 60rpx;
 }
+
 .item-food-text {
   width: 50rpx;
   height: 60rpx;
@@ -1040,11 +1075,11 @@ page {
   white-space: nowrap;
 }
 
-
 .single-format image {
   width: 60rpx;
   height: 60rpx;
 }
+
 .single-format .item-add image {
   width: 60rpx;
   height: 60rpx;
@@ -1065,6 +1100,7 @@ page {
   color: #fff;
   z-index: 10000;
 }
+
 .notPay {
   background-color: #ddd !important;
 }
@@ -1074,42 +1110,206 @@ page {
   margin-top: 20rpx;
   flex-flow: row nowrap;
   justify-content: space-between;
-  height: 60rpx;
+  min-height: 60rpx;
   background-color: #fff;
   font-size: 90%;
   padding: 10rpx;
 }
+
 .item-info .item-image {
   width: 60rpx;
   line-height: 60rpx;
 }
+
 .item-info .item-image image {
   width: 40rpx;
   height: 40rpx;
   margin-top: 10rpx;
 }
+
 .item-info .item-content {
   flex-grow: 1;
   line-height: 60rpx;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
 .sale {
+  margin-top: 10rpx;
   height: 40rpx;
 }
+
 .sale .sale-item {
   display: flex;
   line-height: 40rpx;
   height: 40rpx;
   padding: 0;
 }
-.sale .sale-item .slide-image {
+
+.slide-image {
   width: 40rpx;
   height: 40rpx;
-  margin-left: 20rpx;
+  font-size: 86%;
+  text-align: center;
+  /* margin-left: 20rpx; */
+  background-color: #f36c1b;
+  color: #fff;
+  border-radius: 8rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 .sale .sale-item text {
   flex-grow: 1;
   padding-left: 20rpx;
+  font-size: 70%;
+}
+
+.sale-active-container {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+.sale-active-container .sale {
+  flex-grow: 1;
+}
+
+.sale-active-container .sale-quantity {
+  width: 120rpx;
+  font-size: 70%;
+  white-space: nowrap;
+  text-align: right;
+  padding-right: 20rpx;
+}
+
+.productDetail, .coupon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.coupon-shadow {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #000;
+  opacity: .7;
+}
+
+.coupon-content {
+  position: absolute;
+  top: 150rpx;
+  left: 150rpx;
+  height: 600rpx;
+  width: 450rpx;
+  border-radius: 40rpx;
+  display: flex;
+  background-color: #f36c1b;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coupon-get {
+  margin-top: 150rpx;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  text-align: center;
+  background-color: red;
+  font-size: 140rpx;
+  border: 1px solid #000;
+}
+.coupon-logo image {
+  width: 150rpx;
+  height: 150rpx;
+}
+
+.coupon-operate {
+  position: absolute;
+  top: 800rpx;
+  left: 335rpx;
+  height: 80rpx;
+  width: 80rpx;
+  border: 1px solid #fff;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80rpx;
+}
+
+.coupon-operate text {
+  margin-bottom: 10rpx;
+}
+
+.restaurant-activity {
+  padding: 20rpx;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  margin-top: 20rpx;
   font-size: 80%;
+}
+.restaurant-activity .activity-title {
+  font-size: 120%;
+  white-space: nowrap;
+  margin-bottom: 10rpx;
+}
+.restaurant-activity .activity-content{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10rpx;
+}
+.restaurant-activity .activity-name {
+  flex-grow: 1;
+}
+.product-content {
+  position: absolute;
+  top: 100rpx;
+  left: 50rpx;
+  box-sizing: border-box;
+  width: 650rpx;
+  height: 670rpx;
+  background-color: #fff;
+  border-radius: 10rpx;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 20rpx;
+}
+.product-content .product-img{
+  width: 610rpx;
+}
+.product-content .product-img image{
+  width: 610rpx;
+}
+.product-content .product-name{
+  margin-top: 20rpx;
+}
+.product-content .price{
+  color: red;
+}
+.product-content .product-footer{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+.product-content .formatter{
+  font-size: 25rpx;
+  background-color: #f36c1b;
+  border-radius: 10rpx;
+  padding: 10rpx 20rpx;
+  color: #fff;
+}
+.formatter .selectFormat {
+  width: auto;
 }

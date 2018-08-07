@@ -54,14 +54,35 @@ namespace JdCat.Cat.Web.Controllers
             return Json(Service.DeleteFullReduce(id));
         }
 
-        public IActionResult Coupon()
+        public IActionResult Coupon(int? id)
         {
+            if(id!= null)
+            {
+                ViewBag.entity = JsonConvert.SerializeObject(Service.GetCouponById(id.Value), AppData.JsonSetting);
+            }
             return View();
         }
 
         public IActionResult CouponList()
         {
+            ViewBag.list = JsonConvert.SerializeObject(Service.GetCoupon(Business).ToList(), AppData.JsonSetting);
             return View();
+        }
+
+        public IActionResult CreateCoupon([FromBody]SaleCoupon coupon)
+        {
+            coupon.BusinessId = Business.ID;
+            return Json(Service.CreateCoupon(coupon));
+        }
+
+        public IActionResult DeleteCoupon(int id)
+        {
+            return Json(Service.DeleteCoupon(id));
+        }
+
+        public IActionResult DownCoupon(int id)
+        {
+            return Json(Service.DownCoupon(id));
         }
 
     }

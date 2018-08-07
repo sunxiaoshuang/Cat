@@ -65,34 +65,73 @@ namespace JdCat.Cat.Web.App_Code
             }
             else
             {
+                // 商品名称占用打印纸的16个字符位
+                var position = 16;
                 foreach (var product in order.Products)
                 {
-                    var name = product.Name.Length > 8 ? product.Name.Substring(0, 7) : product.Name;
-                    var buffer = Encoding.Default.GetBytes(name);
-                    var len = 24 - buffer.Count();
-                    if (len > 0)
+                    // 商品名称
+                    var name = product.Name;
+                    var zhQuantity = 0;              // 中文字符数
+                    var enQuantity = 0;              // 其他字符数
+                    while (true)
                     {
-                        for (int i = 0; i < len / 2; i++)
+                        zhQuantity = CalcZhQuantity(name);
+                        enQuantity = name.Length - zhQuantity;
+                        if (zhQuantity * 2 + enQuantity > position)
                         {
-                            name += " ";
+                            name = name.Substring(0, name.Length - 2);
+                        }
+                        else
+                        {
+                            break;
                         }
                     }
-                    name += "* " + product.Quantity;
-                    name += "    " + product.Price.Value.ToString("f2");
-                    content.Append($"<Font# Bold=1 Width=1 Height=1>{name}</Font#>\n");
+                    var nameLen = zhQuantity * 2 + enQuantity;
+                    for (int i = 0; i < position - nameLen; i++)
+                    {
+                        name += " ";
+                    }
+                    // 商品数量
+                    var quantity = "* " +  Convert.ToDouble(product.Quantity);
+                    var quantityLen = quantity.Length;
+                    for (int i = 0; i < 8 - quantityLen; i++)
+                    {
+                        quantity += " ";
+                    }
+                    // 商品价格
+                    var price = Convert.ToDouble(product.Price.Value) + "";
+                    var priceLen = price.Length;
+                    for (int i = 0; i < 8 - priceLen; i++)
+                    {
+                        price = " " + price;
+                    }
+                    content.Append($"<Font# Bold=1 Width=1 Height=1>{name + quantity + price}</Font#>\n");
                     if(!string.IsNullOrEmpty( product.Description))
                     {
                         content.Append($"<Font# Bold=0 Width=1 Height=1>（{product.Description}）</Font#>\n");
                     }
                 }
-                //content.Append($"*************其他*************");
+                content.Append("--------------其他--------------\n");
+                content.Append($"<left>{PrintLineLeftRight("配送费", Convert.ToDouble(order.Freight.Value) + "")}\n");
+                if(order.SaleCouponUser != null)
+                {
+                    content.Append($"{PrintLineLeftRight("[" + order.SaleCouponUser.Name + "]", "-￥" + Convert.ToDouble(order.SaleCouponUser.Value) + "")}\n");
+                }
+                if(order.SaleFullReduce != null)
+                {
+                    content.Append($"{PrintLineLeftRight("[" + order.SaleFullReduce.Name + "]", "-￥" + Convert.ToDouble(order.SaleFullReduce.ReduceMoney) + "")}\n");
+                }
                 content.Append("--------------------------------\n");
-                content.Append($"<right>总价：{order.Price.Value.ToString("f2")}\n");
+                if (order.SaleFullReduce != null)
+                {
+                    content.Append($"<right>原价：{Convert.ToDouble(order.OldPrice.Value)}元\n");
+                }
+                content.Append($"<right>实付：<Font# Bold=1 Width=2 Height=2>{Convert.ToDouble(order.Price)}元</Font#>\n");
                 if(!string.IsNullOrEmpty(order.Remark))
                 {
                     content.Append($"<left>备注：{order.Remark}\n");
                 }
-                content.Append("--------------------------------\n");
+                content.Append("********************************\n");
                 content.Append($"<left><Font# Bold=1 Width=2 Height=2>{order.ReceiverAddress}</Font#>\n");
                 content.Append($"<Font# Bold=1 Width=2 Height=2>{order.Phone}</Font#>\n");
                 content.Append($"{order.ReceiverName}\n");
@@ -170,6 +209,37 @@ namespace JdCat.Cat.Web.App_Code
                 }
                 return ret;
             }
+        }
+
+        /// <summary>
+        /// 计算出文本中的中文字符数量
+        /// </summary>
+        /// <returns></returns>
+        private int CalcZhQuantity(string text)
+        {
+            // 一个中文字符占用三个字节，一个其他字符占用一个字节
+            var len = text.Length;
+            var byteLen = Encoding.UTF8.GetByteCount(text);
+            return (byteLen - len) / 2;
+        }
+        /// <summary>
+        /// 打印一行，左右两边对齐
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        private string PrintLineLeftRight(string left, string right, int width = 32)
+        {
+            var zhLeft = CalcZhQuantity(left);          // 左边文本的中文字符长度
+            var enLeft = left.Length - zhLeft;          // 左边文本的其他字符长度
+            var zhRight = CalcZhQuantity(right);        // 右边文本的中文字符长度
+            var enRight = right.Length - zhRight;       // 右边文本的其他字符长度
+            var len = width - (zhLeft * 2 + enLeft + zhRight * 2 + enRight);            // 缺少的字符长度
+            for (int i = 0; i < len; i++)
+            {
+                left += " ";
+            }
+            return left + right;
         }
     }
 }

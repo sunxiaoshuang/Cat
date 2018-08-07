@@ -6,13 +6,15 @@ Page({
     userInfo: {}
   },
   onLoad: function () {
+    wx.setNavigationBarTitle({
+      title: "个人中心"
+    });
     this.setData({
       userInfo: qcloud.getSession().userinfo
     });
   },
   bindGetUserInfo: function (e) {
     var self = this;
-    console.log(e);
     wx.getSetting({ // 如果用户允许授权，则将用户信息写入数据库
       success: function (res) {
         if (!res.authSetting["scope.userInfo"]) return;
@@ -28,7 +30,9 @@ Page({
             wx.hideToast();
             if(res.data.code === 0){
               res = res.data;
-              qcloud.setSession(res.data);
+              var session = qcloud.getSession();
+              session.userinfo = res.data.userinfo;
+              qcloud.setSession(session);
               self.setData({
                 userInfo: res.data.userinfo
               });
@@ -65,7 +69,9 @@ Page({
           self.setData({
             userInfo: self.data.userInfo
           });
-          qcloud.setSession(self.data.userInfo);
+          var session = qcloud.getSession();
+          session.userinfo = self.data.userInfo;
+          qcloud.setSession(session);
           util.showSuccess("绑定成功");
         } else {
           util.showModel("提示", res.data.message);

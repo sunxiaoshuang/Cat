@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
+using System.Text;
 
 namespace JdCat.Cat.WxApi.Controllers
 {
@@ -243,6 +244,19 @@ namespace JdCat.Cat.WxApi.Controllers
                 result.Msg = "购物车已经清空，请勿重复清理";
             }
             return Json(result);
+        }
+
+        [HttpGet("userCoupon/{id}")]
+        public IActionResult GetUserCoupon(int id)
+        {
+            return Json(Service.GetUserCoupon(id));
+        }
+        [HttpPost("receiveCoupons/{id}")]
+        public IActionResult ReceiveCoupons(int id, [FromBody]IEnumerable<SaleCouponUser> coupons)
+        {
+            var ids = coupons.Select(a => a.ID).ToArray();
+            var list = Service.ReceiveCoupons(new User { ID = id }, ids);
+            return Json(list);
         }
 
 

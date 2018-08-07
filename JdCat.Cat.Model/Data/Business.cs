@@ -10,7 +10,7 @@ namespace JdCat.Cat.Model.Data
     /// 商户表
     /// </summary>
     [Table("Business", Schema = "dbo")]
-    public class Business : BaseEntity
+    public class Business : BaseEntity, ICloneable
     {
         /// <summary>
         /// 商户名称
@@ -195,5 +195,10 @@ namespace JdCat.Cat.Model.Data
         /// 满减活动
         /// </summary>
         public ICollection<SaleFullReduce> SaleFullReduces { get; set; }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 }

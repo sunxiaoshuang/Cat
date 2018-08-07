@@ -5,9 +5,99 @@
 
 @section Styles {
     <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+        <link href="~/css/sale/index.css" rel="stylesheet" />
         <link href="~/css/sale/couponList.css" rel="stylesheet" />
     </environment>
     <environment exclude="Development">
-        <link href="~/css/sale/couponList.min.css" rel="stylesheet" asp-append-version="true" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link href="~/css/sale/index.min.css" rel="stylesheet" asp-append-version="true" />
+        <link href="~/css/sale/couponList.min.css" rel="stylesheet" />
     </environment>
 }
+@section Scripts {
+    <script>
+        var pageData = {
+            list: JSON.parse('@Html.Raw(ViewBag.list)')
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/sale/couponList.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/sale/couponList.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">优惠券</span>
+                        <a asp-controller="Sale" asp-action="Index" class="text-primary my-back1 pull-right">返回</a>
+
+                        <a class="btn btn-primary my-back2" asp-controller="Sale" asp-action="Index">
+                            <i class="fa fa-backward inline-middle" style="font-size: 16px; color: #fff;"></i>
+                            <span class="inline-middle" style="color: #fff;">返回</span>
+                        </a>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row margin-bottom-10">
+                        <div class="col-md-12">
+                            <select class="form-control margin-right-20" v-model="status" style="display: inline-block;width: 140px;">
+                                <option v-for="item in statusList" :value="item.value" v-text="item.name"></option>
+                            </select>
+                            <a class="btn btn-primary" asp-controller="Sale" asp-action="Coupon"><i class="fa fa-plus"> 创建优惠券</i></a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <table class="table table-bordered table-striped table-sale">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">优惠券名称</th>
+                                        <th>有效期</th>
+                                        <th>剩余库存</th>
+                                        <th>领取数量</th>
+                                        <th>核销数量</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="row in list" :key="row.id">
+                                        <td v-html="row.name"></td>
+                                        <td v-html="validFilter(row)"></td>
+                                        <td v-html="row.stock < 0 ? '不限制' : (row.stock + '张')"></td>
+                                        <td v-html="row.received + '张'"></td>
+                                        <td v-html="row.consumed + '张'"></td>
+                                        <td v-html="statusFilter(row.status)"></td>
+                                        <td>
+                                            <i class="fa fa-search text-primary"><a class="text-primary" :href="'/Sale/Coupon?id=' + row.id">查看</a></i>
+                                            <i class="fa fa-edit text-primary" @@click="down(row)" v-if="row.status != '5'">下架</i>
+                                            <i class="fa fa-remove text-primary" @@click="remove(row)">删除</i>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot v-if="list.length === 0">
+                                    <tr>
+                                        <td colspan="7">没有任何优惠券</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;"></div>
+</div>

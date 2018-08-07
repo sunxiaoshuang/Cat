@@ -15,8 +15,8 @@ App({
             method: "GET",
             success: function (res) {
                 var session = qcloud.getSession();
-                if(!session)return;
-                session.business= res.data;
+                if (!session) return;
+                session.business = res.data;
                 qcloud.setSession(session);
             }
         });

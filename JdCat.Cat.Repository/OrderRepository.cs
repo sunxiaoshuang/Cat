@@ -37,7 +37,7 @@ namespace JdCat.Cat.Repository
             var business = Context.Businesses.Single(a => a.ID == order.BusinessId);
             if (business.IsClose)
             {
-                result.Msg = "本店已暂定营业";
+                result.Msg = "本店已暂停营业";
                 return result;
             }
             var now = DateTime.Now;
@@ -49,6 +49,18 @@ namespace JdCat.Cat.Repository
                 return result;
             }
             Context.Orders.Add(order);
+            // 如果使用了优惠券
+            if (order.SaleCouponUserId != null)
+            {
+                var couponUser = Context.SaleCouponUsers.Include(a => a.Coupon).Single(a => a.ID == order.SaleCouponUserId.Value);
+                couponUser.Status = CouponStatus.Used;
+                couponUser.UseTime = DateTime.Now;
+                couponUser.Coupon.Consumed += 1;
+                if(couponUser.Coupon.Quantity > 0 && couponUser.Coupon.Consumed > couponUser.Coupon.Quantity)
+                {
+                    couponUser.Coupon.Consumed = couponUser.Coupon.Quantity;
+                }
+            }
             if (Context.SaveChanges() == 0)
             {
                 throw new Exception("订单创建失败");
@@ -63,7 +75,7 @@ namespace JdCat.Cat.Repository
         public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null)
         {
             var lastTime = DateTime.Now.AddYears(-1);
-            var queryable = Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Where(a => a.BusinessId == business.ID && a.CreateTime > lastTime);
+            var queryable = Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).Where(a => a.BusinessId == business.ID && a.CreateTime > lastTime);
             if(expression != null)
             {
                 queryable = queryable.Where(expression);
@@ -213,7 +225,7 @@ namespace JdCat.Cat.Repository
 
         public Order GetOrderIncludeProduct(int id)
         {
-            return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).SingleOrDefault(a => a.ID == id);
+            return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).SingleOrDefault(a => a.ID == id);
         }
 
         public Order PaySuccess(WxPaySuccess ret)
@@ -237,7 +249,7 @@ namespace JdCat.Cat.Repository
 
         public Order GetOrderByCode(string code)
         {
-            return Context.Orders.Include(a => a.Products).SingleOrDefault(a => a.OrderCode == code);
+            return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == code);
         }
 
     }

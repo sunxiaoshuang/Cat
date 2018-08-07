@@ -42,6 +42,8 @@ namespace JdCat.Cat.Model
         public DbSet<FeyinDevice> FeyinDevices { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<SaleFullReduce> SaleFullReduces { get; set; }
+        public DbSet<SaleCoupon> SaleCoupons { get; set; }
+        public DbSet<SaleCouponUser> SaleCouponUsers { get; set; }
 
         /// <summary>
         /// 添加FluentAPI配置
@@ -54,6 +56,7 @@ namespace JdCat.Cat.Model
             modelBuilder.HasSequence<int>("StoreNumbers", schema: "shared");            // 门店编号序列
             modelBuilder.HasSequence<int>("OrderNumbers", schema: "shared");            // 订单编号序列
             modelBuilder.HasSequence<int>("FormatNumbers", schema: "shared");           // 规格编码序列
+            modelBuilder.HasSequence<int>("SaleCouponNumbers", schema: "shared");           // 规格编码序列
             modelBuilder.Entity<Business>()
                 .Property(a => a.StoreId)
                 .HasDefaultValueSql("'JD' + dbo.fn_right_padding(NEXT VALUE FOR shared.StoreNumbers, 6)");
@@ -63,6 +66,9 @@ namespace JdCat.Cat.Model
             modelBuilder.Entity<Order>()
                 .Property(a => a.OrderCode)
                 .HasDefaultValueSql("CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 6) + dbo.fn_right_padding(CAST(floor(rand()*100000) as varchar(5)), 5)");
+            modelBuilder.Entity<SaleCouponUser>()
+                .Property(a => a.Code)
+                .HasDefaultValueSql("dbo.fn_right_padding(floor(rand()*10000000), 6) + cast(NEXT VALUE FOR shared.SaleCouponNumbers as varchar(max)) + dbo.fn_right_padding(floor(rand()*100000), 4)");
 
 
             var typesToRegister = Assembly.GetExecutingAssembly().GetTypes().Where(q => q.GetInterface(typeof(IEntityTypeConfiguration<>).FullName) != null);

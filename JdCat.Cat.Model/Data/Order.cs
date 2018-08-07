@@ -21,6 +21,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public decimal? Price { get; set; }
         /// <summary>
+        /// 原价
+        /// </summary>
+        public decimal? OldPrice { get; set; }
+        /// <summary>
         /// 运费
         /// </summary>
         public decimal? Freight { get; set; }
@@ -135,5 +139,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public int? SaleFullReduceId { get; set; }
         public virtual SaleFullReduce SaleFullReduce { get; set; }
+        /// <summary>
+        /// 优惠券id
+        /// </summary>
+        public int? SaleCouponUserId { get; set; }
+        public SaleCouponUser SaleCouponUser { get; set; }
     }
 }

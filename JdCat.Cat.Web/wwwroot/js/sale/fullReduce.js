@@ -67,9 +67,6 @@
                 if (!time) return "";
                 return time.substring(0, 10);
             }
-        },
-        created: function () {
-            console.log(this);
         }
     });
 

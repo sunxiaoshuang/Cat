@@ -1,3 +1,6 @@
+var couponStatus = {
+    "1": "未使用", "2": "已使用", "3": "已过期", "4": "上架", "5": "下架", "6": "已领完", "7": "未开始"
+};
 var common = {
     formatDate: function(str){
         if(!str)return "";
@@ -24,7 +27,25 @@ var common = {
         var second = (time % 60).toString();
         second.length == 1 && (second = "0" + second);
         return minus + ":" + second;
+    },
+    couponStatusName: function(status){
+        return couponStatus[status];
+    },
+    couponLimit: function(coupon){
+        if(coupon.minConsume <= 0){
+            return "无限制使用";
+        } 
+        return "满" + coupon.minConsume + "元可用";
+    },
+    couponValidDate: function(coupon){
+        if(coupon.expireDay === null){
+            return coupon.startDate.substring(0, 10) + "至" + coupon.endDate.substring(0, 10);
+        }
+        if(coupon.expireDay <= 0){
+            return "已过期";
+        }
+        return coupon.expireDay + "天后过期";
     }
-}
+};
 
 module.exports = common;

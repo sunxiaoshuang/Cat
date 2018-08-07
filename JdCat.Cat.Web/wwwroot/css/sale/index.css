@@ -55,12 +55,12 @@
     cursor: pointer;
     color: #c55f38 !important;
 }
-th, td {
+table-sale th, table-sale td {
     text-align: center;
 }
-.fa-edit {
+table-sale .fa-edit {
     margin-right: 20px;
 }
-td:last-child {
+table-sale td:last-child {
     width: 150px;
 }
