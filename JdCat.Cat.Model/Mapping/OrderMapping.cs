@@ -7,15 +7,16 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace JdCat.Cat.Model.Mapping
 {
-    //public class OrderMapping : IEntityTypeConfiguration<Order>
-    //{
-    //    public void Configure(EntityTypeBuilder<Order> builder)
-    //    {
-    //        builder.HasMany(a => a.DadaCallBacks)
-    //            .WithOne(a => a.Order)
-    //            .HasForeignKey(a => a.)
-    //            .OnDelete(DeleteBehavior.Cascade);
-    //    }
-    //}
+    public class OrderMapping : IEntityTypeConfiguration<Order>
+    {
+        public void Configure(EntityTypeBuilder<Order> builder)
+        {
+            builder.HasOne(a => a.SaleCouponUser)
+                .WithOne(a => a.Order)
+                .HasForeignKey<Order>(a => a.SaleCouponUserId)
+                //.HasForeignKey<SaleCouponUser>(a => a.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        }
+    }
 }
 

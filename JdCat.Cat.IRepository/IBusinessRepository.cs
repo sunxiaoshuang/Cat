@@ -129,7 +129,43 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         JsonData DeleteFullReduce(int id);
 
+        /// <summary>
+        /// 创建优惠券
+        /// </summary>
+        /// <param name="saleCoupon"></param>
+        /// <returns></returns>
+        JsonData CreateCoupon(SaleCoupon saleCoupon);
+        /// <summary>
+        /// 根据id获取优惠券实例
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        SaleCoupon GetCouponById(int id);
 
+        /// <summary>
+        /// 获取商户优惠券列表
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        IEnumerable<SaleCoupon> GetCoupon(Business business, bool tracking = false);
+        /// <summary>
+        /// 获取商户截止到当前可以的优惠券
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        List<SaleCoupon> GetCouponValid(Business business, bool tracking = false);
+        /// <summary>
+        /// 删除优惠券
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        JsonData DeleteCoupon(int id);
+        /// <summary>
+        /// 下架优惠券
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        JsonData DownCoupon(int id);
         #endregion
 
     }

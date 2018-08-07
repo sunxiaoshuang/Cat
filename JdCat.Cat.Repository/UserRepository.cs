@@ -141,17 +141,74 @@ namespace JdCat.Cat.Repository
         public bool ClearCart(int userId, int businessId)
         {
             return Context.Database.ExecuteSqlCommand("delete dbo.ShoppingCart where userid={0} and businessid={1}", userId, businessId) > 0;
-            
+
         }
         public Order CreateOrder(Order order)
         {
             Context.Orders.Add(order);
-            if(Context.SaveChanges() == 0)
+            if (Context.SaveChanges() == 0)
             {
                 throw new Exception("订单创建失败");
             }
             ClearCart(order.UserId.Value, order.BusinessId.Value);
             return order;
+        }
+        public List<SaleCouponUser> GetUserCoupon(int id)
+        {
+            var now = DateTime.Now;
+            var list = Context.SaleCouponUsers.Where(a => a.UserId == id).ToList();
+            // 取得未使用或者半年内领取的优惠券
+            var result = list.Where(a => a.CreateTime > now.AddDays(-180) || a.Status == CouponStatus.NotUse).ToList();
+            return result;
+        }
+        public List<SaleCouponUser> ReceiveCoupons(User user, IEnumerable<int> ids)
+        {
+            var coupons = Context.SaleCoupons.Where(a => ids.Contains(a.ID));
+            // 将有数量限制的优惠券筛选出来，领取后需要库存减一
+            var canReceive = new List<SaleCoupon>();
+            foreach (var item in coupons)
+            {
+                if(item.Quantity <= 0)
+                {
+                    canReceive.Add(item);
+                    continue;
+                }
+                if(item.Stock > 0)
+                {
+                    canReceive.Add(item);
+                }
+            }
+
+            var list = new List<SaleCouponUser>();
+            foreach (var coupon in canReceive)
+            {
+                var item = new SaleCouponUser {
+                    Name = coupon.Name,
+                    Value = coupon.Value,
+                    Status = CouponStatus.NotUse,
+                    MinConsume = coupon.MinConsume,
+                    StartDate = coupon.StartDate,
+                    EndDate = coupon.EndDate,
+                    ValidDay = coupon.ValidDay,
+                    UserId = user.ID,
+                    CouponId = coupon.ID
+                };
+                if(coupon.Quantity > 0)
+                {
+                    coupon.Stock = coupon.Stock - 1;
+                    if (coupon.Stock < 0) coupon.Stock = 0;
+                    coupon.Received = coupon.Quantity - coupon.Stock;
+                }
+                else
+                {
+                    coupon.Received += 1;
+                }
+                list.Add(item);
+                Context.Add(item);
+            }
+
+            Context.SaveChanges();
+            return list;
         }
     }
 }

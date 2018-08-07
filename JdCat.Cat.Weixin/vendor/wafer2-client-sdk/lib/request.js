@@ -47,7 +47,7 @@ function request(options) {
         wx.showToast({
             title: err,
             icon: 'none'
-        })
+        });
     };
     var complete = options.complete || noop;
     var originHeader = options.header || {};
@@ -116,13 +116,13 @@ function request(options) {
             fail: callFail,
             complete: noop,
         }));
-    };
+    }
 
-};
+}
 
 function payment(options){
     
-};
+}
 
 
 module.exports = {

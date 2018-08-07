@@ -5,11 +5,143 @@
 
 @section Styles {
     <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
         <link href="~/css/sale/coupon.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
     </environment>
     <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
         <link href="~/css/sale/coupon.min.css" rel="stylesheet" asp-append-version="true" />
     </environment>
 }
+@section Scripts {
+    <script>
+        var pageData = {
+            entity: JSON.parse('@Html.Raw(ViewBag.entity)' || 'null')
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/sale/coupon.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/sale/coupon.min.js" asp-append-version="true"></script>
+    </environment>
+}
 
-
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">创建优惠券</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="form-group" v-bind:class="{'has-error': showError && !entity.name}">
+                            <label class="control-label col-md-1">
+                                <span class="require">优惠券名称：</span>
+                            </label>
+                            <div class="col-md-3">
+                                <input type="text" v-model.trim="entity.name" v-bind:disabled="isCheck" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group" v-bind:class="{'has-error': showError && ((timeType == 0 && entity.validDay <= 0) || (timeType == 1 && (!entity.startDate || !entity.endDate)))}">
+                            <label class="control-label col-md-1">
+                                <span class="require">有效期：</span>
+                            </label>
+                            <div class="col-md-11 flex-form">
+                                <select class="form-control" v-bind:disabled="isCheck" v-model="timeType" style="display: inline-block; width: 120px;">
+                                    <option value="0">相对时间</option>
+                                    <option value="1">指定时间</option>
+                                </select>
+                                <div v-show="timeType == 0">
+                                    <span style="margin: 0 20px;">领取后</span>
+                                    <input type="number" v-bind:disabled="isCheck" class="form-control" v-model="entity.validDay" style="display: inline-block;width: 100px;" />
+                                </div>
+                                <div v-show="timeType != 0" style="margin-left: 20px; position:relative;">
+                                    <div class="input-group pull-left" style="width: 150px;">
+                                        <input type="text" v-bind:disabled="isCheck" class="form-control" v-model="entity.startDate" placeholder="开始日期" id="txtStartDate" />
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+                                    <span class="pull-left" style="margin-top: 8px;padding: 0 10px;">至</span>
+                                    <div class="input-group pull-left" style="width: 150px;">
+                                        <input type="text" v-bind:disabled="isCheck" class="form-control" v-model="entity.endDate" placeholder="截止日期" id="txtEndDate" />
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" v-bind:class="{'has-error': showError && entity.value <= 0}">
+                            <label class="control-label col-md-1">
+                                <span class="require">券面金额：</span>
+                            </label>
+                            <div class="col-md-3">
+                                <input type="number" v-bind:disabled="isCheck" v-model.trim="entity.value" class="form-control" />
+                                <span style="color: #999;">代金券面额，例如：金额2元，商品原价10元，用户仅需付8元</span>
+                            </div>
+                        </div>
+                        <div class="form-group" v-bind:class="{'has-error': showError && (quantityType == 1 && entity.quantity <= 0)}">
+                            <label class="control-label col-md-1">
+                                <span class="require">发放数量：</span>
+                            </label>
+                            <div class="col-md-11 flex-form">
+                                <select class="form-control" v-bind:disabled="isCheck" v-model="quantityType" style="display:inline-block; width: 120px;">
+                                    <option value="0">不限制</option>
+                                    <option value="1">限制</option>
+                                </select>
+                                <div v-show="quantityType == 1">
+                                    <span style="margin: 0 20px;">总库存</span>
+                                    <input type="number" v-bind:disabled="isCheck" v-model.trim="entity.quantity" class="form-control" style="display: inline-block;width: 100px;" />
+                                    <span style="margin: 0 20px;">张</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" v-bind:class="{'has-error': showError && (minConsumeType == 1 && entity.minConsume <= 0)}">
+                            <label class="control-label col-xs-1">
+                                <span class="require">最低消费：</span>
+                            </label>
+                            <div class="col-md-11 flex-form">
+                                <select class="form-control" v-bind:disabled="isCheck" v-model="minConsumeType" style="display:inline-block; width: 120px;">
+                                    <option value="0">不限制</option>
+                                    <option value="1">限制</option>
+                                </select>
+                                <div v-show="minConsumeType == 1">
+                                    <span style="margin: 0 20px;">消费满</span>
+                                    <input type="number" v-bind:disabled="isCheck" v-model.trim="entity.minConsume" class="form-control" style="display: inline-block;width: 100px;" />
+                                    <span style="margin: 0 20px;">元使用券</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-md-offset-1 col-md-4">
+                            <div class="kui-button" v-if="!isCheck">
+                                <button type="button" class="btn btn-primary" v-bind:disabled="btnDisplay" style="font-size: 85%; width: 100px" v-on:click="create()">
+                                    保存
+                                </button>
+                            </div>
+                            <div class="kui-button">
+                                <button type="button" class="btn kui-button-primary" style="width: 100px" v-on:click="ret()">
+                                    返回
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;"></div>
+</div>

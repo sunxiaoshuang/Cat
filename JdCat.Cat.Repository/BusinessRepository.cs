@@ -234,6 +234,91 @@ group by CreateTime");
             return Context.SaleFullReduces.Where(a => a.BusinessId == business.ID && !a.IsDelete).OrderBy(a => a.ReduceMoney);
         }
 
+        public JsonData DeleteFullReduce(int id)
+        {
+            var entity = new SaleFullReduce { ID = id };
+            Context.Attach(entity);
+            entity.IsDelete = true;
+            var result = new JsonData { Success = Context.SaveChanges() > 0 };
+            if (result.Success)
+            {
+                result.Msg = "删除成功";
+            }
+            else
+            {
+                result.Msg = "删除失败，请刷新后重试";
+            }
+            return result;
+        }
+
+        public JsonData CreateCoupon(SaleCoupon saleCoupon)
+        {
+            var result = ValidateCoupon(saleCoupon);
+            if (!result.Success) return result;
+            Context.SaleCoupons.Add(saleCoupon);
+            result.Success = Context.SaveChanges() > 0;
+            if (!result.Success)
+            {
+                result.Msg = "创建失败，请刷新后重试";
+                return result;
+            }
+            result.Msg = "创建成功";
+            return result;
+        }
+        public SaleCoupon GetCouponById(int id)
+        {
+            return Context.SaleCoupons.Single(a => a.ID == id);
+        }
+        public IEnumerable<SaleCoupon> GetCoupon(Business business, bool tracking = false)
+        {
+            if (!tracking) return Context.SaleCoupons.AsNoTracking().Where(a => a.BusinessId == business.ID && !a.IsDelete);
+            return Context.SaleCoupons.Where(a => a.BusinessId == business.ID && !a.IsDelete);
+        }
+
+        public List<SaleCoupon> GetCouponValid(Business business, bool tracking = false)
+        {
+            var list = GetCoupon(business, tracking).Where(a => a.IsActive).ToList();
+            return list.Where(a => a.Status == CouponStatus.Up).ToList();
+        }
+        public JsonData DeleteCoupon(int id)
+        {
+            var entity = new SaleCoupon { ID = id };
+            Context.Attach(entity);
+            entity.IsDelete = true;
+            var result = new JsonData { Success = Context.SaveChanges() > 0 };
+            if (result.Success)
+            {
+                result.Msg = "删除成功";
+            }
+            else
+            {
+                result.Msg = "删除失败，请刷新后重试";
+            }
+            return result;
+        }
+        public JsonData DownCoupon(int id)
+        {
+            var entity = new SaleCoupon { ID = id, IsActive = true };
+            Context.Attach(entity);
+            entity.IsActive = false;
+            var result = new JsonData { Success = Context.SaveChanges() > 0 };
+            if (result.Success)
+            {
+                result.Msg = "下架成功";
+            }
+            else
+            {
+                result.Msg = "下架失败，请刷新后重试";
+            }
+            return result;
+        }
+
+
+        /// <summary>
+        /// 验证满减活动输入是否正确
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         private JsonData ValidateFullReduce(SaleFullReduce entity)
         {
             var result = new JsonData();
@@ -258,20 +343,36 @@ group by CreateTime");
             result.Success = true;
             return result;
         }
-        public JsonData DeleteFullReduce(int id)
+        /// <summary>
+        /// 验证优惠券信息是否正确
+        /// </summary>
+        /// <returns></returns>
+        private JsonData ValidateCoupon(SaleCoupon coupon)
         {
-            var entity = new SaleFullReduce { ID = id };
-            Context.Attach(entity);
-            entity.IsDelete = true;
-            var result = new JsonData { Success = Context.SaveChanges() > 0 };
-            if (result.Success)
+            var result = new JsonData();
+            if (coupon.Value <= 0)
             {
-                result.Msg = "删除成功";
+                result.Msg = "代金面额必须大于零";
+                return result;
+            }
+            if (coupon.ValidDay < 0)
+            {
+                if (coupon.StartDate == null || coupon.EndDate == null)
+                {
+                    result.Msg = "优惠券有效期输入不正确";
+                    return result;
+                }
+            }
+            if (coupon.MinConsume < 0) coupon.MinConsume = -1;
+            if (coupon.Quantity < 0)
+            {
+                coupon.Quantity = -1;
             }
             else
             {
-                result.Msg = "删除失败，请刷新后重试";
+                coupon.Stock = coupon.Quantity;
             }
+            result.Success = true;
             return result;
         }
     }

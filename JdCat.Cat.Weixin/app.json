@@ -13,13 +13,15 @@
     "pages/addCgi/addCgi",
     "pages/test/test",
     "pages/pay/pay",
-    "pages/pay/sure/sure"
+    "pages/pay/sure/sure",
+    "pages/user/mycoupon/mycoupon",
+    "pages/user/selectcoupon/selectcoupon"
   ],
   "window":{
     "backgroundColor":"#f36c21",
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#f36c1b",
-    "navigationBarTitleText": "简单猫科技（武汉）有限公司",
+    "navigationBarTitleText": "简单猫",
     "navigationBarTextStyle":"#fff",
     "enablePullDownRefresh": true
   },

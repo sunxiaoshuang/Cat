@@ -39,8 +39,23 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         IEnumerable<Address> GetAddresses(int id);
+        /// <summary>
+        /// 删除地址
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         bool DelAddress(int id);
+        /// <summary>
+        /// 根据id获取地址
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         Address GetAddress(int id);
+        /// <summary>
+        /// 修改地址
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         bool UpdateAddress(Address address);
         /// <summary>
         /// 根据用户获取购物车列表
@@ -86,5 +101,18 @@ namespace JdCat.Cat.IRepository
         /// <param name="order"></param>
         /// <returns></returns>
         Order CreateOrder(Order order);
+        /// <summary>
+        /// 获取用户优惠券
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        List<SaleCouponUser> GetUserCoupon(int id);
+        /// <summary>
+        /// 领取优惠券
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        List<SaleCouponUser> ReceiveCoupons(User user, IEnumerable<int> ids);
     }
 }

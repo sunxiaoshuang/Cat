@@ -43,6 +43,7 @@
     <Compile Remove="Migrations\20180719084949_Modify_ProductType_ProductId.cs" />
     <Compile Remove="Migrations\20180719085129_Modify_ProductType_ProductId.cs" />
     <Compile Remove="Migrations\20180719085939_Modify_ProductType_ProductId.cs" />
+    <Compile Remove="Migrations\20180802054832_Modify_Coupon_Status.cs" />
   </ItemGroup>
 
   <ItemGroup>

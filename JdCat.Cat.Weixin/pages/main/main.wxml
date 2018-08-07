@@ -1,6 +1,7 @@
 <wxs module="productFilter" src="../wxs/filters/product.wxs"></wxs>
+<wxs module="common" src="../wxs/filters/common.wxs"></wxs>
 <wxs module="calc" src="../wxs/calc/order.wxs"></wxs>
-<view class="head">
+<view class="head" bindtap="turnPage" data-index="2">
     <!-- <navigator url="/pages/location/location">
         <view class="head-location">
             <image src="/pages/images/location.png" 
@@ -23,16 +24,20 @@
         <view class="description">
             <text>公告：{{business.description}}</text>
         </view>
+        <view class="sale-active-container">
+            <swiper autoplay="{{true}}" vertical="{{true}}" class="sale">
+                <block wx:for="{{fullReduceList}}" wx:key="id">
+                    <swiper-item class="sale-item">
+                        <!-- <image src="../../images/icon/jian-2.png" class="slide-image" /> -->
+                        <view class="slide-image">减</view>
+                        <text>{{item.name}}</text>
+                    </swiper-item>
+                </block>
+            </swiper>
+            <view class="sale-quantity">{{fullReduceList.length}}个活动</view>
+        </view>
     </view>
 </view>
-<swiper autoplay="{{true}}" vertical="{{true}}" class="sale">
-    <block wx:for="{{fullReduceList}}" wx:key="id">
-        <swiper-item class="sale-item">
-            <image src="../../images/icon/jian-2.png" class="slide-image" />
-            <text>{{item.name}}</text>
-        </swiper-item>
-    </block>
-</swiper>
 <scroll-view class="mainContainer" disable-scroll="true">
     <view class="header">
         <block wx:for="{{swiperTitle}}" wx:key="">
@@ -60,31 +65,33 @@
                     <!-- <view class="selectedMenu">{{menu[selected].name}}</view> -->
                     <scroll-view class="foodList" scroll-y="true" scroll-with-animation="true" scroll-top="{{scrollTop}}" scroll-into-view="{{foodToView}}" bindscroll="scrollFoodList">
                         <block wx:for="{{productList}}" wx:key="">
-                            <view class="food" id="{{'scroll'+item.menuId+item.viewIndex}}">
-                                <image class="img" mode="aspectFill" lazy-load="{{true}}" bindtap="showFoodDetail" data-index="{{index}}" src="{{productFilter.productImage(item, businessId)}}"></image>
-                                <view class="food-info" bindtap="showFoodDetail" data-index="{{index}}">
-                                    <view class="name">{{item.name}}</view>
-                                    <view class="sales">{{item.description}}</view>
-                                    <view class="price">￥ {{item.formats[0].price}}</view>
-                                </view>
-                                <view class="food-numb">
-                                    <view class="single-format" wx:if="{{item.formats.length == 1 && item.attributes.length == 0}}">
-                                        <view class="item-remove" bindtap="remove" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
-                                            <image src="../../images/icon/minus-5.png" />
-                                        </view>
-                                        <view class="item-food-text" wx:if="{{item.quantity > 0}}">
-                                            {{item.quantity}}
-                                        </view>
-                                        <view class="item-add" bindtap="add" data-index="{{index}}">
-                                            <image src="../../images/icon/plus-5.png" />
-                                        </view>
+                            <view class="food" id="{{'scroll_' + item.menuId + '_' + item.viewIndex}}">
+                                <image class="img" catchtap="productDetail" mode="aspectFill" lazy-load="{{true}}" bindtap="showFoodDetail" data-index="{{index}}" src="{{productFilter.productImage(item, businessId)}}"></image>
+                                <view class="food-block">
+                                    <view class="food-info" bindtap="showFoodDetail" data-index="{{index}}">
+                                        <view class="name">{{item.name}}</view>
+                                        <view class="sales">{{item.description}}</view>
                                     </view>
-                                    <view class="multi-format" wx:else>
-                                        <view class="selectFormat" bindtap="showFormat" data-index="{{index}}">
-                                            选规格
+                                    <view class="food-numb">
+                                        <view class="price">￥ {{item.formats[0].price}}</view>
+                                        <view class="single-format" wx:if="{{item.formats.length == 1 && item.attributes.length == 0}}">
+                                            <view class="item-remove" bindtap="remove" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
+                                                <image src="../../images/icon/minus-5.png" />
+                                            </view>
+                                            <view class="item-food-text" wx:if="{{item.quantity > 0}}">
+                                                {{item.quantity}}
+                                            </view>
+                                            <view class="item-add" bindtap="add" data-index="{{index}}">
+                                                <image src="../../images/icon/plus-5.png" />
+                                            </view>
                                         </view>
-                                        <view class="formtCount" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
-                                            <text>{{item.quantity}}</text>
+                                        <view class="multi-format" wx:else>
+                                            <view class="selectFormat" bindtap="showFormat" data-index="{{index}}">
+                                                选规格
+                                            </view>
+                                            <view class="formtCount" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
+                                                <text>{{item.quantity}}</text>
+                                            </view>
                                         </view>
                                     </view>
                                 </view>
@@ -120,6 +127,17 @@
             </view>
         </swiper-item>
         <swiper-item id="restaurantPage">
+            <view class="restaurant-activity" wx:if="{{fullReduceList.length > 0}}">
+                <view class="activity-title">
+                    <text>店铺活动</text>
+                </view>
+                <view class="activity-content" wx:for="{{fullReduceList}}" wx:key="">
+                    <view class="slide-image">减</view>
+                    <view class="activity-name" style="margin-left: 20rpx;">
+                        <text>{{item.name}}</text>
+                    </view>
+                </view>
+            </view>
             <view class="item-info" bindtap="catLicense">
                 <view class="item-image">
                     <image src="../../images/icon/safe-1.png" />
@@ -273,5 +291,42 @@
                 </view>
             </view>
         </view>
+    </view>
+</view>
+<view class="coupon" wx:if="{{isShowCoupon}}">
+    <view class="coupon-shadow"></view>
+    <view class="coupon-content">
+        <view class="coupon-get" bindtap="OpenCoupon">
+            <text>领</text>
+        </view>
+        <view class="coupon-logo">
+            <image src="../../images/logo-2.png" />
+        </view>
+    </view>
+    <view class="coupon-operate" bindtap="closeCoupon">
+        <text>×</text>
+    </view>
+</view>
+<view class="coupon" wx:if="{{isShowProductDetail}}">
+    <view class="coupon-shadow"></view>
+    <view class="product-content">
+        <view class="product-img">
+            <image mode="widthFix" src="{{productFilter.productImage(curProduct, businessId, 'big')}}" />
+        </view>
+        <view class="product-name">
+            <text>{{curProduct.name}}</text>
+        </view>
+        <view class="product-footer">
+            <view class="price">
+                <text>￥ {{curProduct.price}}</text>
+            </view>
+            <view class="formatter">
+                <view class="selectFormat" wx:if="{{curProduct.formats.length == 1}}" bindtap="addAtDetail">加入购物车</view>
+                <view class="selectFormat" wx:else bindtap="showFormatAtDetail">选规格</view>
+            </view>
+        </view>
+    </view>
+    <view class="coupon-operate" bindtap="closeProduct">
+        <text>×</text>
     </view>
 </view>

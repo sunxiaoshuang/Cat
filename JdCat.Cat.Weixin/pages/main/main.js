@@ -39,14 +39,23 @@ Page({
     isShowFoot: true,
     submitText: "去结算",
     isBalance: true, // 是否可以结算
-    fullReduceList: [],
-    saleText: ""
+    fullReduceList: [], // 商户满减活动列表
+    saleText: "", // 购买商品时，根据满减活动，提示用户的显示信息
+    isShowCoupon: false, // 是否显示领取优惠券页面
+    isClosedCoupon: false, // 是否显示过领取优惠券
+    couponList: [], // 商户优惠券列表
+    myCoupon: [], // 我的优惠券列表
+    isShowProductDetail: false
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
     var that = this;
+    var session = qcloud.getSession(), business = session.business;
+    wx.setNavigationBarTitle({
+      title: "首页-" + business.name
+    });
     util.showBusy("loading");
     // 首次加载时，将获取商品信息，并将其缓存
     qcloud.request({
@@ -65,7 +74,7 @@ Page({
             product.menuId = menuItem.id;
             productArr.push(product);
           });
-        };
+        }
         productArr.forEach(function (product, index) {
           // 初始化时，默认规格、属性均选择第一个
           product.formats[0].selected = true;
@@ -129,9 +138,33 @@ Page({
     qcloud.request({
       url: "/business/fullreduce/" + config.businessId,
       method: "GET",
-      success: function(res){
+      success: function (res) {
         that.setData({
           fullReduceList: res.data
+        });
+      }
+    });
+
+    // 加载商户优惠券
+    qcloud.request({
+      url: "/business/coupon/" + config.businessId,
+      method: "GET",
+      success: function (res) {
+        var couponList = res.data;
+        // 加载用户优惠券
+        qcloud.request({
+          url: `/user/userCoupon/${session.userinfo.id}`,
+          method: "GET",
+          success: function (res) {
+            var myCoupon = res.data,
+              unreceived = [];
+            wx.setStorageSync("myCoupon", myCoupon);
+            that.data.couponList = couponList;
+            that.data.myCoupon = myCoupon;
+            that.data.unreceived = unreceived;
+            if (couponList.length === 0) return;
+            that.couponHandler();
+          }
         });
       }
     });
@@ -140,13 +173,14 @@ Page({
     var session = qcloud.getSession();
     return {
       title: session.business.name,
-      path: "/pages/main/main?userid=" + session.userinfo.id
+      path: "/pages/launch/launch?userid=" + session.userinfo.id
     };
   },
   onShow: function () {
     var self = this;
-    setTimeout(function () {
 
+    // 每次显示，均重新计算购物车数据
+    setTimeout(function () {
       var business = qcloud.getSession().business;
       var submitText = "去结算",
         isBalance = true,
@@ -169,6 +203,7 @@ Page({
       });
       self.loadData();
     }, 1000);
+    this.couponHandler();
   },
   loadData: function () {
     var menuArr = wx.getStorageSync("businessMenu");
@@ -195,6 +230,26 @@ Page({
       cartQuantity: cartQuantity
     });
     this.calcSaleText();
+  },
+  couponHandler: function () {
+    if (this.data.isClosedCoupon) return; // 如果已经关闭过优惠券窗口，则不再弹出
+    if (!this.data.couponList || !this.data.myCoupon || !this.data.unreceived) return;
+    var userinfo = qcloud.getSession().userinfo;
+    if (!userinfo.isRegister) return; // 用户没有注册，则不弹出
+
+    var self = this;
+    this.data.couponList.forEach(a => {
+      var coupons = this.data.myCoupon.filter(b => b.couponId == a.id);
+      if (coupons.length === 0) {
+        self.data.unreceived.push(a);
+      }
+    });
+    if (self.data.unreceived.length > 0) {
+      self.setData({
+        isShowCoupon: true
+      });
+      wx.hideTabBar();
+    }
   },
   catLicense: function () {
     wx.navigateTo({
@@ -237,7 +292,7 @@ Page({
   },
   turnMenu: function (e) {
     var menu = this.data.menu[e.currentTarget.dataset.index];
-    var currentToView = "scroll" + menu.id + 0;
+    var currentToView = "scroll_" + menu.id + '_0';
     this.setData({
       selected: e.currentTarget.dataset.index,
       foodToView: currentToView
@@ -276,6 +331,33 @@ Page({
     });
   },
   scrollFoodList: function (e) {
+    var menus = this.data.menu,
+      self = this;
+    var query = wx.createSelectorQuery().select(".food");
+    query._single = false;
+    query.boundingClientRect(function (elements) {
+      if (elements.length === 0) return;
+      var id;
+      elements.some(ele => {
+        if (ele.top - 70 >= 0) {
+          id = ele.id.split('_')[1];
+          menus.some((a, index) => {
+            if (a.id == id) {
+              if (self.data.selected != index) {
+                self.setData({
+                  selected: index
+                });
+              }
+              return true;
+            }
+          });
+          return true;
+        }
+      });
+    }).exec();
+
+  },
+  showFoodDetail: function () {
 
   },
   showCartAnimation: function (isShow) {
@@ -330,12 +412,17 @@ Page({
     });
   },
   showFormat: function (e) { // 显示规格、属性选择框
-    this.data.productIndex = e.currentTarget.dataset.index;
     this.setData({
       curQuantity: this.calcQuantity(),
       showDetail: true,
-      productIndex: e.currentTarget.dataset.index
+      productIndex: !!e ? e.currentTarget.dataset.index : this.data.productIndex
     });
+  },
+  showFormatAtDetail: function(){
+    this.setData({
+      isShowProductDetail: false
+    });
+    this.showFormat();
   },
   closeFormat: function () { // 关闭规格、属性选择框
     this.setData({
@@ -371,10 +458,9 @@ Page({
           });
         }
       });
-
       return;
     }
-    var index = e.currentTarget.dataset.index;
+    var index = !!e ? e.currentTarget.dataset.index : this.data.productIndex;
     if (Object.prototype.toString.call(index) == "[object Number]") {
       this.data.productIndex = index;
     } else {
@@ -385,6 +471,12 @@ Page({
       curQuantity: this.data.curQuantity,
       productIndex: this.data.productIndex
     });
+  },
+  addAtDetail: function(){
+    this.setData({
+      isShowProductDetail: false
+    });
+    this.add();
   },
   remove: function (e) {
     var index = e.currentTarget.dataset.index;
@@ -491,6 +583,51 @@ Page({
       }
     });
   },
+  OpenCoupon: function () {
+    if (!this.data.unreceived || this.data.unreceived.length == 0) return;
+    var ids = this.data.unreceived.map(a => a.id);
+    util.showBusy("请稍等...");
+    var user = qcloud.getSession().userinfo,
+      self = this;
+    qcloud.request({
+      url: "/user/receiveCoupons/" + user.id,
+      data: this.data.unreceived,
+      method: "POST",
+      success: function (res) {
+        wx.hideToast();
+        res.data.forEach(a => {
+          self.data.myCoupon.push(a);
+        });
+        wx.setStorageSync("myCoupon", self.data.myCoupon);
+        self.closeCoupon();
+        wx.navigateTo({
+          url: "/pages/user/mycoupon/mycoupon"
+        });
+      }
+    });
+  },
+  closeCoupon: function () {
+    this.setData({
+      isShowCoupon: false,
+      isClosedCoupon: true
+    });
+    wx.showTabBar();
+  },
+  productDetail: function(e){
+    var index = e.currentTarget.dataset.index;
+    var product = this.data.productList[index];
+    this.data.productIndex = index;
+    console.log(product);
+    this.setData({
+      isShowProductDetail: true,
+      curProduct: product
+    });
+  },
+  closeProduct: function(){
+    this.setData({
+      isShowProductDetail: false
+    });
+  },
   // 以下均为方法，不代表各类事件
   cartHandler: function (flag) {
     var self = this,
@@ -593,19 +730,23 @@ Page({
     });
     this.calcSaleText();
   },
-  calcSaleText: function(){
-    var cartList = this.data.cartList, fullReduceList = this.data.fullReduceList.slice(), nowItem;
-    if(cartList.length === 0 || fullReduceList.length === 0) return;
-    var total = 0, list = fullReduceList.reverse(), text = "";
-    cartList.forEach(function(a) {
-        total += a.quantity * a.price;
+  calcSaleText: function () {
+    var cartList = this.data.cartList,
+      fullReduceList = this.data.fullReduceList.slice(),
+      nowItem;
+    if (cartList.length === 0 || fullReduceList.length === 0) return;
+    var total = 0,
+      list = fullReduceList.reverse(),
+      text = "";
+    cartList.forEach(function (a) {
+      total += a.quantity * a.price;
     });
     total = qcloud.utils.getNumber(total, 2);
-    list.some(function(item, index){
-      if(total >= item.minPrice){
+    list.some(function (item, index) {
+      if (total >= item.minPrice) {
         text += "已满" + item.minPrice + "元，结算减" + item.reduceMoney + "元";
         nowItem = item;
-        if(index > 0) {
+        if (index > 0) {
           var pre = list[index - 1];
           var addMoney = qcloud.utils.getNumber(pre.minPrice - total, 2);
           text += "；再加" + addMoney + "元，减" + pre.reduceMoney + "元";
@@ -613,7 +754,7 @@ Page({
         return true;
       }
     });
-    if(!text){
+    if (!text) {
       var lastItem = list[list.length - 1];
       text += "已购金额" + total + "元，再加" + qcloud.utils.getNumber(lastItem.minPrice - total, 2) + "元，减" + lastItem.reduceMoney + "元";
     }

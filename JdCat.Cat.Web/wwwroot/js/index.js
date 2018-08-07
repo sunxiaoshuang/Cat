@@ -67,6 +67,25 @@
     }
     pageObj.method.hashchange();
 
+    // 店铺营业状态
+    $('#cbClose').bootstrapSwitch({
+        onSwitchChange: function (e, state) {
+            var state = !state;
+            if (pageData.business.isClose === state) return;
+            pageData.business.isClose = state;
+            $.loading();
+            axios.get(`/business/changeClose?isClose=${state}`)
+                .then(function (res) {
+                    $.loaded();
+                    if (!res.data.success) {
+                        $.alert(res.data.msg);
+                        return;
+                    }
+                    $.alert(state ? "暂停营业" : "营业中", "success");
+                });
+        }
+    }).bootstrapSwitch("state", !pageData.business.isClose);
+
     // 新订单提醒
     var ws = new WebSocket(pageData.orderUrl + "?id=" + pageData.business.id);
     var newOrder = document.getElementById("newOrder");
@@ -91,15 +110,13 @@
             .catch(function (msg) {
                 $.alert(msg);
             });
-
-
         
     };
     ws.onopen = function (a) {
         console.log("服务已连接", a);
     };
     ws.onclose = function (a) {
-        $.primary(a.reason || "新订单提醒异常，请刷新后重试");
+        $.primary(a.reason || "新订单提醒异常，请<span style='color: red;font-size: 120%;'>刷新页面</span>后重试");
     };
 
     var msg = new Vue({

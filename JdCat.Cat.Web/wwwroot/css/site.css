@@ -419,8 +419,11 @@ p {
     margin: 0 30px;
 }
 
-.mainframe .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .mainframe .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
-    background-color: #ea7042;
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
+    background-color: #ea7042 !important;
+}
+#wrapper .bootstrap-switch {
+    border: 1px solid #fff;
 }
 
 h1.page-header small {
@@ -1920,6 +1923,11 @@ ul.select-type {
         ul.select-type li.active {
             background-color: #ea7042;
             color: #fff;
+        }
+        ul.select-type li.doing {
+            background-color: #fff;
+            border: 1px solid #999;
+            color: #999;
         }
 
             ul.select-type li.active:hover {

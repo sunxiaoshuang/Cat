@@ -47,9 +47,20 @@
             </view>
         </picker>
     </view>
+    <view class="deliver" wx:if="{{couponQuantity > 0}}" bindtap="selectCoupon">
+        <view style="display: flex; flex-grow: 1;flex-flow: row nowrap;">
+            <view class="slide-image">惠</view>
+            <text>优惠券</text>
+        </view>
+        <view class="no-coupon" wx:if="{{!coupon.id}}">{{couponQuantity + "张可用"}}</view>
+        <view class="price" wx:else>- ￥{{coupon.value}}</view>
+        <view>
+            <image src="../../images/icon/right-1.png" style="width: 60rpx;height: 60rpx;"></image>
+        </view>
+    </view>
     <view class="deliver" wx:if="{{isSaleFullReduce}}">
         <view style="display:flex;">
-            <image src="../../images/icon/jian-2.png" style="width: 40rpx;height: 40rpx;"></image>
+            <view class="slide-image">减</view>
             <text>满减优惠</text>
         </view>
         <view class="price">- ￥{{saleFullReduce.reduceMoney}}</view>

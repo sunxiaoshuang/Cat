@@ -132,14 +132,20 @@
                                         <div class="col-md-4 col-xs-6">
                                             <p>订单类型： <span v-html="category(order.category)"></span></p>
                                         </div>
-                                        <div class="col-md-4 col-xs-6">
-                                            <p>支付方式： <span v-html="paymentType(order.paymentType)"></span></p>
-                                        </div>
-                                        <div class="col-md-4 col-xs-6">
+                                        <div class="col-md-12 col-xs-6">
                                             <p>微信支付流水号： <span v-text="order.wxPayCode"></span></p>
                                         </div>
                                         <div class="col-md-4 col-xs-6">
-                                            <p>应付款：<i class="fa fa-jpy"></i> <span v-text="order.price"></span></p>
+                                            <p>满减活动：- <i class="fa fa-jpy"></i> <span v-text="!order.saleFullReduce ? 0 : order.saleFullReduce.reduceMoney"></span></p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>优惠券：- <i class="fa fa-jpy"></i> <span v-text="!order.saleCouponUser ? 0 : order.saleCouponUser.value"></span></p>
+                                        </div>
+                                        <div class="col-md-4 col-xs-6">
+                                            <p>应付款：<i class="fa fa-jpy"></i> <span v-text="order.oldPrice"></span></p>
+                                        </div>
+                                        <div class="col-md-4 col-md-offset-8 col-xs-6">
+                                            <p style="color:red;">实付款：<i class="fa fa-jpy"></i> <span v-text="order.price"></span></p>
                                         </div>
                                     </div>
                                     <div class="row">

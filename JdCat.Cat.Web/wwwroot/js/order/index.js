@@ -27,8 +27,10 @@
             },
             curType: null,              // 当前选择的订单状态
             sendTypes: [
-                { name: "达达配送", selected: false, type: 0 },
-                { name: "自己配送", selected: false, type: 1 }
+                { name: "达达配送", selected: false, type: 0, doing: false },
+                { name: "蜂鸟配送", selected: false, type: 0, doing: true },
+                { name: "点我达配送", selected: false, type: 0, doing: true },
+                { name: "自己配送", selected: false, type: 1, doing: false }
             ],
             curOrder: null,             // 当前选择配送的订单
             printerCode: localStorage.getItem("defaultPrinter"),          // 当前选择的打印机编码
@@ -193,6 +195,10 @@
                 });
             },
             selectSendType: function (item) {                           // 选择配送类别
+                if (item.doing) {
+                    $.alert("工程师正在努力对接中...", "warning");
+                    return;
+                }
                 this.sendTypes.forEach(a => a.selected = false);
                 item.selected = true;
                 this.curSendType = item;

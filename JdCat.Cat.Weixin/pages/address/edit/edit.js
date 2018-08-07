@@ -40,27 +40,30 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    var id = options.id, 
-        self = this, 
-        addressList = wx.getStorageSync("addressList");
-    if(id){
+    wx.setNavigationBarTitle({
+      title: "编辑地址"
+    });
+    var id = options.id,
+      self = this,
+      addressList = wx.getStorageSync("addressList");
+    if (id) {
       self.setData({
         entity: addressList.filter(a => a.id == id)[0],
         isModify: true
       });
     }
   },
-  blurReceiver: function(e){
+  blurReceiver: function (e) {
     var entity = this.data.entity;
     entity.receiver = e.detail.value;
     this.setData({
       entity: entity
     });
   },
-  blurPhone: function(e){
-    if(!e.detail.value) return;
+  blurPhone: function (e) {
+    if (!e.detail.value) return;
     // 验证手机号
-    if(!util.regExp.phone.test(e.detail.value)){
+    if (!util.regExp.phone.test(e.detail.value)) {
       util.showError("请输入正确的手机号码");
       this.setData({
         phoneFocus: true
@@ -74,7 +77,7 @@ Page({
       phoneFocus: false
     });
   },
-  blurDetailInfo: function(e){
+  blurDetailInfo: function (e) {
     var entity = this.data.entity;
     entity.detailInfo = e.detail.value;
     this.setData({
@@ -102,8 +105,8 @@ Page({
           entity: address
         });
       },
-      fail: function(err){
-        if(self.data.toSetting) {
+      fail: function (err) {
+        if (self.data.toSetting) {
           wx.openSetting();
         } else {
           self.data.toSetting = true;
@@ -112,25 +115,28 @@ Page({
     });
   },
   saveAddress: function () {
-    var self = this, userId = qcloud.getSession().skey, entity = this.data.entity, url;
-    if(!entity.receiver){
+    var self = this,
+      userId = qcloud.getSession().skey,
+      entity = this.data.entity,
+      url;
+    if (!entity.receiver) {
       util.showError("请输入联系人姓名");
       return;
     }
-    if(!entity.phone){
+    if (!entity.phone) {
       util.showError("请输入联系人手机号码");
       return;
     }
-    if(!entity.mapInfo){
+    if (!entity.mapInfo) {
       util.showError("请选择收货地址");
       return;
     }
-    if(!entity.detailInfo){
+    if (!entity.detailInfo) {
       util.showError("请输入门牌号");
       return;
     }
     util.showBusy("loading");
-    if(this.data.isModify){
+    if (this.data.isModify) {
       url = "/user/updateAddress/" + self.data.entity.id;
     } else {
       url = "/user/address/" + userId;
@@ -140,19 +146,20 @@ Page({
       method: this.data.isModify ? "put" : "post",
       data: self.data.entity,
       login: !this.data.isModify,
-      success: function(res){
+      success: function (res) {
         wx.hideToast();
-        if(res.data.success){
+        if (res.data.success) {
           util.showSuccess("保存成功");
-          var addressList = wx.getStorageSync("addressList"), index, address;
+          var addressList = wx.getStorageSync("addressList"),
+            index, address;
           addressList.forEach((a, b) => {
-            if(a.id == res.data.data.id){
+            if (a.id == res.data.data.id) {
               address = a;
               index = b;
               return false;
             }
           });
-          if(!address){
+          if (!address) {
             addressList.push(res.data.data);
           } else {
             addressList.splice(index, 1, res.data.data);

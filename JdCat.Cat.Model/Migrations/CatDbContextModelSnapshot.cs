@@ -21,6 +21,7 @@ namespace JdCat.Cat.Model.Migrations
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011")
                 .HasAnnotation("Relational:Sequence:shared.FormatNumbers", "'FormatNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
                 .HasAnnotation("Relational:Sequence:shared.OrderNumbers", "'OrderNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:shared.SaleCouponNumbers", "'SaleCouponNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
                 .HasAnnotation("Relational:Sequence:shared.StoreNumbers", "'StoreNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -316,6 +317,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<double>("Lng");
 
+                    b.Property<decimal?>("OldPrice");
+
                     b.Property<string>("OrderCode")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 6) + dbo.fn_right_padding(CAST(floor(rand()*100000) as varchar(5)), 5)");
@@ -336,6 +339,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Remark");
 
+                    b.Property<int?>("SaleCouponUserId");
+
                     b.Property<int?>("SaleFullReduceId");
 
                     b.Property<int>("Status");
@@ -353,6 +358,10 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("BusinessId");
+
+                    b.HasIndex("SaleCouponUserId")
+                        .IsUnique()
+                        .HasFilter("[SaleCouponUserId] IS NOT NULL");
 
                     b.HasIndex("SaleFullReduceId");
 
@@ -551,6 +560,88 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasIndex("BusinessId");
 
                     b.ToTable("ProductType","dbo");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SaleCoupon", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<int>("Consumed");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<DateTime?>("EndDate");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<bool>("IsDelete");
+
+                    b.Property<double>("MinConsume");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Quantity");
+
+                    b.Property<int>("Received");
+
+                    b.Property<DateTime?>("StartDate");
+
+                    b.Property<int>("Stock");
+
+                    b.Property<int?>("ValidDay");
+
+                    b.Property<double>("Value");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("SaleCoupon","dbo");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SaleCouponUser", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("dbo.fn_right_padding(floor(rand()*10000000), 6) + cast(NEXT VALUE FOR shared.SaleCouponNumbers as varchar(max)) + dbo.fn_right_padding(floor(rand()*100000), 4)");
+
+                    b.Property<int>("CouponId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<DateTime?>("EndDate");
+
+                    b.Property<double>("MinConsume");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int?>("OrderId");
+
+                    b.Property<DateTime?>("StartDate");
+
+                    b.Property<int>("Status");
+
+                    b.Property<DateTime?>("UseTime");
+
+                    b.Property<int>("UserId");
+
+                    b.Property<int?>("ValidDay");
+
+                    b.Property<double>("Value");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CouponId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SaleCouponUser","dbo");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.SaleFullReduce", b =>
@@ -754,6 +845,10 @@ namespace JdCat.Cat.Model.Migrations
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("JdCat.Cat.Model.Data.SaleCouponUser", "SaleCouponUser")
+                        .WithOne("Order")
+                        .HasForeignKey("JdCat.Cat.Model.Data.Order", "SaleCouponUserId");
+
                     b.HasOne("JdCat.Cat.Model.Data.SaleFullReduce", "SaleFullReduce")
                         .WithMany("Orders")
                         .HasForeignKey("SaleFullReduceId");
@@ -825,10 +920,31 @@ namespace JdCat.Cat.Model.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("JdCat.Cat.Model.Data.SaleFullReduce", b =>
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SaleCoupon", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
                         .WithMany()
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SaleCouponUser", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.SaleCoupon", "Coupon")
+                        .WithMany("CouponUsers")
+                        .HasForeignKey("CouponId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("JdCat.Cat.Model.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SaleFullReduce", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany("SaleFullReduces")
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
