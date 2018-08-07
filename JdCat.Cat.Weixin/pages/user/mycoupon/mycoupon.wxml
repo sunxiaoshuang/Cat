@@ -1,0 +1,102 @@
+<wxs module="common" src="../../wxs/filters/common.wxs"></wxs>
+<view class="header">
+    <view wx:for="{{nav}}" wx:key="{{item.sort}}" class="title {{item.sort == pageIndex ? 'selected' : ''}}" data-index="{{item.sort}}" bindtap="turnPage">
+        <text>{{item.name}} ({{item.num}})</text>
+    </view>
+</view>
+<swiper class="swiper" current-item-id="{{pageIndex}}" bindchange="change">
+    <swiper-item item-id="1">
+        <scroll-view wx:if="{{notUse.length > 0}}" scroll-y="{{true}}" style="height: 100%;">
+            <block wx:for="{{notUse}}" wx:key="{{item.id}}">
+                <view class="coupon">
+                    <view class='amount'>
+                        <text>
+                            <text>￥</text>
+                            <text style="font-size: 200%;">{{item.value}}</text>
+                        </text>
+                    </view>
+                    <view class="description">
+                        <text style="margin-bottom: 20rpx;">{{common.couponLimit(item)}}</text>
+                        <text style="color: #999;font-size: 80%;">{{common.couponValidDate(item)}}</text>
+                    </view>
+                    <view class="use">
+                        <button plain="{{true}}" type="primary" size="mini" bindtap="use">
+                            立即使用
+                        </button>
+                    </view>
+                </view>
+            </block>
+        </scroll-view>
+        <view wx:else>
+            <view class="coupon">
+                <view class='amount'></view>
+                <view class="description">
+                    <text style="font-size: 120%;">无记录</text>
+                </view>
+                <view class="use"></view>
+            </view>
+        </view>
+    </swiper-item>
+    <swiper-item item-id="2">
+        <scroll-view wx:if="{{used.length > 0}}" scroll-y="{{true}}" style="height: 100%;">
+            <block wx:for="{{used}}" wx:key="{{item.id}}">
+                <view class="coupon">
+                    <view class='amount'>
+                        <text>
+                            <text>￥</text>
+                            <text style="font-size: 200%;">{{item.value}}</text>
+                        </text>
+                    </view>
+                    <view class="description">
+                        <text style="margin-bottom: 20rpx;">{{common.couponLimit(item)}}</text>
+                    </view>
+                    <view class="use">
+                        <button plain="{{true}}" type="primary" size="mini" disabled="{{true}}">
+                            已使用
+                        </button>
+                    </view>
+                </view>
+            </block>
+        </scroll-view>
+        <view wx:else>
+            <view class="coupon">
+                <view class='amount'></view>
+                <view class="description">
+                    <text style="font-size: 120%;">无记录</text>
+                </view>
+                <view class="use"></view>
+            </view>
+        </view>
+    </swiper-item>
+    <swiper-item item-id="3">
+        <scroll-view wx:if="{{expire.length > 0}}" scroll-y="{{true}}" style="height: 100%;">
+            <block wx:for="{{expire}}" wx:key="{{item.id}}">
+                <view class="coupon">
+                    <view class='amount'>
+                        <text>
+                            <text>￥</text>
+                            <text style="font-size: 200%;">{{item.value}}</text>
+                        </text>
+                    </view>
+                    <view class="description">
+                        <text style="margin-bottom: 20rpx;">{{common.couponLimit(item)}}</text>
+                    </view>
+                    <view class="use">
+                        <button plain="{{true}}" type="primary" size="mini" disabled="{{true}}">
+                            已过期
+                        </button>
+                    </view>
+                </view>
+            </block>
+        </scroll-view>
+        <view wx:else>
+            <view class="coupon">
+                <view class='amount'></view>
+                <view class="description">
+                    <text style="font-size: 120%;">无记录</text>
+                </view>
+                <view class="use"></view>
+            </view>
+        </view>
+    </swiper-item>
+</swiper>

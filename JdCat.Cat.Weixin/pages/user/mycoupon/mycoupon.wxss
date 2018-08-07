@@ -1,0 +1,69 @@
+page {
+    background-color: #f0f0f0;
+    height: 100%;
+    overflow: hidden;
+}
+.header {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    background-color: #fff;
+}
+
+.header .title {
+    height: 70rpx;
+    min-width: 180rpx;
+    line-height: 70rpx;
+    /* font-size: 30rpx; */
+    text-align: center;
+    white-space: nowrap;
+}
+
+.header .title.selected {
+    border-bottom: 7rpx solid #EA7042;
+    font-weight: 600;
+}
+.swiper {
+    height: 100%;
+}
+.coupon {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: stretch;
+    align-items: center;
+    min-height: 200rpx;
+    background-color: #fff;
+    margin: 20rpx;
+}
+.coupon .amount {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: red;
+    height: 100%;
+    width: 150rpx;
+}
+.coupon .description {
+    flex-grow: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+.coupon .description text {
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 90%;
+}
+.coupon .use {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 230rpx;
+}
+.coupon .use button {
+    border: 1px solid #EA7042;
+    color: #EA7042;
+    font-size: 70%;
+}

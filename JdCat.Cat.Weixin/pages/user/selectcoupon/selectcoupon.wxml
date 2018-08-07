@@ -1,0 +1,29 @@
+<wxs module="common" src="../../wxs/filters/common.wxs"></wxs>
+<view class="header" bindtap="noSelect">
+    <view class="title">不使用优惠券</view>
+    <view class="check">
+        <icon type="success" size="18" color="{{noChecked ? '' : 'gray'}}" />
+    </view>
+</view>
+<view style="margin-left: 20rpx;color: #333;font-size: 90%;">
+    <text>共</text>
+    <text style="color: #EA7042">{{quantity}}</text>
+    <text>张优惠券可用</text>
+</view>
+<view class="coupons">
+    <view class="coupon" wx:for="{{coupons}}" wx:key="" bindtap="select" data-index="{{index}}">
+        <view class='amount'>
+            <text>
+                <text>￥</text>
+                <text style="font-size: 200%;">{{item.value}}</text>
+            </text>
+        </view>
+        <view class="description">
+            <text style="margin-bottom: 20rpx;">{{common.couponLimit(item)}}</text>
+            <text style="color: #999;">{{common.couponValidDate(item)}}</text>
+        </view>
+        <view class="check">
+            <icon type="success" size="18" color="{{item.checked ? '' : 'gray'}}" />
+        </view>
+    </view>
+</view>
