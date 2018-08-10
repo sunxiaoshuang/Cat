@@ -168,12 +168,12 @@ namespace JdCat.Cat.Repository
             var canReceive = new List<SaleCoupon>();
             foreach (var item in coupons)
             {
-                if(item.Quantity <= 0)
+                if (item.Quantity <= 0)
                 {
                     canReceive.Add(item);
                     continue;
                 }
-                if(item.Stock > 0)
+                if (item.Stock > 0)
                 {
                     canReceive.Add(item);
                 }
@@ -182,7 +182,8 @@ namespace JdCat.Cat.Repository
             var list = new List<SaleCouponUser>();
             foreach (var coupon in canReceive)
             {
-                var item = new SaleCouponUser {
+                var item = new SaleCouponUser
+                {
                     Name = coupon.Name,
                     Value = coupon.Value,
                     Status = CouponStatus.NotUse,
@@ -193,7 +194,7 @@ namespace JdCat.Cat.Repository
                     UserId = user.ID,
                     CouponId = coupon.ID
                 };
-                if(coupon.Quantity > 0)
+                if (coupon.Quantity > 0)
                 {
                     coupon.Stock = coupon.Stock - 1;
                     if (coupon.Stock < 0) coupon.Stock = 0;
@@ -209,6 +210,13 @@ namespace JdCat.Cat.Repository
 
             Context.SaveChanges();
             return list;
+        }
+
+
+        public List<User> GetUsers(Business business)
+        {
+            var users = Context.Users.Where(user => user.BusinessId == business.ID);
+            return users.ToList();
         }
     }
 }

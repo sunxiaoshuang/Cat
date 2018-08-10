@@ -307,7 +307,7 @@
         <text>×</text>
     </view>
 </view>
-<view class="coupon" wx:if="{{isShowProductDetail}}">
+<view class="coupon" animation="{{animationData}}" wx:if="{{isShowProductDetail}}">
     <view class="coupon-shadow"></view>
     <view class="product-content">
         <view class="product-img">

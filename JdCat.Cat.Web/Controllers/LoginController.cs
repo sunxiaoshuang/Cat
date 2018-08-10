@@ -27,12 +27,34 @@ namespace JdCat.Cat.Web.Controllers
         {
             ViewBag.CompanyName = _appData.Name;
             ViewBag.type = Request.Query["type"];
+            ViewBag.isVerifyCode = HttpContext.Session.Get<string>("VerificationCode") != null;
             return View();
         }
 
-        public IActionResult Login(string username, string pwd)
+        public IActionResult Code()
+        {
+            var random = new Random();
+            var code = string.Empty;
+            for (int i = 0; i < 4; i++)
+            {
+                code += random.Next(0, 9);
+            }
+            HttpContext.Session.Set("VerificationCode", code);
+            byte[] buffer = UtilHelper.GenerateVerificationCode(code);
+            return File(buffer, "image/png");
+        }
+
+        public IActionResult Login(string username, string pwd, string code)
         {
             var result = new JsonData();
+            if(code != null)
+            {
+                if(HttpContext.Session.Get<string>("VerificationCode") != code)
+                {
+                    result.Msg = "验证码错误";
+                    return Json(result);
+                }
+            }
             var business = _service.GetBusiness(a => (a.Code == username || a.Mobile == username) && a.Password == UtilHelper.MD5Encrypt(pwd));
             if (business == null)
             {
