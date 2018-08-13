@@ -27,29 +27,63 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <span class="title">会员列表</span>
-                        @*<a asp-controller="Sale" asp-action="Index" class="text-primary my-back1 pull-right">返回</a>*@
-
-                        @*<a class="btn btn-primary my-back2" asp-controller="Sale" asp-action="Index">
-                            <i class="fa fa-backward inline-middle" style="font-size: 16px; color: #fff;"></i>
-                            <span class="inline-middle" style="color: #fff;">返回</span>
-                        </a>*@
                     </h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-md-8">
-                            <table class="table table-bordered table-striped table-sale">
+                        <div class="col-md-12">
+                            <table class="table table-bordered table-striped" style="min-height: 400px;">
                                 <thead>
-
+                                    <tr>
+                                        <th>序号</th>
+                                        <th>头像</th>
+                                        <th>昵称</th>
+                                        <th>手机号</th>
+                                        <th>性别</th>
+                                        <th>注册时间</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-
+                                    <tr v-for="(item, index) in list">
+                                        <td v-html="index + 1"></td>
+                                        <td>
+                                            <img :src="item.avatarUrl" style="width: 100px;height: 100px;" />
+                                        </td>
+                                        <td v-html="item.nickName"></td>
+                                        <td v-html="phoneFilter(item)"></td>
+                                        <td v-html="genderFilter(item)"></td>
+                                        <td v-html="item.createTime"></td>
+                                    </tr>
                                 </tbody>
                                 <tfoot v-if="list.length === 0">
-
+                                    <tr>
+                                        <td colspan="6">
+                                            暂无会员
+                                        </td>
+                                    </tr>
                                 </tfoot>
                             </table>
                         </div>
+                    </div>
+
+                    <div class="text-center" v-if="pageCount > 1">
+                        <ul class="pagination cat-pagination pagination-sm">
+                            <li v-bind:class="{'disabled': pageIndex === 1}" v-on:click="prev()">
+                                <a>
+                                    <i class="fa fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li v-for="num in pageCount" v-bind:class="{'active': num === pageIndex}" v-on:click="page(num)">
+                                <a>
+                                    <span v-text="num"></span>
+                                </a>
+                            </li>
+                            <li v-bind:class="{'disabled': pageIndex === pageCount}" v-on:click="next()">
+                                <a>
+                                    <i class="fa fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

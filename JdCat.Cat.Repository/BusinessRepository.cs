@@ -312,6 +312,23 @@ group by CreateTime");
             }
             return result;
         }
+        
+        public IEnumerable<SaleProductDiscount> GetDiscounts(Business business)
+        {
+            return null;
+        }
+        public JsonData CreateDiscount(SaleProductDiscount discount)
+        {
+            return null;
+        }
+        public JsonData DeleteDiscount(SaleProductDiscount discount)
+        {
+            return null;
+        }
+        public JsonData UpdateDiscount(SaleProductDiscount discount)
+        {
+            return null;
+        }
 
 
         /// <summary>

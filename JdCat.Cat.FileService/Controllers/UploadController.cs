@@ -12,7 +12,7 @@ namespace JdCat.Cat.FileService.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    public class UploadController : Controller
+    public class UploadController : BaseController
     {
 
         [HttpPost("Logo")]

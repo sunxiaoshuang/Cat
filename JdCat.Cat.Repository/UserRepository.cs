@@ -213,10 +213,9 @@ namespace JdCat.Cat.Repository
         }
 
 
-        public List<User> GetUsers(Business business)
+        public IEnumerable<User> GetUsers(Business business)
         {
-            var users = Context.Users.Where(user => user.BusinessId == business.ID);
-            return users.ToList();
+            return Context.Users.Where(user => user.BusinessId == business.ID && user.IsRegister);
         }
     }
 }

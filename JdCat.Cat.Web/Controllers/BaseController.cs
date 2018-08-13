@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using log4net;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -36,6 +37,15 @@ namespace JdCat.Cat.Web.Controllers
             this.AppData = appData;
             this.Service = service;
 
+        }
+
+        private static readonly ILog log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(BaseController<T, TEntity>));
+        public ILog Log
+        {
+            get
+            {
+                return log;
+            }
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)

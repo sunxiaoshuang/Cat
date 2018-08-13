@@ -22,7 +22,7 @@
                     $.alert("请上传商户LOGO");
                     return;
                 }
-                if (!entity.name || !entity.address || !entity.contact || !entity.mobile || !entity.freight || !entity.businessLicense || !entity.businessLicenseImage || !entity.lng || !entity.lat) {
+                if (!entity.name || !entity.address || !entity.contact || !entity.mobile || !entity.businessLicense || !entity.businessLicenseImage || !entity.lng || !entity.lat) {
                     $.alert("请将信息填写完整");
                     this.showError = true;
                     return;

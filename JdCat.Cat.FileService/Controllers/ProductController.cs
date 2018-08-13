@@ -11,7 +11,7 @@ namespace JdCat.Cat.FileService.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
         [HttpPost]
         public IActionResult Post([FromBody]ProductImage image, [FromServices]IHostingEnvironment hosting)

@@ -44,6 +44,7 @@
     <Compile Remove="Migrations\20180719085129_Modify_ProductType_ProductId.cs" />
     <Compile Remove="Migrations\20180719085939_Modify_ProductType_ProductId.cs" />
     <Compile Remove="Migrations\20180802054832_Modify_Coupon_Status.cs" />
+    <Compile Remove="Migrations\20180810190536_Add_SaleProductDiscount.cs" />
   </ItemGroup>
 
   <ItemGroup>

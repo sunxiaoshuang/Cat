@@ -76,6 +76,7 @@ namespace JdCat.Cat.IRepository
         bool SetDefaultPrinter(Business business);
 
         #region 报表类方法
+
         /// <summary>
         /// 获取指定日期内商户的每日订单统计
         /// </summary>
@@ -97,6 +98,7 @@ namespace JdCat.Cat.IRepository
         #endregion
 
         #region 营销类方法
+
         /// <summary>
         /// 根据id获取满减实体对象
         /// </summary>
@@ -115,7 +117,6 @@ namespace JdCat.Cat.IRepository
         /// <param name="entity"></param>
         /// <returns></returns>
         JsonData UpdateFullReduce(SaleFullReduce entity);
-
         /// <summary>
         /// 获取商户满减活动列表
         /// </summary>
@@ -128,7 +129,6 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         JsonData DeleteFullReduce(int id);
-
         /// <summary>
         /// 创建优惠券
         /// </summary>
@@ -141,7 +141,6 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         SaleCoupon GetCouponById(int id);
-
         /// <summary>
         /// 获取商户优惠券列表
         /// </summary>
@@ -166,6 +165,32 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         JsonData DownCoupon(int id);
+        /// <summary>
+        /// 根据商户获取折扣活动
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        IEnumerable<SaleProductDiscount> GetDiscounts(Business business);
+        /// <summary>
+        /// 创建折扣活动
+        /// </summary>
+        /// <param name="discount"></param>
+        /// <returns></returns>
+        JsonData CreateDiscount(SaleProductDiscount discount);
+        /// <summary>
+        /// 删除折扣活动
+        /// </summary>
+        /// <param name="discount"></param>
+        /// <returns></returns>
+        JsonData DeleteDiscount(SaleProductDiscount discount);
+        /// <summary>
+        /// 修改折扣活动
+        /// </summary>
+        /// <param name="discount"></param>
+        /// <returns></returns>
+        JsonData UpdateDiscount(SaleProductDiscount discount);
+
+
         #endregion
 
     }
