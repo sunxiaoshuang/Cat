@@ -7,6 +7,7 @@ using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using JdCat.Cat.Common;
+using log4net;
 
 namespace JdCat.Cat.Repository
 {
@@ -75,7 +76,6 @@ namespace JdCat.Cat.Repository
         {
             return _context.Set<T>().FirstOrDefault(predicate) != null;
         }
-
         public List<TModel> ExecuteReader<TModel>(string search) where TModel : new()
         {
             var conn = Context.Database.GetDbConnection();
@@ -89,8 +89,11 @@ namespace JdCat.Cat.Repository
             conn.Close();
             return dt.GetList<TModel>();
         }
-
-
+        private static readonly ILog _log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(BaseRepository<T>));
+        /// <summary>
+        /// 日志对象
+        /// </summary>
+        public ILog Log => _log;
 
     }
 }

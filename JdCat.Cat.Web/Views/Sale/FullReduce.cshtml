@@ -43,8 +43,9 @@
                             <label class="control-label col-md-1">
                                 <span class="require">活动名称：</span>
                             </label>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <input type="text" v-model.trim="entity.name" class="form-control" />
+                                <span class="text-danger">此名称将会在小程序活动列表中显示，如：（开业酬宾满20减5）</span>
                             </div>
                         </div>
                         <div class="form-group" v-bind:class="{'has-error': (showError && !(entity.startDate && entity.endDate) && !entity.isForeverValid)}">

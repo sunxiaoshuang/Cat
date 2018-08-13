@@ -194,7 +194,12 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 满减活动
         /// </summary>
-        public ICollection<SaleFullReduce> SaleFullReduces { get; set; }
+        public virtual ICollection<SaleFullReduce> SaleFullReduces { get; set; }
+        /// <summary>
+        /// 商品折扣活动
+        /// </summary>
+        public virtual ICollection<SaleProductDiscount> SaleProductDiscounts { get; set; }
+
 
         public object Clone()
         {

@@ -15,7 +15,8 @@
 @section Scripts {
     <script>
         var pageObj = {
-            type: "@ViewBag.type"
+            type: "@ViewBag.type",
+            isVerifyCode: @(ViewBag.isVerifyCode == true ? "true" : "false")
         }
     </script>
     <environment include="Development">
@@ -58,6 +59,12 @@
                             <i class="fa fa-key"></i>
                         </span>
                         <input class="form-control login-input" id="txtPwd" type="password" placeholder="密码" />
+                    </div>
+                    <div id="div_code" class="hide">
+                        <input class="form-control" style="display: inline-block;width: 70%;" id="txtCode" type="text" placeholder="请输入验证码" />
+                        <img class="verification-code" style="margin-left: 20px;" id="code" />
+                    </div>
+                    <div class="input-group">
                     </div>
                     <div>
                         <button class="btn btn-danger btn-block" id="btnLogin">登录</button>

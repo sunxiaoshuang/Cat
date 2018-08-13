@@ -114,5 +114,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="ids"></param>
         /// <returns></returns>
         List<SaleCouponUser> ReceiveCoupons(User user, IEnumerable<int> ids);
+
+        IEnumerable<User> GetUsers(Business business);
     }
 }

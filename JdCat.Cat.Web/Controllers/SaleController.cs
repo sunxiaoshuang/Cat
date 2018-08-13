@@ -85,5 +85,17 @@ namespace JdCat.Cat.Web.Controllers
             return Json(Service.DownCoupon(id));
         }
 
+        public IActionResult Discount()
+        {
+
+            return View();
+        }
+
+        public IActionResult DiscountDetail()
+        {
+
+            return View();
+        }
+
     }
 }

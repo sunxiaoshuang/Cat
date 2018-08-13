@@ -20,9 +20,17 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public decimal? Quantity { get; set; }
         /// <summary>
-        /// 商品总价
+        /// 商品价格（折扣价）
         /// </summary>
         public decimal? Price { get; set; }
+        /// <summary>
+        /// 原价
+        /// </summary>
+        public decimal? OldPrice { get; set; }
+        /// <summary>
+        /// 折扣
+        /// </summary>
+        public decimal? Discount { get; set; }
         /// <summary>
         /// 商品图片地址
         /// </summary>

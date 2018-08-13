@@ -52,9 +52,10 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
-    var session = qcloud.getSession(), business = session.business;
+    var session = qcloud.getSession(),
+      business = session.business;
     wx.setNavigationBarTitle({
-      title: "首页-" + business.name
+      title: business.name
     });
     util.showBusy("loading");
     // 首次加载时，将获取商品信息，并将其缓存
@@ -418,7 +419,7 @@ Page({
       productIndex: !!e ? e.currentTarget.dataset.index : this.data.productIndex
     });
   },
-  showFormatAtDetail: function(){
+  showFormatAtDetail: function () {
     this.setData({
       isShowProductDetail: false
     });
@@ -472,7 +473,7 @@ Page({
       productIndex: this.data.productIndex
     });
   },
-  addAtDetail: function(){
+  addAtDetail: function () {
     this.setData({
       isShowProductDetail: false
     });
@@ -613,17 +614,33 @@ Page({
     });
     wx.showTabBar();
   },
-  productDetail: function(e){
-    var index = e.currentTarget.dataset.index;
+  productDetail: function (e) {
+    var index = e.currentTarget.dataset.index,
+      self = this;
     var product = this.data.productList[index];
     this.data.productIndex = index;
-    console.log(product);
+
+    var animation = wx.createAnimation({
+      duration: 200,
+      timingFunction: "ease",
+      delay: 0
+    });
+
+    animation.scale(0.01, 0.01).step();
+
     this.setData({
       isShowProductDetail: true,
+      animationData: animation.export(),
       curProduct: product
     });
+    setTimeout(function () {
+      animation.scale(1, 1).step();
+      self.setData({
+        animationData: animation.export()
+      });
+    }, 100);
   },
-  closeProduct: function(){
+  closeProduct: function () {
     this.setData({
       isShowProductDetail: false
     });

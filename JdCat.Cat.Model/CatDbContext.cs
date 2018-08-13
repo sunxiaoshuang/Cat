@@ -44,6 +44,8 @@ namespace JdCat.Cat.Model
         public DbSet<SaleFullReduce> SaleFullReduces { get; set; }
         public DbSet<SaleCoupon> SaleCoupons { get; set; }
         public DbSet<SaleCouponUser> SaleCouponUsers { get; set; }
+        public DbSet<SaleProductDiscount> SaleProductDiscount { get; set; }
+
 
         /// <summary>
         /// 添加FluentAPI配置

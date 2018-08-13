@@ -26,5 +26,18 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
+        public IActionResult GetList(int pageIndex = 1, int pageSize = 10)
+        {
+            var query = Service.GetUsers(Business);
+            var count = query.Count();
+            var list = query.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+            return Json(new {
+                rows = count,
+                list
+            });
+        }
+
+
+
     }
 }

@@ -8,7 +8,8 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using System.Drawing;
+using System.DrawingCore;
+using System.DrawingCore.Imaging;
 
 namespace JdCat.Cat.Common
 {
@@ -380,7 +381,7 @@ namespace JdCat.Cat.Common
         /// <param name="content"></param>
         public static void Log(string content)
         {
-            var filepath =Path.Combine(Directory.GetCurrentDirectory(), "Log", "Info", DateTime.Now.ToString("yyyyMMdd") + ".txt");
+            var filepath = Path.Combine(Directory.GetCurrentDirectory(), "Log", "Info", DateTime.Now.ToString("yyyyMMdd") + ".txt");
             if (!File.Exists(filepath))
             {
                 File.Create(filepath).Close();
@@ -400,5 +401,83 @@ namespace JdCat.Cat.Common
             return (dateTime.Ticks - dt.Ticks) / 10000;
         }
 
+        #region 验证码
+
+        private static int letterWidth = 18;//单个字体的宽度范围
+        private static int letterHeight = 28;//单个字体的高度范围
+        private static char[] chars = "0123456789".ToCharArray();
+        private static string[] fonts = { "Arial", "Georgia" };
+        /// <summary>
+        /// 生成验证码
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public static byte[] GenerateVerificationCode(string code)
+        {
+            int int_ImageWidth = code.Length * letterWidth;
+            var newRandom = new Random();
+            var image = new Bitmap(int_ImageWidth, letterHeight);
+            var g = Graphics.FromImage(image);
+            //生成随机生成器
+            var random = new Random();
+            //白色背景
+            g.Clear(Color.White);
+            //画图片的背景噪音线
+            for (int i = 0; i < 10; i++)
+            {
+                int x1 = random.Next(image.Width);
+                int x2 = random.Next(image.Width);
+                int y1 = random.Next(image.Height);
+                int y2 = random.Next(image.Height);
+
+                g.DrawLine(new Pen(Color.Silver), x1, y1, x2, y2);
+            }
+
+            //画图片的前景噪音点
+            for (int i = 0; i < 10; i++)
+            {
+                int x = random.Next(image.Width);
+                int y = random.Next(image.Height);
+
+                image.SetPixel(x, y, Color.FromArgb(random.Next()));
+            }
+            //随机字体和颜色的验证码字符
+
+            int findex;
+            for (int int_index = 0; int_index < code.Length; int_index++)
+            {
+                findex = newRandom.Next(fonts.Length - 1);
+                string str_char = code.Substring(int_index, 1);
+                Brush newBrush = new SolidBrush(GetRandomColor());
+                Point thePos = new Point(int_index * letterWidth + 1 + newRandom.Next(3), 1 + newRandom.Next(3));//5+1+a+s+p+x
+                g.DrawString(str_char, new Font(fonts[findex], 12, FontStyle.Bold), newBrush, thePos);
+            }
+            //灰色边框
+            g.DrawRectangle(new Pen(Color.LightGray, 1), 0, 0, int_ImageWidth - 1, (letterHeight - 1));
+            //图片扭曲
+            //image = TwistImage(image, true, 3, 4);
+            //将生成的图片发回客户端
+            using (MemoryStream ms = new MemoryStream())
+            {
+                image.Save(ms, ImageFormat.Png);
+                image.Dispose();
+                return ms.ToArray();
+            }
+        }
+
+        private static Color GetRandomColor()
+        {
+            Random RandomNum_First = new Random((int)DateTime.Now.Ticks);
+            System.Threading.Thread.Sleep(RandomNum_First.Next(50));
+            Random RandomNum_Sencond = new Random((int)DateTime.Now.Ticks);
+            int int_Red = RandomNum_First.Next(210);
+            int int_Green = RandomNum_Sencond.Next(180);
+            int int_Blue = (int_Red + int_Green > 300) ? 0 : 400 - int_Red - int_Green;
+            int_Blue = (int_Blue > 255) ? 255 : int_Blue;
+            return Color.FromArgb(int_Red, int_Green, int_Blue);// 5+1+a+s+p+x
+        }
+
+
+        #endregion
     }
 }

@@ -30,6 +30,11 @@ namespace JdCat.Cat.Model.Mapping
                 .WithOne(a => a.Business)
                 .HasForeignKey(a => a.BusinessId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+
+            builder.HasMany(a => a.SaleProductDiscounts)
+                .WithOne(a => a.Business)
+                .HasForeignKey(a => a.BusinessId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }
