@@ -12,9 +12,10 @@ using System;
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180815164615_Update_Discount_Status")]
+    partial class Update_Discount_Status
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,8 +315,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<string>("ErrorReason");
 
                     b.Property<decimal?>("Freight");
-
-                    b.Property<int>("Identifier");
 
                     b.Property<double>("Lat");
 
@@ -699,11 +698,11 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<DateTime?>("EndDate");
 
-                    b.Property<string>("EndTime1");
+                    b.Property<DateTime?>("EndTime1");
 
-                    b.Property<string>("EndTime2");
+                    b.Property<DateTime?>("EndTime2");
 
-                    b.Property<string>("EndTime3");
+                    b.Property<DateTime?>("EndTime3");
 
                     b.Property<string>("Name");
 
@@ -717,11 +716,11 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<DateTime?>("StartDate");
 
-                    b.Property<string>("StartTime1");
+                    b.Property<DateTime?>("StartTime1");
 
-                    b.Property<string>("StartTime2");
+                    b.Property<DateTime?>("StartTime2");
 
-                    b.Property<string>("StartTime3");
+                    b.Property<DateTime?>("StartTime3");
 
                     b.Property<int>("Status");
 

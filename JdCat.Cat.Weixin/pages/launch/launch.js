@@ -12,14 +12,31 @@ Page({
         businessId: config.businessId
       },
       success: function (userinfo) {
-        setTimeout(() => {
-          wx.switchTab({
-            url: "/pages/main/main"
+        // setTimeout(() => {
+
+
+          qcloud.request({
+            url: `/user/business/${config.businessId}`,
+            method: "GET",
+            success: function (res) {
+              var business = res.data;
+
+              if(business.isPublish) {
+                wx.switchTab({
+                  url: "/pages/main/main"
+                });
+              } else {
+                wx.redirectTo({
+                  url: "/pages/showPage/showPage"
+                });
+              }
+
+            }
           });
           // wx.navigateTo({
-          //   url: "/pages/test/test"
+          //   url: "/pages/showPage/showPage"
           // });
-        }, 100);
+        // }, 100);
       }
     });
   },

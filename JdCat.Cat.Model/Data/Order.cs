@@ -109,6 +109,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string ErrorReason { get; set; }
         /// <summary>
+        /// 当日订单编号
+        /// </summary>
+        public int Identifier { get; set; }
+        /// <summary>
         /// 用户id
         /// </summary>
         public int? UserId { get; set; }

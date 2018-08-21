@@ -740,6 +740,13 @@ page {
   font-size: 38rpx;
   color: red;
   font-weight: 800;
+  white-space: nowrap;
+}
+.oldPrice {
+  color: #999;
+  text-decoration: line-through;
+  font-size: 25rpx;
+  font-weight: 400;
 }
 
 .food-block {
@@ -763,7 +770,7 @@ page {
 }
 
 .single-format {
-  /* width: 150rpx; */
+  min-width: 150rpx;
   flex-grow: 1;
   display: flex;
   margin-right: 10rpx;

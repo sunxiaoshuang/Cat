@@ -52,11 +52,13 @@ namespace JdCat.Cat.Web.App_Code
             var url = $"https://api.open.feyin.net/msg";
             var businessName = business == null ? "简单猫外卖" : business.Name;
             var content = new StringBuilder();
-            content.Append("<left><Font# Bold=1 Width=2 Height=2>商家小票</Font#>\n");
+            content.Append($"<center><Font# Bold=1 Width=4 Height=4>#{order.Identifier}</Font#>\n");
+            content.Append("<left><Font# Bold=1 Width=1 Height=1>商家小票</Font#>\n");
             content.Append("--------------------------------\n");
             content.Append("<center><Font# Bold=1 Width=2 Height=2>"+ businessName + "</Font#>\n");
             content.Append("\n\n");
             content.Append($"<left>下单时间：{order.CreateTime:yyyy-MM-dd HH:mm:ss}\n");
+            content.Append($"<left>订单编号：{order.OrderCode}\n");
             content.Append("************购买商品************\n");
             //content.Append($"******{DateTime.Now:yyyy-MM-dd HH:mm:ss}*******\n");
             if (order.Products == null || order.Products.Count == 0)
@@ -134,7 +136,8 @@ namespace JdCat.Cat.Web.App_Code
                 content.Append("********************************\n");
                 content.Append($"<left><Font# Bold=1 Width=2 Height=2>{order.ReceiverAddress}</Font#>\n");
                 content.Append($"<Font# Bold=1 Width=2 Height=2>{order.Phone}</Font#>\n");
-                content.Append($"{order.ReceiverName}\n");
+                content.Append($"<Font# Bold=1 Width=2 Height=2>{order.ReceiverName}</Font#>\n");
+                content.Append($"<center>***********<Font# Bold=1 Width=2 Height=2>#{order.Identifier}</Font#>完***********\n");
             }
 
             return await Request(url, new

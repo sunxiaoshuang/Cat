@@ -1,6 +1,7 @@
 var qcloud = require('./vendor/wafer2-client-sdk/index');
 var config = require('./config');
 var util = require("./utils/util");
+var isFirstEnter = true;
 
 App({
     onLaunch: function () {
@@ -10,16 +11,20 @@ App({
     onShow: function () {
         // 从后台进入前台执行
         // 每次进入首页，重新加载商户信息
-        qcloud.request({
-            url: `/user/business/${config.businessId}`,
-            method: "GET",
-            success: function (res) {
-                var session = qcloud.getSession();
-                if (!session) return;
-                session.business = res.data;
-                qcloud.setSession(session);
-            }
-        });
+        if (isFirstEnter) {
+            isFirstEnter = false;
+        } else {
+            qcloud.request({
+                url: `/user/business/${config.businessId}`,
+                method: "GET",
+                success: function (res) {
+                    var session = qcloud.getSession();
+                    if (!session) return;
+                    session.business = res.data;
+                    qcloud.setSession(session);
+                }
+            });
+        }
     },
     onHide: function () {
         // 从前台进入后台执行

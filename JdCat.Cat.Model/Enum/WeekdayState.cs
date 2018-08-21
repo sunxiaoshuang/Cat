@@ -49,6 +49,11 @@ namespace JdCat.Cat.Model.Enum
         /// 星期日
         /// </summary>
         [Description("星期日")]
-        Sunday = 64
+        Sunday = 64,
+        /// <summary>
+        /// 全部
+        /// </summary>
+        [Description("全部")]
+        All = 127
     }
 }

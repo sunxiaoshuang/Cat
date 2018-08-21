@@ -12,9 +12,10 @@ using System;
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180817022422_Modify_Order_Identifier")]
+    partial class Modify_Order_Identifier
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -2,18 +2,6 @@
 <wxs module="common" src="../wxs/filters/common.wxs"></wxs>
 <wxs module="calc" src="../wxs/calc/order.wxs"></wxs>
 <view class="head" bindtap="turnPage" data-index="2">
-    <!-- <navigator url="/pages/location/location">
-        <view class="head-location">
-            <image src="/pages/images/location.png" 
-
-        class="head-location-icon"/>
-            <text class="head-location-text">{{location}}</text>
-        </view>
-    </navigator> -->
-    <!-- <view class="head-search">
-        <image src="/pages/images/search.png" class="head-search-icon"/>
-        <input class="head-search-input" placeholder="鸡排" />
-    </view> -->
     <view class="logo">
         <image mode="aspectFill" src="{{productFilter.logoImage(logo, businessId)}}" />
     </view>
@@ -28,7 +16,6 @@
             <swiper autoplay="{{true}}" vertical="{{true}}" class="sale">
                 <block wx:for="{{fullReduceList}}" wx:key="id">
                     <swiper-item class="sale-item">
-                        <!-- <image src="../../images/icon/jian-2.png" class="slide-image" /> -->
                         <view class="slide-image">减</view>
                         <text>{{item.name}}</text>
                     </swiper-item>
@@ -62,7 +49,6 @@
                     </view>
                 </scroll-view>
                 <view class="foodListMain">
-                    <!-- <view class="selectedMenu">{{menu[selected].name}}</view> -->
                     <scroll-view class="foodList" scroll-y="true" scroll-with-animation="true" scroll-top="{{scrollTop}}" scroll-into-view="{{foodToView}}" bindscroll="scrollFoodList">
                         <block wx:for="{{productList}}" wx:key="">
                             <view class="food" id="{{'scroll_' + item.menuId + '_' + item.viewIndex}}">
@@ -73,7 +59,16 @@
                                         <view class="sales">{{item.description}}</view>
                                     </view>
                                     <view class="food-numb">
-                                        <view class="price">￥ {{item.formats[0].price}}</view>
+                                        <view class="price">
+                                            <view>
+                                                <text>￥{{!item.discount ? item.price : item.discount.price}}</text>
+                                                <text class="oldPrice" wx:if="{{!!item.discount}}">￥{{item.price}}</text>
+                                            </view>
+                                            <view style="display: flex;" wx:if="{{!!item.discount}}">
+                                                <!-- <view class="slide-image" style="transform: scale(.7,.7)">折</view> -->
+                                                <view style="font-size: 25rpx; font-weight: 400;">{{!item.discount ? '' : item.discount.discount}}折 {{productFilter.discountLimit(item.discount.upperLimit)}}</view>
+                                            </view>
+                                        </view>
                                         <view class="single-format" wx:if="{{item.formats.length == 1 && item.attributes.length == 0}}">
                                             <view class="item-remove" bindtap="remove" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
                                                 <image src="../../images/icon/minus-5.png" />
@@ -206,13 +201,13 @@
                 <image src="../../images/icon/remove-1.png" style="width: 30rpx;height: 30rpx;margin-right: 20rpx;" />
                 <text>清空购物车</text>
             </view>
-        </view>
+        </view> 
         <scroll-view class="cart-view" scroll-y>
             <view class="cart" wx:for="{{cartList}}" wx:for-item="cart" wx:key="id">
                 <view class="cart-food-name">
                     {{cart.name}}
                     <text style="font-size: 80%; color: #aaa;">
-                        {{cart.description ? ("（" + cart.description + "）") : ""}}
+                        {{calc.cartDescription(cart)}}
                     </text>
                 </view>
                 <view class="cart-food-price">
@@ -296,7 +291,7 @@
 <view class="coupon" wx:if="{{isShowCoupon}}">
     <view class="coupon-shadow"></view>
     <view class="coupon-content">
-        <view class="coupon-get" bindtap="OpenCoupon">
+        <view class="coupon-get" bindtap="openCoupon">
             <text>领</text>
         </view>
         <view class="coupon-logo">

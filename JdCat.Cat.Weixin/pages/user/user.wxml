@@ -7,7 +7,7 @@
     </view>
     <view wx:else style="width: 100%;">
         <view class="user-login">
-            <button bindgetuserinfo="bindGetUserInfo" plain="{{true}}" class="btn-none" open-type="getUserInfo">
+            <button bindgetuserinfo="bindGetUserInfo" lang="zh_CN" plain="{{true}}" class="btn-none" open-type="getUserInfo">
                 点击登录
             </button>
         </view>

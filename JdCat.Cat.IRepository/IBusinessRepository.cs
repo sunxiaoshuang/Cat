@@ -148,7 +148,7 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         IEnumerable<SaleCoupon> GetCoupon(Business business, bool tracking = false);
         /// <summary>
-        /// 获取商户截止到当前可以的优惠券
+        /// 获取商户截止到当前可用的优惠券
         /// </summary>
         /// <param name="business"></param>
         /// <returns></returns>
@@ -178,18 +178,23 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         JsonData CreateDiscount(SaleProductDiscount discount);
         /// <summary>
+        /// 创建折扣活动
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        List<SaleProductDiscount> CreateDiscount(List<SaleProductDiscount> list);
+        /// <summary>
         /// 删除折扣活动
         /// </summary>
-        /// <param name="discount"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        JsonData DeleteDiscount(SaleProductDiscount discount);
+        JsonData DeleteDiscount(int id);
         /// <summary>
         /// 修改折扣活动
         /// </summary>
         /// <param name="discount"></param>
         /// <returns></returns>
         JsonData UpdateDiscount(SaleProductDiscount discount);
-
 
         #endregion
 

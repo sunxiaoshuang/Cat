@@ -17,13 +17,17 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string Name { get; set; }
         /// <summary>
+        /// 活动状态
+        /// </summary>
+        public ActivityStatus Status { get; set; }
+        /// <summary>
         /// 活动开始时间
         /// </summary>
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
         /// <summary>
         /// 活动结束时间
         /// </summary>
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
         /// <summary>
         /// 原价
         /// </summary>
@@ -43,29 +47,29 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 时间段1
         /// </summary>
-        public DateTime? StartTime1 { get; set; }
+        public string StartTime1 { get; set; }
         /// <summary>
         /// 时间段1
         /// </summary>
-        public DateTime? EndTime1 { get; set; }
+        public string EndTime1 { get; set; }
         /// <summary>
         /// 时间段2
         /// </summary>
-        public DateTime? StartTime2 { get; set; }
+        public string StartTime2 { get; set; }
         /// <summary>
         /// 时间段2
         /// </summary>
-        public DateTime? EndTime2 { get; set; }
+        public string EndTime2 { get; set; }
         /// <summary>
         /// 时间段3
         /// </summary>
-        public DateTime? StartTime3 { get; set; }
+        public string StartTime3 { get; set; }
         /// <summary>
         /// 时间段3
         /// </summary>
-        public DateTime? EndTime3 { get; set; }
+        public string EndTime3 { get; set; }
         /// <summary>
-        /// 设置方式
+        /// 设置方式，1:按折扣，2:按活动价
         /// </summary>
         public string SettingType { get; set; }
         /// <summary>

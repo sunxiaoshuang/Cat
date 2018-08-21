@@ -31,7 +31,7 @@ namespace JdCat.Cat.Repository
         }
         public bool SaveBase(Business business)
         {
-            var entity = new Business { ID = business.ID };
+            var entity = new Business { ID = business.ID, Lng = -1, Lat = -1, MinAmount = -1, Range = -1 };
             Context.Attach(entity);
             entity.Name = business.Name;
             entity.Email = business.Email;
@@ -312,22 +312,63 @@ group by CreateTime");
             }
             return result;
         }
-        
+
         public IEnumerable<SaleProductDiscount> GetDiscounts(Business business)
         {
-            return null;
+            return Context.SaleProductDiscount.Where(a => a.BusinessId == business.ID && a.Status != ActivityStatus.Delete);
         }
         public JsonData CreateDiscount(SaleProductDiscount discount)
         {
+
             return null;
         }
-        public JsonData DeleteDiscount(SaleProductDiscount discount)
+        public List<SaleProductDiscount> CreateDiscount(List<SaleProductDiscount> list)
         {
-            return null;
+            list.ForEach(discount =>
+            {
+                discount.Cycle = WeekdayState.All;
+                discount.StartTime1 = "00:00";
+                discount.EndTime1 = "23:59";
+                discount.SettingType = "1";
+                discount.Status = ActivityStatus.Init;
+                discount.UpperLimit = 1;
+                Context.SaleProductDiscount.Add(discount);
+
+            });
+            Commit();
+            return list;
+        }
+        public JsonData DeleteDiscount(int id)
+        {
+            var result = new JsonData();
+            var discount = new SaleProductDiscount { ID = id };
+            Context.Attach(discount);
+            discount.Status = ActivityStatus.Delete;
+            result.Success = Context.SaveChanges() > 0;
+            result.Msg = "删除成功";
+            return result;
         }
         public JsonData UpdateDiscount(SaleProductDiscount discount)
         {
-            return null;
+            var result = new JsonData();
+            var entity = Context.SaleProductDiscount.Single(a => a.ID == discount.ID);
+            entity.Status = ActivityStatus.Active;
+            entity.StartDate = discount.StartDate;
+            entity.EndDate = discount.EndDate;
+            entity.Discount = discount.Discount;
+            entity.Price = discount.Price;
+            entity.Cycle = discount.Cycle;
+            entity.StartTime1 = discount.StartTime1;
+            entity.EndTime1 = discount.EndTime1;
+            entity.StartTime2 = discount.StartTime2;
+            entity.EndTime2 = discount.EndTime2;
+            entity.StartTime3 = discount.StartTime3;
+            entity.EndTime3 = discount.EndTime3;
+            entity.SettingType = discount.SettingType;
+            entity.UpperLimit = discount.UpperLimit;
+            result.Success = Context.SaveChanges() > 0;
+            result.Data = entity;
+            return result;
         }
 
 

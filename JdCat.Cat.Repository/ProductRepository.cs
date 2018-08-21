@@ -252,10 +252,11 @@ namespace JdCat.Cat.Repository
         public void Up(int id)
         {
             var product = new Product { ID = id };
+            product.Status = ProductStatus.Init;
             Context.Attach(product);
             product.ModifyTime = DateTime.Now;
             product.PublishTime = DateTime.Now;
-            product.Status = Model.Enum.ProductStatus.Sale;
+            product.Status = ProductStatus.Sale;
         }
         public void Down(int id)
         {

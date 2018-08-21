@@ -8,7 +8,7 @@
         <link href="~/css/user/list.css" rel="stylesheet" />
     </environment>
     <environment exclude="Development">
-        <link href="~/css/user/list.min.css" rel="stylesheet" />
+        <link href="~/css/user/list.min.css" rel="stylesheet" asp-append-version="true" />
     </environment>
 }
 @section Scripts {
@@ -30,28 +30,28 @@
                     </h3>
                 </div>
                 <div class="panel-body">
-                    <div class="row">
+                    <div class="row" style="min-height: 400px;">
                         <div class="col-md-12">
-                            <table class="table table-bordered table-striped" style="min-height: 400px;">
+                            <table class="table table-bordered table-striped table-user">
                                 <thead>
                                     <tr>
-                                        <th>序号</th>
                                         <th>头像</th>
                                         <th>昵称</th>
-                                        <th>手机号</th>
                                         <th>性别</th>
+                                        <th>地域</th>
+                                        <th>手机号</th>
                                         <th>注册时间</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(item, index) in list">
-                                        <td v-html="index + 1"></td>
                                         <td>
-                                            <img :src="item.avatarUrl" style="width: 100px;height: 100px;" />
+                                            <img :src="item.avatarUrl" />
                                         </td>
                                         <td v-html="item.nickName"></td>
-                                        <td v-html="phoneFilter(item)"></td>
                                         <td v-html="genderFilter(item)"></td>
+                                        <td v-html="item.province + ' ' + item.city"></td>
+                                        <td v-html="phoneFilter(item)"></td>
                                         <td v-html="item.createTime"></td>
                                     </tr>
                                 </tbody>

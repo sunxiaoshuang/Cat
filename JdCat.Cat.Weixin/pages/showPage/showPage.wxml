@@ -1,0 +1,44 @@
+<wxs module="productFilter" src="../wxs/filters/product.wxs"></wxs>
+<view class="container">
+    <view class="header">
+        <view class="title">
+            <text class="name">{{business.name}}</text>
+            <text class="type">简单猫科技</text>
+        </view>
+        <view class="logo">
+            <image src="{{productFilter.logoImage(business.logoSrc, business.id)}}" />
+        </view>
+    </view>
+    <view class="list">
+        <view class="item" bindtap="address">
+            <image src="../../images/icon/address-1.png" class="list-item-icon" />
+            <text class="list-item-content">{{business.address}}</text>
+            <image src="../../images/icon/right-1.png" class="list-item-right" />
+        </view>
+        <view class="item">
+            <image src="../../images/icon/time-1.png" class="list-item-icon" />
+            <text class="list-item-content">{{business.businessStartTime}} - {{business.businessEndTime}}</text>
+            <image class="list-item-right" />
+        </view>
+        <view class="item" bindtap="phone">
+            <image src="../../images/icon/phone-1.png" class="list-item-icon" />
+            <text class="list-item-content">{{business.mobile}}</text>
+            <image src="../../images/icon/right-1.png" class="list-item-right" />
+        </view>
+        <view class="item">
+            <image src="../../images/icon/image-1.png" class="list-item-icon" />
+            <text class="list-item-content">设计图</text>
+            <image class="list-item-right" />
+        </view>
+    </view>
+    <view class="img">
+        <view class="item">
+            <image src="../../images/pic/1.png" mode="widthFix" />
+            <image src="../../images/pic/2.png" mode="widthFix" />
+        </view>
+        <view class="item">
+            <image src="../../images/pic/3.png" mode="widthFix" />
+            <image src="../../images/pic/4.png" mode="widthFix" />
+        </view>
+    </view>
+</view>

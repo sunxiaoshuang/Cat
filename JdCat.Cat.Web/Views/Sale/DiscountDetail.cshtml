@@ -1,7 +1,120 @@
-﻿
-@{
-    ViewData["Title"] = "折扣商品详情";
+﻿@{
+    ViewData["Title"] = "设置折扣商品";
+    Layout = null;
 }
 
-<h2>DiscountDetail</h2>
-
+<div class="container-fluid" id="setting">
+    <div class="row form-horizontal">
+        <div class="form-group">
+            <label class="col-xs-2 control-label">
+                商品名称：
+            </label>
+            <div class="col-xs-9">
+                <input type="text" :value="entity.name" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">
+                活动日期：
+            </label>
+            <div class="col-xs-9">
+                <input type="text" class="form-control date" id="txtStartDate" :value="entity.startDate" />
+                <label class="pull-left">至</label>
+                <input type="text" class="form-control date" id="txtEndDate" :value="entity.endDate" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">
+                循环周期：
+            </label>
+            <div class="col-xs-9">
+                <div class="kui-checkbox checkbox  pull-left m-left-md m-right-md" style="margin-right: 15px;" v-for="item in cycleList">
+                    <label class="label-checkbox">
+                        <input type="checkbox" v-model="item.checked">
+                        <span class="custom-checkbox"></span>
+                        {{item.name}}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">
+                生效时段：
+            </label>
+            <div class="col-xs-9 margin-bottom-10">
+                <cat-time v-bind:time="entity.startTime1" @@change="changeTime('startTime1', $event)"></cat-time>
+                <label class="pull-left" style="display:inline-block;width: 6%;padding-top: 6px;">至</label>
+                <cat-time v-bind:time="entity.endTime1" @@change="changeTime('endTime1', $event)"></cat-time>
+                <div class="time">
+                    <i class="fa fa-plus-circle" @@click="addTime()"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <i class="fa fa-minus-circle" v-bind:class="{'disabled': !entity.startTime2}" @@click="removeTime()"></i>
+                </div>
+            </div>
+            <div class="col-xs-offset-2 col-xs-9 margin-bottom-10" v-if="!!entity.startTime2">
+                <cat-time v-bind:time="entity.startTime2" @@change="changeTime('startTime2', $event)"></cat-time>
+                <label class="pull-left" style="display:inline-block;width: 6%;padding-top: 6px;">至</label>
+                <cat-time v-bind:time="entity.endTime2" @@change="changeTime('endTime2', $event)"></cat-time>
+            </div>
+            <div class="col-xs-offset-2 col-xs-9 margin-bottom-10" v-if="!!entity.startTime3">
+                <cat-time v-bind:time="entity.startTime3" @@change="changeTime('startTime3', $event)"></cat-time>
+                <label class="pull-left" style="display:inline-block;width: 6%;padding-top: 6px;">至</label>
+                <cat-time v-bind:time="entity.endTime3" @@change="changeTime('endTime3', $event)"></cat-time>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">
+                原价：
+            </label>
+            <div class="col-xs-9">
+                <input type="text" :value="'￥' + entity.oldPrice" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">
+                设置方式：
+            </label>
+            <div class="col-xs-9">
+                <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                    <label class="label-checkbox">
+                        <input type="radio" name="SettingType" value="1" v-model="entity.settingType">
+                        <span class="custom-checkbox"></span>
+                        按折扣
+                    </label>
+                </div>
+                <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                    <label class="label-checkbox">
+                        <input type="radio" name="SettingType" value="2" v-model="entity.settingType">
+                        <span class="custom-checkbox"></span>
+                        按活动价
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group" v-if="entity.settingType == 1">
+            <label class="col-xs-2 control-label">
+                折扣：
+            </label>
+            <div class="col-xs-9">
+                <input type="number" v-model="entity.discount" @@blur="discountChange()" style="width: 100px;" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group" v-else>
+            <label class="col-xs-2 control-label">
+                活动价：
+            </label>
+            <div class="col-xs-9">
+                <input type="number" v-model="entity.price" @@blur="priceChange()" style="width: 100px;" class="form-control pull-left" />
+                <span class="pull-left" style="line-height: 32px; margin-left: 20px;">元</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-2 control-label">
+                每单限购：
+            </label>
+            <div class="col-xs-9">
+                <input type="number" v-model="entity.upperLimit" class="form-control pull-left" style="width: 100px;" />
+                <span class="pull-left" style="line-height: 32px; margin-left: 20px;">不限购填 -1</span>
+            </div>
+        </div>
+    </div>
+</div>

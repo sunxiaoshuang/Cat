@@ -27,6 +27,10 @@ var product = {
     licenseImage: function(url, businessId){
         if(!url)return null;
         return "http://f.jiandanmao.cn/File/License/" + businessId + "/" + url; 
+    },
+    discountLimit: function(limit){
+        if(limit == -1) return "不限份";
+        return "限" + limit + "份";
     }
 };
 
@@ -34,5 +38,6 @@ module.exports = {
     productImage: product.productImage,
     orderProductImage: product.orderProductImage,
     logoImage: product.logoImage,
-    licenseImage: product.licenseImage
+    licenseImage: product.licenseImage,
+    discountLimit: product.discountLimit
 };

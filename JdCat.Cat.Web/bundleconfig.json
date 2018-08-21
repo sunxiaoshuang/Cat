@@ -208,6 +208,18 @@
       "wwwroot/js/sale/couponList.js"
     ]
   },
+  {
+    "outputFileName": "wwwroot/js/sale/discount.min.js",
+    "inputFiles": [
+      "wwwroot/js/sale/discount.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/sale/discount.min.css",
+    "inputFiles": [
+      "wwwroot/css/sale/discount.css"
+    ]
+  },
   // 会员
   {
     "outputFileName": "wwwroot/js/user/list.min.js",

@@ -15,7 +15,8 @@
     "pages/pay/pay",
     "pages/pay/sure/sure",
     "pages/user/mycoupon/mycoupon",
-    "pages/user/selectcoupon/selectcoupon"
+    "pages/user/selectcoupon/selectcoupon",
+    "pages/showPage/showPage"
   ],
   "window":{
     "backgroundColor":"#f36c21",

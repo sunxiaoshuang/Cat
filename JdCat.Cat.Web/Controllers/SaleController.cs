@@ -30,7 +30,7 @@ namespace JdCat.Cat.Web.Controllers
 
         public IActionResult FullReduce(int? id)
         {
-            if(id != null)
+            if (id != null)
             {
                 ViewBag.entity = JsonConvert.SerializeObject(Service.GetFullReduceById(id.Value), AppData.JsonSetting);
             }
@@ -56,7 +56,7 @@ namespace JdCat.Cat.Web.Controllers
 
         public IActionResult Coupon(int? id)
         {
-            if(id!= null)
+            if (id != null)
             {
                 ViewBag.entity = JsonConvert.SerializeObject(Service.GetCouponById(id.Value), AppData.JsonSetting);
             }
@@ -85,16 +85,55 @@ namespace JdCat.Cat.Web.Controllers
             return Json(Service.DownCoupon(id));
         }
 
-        public IActionResult Discount()
+        public IActionResult Discount([FromServices]IProductRepository repository)
         {
-
+            ViewBag.discountList = JsonConvert.SerializeObject(Service.GetDiscounts(Business), AppData.JsonSetting);
+            var typeList = repository.GetTypes(Business, Model.Enum.ProductStatus.Sale).ToList();
+            typeList.ForEach(type =>
+            {
+                var removeList = new List<Product>();
+                foreach (var item in type.Products)
+                {
+                    if(item.Formats.Count > 1)
+                    {
+                        removeList.Add(item);
+                    }
+                }
+                removeList.ForEach(a => type.Products.Remove(a));
+            });
+            ViewBag.typeList = JsonConvert.SerializeObject(typeList, AppData.JsonSetting);
             return View();
         }
 
+        public IActionResult DiscountProduct()
+        {
+            return View();
+        }
         public IActionResult DiscountDetail()
         {
-
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreateDiscount([FromBody]List<SaleProductDiscount> list)
+        {
+            list.ForEach(a => a.BusinessId = Business.ID);
+            list = Service.CreateDiscount(list);
+            return Json(list);
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteDiscount(int id)
+        {
+            return Json(Service.DeleteDiscount(id));
+        }
+
+        [HttpPost]
+        public IActionResult UpdateDiscount([FromBody]SaleProductDiscount discount)
+        {
+            var result = Service.UpdateDiscount(discount);
+            result.Msg = result.Success ? "修改成功" : "修改失败";
+            return Json(result);
         }
 
     }

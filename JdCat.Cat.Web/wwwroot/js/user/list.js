@@ -8,7 +8,7 @@
             pageIndex: 1,
             list: [],
             pageCount: undefined,
-            pageSize: 2
+            pageSize: 20
         },
         methods: {
             phoneFilter: function (item) {

@@ -95,7 +95,7 @@ namespace JdCat.Cat.Web.App_Code
             {
                 dadaOrder.shop_no = business.DadaShopNo;
             }
-            dadaOrder.origin_id = order.OrderCode.Substring(0, 10);
+            dadaOrder.origin_id = order.OrderCode;
             dadaOrder.city_code = order.CityCode;
             dadaOrder.cargo_price = (double)order.Price;
             dadaOrder.receiver_name = order.ReceiverName;

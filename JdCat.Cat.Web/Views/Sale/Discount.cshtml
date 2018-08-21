@@ -1,7 +1,105 @@
 ﻿
 @{
-    ViewData["Title"] = "折扣商品";
+    ViewData["Title"] = "优惠券列表";
 }
 
-<h2>Discount</h2>
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+        <link href="~/css/sale/discount.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link href="~/css/sale/discount.min.css" rel="stylesheet" />
+    </environment>
+}
+@section Scripts {
+    <script>
+        $.loading();
+        var pageData = {
+            typeList: '@Html.Raw(ViewBag.typeList)',
+            discountList: '@Html.Raw(ViewBag.discountList)'
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/sale/discount.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/sale/discount.js" asp-append-version="true"></script>
+    </environment>
+}
 
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">折扣商品</span>
+                        <a asp-controller="Sale" asp-action="Index" class="text-primary my-back1 pull-right">返回</a>
+
+                        <a class="btn btn-primary my-back2" asp-controller="Sale" asp-action="Index">
+                            <i class="fa fa-backward inline-middle" style="font-size: 16px; color: #fff;"></i>
+                            <span class="inline-middle" style="color: #fff;">返回</span>
+                        </a>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row margin-bottom-10">
+                        <div class="col-md-12">
+                            <a class="btn btn-primary" @@click="select"><i class="fa fa-plus"> 选择商品</i></a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <table class="table table-bordered table-striped table-sale">
+                                <thead>
+                                    <tr>
+                                        <th>商品名称</th>
+                                        <th style="width: 7em;">原价</th>
+                                        <th style="width: 5em;">折扣</th>
+                                        <th style="width: 7em;">活动价</th>
+                                        <th style="width: 6em;">每单限购</th>
+                                        <th>活动日期</th>
+                                        <th>周期循环</th>
+                                        <th>生效时段</th>
+                                        <th style="width: 6em;">活动状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-show="isShow" style="display: none;">
+                                    <tr v-for="(item, index) in discountList">
+                                        <td>{{item.name}}</td>
+                                        <td>{{item.oldPrice | price}}</td>
+                                        <td>{{item.discount | discount}}</td>
+                                        <td>{{item.price | price}}</td>
+                                        <td>{{item.upperLimit | upperLimit}}</td>
+                                        <td>{{item | activityTime}}</td>
+                                        <td>{{item.cycle | cycle}}</td>
+                                        <td>{{item | validTime}}</td>
+                                        <td>{{item.status | status}}</td>
+                                        <td style="width: 8em;">
+                                            <i class="fa fa-edit text-primary" @@click="edit(item)">修改</i>
+                                            <i class="fa fa-remove text-primary" @@click="remove(item, index)">删除</i>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot v-if="discountList.length === 0">
+                                    <tr>
+                                        <td colspan="10">没有任何折扣活动</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;"></div>
+</div>

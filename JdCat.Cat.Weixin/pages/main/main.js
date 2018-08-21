@@ -1,6 +1,7 @@
 const qcloud = require("../../vendor/wafer2-client-sdk/index");
 const config = require("../../config");
 const util = require("../../utils/util");
+const weekObj = {"1": 1, "2": 2, "3": 4, "4": 8, "5": 16, "6": 32, "0": 64};
 Page({
 
   /**
@@ -135,24 +136,17 @@ Page({
         });
       }
     });
-    // 加载满减活动
-    qcloud.request({
-      url: "/business/fullreduce/" + config.businessId,
-      method: "GET",
-      success: function (res) {
-        that.setData({
-          fullReduceList: res.data
-        });
-      }
-    });
 
-    // 加载商户优惠券
     qcloud.request({
-      url: "/business/coupon/" + config.businessId,
+      url: "/business/sale/" + config.businessId,
       method: "GET",
-      success: function (res) {
-        var couponList = res.data;
-        // 加载用户优惠券
+      success: function(res){
+        // 满减
+        that.setData({
+          fullReduceList: res.data.fullReduct
+        });
+        // 优惠券
+        var couponList = res.data.coupon;
         qcloud.request({
           url: `/user/userCoupon/${session.userinfo.id}`,
           method: "GET",
@@ -167,8 +161,12 @@ Page({
             that.couponHandler();
           }
         });
+        // 商品打折
+        that.data.discount = res.data.discount;
+        that.discountHandler();
       }
     });
+
   },
   onShareAppMessage: function () {
     var session = qcloud.getSession();
@@ -217,6 +215,7 @@ Page({
       cartList.forEach(function (obj) {
         var products = productArr.filter(a => a.id == obj.productId);
         if (products.length === 0) return;
+        obj.product = products[0];
         existCart.push(obj);
         products[0].quantity += obj.quantity;
         cartQuantity += obj.quantity;
@@ -231,6 +230,8 @@ Page({
       cartQuantity: cartQuantity
     });
     this.calcSaleText();
+    // this.discountHandler();
+    // this.cartSync();
   },
   couponHandler: function () {
     if (this.data.isClosedCoupon) return; // 如果已经关闭过优惠券窗口，则不再弹出
@@ -251,6 +252,40 @@ Page({
       });
       wx.hideTabBar();
     }
+  },
+  discountHandler: function(){
+    if(!this.data.productList || !this.data.discount) return;
+    if(this.data.productList.length === 0 || this.data.discount.length === 0) return;
+    var self = this, now = new Date(), product, hour = now.getHours().toString(), minus = now.getMinutes().toString(),
+      hourMinus = (hour.length > 1 ? hour : ("0" + hour)) + ":" + (minus.length > 1 ? minus : ("0" + minus)), 
+      weekday = weekObj[now.getDay().toString()];
+    this.data.discount.forEach(function(item){
+      if(!(weekday & item.cycle)) return; // 不在循环周期内
+      var isArea = false;   // 是否在有效时间区间内
+      if(item.startTime1 <= hourMinus && item.endTime1 >= hourMinus) isArea = true;
+      else if(item.startTime2 <= hourMinus && item.endTime2 >= hourMinus) isArea = true;
+      else if(item.startTime3 <= hourMinus && item.endTime3 >= hourMinus) isArea = true;
+      if(!isArea) return;
+      product = self.data.productList.filter(a => a.id == item.productId);
+      if(product.length === 0) return;
+      product[0].discount = item;
+    });
+    
+    this.setData({
+      productList: this.data.productList,
+    });
+    this.cartSync();    // 同步购物车商品
+  },
+  cartSync: function(){
+    var productList = this.data.productList, cartList = this.data.cartList, product;
+    if(!cartList || cartList.length === 0)return;
+    cartList.forEach(cart => {
+      product = productList.filter(a => a.id == cart.productId)[0];
+      cart.product = product;
+    });
+    this.setData({
+      cartList
+    });
   },
   catLicense: function () {
     wx.navigateTo({
@@ -584,7 +619,7 @@ Page({
       }
     });
   },
-  OpenCoupon: function () {
+  openCoupon: function () {
     if (!this.data.unreceived || this.data.unreceived.length == 0) return;
     var ids = this.data.unreceived.map(a => a.id);
     util.showBusy("请稍等...");
@@ -677,6 +712,7 @@ Page({
         quantity: 1,
         price: format.price,
         productId: product.id,
+        product: product,
         formatId: format.id,
         packingQuantity: format.packingQuantity,
         description: description,
@@ -688,12 +724,13 @@ Page({
       if (flag === "add") cart.quantity++;
       else cart.quantity--;
     }
-
+    var cartClone = qcloud.utils.extend({}, cart);
+    cartClone.product = null;
     // 请求服务器
     qcloud.request({
       url: "/user/carthandler",
       method: "POST",
-      data: cart,
+      data: cartClone,
       success: function (res) {
         cart.id = res.data.id;
         if (cart.quantity <= 0) {
@@ -748,7 +785,7 @@ Page({
     this.calcSaleText();
   },
   calcSaleText: function () {
-    var cartList = this.data.cartList,
+    var cartList = this.data.cartList, self = this,
       fullReduceList = this.data.fullReduceList.slice(),
       nowItem;
     if (cartList.length === 0 || fullReduceList.length === 0) return;
@@ -756,7 +793,8 @@ Page({
       list = fullReduceList.reverse(),
       text = "";
     cartList.forEach(function (a) {
-      total += a.quantity * a.price;
+      // total += a.quantity * a.price;
+      total += self.calcCartProductPrice(a);
     });
     total = qcloud.utils.getNumber(total, 2);
     list.some(function (item, index) {
@@ -779,5 +817,16 @@ Page({
     this.setData({
       saleText: text
     });
+  },
+  calcCartProductPrice: function(cart){
+    var price = cart.price, quantity = cart.quantity, product = cart.product, discount = product.discount;
+    if(!discount)return price * quantity;
+    if(discount.upperLimit == -1) {
+      return discount.price * quantity;
+    }
+    if(discount.upperLimit >= quantity) {
+      return discount.price * quantity;
+    }
+    return (quantity - discount.upperLimit) * price + discount.upperLimit * discount.price;
   }
 });

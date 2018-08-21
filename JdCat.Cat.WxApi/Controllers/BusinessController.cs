@@ -47,5 +47,21 @@ namespace JdCat.Cat.WxApi.Controllers
             return Json(Service.GetCouponValid(new Business { ID = id }));
         }
 
+        /// <summary>
+        /// 获取商户营销活动
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("sale/{id}")]
+        public IActionResult GetSale(int id)
+        {
+            var now = DateTime.Now;
+            var fullReduct = Service.GetFullReduce(new Business { ID = id }, false).ToList();
+            var valid = fullReduct.Where(a => a.IsActiveValid());
+            var coupon = Service.GetCouponValid(new Business { ID = id });
+            var discount = Service.GetDiscounts(new Business { ID = id })
+                .Where(a => a.Status == Model.Enum.ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
+            return Json(new { fullReduct = valid, coupon, discount });
+        }
+
     }
 }

@@ -1,0 +1,88 @@
+page {
+    overflow: hidden;
+}
+.container {
+    
+    overflow: hidden;
+}
+.header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+    align-items: center;
+    padding: 30rpx;
+    border-bottom: 1px dashed #ccc;
+}
+.header .title {
+    width: 570rpx;
+    display: flex;
+    flex-direction: column;
+    
+}
+.header .title .name {
+    font-size: 140%;
+}
+.header .title .type {
+    color: #ccc;
+    font-size: 90%;
+    line-height: 100rpx;
+}
+
+.header .logo {
+    width: 100rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.header .logo image {
+    width: 90rpx;
+    height: 90rpx;
+    border-radius: 50%;
+}
+
+.list {
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    padding-top: 30rpx;
+}
+.list .item {
+    display: flex;
+    padding: 10rpx 30rpx;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 70rpx;
+}
+.list .item .list-item-icon {
+    width: 50rpx;
+    height: 50rpx;
+}
+
+.list .item .list-item-content {
+    width: 570rpx;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.list .item .list-item-right {
+    width: 50rpx;
+    height: 50rpx;
+}
+.img {
+    display: flex;
+    padding: 30rpx;
+    flex-direction: column;
+    width: 100%;
+}
+.img .item {
+    margin-top: 20rpx;
+    display: flex;
+    width: 100%;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+}
+.img .item image {
+    width: 330rpx;
+}

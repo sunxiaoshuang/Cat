@@ -23,6 +23,7 @@ namespace JdCat.Cat.Repository
 {
     public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
+        private static object loop = new object();
         public Order Get(int id)
         {
             return Context.Orders.Include(a => a.DadaReturn).SingleOrDefault(a => a.ID == id);
@@ -43,27 +44,40 @@ namespace JdCat.Cat.Repository
             var now = DateTime.Now;
             var startTime = new DateTime(now.Year, now.Month, now.Day, int.Parse(business.BusinessStartTime.Split(':')[0]), int.Parse(business.BusinessStartTime.Split(':')[1]), 0);
             var endTime = new DateTime(now.Year, now.Month, now.Day, int.Parse(business.BusinessEndTime.Split(':')[0]), int.Parse(business.BusinessEndTime.Split(':')[1]), 0);
-            if(startTime > now || endTime < now)
+            if (startTime > now || endTime < now)
             {
                 result.Msg = $"本店营业时间：{business.BusinessStartTime}-{business.BusinessEndTime}";
                 return result;
             }
-            Context.Orders.Add(order);
-            // 如果使用了优惠券
-            if (order.SaleCouponUserId != null)
+            lock (loop)
             {
-                var couponUser = Context.SaleCouponUsers.Include(a => a.Coupon).Single(a => a.ID == order.SaleCouponUserId.Value);
-                couponUser.Status = CouponStatus.Used;
-                couponUser.UseTime = DateTime.Now;
-                couponUser.Coupon.Consumed += 1;
-                if(couponUser.Coupon.Quantity > 0 && couponUser.Coupon.Consumed > couponUser.Coupon.Quantity)
+                var nowStr = now.ToString("yyyy-MM-dd");
+                var query = Context.Orders.Where(a => a.BusinessId == order.BusinessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == nowStr);
+                int max = 0;
+                if(query.Count() > 0)
                 {
-                    couponUser.Coupon.Consumed = couponUser.Coupon.Quantity;
+                    max = query.Max(a => a.Identifier);
                 }
-            }
-            if (Context.SaveChanges() == 0)
-            {
-                throw new Exception("订单创建失败");
+                order.Identifier = max + 1;
+                Context.Orders.Add(order);
+                // 如果使用了优惠券
+                if (order.SaleCouponUserId != null)
+                {
+                    var couponUser = Context.SaleCouponUsers.Include(a => a.Coupon).Single(a => a.ID == order.SaleCouponUserId.Value);
+                    couponUser.Status = CouponStatus.Used;
+                    couponUser.UseTime = DateTime.Now;
+                    couponUser.Coupon.Consumed += 1;
+                    if (couponUser.Coupon.Quantity > 0 && couponUser.Coupon.Consumed > couponUser.Coupon.Quantity)
+                    {
+                        couponUser.Coupon.Consumed = couponUser.Coupon.Quantity;
+                    }
+                }
+                if (Context.SaveChanges() == 0)
+                {
+                    result.Success = false;
+                    result.Msg = "创建订单失败";
+                    return result;
+                }
             }
             result.Data = order;
             result.Success = true;
@@ -76,11 +90,11 @@ namespace JdCat.Cat.Repository
         {
             var lastTime = DateTime.Now.AddYears(-1);
             var queryable = Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).Where(a => a.BusinessId == business.ID && a.CreateTime > lastTime);
-            if(expression != null)
+            if (expression != null)
             {
                 queryable = queryable.Where(expression);
             }
-            if(!string.IsNullOrEmpty(code))
+            if (!string.IsNullOrEmpty(code))
             {
                 queryable = queryable.Where(a => a.OrderCode.Contains(code));
             }
@@ -88,7 +102,7 @@ namespace JdCat.Cat.Repository
             {
                 queryable = queryable.Where(a => a.Phone.Contains(phone));
             }
-            if(userId != null)
+            if (userId != null)
             {
                 queryable = queryable.Where(a => a.UserId == userId.Value);
             }
@@ -119,7 +133,7 @@ namespace JdCat.Cat.Repository
         public bool SendSuccess(Order order, DadaResult<DadaReturn> back)
         {
             back.result.Order = order;
-            if(order.DadaReturn != null)
+            if (order.DadaReturn != null)
             {
                 Context.DadaReturns.Remove(order.DadaReturn);
             }

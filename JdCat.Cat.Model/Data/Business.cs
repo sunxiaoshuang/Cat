@@ -170,6 +170,10 @@ namespace JdCat.Cat.Model.Data
         /// 配送服务商
         /// </summary>
         public ServiceProvider ServiceProvider { get; set; }
+        /// <summary>
+        /// 是否正式发布
+        /// </summary>
+        public bool IsPublish { get; set; } = true;
 
         /// <summary>
         /// 产品列表集合
