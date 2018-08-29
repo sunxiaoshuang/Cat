@@ -55,7 +55,7 @@ namespace JdCat.Cat.Web.App_Code
             content.Append($"<center><Font# Bold=1 Width=4 Height=4>#{order.Identifier}</Font#>\n");
             content.Append("<left><Font# Bold=1 Width=1 Height=1>商家小票</Font#>\n");
             content.Append("--------------------------------\n");
-            content.Append("<center><Font# Bold=1 Width=2 Height=2>"+ businessName + "</Font#>\n");
+            content.Append("<center><Font# Bold=1 Width=2 Height=2>" + businessName + "</Font#>\n");
             content.Append("\n\n");
             content.Append($"<left>下单时间：{order.CreateTime:yyyy-MM-dd HH:mm:ss}\n");
             content.Append($"<left>订单编号：{order.OrderCode}\n");
@@ -67,20 +67,23 @@ namespace JdCat.Cat.Web.App_Code
             }
             else
             {
-                // 商品名称占用打印纸的16个字符位
-                var position = 16;
+                // 商品名称占用打印纸的20个字符位
+                var position = 20;
+                var other = 6;
                 foreach (var product in order.Products)
                 {
                     // 商品名称
                     var name = product.Name;
                     var zhQuantity = 0;              // 中文字符数
                     var enQuantity = 0;              // 其他字符数
+                    var cutName = string.Empty;      // 截取的名称
                     while (true)
                     {
                         zhQuantity = CalcZhQuantity(name);
                         enQuantity = name.Length - zhQuantity;
                         if (zhQuantity * 2 + enQuantity > position)
                         {
+                            cutName += name.Substring(name.Length - 2);
                             name = name.Substring(0, name.Length - 2);
                         }
                         else
@@ -94,32 +97,36 @@ namespace JdCat.Cat.Web.App_Code
                         name += " ";
                     }
                     // 商品数量
-                    var quantity = "* " +  Convert.ToDouble(product.Quantity);
+                    var quantity = "* " + Convert.ToDouble(product.Quantity);
                     var quantityLen = quantity.Length;
-                    for (int i = 0; i < 8 - quantityLen; i++)
+                    for (int i = 0; i < other - quantityLen; i++)
                     {
                         quantity += " ";
                     }
                     // 商品价格
                     var price = Convert.ToDouble(product.Price.Value) + "";
                     var priceLen = price.Length;
-                    for (int i = 0; i < 8 - priceLen; i++)
+                    for (int i = 0; i < other - priceLen; i++)
                     {
                         price = " " + price;
                     }
                     content.Append($"<Font# Bold=1 Width=1 Height=1>{name + quantity + price}</Font#>\n");
-                    if(!string.IsNullOrEmpty( product.Description))
+                    if(!string.IsNullOrEmpty(cutName))
+                    {
+                        content.Append($"<Font# Bold=1 Width=1 Height=1>{cutName}</Font#>\n");
+                    }
+                    if (!string.IsNullOrEmpty(product.Description))
                     {
                         content.Append($"<Font# Bold=0 Width=1 Height=1>（{product.Description}）</Font#>\n");
                     }
                 }
                 content.Append("--------------其他--------------\n");
                 content.Append($"<left>{PrintLineLeftRight("配送费", Convert.ToDouble(order.Freight.Value) + "")}\n");
-                if(order.SaleCouponUser != null)
+                if (order.SaleCouponUser != null)
                 {
                     content.Append($"{PrintLineLeftRight("[" + order.SaleCouponUser.Name + "]", "-￥" + Convert.ToDouble(order.SaleCouponUser.Value) + "")}\n");
                 }
-                if(order.SaleFullReduce != null)
+                if (order.SaleFullReduce != null)
                 {
                     content.Append($"{PrintLineLeftRight("[" + order.SaleFullReduce.Name + "]", "-￥" + Convert.ToDouble(order.SaleFullReduce.ReduceMoney) + "")}\n");
                 }
@@ -129,7 +136,7 @@ namespace JdCat.Cat.Web.App_Code
                     content.Append($"<right>原价：{Convert.ToDouble(order.OldPrice.Value)}元\n");
                 }
                 content.Append($"<right>实付：<Font# Bold=1 Width=2 Height=2>{Convert.ToDouble(order.Price)}元</Font#>\n");
-                if(!string.IsNullOrEmpty(order.Remark))
+                if (!string.IsNullOrEmpty(order.Remark))
                 {
                     content.Append($"<left>备注：{order.Remark}\n");
                 }

@@ -198,5 +198,9 @@ namespace JdCat.Cat.IRepository
 
         #endregion
 
+        #region 客户端请求
+        Business Login(string username, string password);
+        #endregion
+
     }
 }

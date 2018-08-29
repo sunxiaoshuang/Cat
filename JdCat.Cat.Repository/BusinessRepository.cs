@@ -371,6 +371,11 @@ group by CreateTime");
             return result;
         }
 
+        public Business Login(string username, string password)
+        {
+            return Context.Businesses.SingleOrDefault(a => a.Code == username && a.Password == password);
+        }
+
 
         /// <summary>
         /// 验证满减活动输入是否正确
@@ -433,5 +438,7 @@ group by CreateTime");
             result.Success = true;
             return result;
         }
+
+
     }
 }

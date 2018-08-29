@@ -63,5 +63,22 @@ namespace JdCat.Cat.WxApi.Controllers
             return Json(new { fullReduct = valid, coupon, discount });
         }
 
+        [HttpGet("login")]
+        public IActionResult Login([FromQuery]string username, [FromQuery]string pwd)
+        {
+            var business = Service.Login(username, UtilHelper.MD5Encrypt(pwd));
+            var result = new JsonData();
+            if(business == null)
+            {
+                result.Msg = "用户名或密码错误";
+            }
+            else
+            {
+                result.Data = business;
+                result.Success = true;
+            }
+            return Json(result);
+        }
+
     }
 }
