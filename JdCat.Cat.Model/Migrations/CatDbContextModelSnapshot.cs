@@ -268,6 +268,38 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("DadaReturn","dbo");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DWD_Business", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("addr");
+
+                    b.Property<string>("city_code");
+
+                    b.Property<string>("city_name");
+
+                    b.Property<string>("external_shopid");
+
+                    b.Property<long>("lat");
+
+                    b.Property<long>("lng");
+
+                    b.Property<string>("mobile");
+
+                    b.Property<string>("shop_title");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("DWDBusiness","dbo");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.FeyinDevice", b =>
                 {
                     b.Property<int>("ID")
@@ -309,6 +341,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("DeliveryMode");
 
+                    b.Property<int>("DistributionFlow");
+
                     b.Property<DateTime?>("DistributionTime");
 
                     b.Property<string>("ErrorReason");
@@ -317,9 +351,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("Identifier");
 
+                    b.Property<bool>("IsSendDada");
+
                     b.Property<double>("Lat");
 
                     b.Property<double>("Lng");
+
+                    b.Property<int>("LogisticsType");
 
                     b.Property<decimal?>("OldPrice");
 
@@ -887,6 +925,14 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.Order", "Order")
                         .WithOne("DadaReturn")
                         .HasForeignKey("JdCat.Cat.Model.Data.DadaReturn", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DWD_Business", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

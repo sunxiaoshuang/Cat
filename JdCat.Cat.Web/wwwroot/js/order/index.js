@@ -27,10 +27,11 @@
             },
             curType: null,              // 当前选择的订单状态
             sendTypes: [
-                { name: "达达配送", selected: false, type: 0, doing: false },
-                { name: "蜂鸟配送", selected: false, type: 0, doing: true },
-                { name: "点我达配送", selected: false, type: 0, doing: true },
-                { name: "自己配送", selected: false, type: 1, doing: false }
+                { name: "达达配送", selected: false, type: 0, logisticsType: 2, doing: false },
+                { name: "美团配送", selected: false, type: 0, logisticsType: 3, doing: true },
+                { name: "蜂鸟配送", selected: false, type: 0, logisticsType: 4, doing: true },
+                { name: "点我达配送", selected: false, type: 0, logisticsType: 5, doing: false },
+                { name: "自己配送", selected: false, type: 1, logisticsType: 1, doing: false }
             ],
             curOrder: null,             // 当前选择配送的订单
             printerCode: localStorage.getItem("defaultPrinter"),          // 当前选择的打印机编码
@@ -215,7 +216,7 @@
                 }
                 $.loading();
                 $("#modal-sendType").modal("hide");
-                axios.get(`/order/send/${this.curOrder.id}?type=${this.curSendType.type}`)
+                axios.get(`/order/send/${this.curOrder.id}?type=${this.curSendType.type}&logisticsType=${this.curSendType.logisticsType}`)
                     .then(function (res) {
                         $.loaded();
                         if (res.data.success) {

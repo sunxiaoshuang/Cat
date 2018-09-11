@@ -41,10 +41,19 @@ namespace JdCat.Cat.WxApi.Controllers
         /// <param name="query"></param>
         /// <returns></returns>
         [HttpPost("getOrder/{id}")]
-        public IActionResult GetOrder(int id, [FromQuery]int businessId, [FromBody]PagingQuery query)
+        public IActionResult GetOrder(int id, [FromQuery]int businessId, [FromQuery]DateTime? createTime, [FromBody]PagingQuery query)
         {
             var result = new JsonData();
-            var orders = Service.GetOrder(new Business { ID = businessId }, null, query, null, null, id);
+            int? userId;
+            if(id == 0)
+            {
+                userId = null;
+            }
+            else
+            {
+                userId = id;
+            }
+            var orders = Service.GetOrder(new Business { ID = businessId }, null, query, null, null, userId, createTime: createTime);
             result.Data = new
             {
                 list = orders,                          // 订单列表
@@ -63,6 +72,16 @@ namespace JdCat.Cat.WxApi.Controllers
         public IActionResult GetOrder(int id)
         {
             var order = Service.GetOrderIncludeProduct(id);
+            return Json(order, JsSetting);
+        }
+        /// <summary>
+        /// 获取订单
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("singleByCode")]
+        public IActionResult GetOrder([FromQuery]string code)
+        {
+            var order = Service.GetOrderByCode(code);
             return Json(order, JsSetting);
         }
 
@@ -97,7 +116,7 @@ namespace JdCat.Cat.WxApi.Controllers
                 total_fee = (int)Math.Round(order.Price.Value * 100, 0),
                 key = appData.ServerKey
             };
-            if(business.ID == 1)
+            if (business.ID == 1)
             {
                 option.total_fee = 1;
             }
@@ -177,7 +196,7 @@ namespace JdCat.Cat.WxApi.Controllers
                 var ret = UtilHelper.ReadXml<WxPaySuccess>(content);
                 if (string.IsNullOrEmpty(ret.transaction_id)) return NotFound("支付不成功");
                 var order = Service.PaySuccess(ret);
-                if(order != null)
+                if (order != null)
                 {
                     Task.Run(async () =>
                     {
@@ -190,5 +209,6 @@ namespace JdCat.Cat.WxApi.Controllers
             }
             return Ok("ok");
         }
+
     }
 }

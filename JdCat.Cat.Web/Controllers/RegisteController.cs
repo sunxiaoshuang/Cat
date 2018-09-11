@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JdCat.Cat.Common;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -76,8 +77,7 @@ namespace JdCat.Cat.Web.Controllers
                     Address = address,
                     Mobile = phone,
                     BusinessLicense = license,
-                    Description = mark,
-                    ServiceProvider = Model.Enum.ServiceProvider.Self
+                    Description = mark
                 };
                 userInfo.FeyinMemberCode = appData.FeyinMemberCode;
                 userInfo.FeyinApiKey = appData.FeyinApiKey;

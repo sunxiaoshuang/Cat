@@ -44,7 +44,8 @@ namespace JdCat.Cat.Repository
                 .Include("Products.Images")
                 .Where(a => a.BusinessId == business.ID)
                 .OrderBy(a => a.Sort).ToList();
-            list.ForEach(a => {
+            list.ForEach(a =>
+            {
                 var delList = new List<Product>();
                 foreach (var item in a.Products)
                 {
@@ -55,10 +56,31 @@ namespace JdCat.Cat.Repository
                     }
                     if (status != null)
                     {
-                        if(item.Status != status)
+                        if (item.Status != status)
                         {
                             delList.Add(item);
                         }
+                    }
+                }
+                delList.ForEach(b => a.Products.Remove(b));
+            });
+            return list;
+        }
+        public IEnumerable<ProductType> GetTypes(int businessId)
+        {
+            var list = Context.ProductTypes
+                .Include(a => a.Products)
+                .Where(a => a.BusinessId == businessId)
+                .OrderBy(a => a.Sort).ToList();
+            list.ForEach(a =>
+            {
+                var delList = new List<Product>();
+                foreach (var item in a.Products)
+                {
+                    if (item.Status == ProductStatus.Delete)
+                    {
+                        delList.Add(item);
+                        continue;
                     }
                 }
                 delList.ForEach(b => a.Products.Remove(b));

@@ -26,7 +26,10 @@ namespace JdCat.Cat.Repository
         private static object loop = new object();
         public Order Get(int id)
         {
-            return Context.Orders.Include(a => a.DadaReturn).SingleOrDefault(a => a.ID == id);
+            return Context.Orders
+                .Include(a => a.DadaReturn)
+                .Include(a => a.Products)
+                .SingleOrDefault(a => a.ID == id);
         }
         public OrderRepository(CatDbContext context) : base(context)
         {
@@ -86,7 +89,7 @@ namespace JdCat.Cat.Repository
             return result;
         }
 
-        public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null)
+        public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null, DateTime? createTime = null)
         {
             var lastTime = DateTime.Now.AddYears(-1);
             var queryable = Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).Where(a => a.BusinessId == business.ID && a.CreateTime > lastTime);
@@ -109,6 +112,11 @@ namespace JdCat.Cat.Repository
             if (status.HasValue)
             {
                 queryable = queryable.Where(a => (a.Status & status) > 0);
+            }
+            if (createTime.HasValue)
+            {
+                var flag = createTime.Value.ToString("yyyy-MM-dd");
+                queryable = queryable.Where(a => a.CreateTime.Value.ToString("yyyy-MM-dd") == flag);
             }
             query.RecordCount = queryable.Count();
             return queryable.OrderByDescending(a => a.CreateTime).Skip(query.Skip).Take(query.PageSize).ToList();
@@ -140,6 +148,17 @@ namespace JdCat.Cat.Repository
             Context.DadaReturns.Add(back.result);
             order.Status = OrderStatus.DistributorReceipt;
             order.DeliveryMode = DeliveryMode.Third;
+            order.LogisticsType = LogisticsType.Dada;
+            order.DistributionTime = DateTime.Now;
+            order.ErrorReason = "";
+            order.IsSendDada = true;
+            return Context.SaveChanges() > 0;
+        }
+        public bool SendDwdSuccess(Order order, DWD_Result<DWD_Content> back)
+        {
+            order.Status = OrderStatus.DistributorReceipt;
+            order.DeliveryMode = DeliveryMode.Third;
+            order.LogisticsType = LogisticsType.Dianwoda;
             order.DistributionTime = DateTime.Now;
             order.ErrorReason = "";
             return Context.SaveChanges() > 0;
@@ -264,6 +283,11 @@ namespace JdCat.Cat.Repository
         public Order GetOrderByCode(string code)
         {
             return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == code);
+        }
+
+        public DWD_Business GetDwdShop(int businessId)
+        {
+            return Context.DWD_Businesses.AsNoTracking().FirstOrDefault(a => a.BusinessId == businessId);
         }
 
     }

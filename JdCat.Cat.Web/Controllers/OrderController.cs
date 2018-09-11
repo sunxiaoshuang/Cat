@@ -12,6 +12,7 @@ using JdCat.Cat.Web.App_Code;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -65,8 +66,6 @@ namespace JdCat.Cat.Web.Controllers
             return Json(result);
         }
 
-
-
         /// <summary>
         /// 接单
         /// </summary>
@@ -99,33 +98,35 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="id"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public async Task<IActionResult> Send(int id, [FromQuery]int type, [FromServices]DadaHelper helper)
+        public async Task<IActionResult> Send(int id, [FromQuery]int type, [FromQuery]LogisticsType logisticsType)
         {
-            var result = new JsonData();
-
             if (type == 0)
             {
-                // 达达配送
                 var order = Service.Get(id);
-                var back = await helper.SendOrderAsync(order, Business);
-                // 创建达达订单未成功
-                if (!back.IsSuccess())
+                switch (logisticsType)
                 {
-                    result.Msg = back.msg;
-                    order.ErrorReason = back.msg;
-                    Service.Commit();
-                    return Json(result);
+                    case LogisticsType.None:
+                        break;
+                    case LogisticsType.Dada:
+                        return Json(await DadaHandler(order));
+                    case LogisticsType.Dianwoda:
+                        return Json(await DwdHandler(order));
+                    case LogisticsType.Meituan:
+                        return Json(await MeituanHandler(order));
+                    case LogisticsType.Fengniao:
+                        return Json(await FengniaoHandler(order));
+                    default:
+                        break;
                 }
-                result.Success = Service.SendSuccess(order, back);
-                result.Msg = result.Success ? "配送成功" : "接单异常或者已经接单";
-                result.Data = new
+                return Json(new JsonData
                 {
-                    Mode = DeliveryMode.Third,
-                    order.Status
-                };
+                    Msg = "操作异常，请刷新后重试"
+                });
             }
             else
             {
+                var result = new JsonData();
+
                 // 自己配送
                 result.Success = Service.SendOrderSelf(id);
                 result.Msg = result.Success ? "操作成功" : "接单异常或者已经接单";
@@ -134,8 +135,69 @@ namespace JdCat.Cat.Web.Controllers
                     Mode = DeliveryMode.Own,
                     Status = OrderStatus.Distribution,
                 };
+                return Json(result);
             }
-            return Json(result);
+        }
+
+        private async Task<JsonData> DadaHandler(Order order)
+        {
+            var result = new JsonData();
+            var helper = HttpContext.RequestServices.GetService<DadaHelper>();
+            var back = await helper.SendOrderAsync(order, Business);
+            // 发送订单未成功
+            if (!back.IsSuccess())
+            {
+                result.Msg = back.msg;
+                order.ErrorReason = back.msg;
+                Service.Commit();
+                return result;
+            }
+            result.Success = Service.SendSuccess(order, back);
+            result.Msg = result.Success ? "配送成功" : "接单异常或者已经接单";
+            result.Data = new
+            {
+                Mode = DeliveryMode.Third,
+                Logistics = LogisticsType.Dada,
+                order.Status
+            };
+            return result;
+        }
+        private async Task<JsonData> DwdHandler(Order order)
+        {
+            var result = new JsonData();
+            var helper = HttpContext.RequestServices.GetService<DwdHelper>();
+            var shop = GetDwdShop();
+            if(shop == null)
+            {
+                result.Msg = "尚未创建点我达商户，请进入[设置->点我达设置]完成初始化操作";
+                return result;
+            }
+            var back = await helper.SendOrderAsync(order, Business);
+            // 发送订单未成功
+            if (!back.success)
+            {
+                result.Msg = back.message;
+                order.ErrorReason = back.message;
+                Service.Commit();
+                return result;
+            }
+            result.Success = Service.SendDwdSuccess(order, back);
+            result.Msg = result.Success ? "配送成功" : "接单异常或者已经接单";
+            result.Data = new
+            {
+                Mode = order.DeliveryMode,
+                Logistics = order.LogisticsType,
+                order.Status
+            };
+            return result;
+        }
+        private async Task<JsonData> MeituanHandler(Order order)
+        {
+            return new JsonData { Msg = "美团配送尚未开通" };
+        }
+        private async Task<JsonData> FengniaoHandler(Order order)
+        {
+            return new JsonData { Msg = "蜂鸟配送尚未开通" };
         }
 
         /// <summary>
@@ -162,26 +224,17 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> Cancel(int id, [FromQuery]int flagId, [FromQuery]string reason, [FromServices]DadaHelper helper)
         {
-            var result = new JsonData();
+            JsonData result;
             var order = Service.Get(a => a.ID == id);
             if (order.DeliveryMode == DeliveryMode.Third)
             {
-                var back = await helper.CancelOrderAsync(order.OrderCode, Business, flagId, reason);
-                // 取消不成功
-                if (!back.IsSuccess())
-                {
-                    result.Msg = back.msg;
-                    return Json(result);
-                }
-                result.Success = Service.CancelSuccess(order, back);
-                result.Data = OrderStatus.CallOff;
+                return Json(await CancelDistribution(order));
             }
-            else
-            {
-                order.Status = OrderStatus.Receipted;
-                result.Success = Service.Commit() > 0;
-                result.Data = OrderStatus.Receipted;
-            }
+
+            result = new JsonData();
+            order.Status = OrderStatus.Receipted;
+            result.Success = Service.Commit() > 0;
+            result.Data = OrderStatus.Receipted;
             result.Msg = "配送取消成功";
             return Json(result);
         }
@@ -213,7 +266,7 @@ namespace JdCat.Cat.Web.Controllers
         /// ws消息处理
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> MessageHandler([FromQuery]string code, [FromServices]DadaHelper helper)
+        public async Task<IActionResult> MessageHandler([FromQuery]string code)
         {
             // Data记录语音提示方式，Msg记录提示语
             var result = new JsonData();
@@ -228,35 +281,26 @@ namespace JdCat.Cat.Web.Controllers
             var order = Service.GetOrderByCode(code);
             switch (Business.ServiceProvider)
             {
-                case ServiceProvider.None:
+                case LogisticsType.None:
                     order.Status = OrderStatus.Receipted;
                     result.Data = 2;
                     result.Success = Service.Commit() > 0;
                     break;
-                case ServiceProvider.Self:
+                case LogisticsType.Self:
                     // 自己配送
                     result.Success = Service.SendOrderSelf(order.ID, order);
                     result.Data = 2;
                     result.Msg = "自动接单成功，配送方式：自己配送";
                     break;
-                case ServiceProvider.Dada:
+                case LogisticsType.Dada:
                     // 达达配送
-                    var back = await helper.SendOrderAsync(order, Business);
-                    // 创建达达订单未成功
-                    if (!back.IsSuccess())
-                    {
-                        result.Data = 3;
-                        result.Msg = back.msg;
-                        order.Status = OrderStatus.Receipted;
-                        order.ErrorReason = back.msg;
-                        Service.Commit();
-                    }
-                    else
-                    {
-                        result.Success = Service.SendSuccess(order, back);
-                        result.Data = 2;
-                        result.Msg = "自动接单成功，配送方式：达达配送";
-                    }
+                    result = await DadaHandler(order);
+                    result.Data = result.Success ? 2 : 3;
+                    break;
+                case LogisticsType.Dianwoda:
+                    // 点我达配送
+                    result = await DwdHandler(order);
+                    result.Data = result.Success ? 2 : 3;
                     break;
                 default:
                     break;
@@ -299,6 +343,75 @@ namespace JdCat.Cat.Web.Controllers
             }
             result.Msg = "正在打印小票，请稍等";
             return result;
+        }
+
+        private async Task<JsonData> CancelDistribution(Order order)
+        {
+            switch (order.LogisticsType)
+            {
+                case LogisticsType.Dada:
+                    return await DadaCancel(order);
+                case LogisticsType.Meituan:
+                    break;
+                case LogisticsType.Fengniao:
+                    break;
+                case LogisticsType.Dianwoda:
+                    return await DwdCancel(order);
+                default:
+                    break;
+            }
+            return null;
+        }
+        private async Task<JsonData> DadaCancel(Order order)
+        {
+            var result = new JsonData();
+            var helper = HttpContext.RequestServices.GetService<DadaHelper>();
+            var flagId = int.Parse(Request.Query["flagId"].First());
+            var reason = Request.Query["reason"].First();
+
+            var back = await helper.CancelOrderAsync(order.OrderCode, Business, flagId, reason);
+            //取消不成功
+            if (!back.IsSuccess())
+            {
+                result.Msg = back.msg;
+                return result;
+            }
+            result.Success = Service.CancelSuccess(order, back);
+            result.Data = OrderStatus.CallOff;
+            result.Success = true;
+            result.Msg = "配送取消成功";
+            Service.Commit();
+            return result;
+        }
+        private async Task<JsonData> DwdCancel(Order order)
+        {
+            var result = new JsonData();
+            var helper = HttpContext.RequestServices.GetService<DwdHelper>();
+            var reason = Request.Query["reason"].First();
+            var back = await helper.CancelOrderAsync(order, reason);
+            //取消不成功
+            if (!back.success)
+            {
+                result.Msg = back.message;
+                return result;
+            }
+            order.Status = OrderStatus.CallOff;
+            result.Data = OrderStatus.CallOff;
+            result.Success = true;
+            result.Msg = "配送取消成功";
+            Service.Commit();
+            return result;
+        }
+
+        private DWD_Business GetDwdShop()
+        {
+            var shop = Business.DwdShop;
+            if (shop != null) return shop;
+            shop = Service.GetDwdShop(Business.ID);
+            if (shop == null) return null;
+            Business.DwdShop = shop;
+            HttpContext.Session.Set(AppData.Session, Business);
+            return shop;
         }
 
     }

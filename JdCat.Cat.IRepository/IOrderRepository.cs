@@ -31,7 +31,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="phone">用户手机号</param>
         /// <param name="userId">用户id</param>
         /// <returns></returns>
-        IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null);
+        IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null, DateTime? createTime = null);
         /// <summary>
         /// 商户接单
         /// </summary>
@@ -69,6 +69,12 @@ namespace JdCat.Cat.IRepository
         /// <param name="back"></param>
         bool SendSuccess(Order order, DadaResult<DadaReturn> back);
         /// <summary>
+        /// 点我达配送接口调用成功后保存订单状态
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="back"></param>
+        bool SendDwdSuccess(Order order, DWD_Result<DWD_Content> back);
+        /// <summary>
         /// 达达配送取消后，保存订单状态
         /// </summary>
         /// <param name="order"></param>
@@ -99,5 +105,11 @@ namespace JdCat.Cat.IRepository
         /// <param name="code"></param>
         /// <returns></returns>
         Order GetOrderByCode(string code);
+        /// <summary>
+        /// 根据商户id获取点我达商户
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        DWD_Business GetDwdShop(int businessId);
     }
 }

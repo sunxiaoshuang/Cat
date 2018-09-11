@@ -65,6 +65,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 无效订单
         /// </summary>
-        Invalid = 2 + 32 + 256 + 1024 + 4096
+        Invalid = 2 + 32 + 256 + 1024 + 4096,
+        /// <summary>
+        /// 有效订单
+        /// </summary>
+        Valid = 1 + 4 + 8 + 16 + 64 + 128 + 512 + 2048
     }
 }

@@ -104,7 +104,8 @@ namespace JdCat.Cat.Web.App_Code
             dadaOrder.receiver_lng = order.Lng;
             dadaOrder.callback = _appData.DadaCallback;
             dadaOrder.receiver_phone = order.Phone;
-            var url = order.Status == Model.Enum.OrderStatus.CallOff ? "/api/order/reAddOrder" : "/api/order/addOrder";
+            dadaOrder.origin_mark_no = order.Identifier.ToString();
+            var url = order.IsSendDada ? "/api/order/reAddOrder" : "/api/order/addOrder";
             return await RequestAsync<DadaReturn>(url, dadaOrder, business.DadaSourceId);
         }
 

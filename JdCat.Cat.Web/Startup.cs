@@ -49,6 +49,7 @@ namespace JdCat.Cat.Web
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IDwdRepository, DwdRepository>();
             services.AddSingleton(new List<City>());
             services.AddSingleton(new List<DadaCancelReason>());
             // 系统参数
@@ -71,7 +72,12 @@ namespace JdCat.Cat.Web
                 DadaCallback = appData["dadaCallback"],
                 FeyinAppId = appData["feyinAppId"],
                 FeyinMemberCode = appData["feyinMemberCode"],
-                FeyinApiKey = appData["feyinApiKey"]
+                FeyinApiKey = appData["feyinApiKey"],
+                DwdDomain = appData["dwdDomain"],
+                DwdAppKey = appData["dwdAppKey"],
+                DwdAppSecret = appData["dwdAppSecret"],
+                DwdShopNo = appData["dwdShopNo"],
+                DwdCallback = appData["dwdCallback"]
             };
             services.AddSingleton(config);
             // 序列化参数
@@ -84,6 +90,8 @@ namespace JdCat.Cat.Web
             services.AddSingleton(setting);
             // 达达请求
             services.AddSingleton(new DadaHelper(config, setting));
+            // 点我达请求
+            services.AddSingleton(new DwdHelper(config));
             // 飞印
             var feyin = new FeYinHelper
             {

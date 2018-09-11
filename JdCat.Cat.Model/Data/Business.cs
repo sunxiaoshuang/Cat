@@ -169,11 +169,15 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 配送服务商
         /// </summary>
-        public ServiceProvider ServiceProvider { get; set; }
+        public LogisticsType ServiceProvider { get; set; }
         /// <summary>
         /// 是否正式发布
         /// </summary>
         public bool IsPublish { get; set; } = true;
+        /// <summary>
+        /// 点我达商户对象
+        /// </summary>
+        public virtual DWD_Business DwdShop { get; set; }
 
         /// <summary>
         /// 产品列表集合

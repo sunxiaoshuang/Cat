@@ -232,6 +232,13 @@
     "inputFiles": [
       "wwwroot/css/user/list.css"
     ]
+  },
+  // 点我达
+  {
+    "outputFileName": "wwwroot/js/dianwoda/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/dianwoda/index.js"
+    ]
   }
 
 ]

@@ -1,0 +1,63 @@
+﻿
+@{
+    Layout = null;
+}
+
+<script>
+    var createPageObj = JSON.parse('@Html.Raw(ViewBag.dwd)');
+</script>
+
+<div class="row form-horizontal" id="createPage">
+
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            <span class="require">商户名称：</span>
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control" v-model="obj.shop_title" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            <span class="require">所属城市：</span>
+        </label>
+        <div class="col-xs-8">
+            <select class="form-control" v-model="obj.city_code" @@change="change($event)">
+                <option :value="item.code" v-for="item in cityList">{{item.name}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            <span class="require">联系电话：</span>
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control" v-model="obj.mobile" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            <span class="require">经度：</span>
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control" type="number" v-model="obj.lng" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            <span class="require">纬度：</span>
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control" type="number" v-model="obj.lat" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            <span class="require">地址：</span>
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control" v-model="obj.addr" />
+        </div>
+    </div>
+
+</div>

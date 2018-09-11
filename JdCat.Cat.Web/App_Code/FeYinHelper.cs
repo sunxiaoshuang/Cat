@@ -52,8 +52,8 @@ namespace JdCat.Cat.Web.App_Code
             var url = $"https://api.open.feyin.net/msg";
             var businessName = business == null ? "简单猫外卖" : business.Name;
             var content = new StringBuilder();
-            content.Append($"<center><Font# Bold=1 Width=4 Height=4>#{order.Identifier}</Font#>\n");
-            content.Append("<left><Font# Bold=1 Width=1 Height=1>商家小票</Font#>\n");
+            content.Append($"<center><Font# Bold=1 Width=4 Height=4>#{order.Identifier}</Font#><Font# Bold=1 Width=2 Height=2> 简单猫</Font#>\n");
+            content.Append("<left><Font# Bold=1 Width=1 Height=1>配送小票</Font#>\n");
             content.Append("--------------------------------\n");
             content.Append("<center><Font# Bold=1 Width=2 Height=2>" + businessName + "</Font#>\n");
             content.Append("\n\n");

@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
+using JdCat.Cat.WsService.App_Code;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +17,10 @@ namespace JdCat.Cat.WsService
     {
         public static void Main(string[] args)
         {
+            //Task.Run(() => AsynchronousSocketListener.StartListening());
             BuildWebHost(args).Run();
+
+
         }
 
         public static IWebHost BuildWebHost(string[] args)

@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
 using JdCat.Cat.Common.Filter;
-using JdCat.Cat.Model;
 using JdCat.Cat.WsService.App_Code;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

@@ -96,5 +96,25 @@ namespace JdCat.Cat.Common
         /// 支付服务商号
         /// </summary>
         public string ServerMchId { get; set; }
+        /// <summary>
+        /// 点我达接口地址
+        /// </summary>
+        public string DwdDomain { get; set; }
+        /// <summary>
+        /// 点我达开发者id
+        /// </summary>
+        public string DwdAppKey { get; set; }
+        /// <summary>
+        /// 点我达开发者密钥
+        /// </summary>
+        public string DwdAppSecret { get; set; }
+        /// <summary>
+        /// 点我达测试商户编码
+        /// </summary>
+        public string DwdShopNo { get; set; }
+        /// <summary>
+        /// 点我达接口回调
+        /// </summary>
+        public string DwdCallback { get; set; }
     }
 }

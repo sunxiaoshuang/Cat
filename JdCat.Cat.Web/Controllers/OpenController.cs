@@ -9,6 +9,7 @@ using JdCat.Cat.Common;
 using JdCat.Cat.Common.Models;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using log4net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         /// <summary>
-        /// 订单回调
+        /// 达达订单回调
         /// </summary>
         /// <param name="dada"></param>
         /// <param name="environment"></param>
@@ -43,6 +44,19 @@ namespace JdCat.Cat.Web.Controllers
                 System.IO.File.AppendAllText(filename, "\r\n" + Environment.NewLine + e.Message);
             }
             return Ok("更新完成");
+        }
+        /// <summary>
+        /// 点我达订单回调
+        /// </summary>
+        /// <param name="dada"></param>
+        /// <param name="environment"></param>
+        /// <returns></returns>
+        public IActionResult DWDCallback([FromBody]DWD_Callback dwd)
+        {
+            var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
+            var result = JsonConvert.SerializeObject(dwd);
+            log.Debug("点我达回调：" + result);
+            return Json(new { success = true });
         }
     }
 }

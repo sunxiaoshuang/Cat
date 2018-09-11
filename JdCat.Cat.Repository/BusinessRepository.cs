@@ -151,7 +151,7 @@ namespace JdCat.Cat.Repository
         public List<Report_Order> GetOrderTotal(Business business, DateTime startTime, DateTime endTime)
         {
             return ExecuteReader<Report_Order>($@"select CreateTime, SUM(Price) Price, COUNT(*) Quantity from 
-    (select Price, CONVERT(varchar(10), CreateTime, 120) as CreateTime from dbo.[Order] where BusinessId={business.ID} and CreateTime between '{startTime:yyyy-MM-dd}' and '{endTime:yyyy-MM-dd}')t1
+    (select Price, CONVERT(varchar(10), CreateTime, 120) as CreateTime from dbo.[Order] where BusinessId={business.ID} and Status & {(int)OrderStatus.Valid} > 0 and CreateTime between '{startTime:yyyy-MM-dd}' and '{endTime:yyyy-MM-dd}')t1
 group by CreateTime");
         }
 

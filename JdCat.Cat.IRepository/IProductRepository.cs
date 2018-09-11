@@ -17,6 +17,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         IEnumerable<ProductType> GetTypes(Business business, ProductStatus? status = null);
         /// <summary>
+        /// 根据商户Id获取商品类别列表
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        IEnumerable<ProductType> GetTypes(int businessId);
+        /// <summary>
         /// 新增商品类别
         /// </summary>
         /// <param name="type"></param>

@@ -318,6 +318,33 @@ namespace JdCat.Cat.Common
             return result;
         }
         #endregion
+
+        public static string SHA1(string content, Encoding encode = null)
+        {
+            if (encode == null)
+            {
+                encode = Encoding.UTF8;
+            }
+            try
+            {
+                var sha1 = new SHA1CryptoServiceProvider();
+                byte[] bytes_in = encode.GetBytes(content);
+                byte[] bytes_out = sha1.ComputeHash(bytes_in);
+                sha1.Dispose();
+                var enText = new StringBuilder();
+                foreach (byte iByte in bytes_out)
+                {
+                    enText.AppendFormat("{0:x2}", iByte);
+                }
+                return enText.ToString().ToUpper();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("SHA1加密出错：" + ex.Message);
+            }
+        }
+
+
         #endregion
 
         /// <summary>

@@ -113,6 +113,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public int Identifier { get; set; }
         /// <summary>
+        /// 配送流水
+        /// </summary>
+        public int DistributionFlow { get; set; }
+        /// <summary>
+        /// 物流方式
+        /// </summary>
+        public LogisticsType LogisticsType { get; set; }
+        /// <summary>
         /// 用户id
         /// </summary>
         public int? UserId { get; set; }
@@ -134,6 +142,14 @@ namespace JdCat.Cat.Model.Data
         /// 达达新增订单返回结果
         /// </summary>
         public virtual DadaReturn DadaReturn { get; set; }
+        /// <summary>
+        /// 是否已经发送过达达
+        /// </summary>
+        public bool IsSendDada { get; set; }
+        /// <summary>
+        /// 点我达新增订单返回结果
+        /// </summary>
+        //public virtual DWD_Content DwdContent{ get; set; }
         /// <summary>
         /// 违约金
         /// </summary>

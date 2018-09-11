@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JdCat.Cat.Common\JdCat.Cat.Common.csproj" />
-    <ProjectReference Include="..\JdCat.Cat.Model\JdCat.Cat.Model.csproj" />
   </ItemGroup>
 
   <ItemGroup>

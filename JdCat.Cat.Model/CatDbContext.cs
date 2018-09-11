@@ -45,6 +45,7 @@ namespace JdCat.Cat.Model
         public DbSet<SaleCoupon> SaleCoupons { get; set; }
         public DbSet<SaleCouponUser> SaleCouponUsers { get; set; }
         public DbSet<SaleProductDiscount> SaleProductDiscount { get; set; }
+        public DbSet<DWD_Business> DWD_Businesses { get; set; }
 
 
         /// <summary>

@@ -31,8 +31,23 @@ namespace JdCat.Cat.WsService.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id, [FromQuery]string code, [FromServices]WsHandler wsHandler)
         {
+            // 网页通知
             await wsHandler.OrderNotifyAsync(id, code);
+            // 客户端通知
+            //var state = StateObject.DicSocket.FirstOrDefault(a => a.Key == id);
+            //if (state.Value != null)
+            //{
+            //    if (!state.Value.workSocket.Poll(10, System.Net.Sockets.SelectMode.SelectRead))
+            //    {
+            //        AsynchronousSocketListener.Send(state.Value, code);
+            //    }
+            //    else
+            //    {
+            //        StateObject.DicSocket.Remove(id);
+            //    }
+            //}
             return Ok("新订单通知成功");
         }
+
     }
 }

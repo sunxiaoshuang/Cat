@@ -37,6 +37,7 @@ namespace JdCat.Cat.Web.App_Code
                 var context = scope.ServiceProvider.GetService<CatDbContext>();
                 var cityList = scope.ServiceProvider.GetService<List<City>>();
                 var dadaHelper = scope.ServiceProvider.GetService<DadaHelper>();
+                
                 using (var hc = new HttpClient())
                 {
                     var content = await dadaHelper.RequestAsync("/api/cityCode/list");
