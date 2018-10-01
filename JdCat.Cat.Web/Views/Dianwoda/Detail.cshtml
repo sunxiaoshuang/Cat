@@ -1,0 +1,66 @@
+﻿
+@{
+    Layout = null;
+}
+
+<div class="form-horizontal" style="padding-top:20px;" id="detailPage">
+    <div class="form-group">
+        <label class="control-label col-md-1">查询时间：</label>
+        <div class="col-md-10">
+            <div class="input-group pull-left" style="width: 200px;">
+                <input type="text" class="form-control" value="@DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd")" id="txtStartDate" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+            <span class="pull-left" style="margin-top: 8px;padding: 0 10px;">至</span>
+            <div class="input-group pull-left" style="width: 200px;">
+                <input type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="txtEndDate" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+            <button class="btn btn-primary pull-left" style="margin-left: 20px;" @@click="search()">
+                <i class="fa fa-search"></i>
+                搜索
+            </button>
+        </div>
+        <label class="control-label col-md-offset-1">
+            <span class="pull-left text-danger" style="margin-top: 8px;padding: 0 10px;">注：开始时间和结束时间必须在一个月内，不支持跨月的处理</span>
+        </label>
+    </div>
+    <div class="row">
+        <div class="col-md-8" style="padding: 0 30px;">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th width="100">#</th>
+                        <th>交易编号</th>
+                        <th>入账时间</th>
+                        <th>收支金额</th>
+                        <th>交易类型</th>
+                        <th>交易内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, index) in list">
+                        <td v-text="index + 1"></td>
+                        <td v-text="item.serial_id"></td>
+                        <td v-text="item.operate_time">入账时间</td>
+                        <td v-html="'￥' + (item.amount / 100)">收支金额</td>
+                        <td v-text="item.trade_type">交易类型</td>
+                        <td v-text="item.trade_content">交易内容</td>
+                    </tr>
+                </tbody>
+                <tfoot v-if="!list || list.length === 0">
+                    <tr>
+                        <td colspan="6">
+                            暂无交易数据...
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <cat-pager :page-count="pageCount" :page-index="pageIndex" @@next="next" @@page="page" @@prev="prev"></cat-pager>
+        </div>
+    </div>
+</div>

@@ -121,6 +121,18 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public LogisticsType LogisticsType { get; set; }
         /// <summary>
+        /// 物流平台返回的费用
+        /// </summary>
+        public double? CallbackCost { get; set; }
+        /// <summary>
+        /// 微信调用统一支付接口后返回的id，用来发送模版消息，使用redis后删除掉
+        /// </summary>
+        public string PrepayId { get; set; }
+        /// <summary>
+        /// 下单人OpenId
+        /// </summary>
+        public string OpenId { get; set; }
+        /// <summary>
         /// 用户id
         /// </summary>
         public int? UserId { get; set; }

@@ -1,9 +1,8 @@
-﻿using JdCat.Cat.Model.Enum;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace JdCat.Cat.Model.Data
+namespace JdCat.Cat.Common.Dianwoda
 {
     public class DWD_Info
     {

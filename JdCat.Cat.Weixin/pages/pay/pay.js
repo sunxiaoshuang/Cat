@@ -24,7 +24,9 @@ Page({
       tablewareQuantity = 0,
       freight = qcloud.getSession().business.freight;
     cartList.forEach(a => {
-      oldPrice += a.price * a.quantity;
+      // var format = a.product.formats.filter(b => b.id = a.formatId)[0];
+      // oldPrice += a.price * a.quantity + a.quantity * format.packingPrice;      
+      oldPrice += a.price * a.quantity;      
       tablewareQuantity += a.packingQuantity * a.quantity;
     });
     oldPrice = qcloud.utils.getNumber(oldPrice + freight, 2);
@@ -38,7 +40,7 @@ Page({
       total = qcloud.utils.getNumber(oldPrice - saleFullReduce.reduceMoney, 2);
     }
 
-    if(total < 0)total = 0;
+    if (total < 0) total = 0;
     // 优惠券
     var myCoupon = wx.getStorageSync("myCoupon");
     var notUse = myCoupon.filter(a => {
@@ -46,7 +48,7 @@ Page({
       if (oldPrice >= a.minConsume) return true;
       return false;
     });
-
+    
     this.setData({
       cartList: cartList,
       freight: freight,
@@ -63,10 +65,11 @@ Page({
     // 优惠券
     var coupon = wx.getStorageSync("selectCoupon") || "";
     wx.removeStorageSync("selectCoupon");
-    
-    var oldPrice = this.data.oldPrice, fullReducePrice = this.data.saleFullReduce.reduceMoney || 0;
+
+    var oldPrice = this.data.oldPrice,
+      fullReducePrice = this.data.saleFullReduce.reduceMoney || 0;
     var total = qcloud.utils.getNumber(oldPrice - fullReducePrice - (coupon.value || 0), 2);
-    if(total < 0)total = 0;
+    if (total < 0) total = 0;
     this.setData({
       address,
       coupon,
@@ -100,6 +103,13 @@ Page({
     var self = this,
       business = qcloud.getSession().business,
       user = qcloud.getSession().userinfo;
+    if (business.range > 0) {
+      var distance = util.calcDistance(this.data.address, business);
+      if (business.range - distance / 1000 < 0) {
+        util.showError("地址超出商家配送范围");
+        return;
+      }
+    }
     var order = {
       price: this.data.total,
       oldPrice: this.data.oldPrice,
@@ -116,8 +126,10 @@ Page({
       businessId: business.id,
       saleFullReduceId: this.data.saleFullReduce.id,
       saleCouponUserId: this.data.coupon.id,
-      products: []
+      products: [],
+      openId: user.openId
     };
+    
     this.data.cartList.forEach(a => {
       order.products.push({
         name: a.name,
@@ -151,11 +163,11 @@ Page({
       }
     });
   },
-  useCoupon: function(id){
-    if(!id)return;
+  useCoupon: function (id) {
+    if (!id) return;
     var myCoupon = wx.getStorageSync("myCoupon");
     myCoupon.forEach(a => {
-      if(a.id == id) {
+      if (a.id == id) {
         a.status = 2;
       }
     });

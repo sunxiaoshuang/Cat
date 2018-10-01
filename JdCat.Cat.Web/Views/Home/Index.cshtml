@@ -32,11 +32,13 @@
         pageData.business.description = pageData.business.description.replace(/\\n/g, "\n");
     </script>
     <environment include="Development">
+        <script src="~/js/lib/reconnecting-websocket.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap-switch.js"></script>
         <script src="~/lib/metisMenu/metisMenu.js"></script>
         <script src="~/js/index.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
+        <script src="~/js/lib/reconnecting-websocket.min.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap-switch.min.js"></script>
         <script src="~/lib/metisMenu/metisMenu.min.js"></script>
         <script src="~/js/index.min.js" asp-append-version="true"></script>

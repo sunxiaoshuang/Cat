@@ -1,0 +1,121 @@
+﻿@using JdCat.Cat.Common
+@using JdCat.Cat.Common.Dianwoda
+@using JdCat.Cat.Web.App_Code
+@model DWD_OrderDetail
+
+@{
+    Layout = null;
+}
+
+
+<div class="row form-horizontal" id="createPage">
+    <div class="form-group">
+        <label class="control-label col-offset-xs-1 col-xs-3">
+            点我达订单编号：
+        </label>
+        <label class="control-label text-left font-nobold col-xs-3">
+            @Model.dwd_order_id
+        </label>
+        <label class="control-label col-offset-xs-1 col-xs-3">
+            @ViewBag.typeName：
+        </label>
+        <label class="control-label text-left font-nobold">
+            @ViewBag.price
+        </label>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-offset-xs-1 col-xs-3">
+            订单状态：
+        </label>
+        <label class="control-label text-left font-nobold col-xs-3">
+            @DwdHelper.DwdStatusDic[Model.order_status]
+        </label>
+        <label class="control-label col-offset-xs-1 col-xs-3">
+            服务类型：
+        </label>
+        <label class="control-label text-left font-nobold">
+            @(Model.service_type == 0 ? "骑手" : "骑士")
+        </label>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.abnormal_reason))
+    {
+        <div class="form-group">
+            <label class="control-label col-offset-xs-1 col-xs-3">
+                异常原因：
+            </label>
+            <label class="control-label text-left font-nobold">
+                @Model.abnormal_reason
+            </label>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.rider_code))
+    {
+        <div class="form-group">
+            <label class="control-label col-offset-xs-1 col-xs-3">
+                配送员编号：
+            </label>
+            <label class="control-label text-left font-nobold col-xs-3">
+                @Model.rider_code
+            </label>
+            <label class="control-label col-offset-xs-1 col-xs-3">
+                配送员姓名：
+            </label>
+            <label class="control-label text-left font-nobold">
+                @Model.rider_name
+            </label>
+        </div>
+        @*<div class="form-group">
+            <label class="control-label col-offset-xs-1 col-xs-3">
+                配送员纬度：
+            </label>
+            <label class="control-label text-left font-nobold col-xs-3">
+                @Model.rider_lat
+            </label>
+            <label class="control-label col-offset-xs-1 col-xs-3">
+                配送员经度：
+            </label>
+            <label class="control-label text-left font-nobold">
+                @Model.rider_lng
+            </label>
+        </div>*@
+        <div class="form-group">
+            <label class="control-label col-offset-xs-1 col-xs-3">
+                配送员手机号：
+            </label>
+            <label class="control-label text-left font-nobold col-xs-8">
+                @Model.rider_mobile
+            </label>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-offset-xs-1 col-xs-3">
+                区域经理的姓名：
+            </label>
+            <label class="control-label text-left font-nobold col-xs-3">
+                @Model.am_name
+            </label>
+            <label class="control-label col-offset-xs-1 col-xs-3">
+                区域经理手机号码：
+            </label>
+            <label class="control-label text-left font-nobold">
+                @Model.am_mobile
+            </label>
+        </div>
+    }
+    @if (Model.logistic_info != null)
+    {
+        <div class="padding-10">
+            <table class="table table-border">
+                <tbody>
+                    @foreach (var item in Model.logistic_info)
+                    {
+                        <tr>
+                            <td>@DwdHelper.DwdStatusDic[item.order_status]</td>
+                            <td>@UtilHelper.ConvertStringToDateTime(item.time_status_update.ToString()).ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+

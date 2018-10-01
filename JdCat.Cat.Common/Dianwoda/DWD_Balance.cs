@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace JdCat.Cat.Web.Models
+namespace JdCat.Cat.Common.Dianwoda
 {
     public class DWD_Balance
     {

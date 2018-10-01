@@ -77,7 +77,8 @@ namespace JdCat.Cat.Web.Controllers
                     Address = address,
                     Mobile = phone,
                     BusinessLicense = license,
-                    Description = mark
+                    Description = mark,
+                    Freight = 4
                 };
                 userInfo.FeyinMemberCode = appData.FeyinMemberCode;
                 userInfo.FeyinApiKey = appData.FeyinApiKey;

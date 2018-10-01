@@ -148,23 +148,24 @@
                         }
                     });
                 }
+                return $modal;
             };
-            $.confirm.apply(this, arguments);
+            return $.confirm.apply(this, arguments);
         },
         warning: function (msg, submit, cancel) {
-            $.confirm("警告", msg, submit, cancel, "fa-warning text-warning", "bg-warning", "btn-warning", null, "text-warning");
+            return $.confirm("警告", msg, submit, cancel, "fa-warning text-warning", "bg-warning", "btn-warning", null, "text-warning");
         },
         info: function (msg, submit, cancel) {
-            $.confirm("提示", msg, submit, cancel, "fa-info-circle text-info", "bg-info", "btn-info", null, "text-info");
+            return $.confirm("提示", msg, submit, cancel, "fa-info-circle text-info", "bg-info", "btn-info", null, "text-info");
         },
         danger: function (msg, submit, cancel) {
-            $.confirm("错误", msg, submit, cancel, "fa-times-circle text-danger", "bg-danger", "btn-danger", null, "text-danger");
+            return $.confirm("错误", msg, submit, cancel, "fa-times-circle text-danger", "bg-danger", "btn-danger", null, "text-danger");
         },
         success: function (msg, submit, cancel) {
-            $.confirm("提示", msg, submit, cancel, "fa-check-circle text-success", "bg-success", "btn-success", null, "text-success");
+            return $.confirm("提示", msg, submit, cancel, "fa-check-circle text-success", "bg-success", "btn-success", null, "text-success");
         },
         primary: function (msg, submit, cancel) {
-            $.confirm("提示", msg, submit, cancel, "fa-check-circle text-primary", "bg-primary", "btn-primary", null, "text-primary");
+            return $.confirm("提示", msg, submit, cancel, "fa-check-circle text-primary", "bg-primary", "btn-primary", null, "text-primary");
         },
         alert: function (msg, status) {
             status = status || "error";
@@ -224,6 +225,15 @@
             }(),
 
             language: (navigator.browserLanguage || navigator.language).toLowerCase()
+        },
+        dateOptions: {
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            maxView: 1,
+            minView: 2,
+            todayBtn: true,
+            todayHighlight: true,
+            language: "zh-CN"
         }
 
     });

@@ -116,5 +116,13 @@ namespace JdCat.Cat.Common
         /// 点我达接口回调
         /// </summary>
         public string DwdCallback { get; set; }
+        /// <summary>
+        /// 微信支付成功后通知地址
+        /// </summary>
+        public string PaySuccessUrl { get; set; }
+        /// <summary>
+        /// 服务器IP地址
+        /// </summary>
+        public string HostIpAddress { get; set; }
     }
 }

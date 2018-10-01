@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.Common.Dianwoda;
 using JdCat.Cat.Common.Models;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
@@ -57,7 +58,7 @@ namespace JdCat.Cat.Repository
                 var nowStr = now.ToString("yyyy-MM-dd");
                 var query = Context.Orders.Where(a => a.BusinessId == order.BusinessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == nowStr);
                 int max = 0;
-                if(query.Count() > 0)
+                if (query.Count() > 0)
                 {
                     max = query.Max(a => a.Identifier);
                 }
@@ -263,17 +264,13 @@ namespace JdCat.Cat.Repository
 
         public Order PaySuccess(WxPaySuccess ret)
         {
-            var order = Context.Orders.Single(a => a.OrderCode == ret.out_trade_no);
+            var order = Context.Orders.SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
+            if (order == null) return null;
             if (order.Status == OrderStatus.NotPay)
             {
                 order.WxPayCode = ret.transaction_id;
                 order.PayTime = DateTime.Now;
                 order.Status = OrderStatus.Payed;
-                //var business = Context.Businesses.Single(a => a.ID == order.BusinessId);
-                //if (business.IsAutoReceipt)
-                //{
-                //    order.Status = OrderStatus.Receipted;
-                //}
                 Context.SaveChanges();
                 return order;
             }
@@ -285,9 +282,51 @@ namespace JdCat.Cat.Repository
             return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == code);
         }
 
-        public DWD_Business GetDwdShop(int businessId)
+        public DWDStore GetDwdShop(int businessId)
         {
-            return Context.DWD_Businesses.AsNoTracking().FirstOrDefault(a => a.BusinessId == businessId);
+            return Context.DWDStores.AsNoTracking().FirstOrDefault(a => a.BusinessId == businessId);
+        }
+
+        public Order UpdateOrderByDwd(DWD_Callback callback, double cost)
+        {
+            var orderCode = callback.order_original_id.Split('_')[0];
+            var order = Context.Orders.SingleOrDefault(a => a.OrderCode == orderCode);
+            order.CallbackCost = cost;
+            // 根据达达返回状态，更新订单的状态
+            switch (callback.order_status)
+            {
+                case DWD_OrderStatus.Assigning:
+                    break;
+                case DWD_OrderStatus.Transfer:
+                    order.Status = OrderStatus.Receipted;
+                    break;
+                case DWD_OrderStatus.Taking:
+                    order.Status = OrderStatus.DistributorReceipt;
+                    break;
+                case DWD_OrderStatus.ArrivedShop:
+                    order.Status = OrderStatus.DistributorReceipt;
+                    break;
+                case DWD_OrderStatus.Distribution:
+                    order.DistributionTime = DateTime.Now;
+                    order.Status = OrderStatus.Distribution;
+                    break;
+                case DWD_OrderStatus.Finish:
+                    order.Status = OrderStatus.Achieve;
+                    order.AchieveTime = DateTime.Now;
+                    break;
+                case DWD_OrderStatus.Exception:
+                    order.Status = OrderStatus.Receipted;
+                    order.ErrorReason = callback.abnormal_reason;
+                    break;
+                case DWD_OrderStatus.Cancel:
+                    order.Status = OrderStatus.CallOff;
+                    order.ErrorReason = callback.cancel_reason;
+                    break;
+                default:
+                    break;
+            }
+            Context.SaveChanges();
+            return order;
         }
 
     }

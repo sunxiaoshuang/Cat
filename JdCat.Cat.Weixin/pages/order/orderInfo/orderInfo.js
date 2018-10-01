@@ -9,7 +9,8 @@ Page({
     order: {},
     businessId: "",
     timeId: 0,
-    remainderTime: 0
+    remainderTime: 0,
+    scene: 0
   },
 
   /**
@@ -20,6 +21,13 @@ Page({
       title: "订单详情"
     });
     this.loadData(options.id);
+    
+    // 当界面是从模版消息进来时，需要显示返回按钮
+    var scene = wx.getStorageSync("scene");
+    wx.setStorageSync("scene", 0);
+    this.setData({
+      scene: scene
+    });
   },
 
   /**
@@ -32,7 +40,7 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
+  onShow: function (a) {
     this.calcTime();
   },
   loadData: function(id){
@@ -87,6 +95,11 @@ Page({
       remainderTime: remainderTime
     });
   },
+  sure: function(e){
+    wx.navigateTo({
+      url: "/pages/pay/sure/sure?id=" + this.data.order.id
+    });
+  },
 
   copy: function(){
     wx.setClipboardData({
@@ -94,6 +107,11 @@ Page({
       success: function(){
         util.showSuccess("复制成功");
       }
+    });
+  },
+  cancel: function(){
+    wx.switchTab({
+      url: '/pages/main/main'
     });
   }
 })

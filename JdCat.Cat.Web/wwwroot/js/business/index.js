@@ -29,7 +29,6 @@
                 }
                 entity.businessStartTime = this.startHour + ":" + this.startMinus;
                 entity.businessEndTime = this.endHour + ":" + this.endMinus;
-
                 this.showError = false;
                 $.loading();
                 axios.post("/business/savebase?isChangeLogo=" + (this.isChangeLogo ? 1 : 0), entity)

@@ -1,99 +1,59 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "点我达";
 }
 
 @section Styles {
-    <environment include="Development">
-        <link href="~/css/business/index.css" rel="stylesheet" />
-    </environment>
-    <environment exclude="Development">
-        <link href="~/css/business/index.min.css" rel="stylesheet" asp-append-version="true" />
-    </environment>
+<environment include="Development">
+    <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+    <link href="~/css/dianwoda/index.css" rel="stylesheet" />
+</environment>
+<environment exclude="Development">
+    <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link href="~/css/dianwoda/index.min.css" rel="stylesheet" asp-append-version="true" />
+</environment>
 
 }
 @section Scripts {
     <script>
-        var pageObj = {
-            dwd: JSON.parse('@Html.Raw(ViewBag.dwd)'),
-            balance: @ViewBag.balance
-        };
+        var pageObj = { exist: "@ViewBag.exist" == "True"};
     </script>
     <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
         <script src="~/js/dianwoda/index.js"></script>
     </environment>
     <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
         <script src="~/js/dianwoda/index.min.js" asp-append-version="true"></script>
     </environment>
 }
 
-<div class="mainframe" id="app">
-    <div class="container-fluid" v-if="!isCreated">
-        <div class="row">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <span class="title">点我达注册信息</span>
-                    </h3>
-                </div>
-            </div>
-            <div class="panel-body form-horizontal">
-                <button class="btn btn-primary" @@click="create()">创建新商户</button>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid" v-else>
-        <div class="row">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        <span class="title">点我达注册信息</span>
-                    </h3>
-                </div>
-            </div>
-            <div class="panel-body form-horizontal">
-                <div class="form-group">
-                    <label class="control-label col-md-1">
-                        商户名称：
-                    </label>
-                    <label class="control-label" style="font-weight: 400;" v-html="shop.shop_title"></label>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-md-1">
-                        商户余额：
-                    </label>
-                    <label class="control-label" style="font-weight: 400;" v-html="balance"></label>
-                    <label class="control-label" style="font-weight: 400; padding-left: 20px;">
-                        <a href="javascript:void(0)" class="text-primary">充值</a>
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-md-1">
-                        所属城市：
-                    </label>
-                    <label class="control-label" style="font-weight: 400;" v-html="shop.city_name"></label>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-md-1">
-                        联系电话：
-                    </label>
-                    <label class="control-label" style="font-weight: 400;" v-html="shop.mobile"></label>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-md-1">
-                        地址：
-                    </label>
-                    <label class="control-label" style="font-weight: 400;" v-html="shop.addr"></label>
-                </div>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-md-offset-1 col-md-10">
-                            <button class="btn btn-primary" @@click="create()">重新创建商户</button>
-                        </div>
-                    </div>
-                </div>
+<div class="mainframe">
+    @if (ViewBag.exist)
+    {
+        <div class="container-fluid" style="padding: 0;">
+            <ul class="nav nav-tabs" id="dianwodaTab">
+                <li class="active"><a href="#info" data-toggle="tab">商户信息</a></li>
+                <li><a href="#detail" data-toggle="tab">交易明细</a></li>
+                <li>@*<a href="#charge" data-toggle="tab">账单</a>*@</li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="info"></div>
+                <div class="tab-pane fade" id="detail"></div>
+                @*<div class="tab-pane fade" id="charge"></div>*@
             </div>
         </div>
-    </div>
-</div>
+    }
+    else
+    {
+        <div class="container-fluid" style="padding: 0;">
+            <div class="noExist">
+                <p>尚未创建点我达商户</p>
+                <button class="btn btn-primary" id="btnCreate">点击创建</button>
+            </div>
 
+        </div>
+    }
+
+</div>

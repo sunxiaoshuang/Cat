@@ -46,12 +46,31 @@
     <Compile Remove="Migrations\20180802054832_Modify_Coupon_Status.cs" />
     <Compile Remove="Migrations\20180810190536_Add_SaleProductDiscount.cs" />
     <Compile Remove="Migrations\20180910081558_Add_DWD_Business.cs" />
+    <Compile Remove="Migrations\20180914121751_Add_DwdRecharge.cs" />
+    <Compile Remove="Migrations\20180914124058_Add_DwdRecharge.cs" />
+    <Compile Remove="Migrations\20180914124439_Add_DwdRecharge.cs" />
+    <Compile Remove="Migrations\20180914124824_Add_DwdRecharge.cs" />
+    <Compile Remove="Migrations\20180914125121_Add_DwdRecharge.cs" />
+    <Compile Remove="Migrations\20180915075747_Add_DwdRecharge.cs" />
+    <Compile Remove="Migrations\20180915080228_Add_DwdRecharge.cs" />
+    <Compile Remove="Migrations\20180915080523_Add_DwdRecharge.cs" />
+    <Compile Remove="Migrations\20180915081933_Modify_DWDBusiness.cs" />
+    <Compile Remove="Migrations\20180915083532_Modify_DWDBusiness.cs" />
+    <Compile Remove="Migrations\20180915084003_Modify_DWDBusiness.cs" />
+    <Compile Remove="Migrations\20180915084417_Modify_DWDBusiness.cs" />
+    <Compile Remove="Migrations\20180915095943_Modify_DWDBusiness.cs" />
+    <Compile Remove="Migrations\20180915125705_Modify_DWDBusiness.cs" />
+    <Compile Remove="Migrations\20180927145143_Modify_TemplateMessage.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JdCat.Cat.Common\JdCat.Cat.Common.csproj" />
   </ItemGroup>
 
 </Project>

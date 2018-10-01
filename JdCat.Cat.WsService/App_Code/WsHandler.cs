@@ -127,20 +127,27 @@ namespace JdCat.Cat.WsService.App_Code
         public async Task OrderNotifyAsync(int id, string code)
         {
             var buffer = System.Text.Encoding.Default.GetBytes(code);
-            if (SocketDictionary.ContainsKey(id))
-            {
-                var result = await OrderNotifyAsync(SocketDictionary[id], buffer);
-                if(!result)
-                {
-                    SocketDictionary.Remove(id);
-                }
-            }
+            // 发送客户端消息通知
             if (ClientSocketDictionary.ContainsKey(id))
             {
                 var result = await OrderNotifyAsync(ClientSocketDictionary[id], buffer);
                 if (!result)
                 {
                     ClientSocketDictionary.Remove(id);
+                }
+                else
+                {
+                    // 如果客户端已经处理了通知，则不再发给网站处理
+                    return;
+                }
+            }
+            // 发送网站端消息通知
+            if (SocketDictionary.ContainsKey(id))
+            {
+                var result = await OrderNotifyAsync(SocketDictionary[id], buffer);
+                if(!result)
+                {
+                    SocketDictionary.Remove(id);
                 }
             }
         }

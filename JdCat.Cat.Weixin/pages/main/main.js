@@ -485,9 +485,9 @@ Page({
     if (!user.isPhone) {
       wx.showModal({
         title: "提示",
-        content: "为了给您提供更优质的服务，本店邀请您绑定手机号",
+        content: "为了给您提供更优质的服务，本店邀请您授权手机号",
         showCancel: false,
-        confirmText: "去绑定",
+        confirmText: "去授权",
         success: function () {
           wx.switchTab({
             url: "/pages/user/user"
@@ -710,7 +710,7 @@ Page({
         name: product.name,
         src: imgSrc,
         quantity: 1,
-        price: format.price,
+        price: qcloud.utils.getNumber(format.price + format.packingPrice, 2),
         productId: product.id,
         product: product,
         formatId: format.id,
@@ -788,6 +788,7 @@ Page({
     var cartList = this.data.cartList, self = this,
       fullReduceList = this.data.fullReduceList.slice(),
       nowItem;
+    wx.removeStorageSync("nowFullReduce");
     if (cartList.length === 0 || fullReduceList.length === 0) return;
     var total = 0,
       list = fullReduceList.reverse(),

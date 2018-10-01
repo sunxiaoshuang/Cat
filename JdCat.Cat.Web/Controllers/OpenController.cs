@@ -6,9 +6,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.Common.Dianwoda;
 using JdCat.Cat.Common.Models;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Web.App_Code;
 using log4net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -51,12 +53,32 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="dada"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public IActionResult DWDCallback([FromBody]DWD_Callback dwd)
+        public async Task<IActionResult> DWDCallback([FromBody]DWD_Callback dwd, [FromServices]DwdHelper helper)
         {
-            var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
-            var result = JsonConvert.SerializeObject(dwd);
-            log.Debug("点我达回调：" + result);
+            var orderCode = dwd.order_original_id.Split('_')[0];
+            var service = HttpContext.RequestServices.GetService<IOrderRepository>();
+            try
+            {
+                var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
+                log.Debug("点我达回调：" + JsonConvert.SerializeObject(dwd));
+                // 每次回调时，均重新读取一次订单配送费用，并保存到数据库
+                var priceResult = await helper.GetOrderPrice(orderCode);
+                double cost = 0;
+                if (priceResult.success)
+                {
+                    cost = priceResult.result.receivable_price / 100;
+                }
+                service.UpdateOrderByDwd(dwd, cost);
+            }
+            catch (Exception e)
+            {
+                var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
+                log.Info("点我达回调错误：" + e.Message);
+            }
+
+
             return Json(new { success = true });
         }
+
     }
 }

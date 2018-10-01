@@ -20,7 +20,7 @@ namespace JdCat.Cat.Model
         {
             InitBusiness();
             InitSettingProductAttribute();
-            InitOrder();
+            //InitOrder();
         }
 
         private void InitSettingProductAttribute()
@@ -117,8 +117,8 @@ namespace JdCat.Cat.Model
                 .Include("Products.Images")
                 .OrderBy(a => a.ID).First();
             var user = _context.Users.FirstOrDefault();
-            var product = business.Products.ElementAt(0);
-            var product2 = business.Products.ElementAt(0);
+            var product = business.Products?.ElementAt(0);
+            var product2 = business.Products?.ElementAt(0);
             if (user == null || product == null || product2 == null) return;
             var products = new List<OrderProduct> {
                 new OrderProduct {

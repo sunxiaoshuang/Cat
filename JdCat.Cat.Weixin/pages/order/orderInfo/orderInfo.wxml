@@ -14,7 +14,7 @@
             </view>
             <view class="order-item" wx:if="{{calc.orderStatus(order) == '未付款'}}">
                 <view class="order-content" style="flex-grow: 1;">
-                    <button class="primary" plain="true" style="float: right;border:1px solid #fdaa8a">去付款</button>
+                    <button class="primary small" plain="true" catchtap="sure" style="float: right;border:1px solid #fdaa8a">去付款</button>
                 </view>
             </view>
         </view>
@@ -69,7 +69,7 @@
         <view class="order-body">
             <view class="order-item">
                 <text class="order-title">配送服务：</text>
-                <text class="order-content">达达配送</text>
+                <text class="order-content">{{common.distributionMode(order)}}</text>
             </view>
             <view class="order-item">
                 <text class="order-title">送达时间：</text>
@@ -78,6 +78,14 @@
             <view class="order-item">
                 <text class="order-title">配送地址：</text>
                 <text class="order-content">{{order.receiverAddress}}</text>
+            </view>
+            <view class="order-item" wx:if="{{scene == 1014}}">
+                <text class="order-title">收货人：</text>
+                <text class="order-content">{{order.receiverName}}</text>
+            </view>
+            <view class="order-item" wx:if="{{scene == 1014}}">
+                <text class="order-title">联系电话：</text>
+                <text class="order-content">{{order.phone}}</text>
             </view>
         </view>
     </view>
@@ -90,7 +98,7 @@
                 <text class="order-title">订单编号：</text>
                 <view class="order-content order-code">
                     <text>{{order.orderCode}}</text>
-                    <button class="primary copy" plain="true" style="border:1px solid #fdaa8a;" bindtap="copy">复制</button>
+                    <button class="primary copy small" plain="true" style="border:1px solid #fdaa8a;" bindtap="copy">复制</button>
                 </view>
             </view>
             <view class="order-item">
@@ -102,5 +110,8 @@
                 <text class="order-content">在线支付</text>
             </view>
         </view>
+    </view>
+    <view class="commit" wx:if="{{scene == 1014}}">
+        <button type="primary" bindtap="cancel">返回首页</button>
     </view>
 </view>

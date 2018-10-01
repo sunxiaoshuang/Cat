@@ -92,7 +92,6 @@ Page({
     qcloud.request({
       url: `/order/unifiePayment/${this.data.order.id}?businessId=${this.data.businessId}&userId=${user.id}`,
       success: function (res) {
-        // wx.hideToast();
         if (res.data.success) {
           wx.requestPayment(qcloud.utils.extend({}, res.data.data, {
             success: function (res) {

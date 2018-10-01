@@ -21,20 +21,34 @@ using Newtonsoft.Json.Serialization;
 
 namespace JdCat.Cat.Repository
 {
-    public class DwdRepository : BaseRepository<DWD_Business>, IDwdRepository
+    public class DwdRepository : BaseRepository<DWDStore>, IDwdRepository
     {
         public DwdRepository(CatDbContext context) : base(context)
         {
 
         }
 
-        public bool CreateShop(DWD_Business business)
+        public bool CreateShop(DWDStore store)
         {
             // 首先删除当前的商户
-            Context.Database.ExecuteSqlCommand("delete dbo.DWDBusiness where BusinessId={0}", business.ID);
+            Context.Database.ExecuteSqlCommand("delete dbo.DWDStore where BusinessId={0}", store.BusinessId);
             // 然后保存
-            Context.DWD_Businesses.Add(business);
+            Context.DWDStores.Add(store);
             return Context.SaveChanges() > 0;
+        }
+
+        public bool AddRecharge(DWD_Recharge recharge)
+        {
+            Context.DWD_Recharges.Add(recharge);
+            return Context.SaveChanges() > 0;
+        }
+
+        public void RechargeSuccess(string bizNo)
+        {
+            var entity = Context.DWD_Recharges.FirstOrDefault(a => a.DwdCode == bizNo);
+            if (entity.IsFinish) return;
+            entity.IsFinish = true;
+            Context.SaveChanges();
         }
 
     }

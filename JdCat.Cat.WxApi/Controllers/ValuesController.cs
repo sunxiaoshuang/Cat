@@ -18,7 +18,6 @@ namespace JdCat.Cat.WxApi.Controllers
         [HttpGet]
         public IEnumerable<string> Get([FromServices]IHostingEnvironment env)
         {
-            
             return new string[] { "孙小双", "王浩" };
         }
 

@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Linq;
 
-namespace JdCat.Cat.Model.Data
+namespace JdCat.Cat.Common.Dianwoda
 {
     public abstract class DWDProperty<T> where T : class
     {

@@ -211,11 +211,16 @@ namespace JdCat.Cat.Repository
             Context.SaveChanges();
             return list;
         }
-
-
         public IEnumerable<User> GetUsers(Business business)
         {
             return Context.Users.Where(user => user.BusinessId == business.ID && user.IsRegister);
         }
+        //public bool SetPrimaryUser(Business business)
+        //{
+        //    var entity = new Business { ID = business.ID };
+        //    Context.Attach(entity);
+        //    entity.TemplateNotifyUser = business.TemplateNotifyUser;
+        //    return Context.SaveChanges() > 0;
+        //}
     }
 }

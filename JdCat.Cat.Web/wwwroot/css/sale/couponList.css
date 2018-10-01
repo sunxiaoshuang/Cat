@@ -10,8 +10,12 @@
     margin-right: 20px;
 }
 
+
+.table-sale th:nth-child(1) {
+    min-width: 200px;
+}
 .table-sale th:nth-child(2) {
-    width: 200px;
+    min-width: 200px;
 }
 
 .table-sale th:nth-child(3) {

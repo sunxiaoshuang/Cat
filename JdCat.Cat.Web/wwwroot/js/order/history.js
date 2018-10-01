@@ -50,6 +50,16 @@
                 this.pageObj.pageIndex = num;
                 this.loadData();
             },
+            prevPage: function () {
+                if (this.pageObj.pageIndex === 1) return;
+                this.pageObj.pageIndex--;
+                this.loadData();
+            },
+            nextPage: function () {
+                if (this.pageObj.pageIndex === this.pageObj.pageCount) return;
+                this.pageObj.pageIndex = this.pageObj.pageIndex + 1;
+                this.loadData();
+            },
             category: function (type) {
                 return typeName[type];
             },

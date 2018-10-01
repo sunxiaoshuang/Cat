@@ -16,6 +16,8 @@ using Newtonsoft.Json.Serialization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using JdCat.Cat.Common.Models;
+using Microsoft.Extensions.DependencyInjection;
+using System.Text;
 
 namespace JdCat.Cat.WxApi.Controllers
 {
@@ -45,7 +47,7 @@ namespace JdCat.Cat.WxApi.Controllers
         {
             var result = new JsonData();
             int? userId;
-            if(id == 0)
+            if (id == 0)
             {
                 userId = null;
             }
@@ -105,8 +107,6 @@ namespace JdCat.Cat.WxApi.Controllers
             var order = Service.GetOrderIncludeProduct(id);
             var option = new WxUnifiePayment
             {
-                //appid = business.AppId,
-                //mch_id = business.MchId,
                 appid = appData.ServerAppId,
                 mch_id = appData.ServerMchId,
                 sub_appid = business.AppId,
@@ -114,7 +114,9 @@ namespace JdCat.Cat.WxApi.Controllers
                 sub_openid = user.OpenId,
                 out_trade_no = order.OrderCode,
                 total_fee = (int)Math.Round(order.Price.Value * 100, 0),
-                key = appData.ServerKey
+                key = appData.ServerKey,
+                notify_url = appData.PaySuccessUrl,
+                spbill_create_ip = appData.HostIpAddress
             };
             if (business.ID == 1)
             {
@@ -131,7 +133,7 @@ namespace JdCat.Cat.WxApi.Controllers
                     xml = reader.ReadToEnd();
                 }
             }
-            UtilHelper.Log(xml);
+            //UtilHelper.Log(xml);
 
             using (var hc = new HttpClient())
             {
@@ -158,6 +160,9 @@ namespace JdCat.Cat.WxApi.Controllers
                         package = "prepay_id=" + ret.prepay_id,
                         key = appData.ServerKey
                     };
+                    // 保存支付标识码
+                    order.PrepayId = ret.prepay_id;
+                    Service.Commit();
                     payment.Generator();
                     result.Data = payment;
                 }
@@ -165,28 +170,6 @@ namespace JdCat.Cat.WxApi.Controllers
             }
         }
 
-        //[HttpGet("paySuccess/{id}")]
-        //public IActionResult PaySuccess(int id, [FromServices]AppData appData)
-        //{
-        //    Order order = Service.PaySuccess(id);
-        //    var result = new JsonData
-        //    {
-        //        Success = true,
-        //        Data = order
-        //    };
-        //    Task.Run(async () => {
-        //        using (var hc = new HttpClient())
-        //        {
-        //            await hc.GetAsync($"{appData.OrderUrl}/api/notify/{order.BusinessId}?code={order.OrderCode}");
-        //        }
-        //    });
-        //    return Json(result, new JsonSerializerSettings
-        //    {
-        //        DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
-        //        ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        //        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        //    });
-        //}
         [HttpPost("paySuccess")]
         public IActionResult PaySuccess([FromServices]AppData appData)
         {
@@ -205,9 +188,76 @@ namespace JdCat.Cat.WxApi.Controllers
                             await hc.GetAsync($"{appData.OrderUrl}/api/notify/{order.BusinessId}?code={order.OrderCode}");
                         }
                     });
+                    try
+                    {
+                        TemplateMessage(order);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("发送模版消息出错：" + ex.Message);
+                    }
+                }
+                else
+                {
+                    Log.Error(JsonConvert.SerializeObject(ret));
+                    return BadRequest("简单猫订单参数错误");
                 }
             }
             return Ok("ok");
+        }
+
+        [HttpGet("recevice/{id}")]
+        public IActionResult AutoRecevice(int id)
+        {
+            var result = new JsonData();
+            result.Success = Service.Receive(id);
+            if (result.Success)
+            {
+                result.Msg = "接单成功";
+            }
+            else
+            {
+                result.Msg = "接单失败";
+            }
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 发送模版消息
+        /// </summary>
+        /// <param name="order"></param>
+        private void TemplateMessage(Order order)
+        {
+            if (string.IsNullOrEmpty(order.PrepayId)) return;
+            var businessRep = HttpContext.RequestServices.GetService<IBusinessRepository>();
+            var business = businessRep.Get(a => a.ID == order.BusinessId);
+            if (string.IsNullOrEmpty(business.TemplateNotifyId)) return;
+            var msg = new WxTemplateMessage
+            {
+                emphasis_keyword = "keyword2.DATA",
+                template_id = business.TemplateNotifyId,
+                touser = order.OpenId,
+                form_id = order.PrepayId,
+                page = "pages/order/orderInfo/orderInfo?id=" + order.ID
+            };
+            var token = WxHelper.GetTokenAsync(business.AppId, business.Secret);
+            token.Wait();
+            msg.access_token = token.Result;
+            msg.data = new
+            {
+                keyword1 = new { value = order.OrderCode },
+                keyword2 = new { value = order.Price + "元" },
+                keyword3 = new { value = order.PayTime.Value.ToString("yyyy-MM-dd HH:mm:ss") },
+                keyword4 = new { value = order.ReceiverAddress },
+                keyword5 = new { value = order.ReceiverName },
+                keyword6 = new { value = order.Phone }
+            };
+
+            var res = WxHelper.SendTemplateMessage(msg);
+            res.Wait();
+            var content = res.Result;
+            Log.Debug(JsonConvert.SerializeObject(content));
+
         }
 
     }

@@ -55,7 +55,9 @@ namespace JdCat.Cat.WxApi
                 OrderUrl = appData["orderUrl"],
                 ServerAppId = appData["serverAppId"],
                 ServerKey = appData["serverKey"],
-                ServerMchId = appData["serverMchId"]
+                ServerMchId = appData["serverMchId"],
+                PaySuccessUrl = appData["paySuccessUrl"],
+                HostIpAddress = appData["HostIpAddress"],
             });
         }
         

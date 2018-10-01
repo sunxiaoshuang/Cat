@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JdCat.Cat.Model.Enum
+namespace JdCat.Cat.Common.Dianwoda
 {
     public enum DWD_OrderStatus
     {

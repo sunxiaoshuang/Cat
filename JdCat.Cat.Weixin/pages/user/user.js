@@ -3,15 +3,21 @@ const util = require("../../utils/util");
 var qcloud = require('../../vendor/wafer2-client-sdk/index');
 Page({
   data: {
-    userInfo: {}
+    userInfo: {},
+    animationData: "",
+    isShowPhoneWindow: false
   },
   onLoad: function () {
     wx.setNavigationBarTitle({
       title: "个人中心"
     });
+    var user = qcloud.getSession().userinfo;
     this.setData({
-      userInfo: qcloud.getSession().userinfo
+      userInfo: user
     });
+    if(user.isRegister && !user.isPhone){
+      this.bindPhone();
+    }
   },
   bindGetUserInfo: function (e) {
     var self = this;
@@ -36,6 +42,9 @@ Page({
               self.setData({
                 userInfo: res.data.userinfo
               });
+              
+              self.bindPhone();
+
             } else {
               util.showModel("授权失败", "请检查网络连接");
             }
@@ -67,12 +76,17 @@ Page({
           self.data.userInfo.phone = res.data.data;
           self.data.userInfo.isPhone = true;
           self.setData({
-            userInfo: self.data.userInfo
+            userInfo: self.data.userInfo,
+            isShowPhoneWindow: false
           });
           var session = qcloud.getSession();
           session.userinfo = self.data.userInfo;
           qcloud.setSession(session);
           util.showSuccess("绑定成功");
+          wx.showTabBar();
+          wx.switchTab({
+            url: "/pages/main/main"
+          });
         } else {
           util.showModel("提示", res.data.message);
         }
@@ -81,6 +95,28 @@ Page({
         util.showModel("错误", "绑定失败，请检查网络连接");
       }
     });
+  },
+  bindPhone: function(){
+    var self = this;
+    wx.hideTabBar();
+    var animation = wx.createAnimation({
+      duration: 200,
+      timingFunction: "ease",
+      delay: 0
+    });
+
+    animation.scale(0.01, 0.01).step();
+
+    this.setData({
+      isShowPhoneWindow: true,
+      animationData: animation.export()
+    });
+    setTimeout(function () {
+      animation.scale(1, 1).step();
+      self.setData({
+        animationData: animation.export()
+      });
+    }, 100);
   },
   callPhone: function(){
     var business = qcloud.getSession().business;

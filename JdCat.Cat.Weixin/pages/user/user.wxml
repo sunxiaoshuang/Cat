@@ -17,7 +17,7 @@
     </view>
     <view class="user-phone" wx:if="{{userInfo.isRegister && !userInfo.isPhone}}">
         <button bindgetphonenumber="bindGetPhoneNumber" plain="{{true}}" class="btn-bind-phone" open-type="getPhoneNumber">
-            一键绑定手机，成为会员
+            点击此处注册为会员，才能下单噢！
         </button>
     </view>
     <view class="btn-area" wx:if="{{userInfo.isRegister}}">
@@ -53,13 +53,22 @@
         </navigator>
     </view>
     <view class="support">
-        <!-- <view class="image">
-            <image src="../../images/log.jpg" style="width: 100rpx;height: 100rpx;" />
-        </view> -->
         <view class="note">
-            <text><text style="font-weight: 800; font-size: 120%;">简单猫科技</text> 提供技术支持</text>
-            <!-- <text>联系人：王浩</text> -->
+            <text>
+                <text style="font-weight: 800; font-size: 120%;">简单猫科技</text> 提供技术支持
+            </text>
             <text>TEL:18986288527</text>
+
         </view>
+    </view>
+</view>
+<view class="modal" animation="{{animationData}}" wx:if="{{isShowPhoneWindow}}">
+    <view class="modal-shadow"></view>
+    <view class="modal-content">
+        <text style="text-align: center;margin-top: 20rpx;">成为VIP，需要您的授权</text>
+        <text style="text-align: center;color: gray;font-size: 80%;">为了提供更好的服务
+            请在稍后的提示中点击“确认授权”</text>
+        <image style="width: 350rpx;height: 310rpx;" src="/images/vip.jpg"></image>
+        <button type="primary" style="margin-bottom: 20rpx;border-radius: 30rpx;width: 300rpx;" open-type="getPhoneNumber" bindgetphonenumber="bindGetPhoneNumber">我晓得了</button>
     </view>
 </view>

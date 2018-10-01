@@ -1,3 +1,4 @@
+<wxs module="calc" src="../wxs/calc/order.wxs"></wxs>
 <scroll-view class="payMain" scroll-y="true">
     <view class="address">
         <view class="select-address" wx:if="{{!address}}">
@@ -31,7 +32,7 @@
                 </text>
             </view>
             <view class="foodCount">×{{cart.quantity}}</view>
-            <view class="foodPrice">￥{{cart.price * cart.quantity}}</view>
+            <view class="foodPrice">￥{{calc.precision(cart.price * cart.quantity, 2)}}</view>
         </view>
     </view>
     <view class="deliver">

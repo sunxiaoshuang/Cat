@@ -1,0 +1,52 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>充值完成</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        img {
+            margin-top: -150px;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #finish {
+            margin-top: 30px;
+            font-size: 2em;
+            font-weight: bold;
+            /*letter-spacing: 5px;*/
+            text-align: center;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            if (window.history && window.history.pushState) {
+                window.onpopstate = function () {
+                    window.history.pushState('forward', null, '#');
+                    window.history.forward(1);
+                };
+            }
+            window.history.pushState('forward', null, '#'); //在IE中必须得有这两行
+            window.history.forward(1);
+        };
+    </script>
+</head>
+<body>
+    <img src="~/images/recharge.png" />
+    <p id="finish">充值成功</p>
+</body>
+</html>

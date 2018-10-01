@@ -109,6 +109,11 @@
                                             删除
                                         </span>
                                     </p>
+                                    <div class="my-order1" style="text-align: center;">
+                                        <div class="kui-button m-right-xs">
+                                            <button type="button" v-on:click="toggleStatus(product)" style="width: 100px" class="btn btn-sm kui-button-primary" v-text='product.status == 1 ? "下架" : "上架"'></button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div v-bind:class="{'hide': product.images.length > 0}" class="product-no-img">
                                     <div>

@@ -18,7 +18,7 @@ namespace JdCat.Cat.Model.Enum
         /// </summary>
         Self = 1,
         /// <summary>
-        /// 点我达配送
+        /// 达达配送
         /// </summary>
         Dada = 2,
         /// <summary>

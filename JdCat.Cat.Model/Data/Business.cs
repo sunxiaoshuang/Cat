@@ -95,15 +95,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 运费
         /// </summary>
-        public decimal? Freight { get; set; } = 4;
-        ///// <summary>
-        ///// 达达商户标识
-        ///// </summary>
-        //public string DadaAppKey { get; set; }
-        ///// <summary>
-        ///// 达达商户密码
-        ///// </summary>
-        //public string DadaAppSecret { get; set; }
+        public decimal? Freight { get; set; }
         /// <summary>
         /// 商户编号
         /// </summary>
@@ -124,7 +116,6 @@ namespace JdCat.Cat.Model.Data
         /// 配送范围
         /// </summary>
         public double Range { get; set; } = 0;
-
         /// <summary>
         /// 飞印商户编码
         /// </summary>
@@ -167,6 +158,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public bool IsClose { get; set; }
         /// <summary>
+        /// 订单交易模版Id
+        /// </summary>
+        public string TemplateNotifyId { get; set; }
+        /// <summary>
         /// 配送服务商
         /// </summary>
         public LogisticsType ServiceProvider { get; set; }
@@ -177,7 +172,11 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 点我达商户对象
         /// </summary>
-        public virtual DWD_Business DwdShop { get; set; }
+        //public int? DWD_BusinessId { get; set; }
+        /// <summary>
+        /// 点我达商户对象
+        /// </summary>
+        public virtual DWDStore DWDStore { get; set; }
 
         /// <summary>
         /// 产品列表集合

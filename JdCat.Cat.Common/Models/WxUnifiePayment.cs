@@ -15,18 +15,6 @@ namespace JdCat.Cat.Common.Models
     [XmlRoot("xml")]
     public class WxUnifiePayment
     {
-        private static string ip;
-        static WxUnifiePayment()
-        {
-
-            //var list = Dns.GetHostAddresses(Environment.MachineName);
-            //foreach (var item in list)
-            //{
-            //    Dns.addre
-            //}
-
-            ip = "203.195.205.143";
-        }
         /// <summary>
         /// 服务号appid
         /// </summary>
@@ -70,7 +58,7 @@ namespace JdCat.Cat.Common.Models
         /// <summary>
         /// 通知地址
         /// </summary>
-        public string notify_url { get; set; } = "https://www.jiandanmao.cn/api/order/paySuccess";
+        public string notify_url { get; set; }
         /// <summary>
         /// 用户标识
         /// </summary>
@@ -94,7 +82,7 @@ namespace JdCat.Cat.Common.Models
         /// <summary>
         /// 终端IP
         /// </summary>
-        public string spbill_create_ip { get; set; } = ip;
+        public string spbill_create_ip { get; set; }
         /// <summary>
         /// 最终支付的小程序appid
         /// </summary>

@@ -56,12 +56,7 @@ namespace JdCat.Cat.WxApi.Controllers
             }
             var sessData = sessionService.SetSession(new SessionData { SessionKey = session.Session_Key, UserId = user.ID });
             user.Skey = sessData.ID;
-
-            //var filePath = Path.Combine(env.ContentRootPath, "Log", "Error", DateTime.Now.ToString("yyyyMMdd") + ".txt");
-            //using (var stream = System.IO.File.AppendText(filePath))
-            //{
-            //    stream.WriteLine($"{user.NickName}登录成功");
-            //}
+            
             return Ok(new WxRetInfo
             {
                 Data = new WxUserData

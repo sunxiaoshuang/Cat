@@ -185,7 +185,8 @@
                 </tr>
             </tfoot>
         </table>
-        <div class="pull-right" v-show="pageObj.pageCount > 1">
+        <cat-pager :page-count="pageObj.pageCount" :page-index="pageObj.pageIndex" page-position="center" @@next="nextPage" @@page="changePage" @@prev="prevPage"></cat-pager>
+        @*<div class="pull-right" v-show="pageObj.pageCount > 1">
             <div>
                 <ul class="pagination cat-pagination pagination-sm">
                     <li v-bind:class="{'disabled': pageObj.pageIndex === 1}" v-on:click="prevPage()">
@@ -205,6 +206,6 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </div>*@
     </div>
 </div>

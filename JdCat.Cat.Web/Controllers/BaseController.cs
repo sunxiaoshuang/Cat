@@ -97,7 +97,7 @@ namespace JdCat.Cat.Web.Controllers
         public override ViewResult View(object model)
         {
             ViewLoad();
-            return base.View();
+            return base.View(model);
         }
 
         public override JsonResult Json(object data)
@@ -127,6 +127,14 @@ namespace JdCat.Cat.Web.Controllers
                     Token = Business.FeyinToken
                 };
             }
+        }
+
+        /// <summary>
+        /// 保存session
+        /// </summary>
+        protected void SaveSession()
+        {
+            HttpContext.Session.Set(AppData.Session, Business);
         }
 
         //public override void OnActionExecuted(ActionExecutedContext context)

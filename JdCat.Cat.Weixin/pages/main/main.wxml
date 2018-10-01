@@ -61,12 +61,18 @@
                                     <view class="food-numb">
                                         <view class="price">
                                             <view>
-                                                <text>￥{{!item.discount ? item.price : item.discount.price}}</text>
-                                                <text class="oldPrice" wx:if="{{!!item.discount}}">￥{{item.price}}</text>
+                                                <text>
+                                                    ￥{{!item.discount ? item.price : item.discount.price}}
+                                                </text>
+                                                <text class="oldPrice" wx:if="{{!!item.discount}}">
+                                                    ￥{{item.price}}
+                                                </text>
                                             </view>
                                             <view style="display: flex;" wx:if="{{!!item.discount}}">
                                                 <!-- <view class="slide-image" style="transform: scale(.7,.7)">折</view> -->
-                                                <view style="font-size: 25rpx; font-weight: 400;">{{!item.discount ? '' : item.discount.discount}}折 {{productFilter.discountLimit(item.discount.upperLimit)}}</view>
+                                                <view style="font-size: 25rpx; font-weight: 400;">
+                                                    {{!item.discount ? '' : item.discount.discount}}折 {{productFilter.discountLimit(item.discount.upperLimit)}}
+                                                </view>
                                             </view>
                                         </view>
                                         <view class="single-format" wx:if="{{item.formats.length == 1 && item.attributes.length == 0}}">
@@ -201,14 +207,12 @@
                 <image src="../../images/icon/remove-1.png" style="width: 30rpx;height: 30rpx;margin-right: 20rpx;" />
                 <text>清空购物车</text>
             </view>
-        </view> 
+        </view>
         <scroll-view class="cart-view" scroll-y>
             <view class="cart" wx:for="{{cartList}}" wx:for-item="cart" wx:key="id">
                 <view class="cart-food-name">
                     {{cart.name}}
-                    <text style="font-size: 80%; color: #aaa;">
-                        {{calc.cartDescription(cart)}}
-                    </text>
+                    <text style="font-size: 80%; color: #aaa;">{{calc.cartDescription(cart)}}</text>
                 </view>
                 <view class="cart-food-price">
                     ￥{{calc.precision(cart.price * cart.quantity, 2)}}
@@ -290,10 +294,11 @@
 </view>
 <view class="coupon" wx:if="{{isShowCoupon}}">
     <view class="coupon-shadow"></view>
-    <view class="coupon-content">
-        <view class="coupon-get" bindtap="openCoupon">
+    <view class="coupon-content" bindtap="openCoupon">
+        <view class="coupon-get">
             <text>领</text>
         </view>
+        <text style="font-size: 80%;">点击领取优惠券</text>
         <view class="coupon-logo">
             <image src="../../images/logo-2.png" />
         </view>
@@ -316,7 +321,9 @@
                 <text>￥ {{curProduct.price}}</text>
             </view>
             <view class="formatter">
-                <view class="selectFormat" wx:if="{{curProduct.formats.length == 1}}" bindtap="addAtDetail">加入购物车</view>
+                <view class="selectFormat" wx:if="{{curProduct.formats.length == 1}}" bindtap="addAtDetail">
+                    加入购物车
+                </view>
                 <view class="selectFormat" wx:else bindtap="showFormatAtDetail">选规格</view>
             </view>
         </view>

@@ -38,11 +38,12 @@ namespace JdCat.Cat.Web.App_Code
         /// <summary>
         /// 获取token令牌
         /// </summary>
-        public async Task GetToken()
+        public async Task<FeyinModel> GetToken()
         {
             var url = $"https://api.open.feyin.net/token?code={_memberCode}&secret={_apiKey}";
             var result = await Request(url, method: "get", isToken: false);
             Token = result.Access_Token;
+            return result;
         }
         /// <summary>
         /// 打印小票
@@ -55,6 +56,11 @@ namespace JdCat.Cat.Web.App_Code
             content.Append($"<center><Font# Bold=1 Width=4 Height=4>#{order.Identifier}</Font#><Font# Bold=1 Width=2 Height=2> 简单猫</Font#>\n");
             content.Append("<left><Font# Bold=1 Width=1 Height=1>配送小票</Font#>\n");
             content.Append("--------------------------------\n");
+            if (!string.IsNullOrEmpty(order.Remark))
+            {
+                content.Append($"<left><Font# Bold=1 Width=2 Height=2>备注：{order.Remark}</Font#>\n");
+            }
+            content.Append("\n");
             content.Append("<center><Font# Bold=1 Width=2 Height=2>" + businessName + "</Font#>\n");
             content.Append("\n\n");
             content.Append($"<left>下单时间：{order.CreateTime:yyyy-MM-dd HH:mm:ss}\n");
@@ -136,10 +142,6 @@ namespace JdCat.Cat.Web.App_Code
                     content.Append($"<right>原价：{Convert.ToDouble(order.OldPrice.Value)}元\n");
                 }
                 content.Append($"<right>实付：<Font# Bold=1 Width=2 Height=2>{Convert.ToDouble(order.Price)}元</Font#>\n");
-                if (!string.IsNullOrEmpty(order.Remark))
-                {
-                    content.Append($"<left>备注：{order.Remark}\n");
-                }
                 content.Append("********************************\n");
                 content.Append($"<left><Font# Bold=1 Width=2 Height=2>{order.ReceiverAddress}</Font#>\n");
                 content.Append($"<Font# Bold=1 Width=2 Height=2>{order.Phone}</Font#>\n");
@@ -214,8 +216,12 @@ namespace JdCat.Cat.Web.App_Code
                 // 如果返回的结果是40014【token不存在或已过期】，则重新请求服务器得到Token
                 if (ret.ErrCode == 40014)
                 {
-                    await GetToken();
-                    return await Request(url, p, method);
+                    var tokenResult = await GetToken();
+                    if(tokenResult.ErrCode == 0)
+                    {
+                        return await Request(url, p, method);
+                    }
+                    return tokenResult;
                 }
                 return ret;
             }

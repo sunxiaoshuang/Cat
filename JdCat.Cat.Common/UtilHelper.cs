@@ -10,6 +10,8 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.DrawingCore;
 using System.DrawingCore.Imaging;
+using ZXing.Common;
+using ZXing;
 
 namespace JdCat.Cat.Common
 {
@@ -43,115 +45,15 @@ namespace JdCat.Cat.Common
         /// <returns></returns>        
         public static DateTime ConvertStringToDateTime(string timeStamp)
         {
-            var dtStart = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
-            var lTime = long.Parse(timeStamp + "0000");
-            var toNow = new TimeSpan(lTime);
-            return dtStart.Add(toNow);
+            DateTime dtStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+            long lTime = (long.Parse(timeStamp) * 10000);
+            TimeSpan toNow = new TimeSpan(lTime);
+            DateTime targetDt = dtStart.Add(toNow);
+            return targetDt;
         }
 
         #region 加密与解密
 
-        #region Base64加密解密
-        /// <summary>
-        /// Base64加密
-        /// </summary>
-        /// <param name="input">需要加密的字符串</param>
-        /// <returns></returns>
-        public static string Base64Encrypt(string input)
-        {
-            return Base64Encrypt(input, new UTF8Encoding());
-        }
-
-        /// <summary>
-        /// Base64加密
-        /// </summary>
-        /// <param name="input">需要加密的字符串</param>
-        /// <param name="encode">字符编码</param>
-        /// <returns></returns>
-        public static string Base64Encrypt(string input, Encoding encode)
-        {
-            return Convert.ToBase64String(encode.GetBytes(input));
-        }
-
-        /// <summary>
-        /// Base64解密
-        /// </summary>
-        /// <param name="input">需要解密的字符串</param>
-        /// <returns></returns>
-        public static string Base64Decrypt(string input)
-        {
-            return Base64Decrypt(input, new UTF8Encoding());
-        }
-
-        /// <summary>
-        /// Base64解密
-        /// </summary>
-        /// <param name="input">需要解密的字符串</param>
-        /// <param name="encode">字符的编码</param>
-        /// <returns></returns>
-        public static string Base64Decrypt(string input, Encoding encode)
-        {
-            return encode.GetString(Convert.FromBase64String(input));
-        }
-        #endregion
-
-        #region DES加密解密
-        /// <summary>
-        /// DES加密
-        /// </summary>
-        /// <param name="data">加密数据</param>
-        /// <param name="key">8位字符的密钥字符串</param>
-        /// <param name="iv">8位字符的初始化向量字符串</param>
-        /// <returns></returns>
-        public static string DESEncrypt(string data, string key, string iv)
-        {
-            byte[] byKey = System.Text.ASCIIEncoding.ASCII.GetBytes(key);
-            byte[] byIV = System.Text.ASCIIEncoding.ASCII.GetBytes(iv);
-
-            DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
-            int i = cryptoProvider.KeySize;
-            MemoryStream ms = new MemoryStream();
-            CryptoStream cst = new CryptoStream(ms, cryptoProvider.CreateEncryptor(byKey, byIV), CryptoStreamMode.Write);
-
-            StreamWriter sw = new StreamWriter(cst);
-            sw.Write(data);
-            sw.Flush();
-            cst.FlushFinalBlock();
-            sw.Flush();
-            return Convert.ToBase64String(ms.GetBuffer(), 0, (int)ms.Length);
-        }
-
-        /// <summary>
-        /// DES解密
-        /// </summary>
-        /// <param name="data">解密数据</param>
-        /// <param name="key">8位字符的密钥字符串(需要和加密时相同)</param>
-        /// <param name="iv">8位字符的初始化向量字符串(需要和加密时相同)</param>
-        /// <returns></returns>
-        public static string DESDecrypt(string data, string key, string iv)
-        {
-            byte[] byKey = Encoding.ASCII.GetBytes(key);
-            byte[] byIV = Encoding.ASCII.GetBytes(iv);
-
-            byte[] byEnc;
-            try
-            {
-                byEnc = Convert.FromBase64String(data);
-            }
-            catch
-            {
-                return null;
-            }
-
-            DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
-            MemoryStream ms = new MemoryStream(byEnc);
-            CryptoStream cst = new CryptoStream(ms, cryptoProvider.CreateDecryptor(byKey, byIV), CryptoStreamMode.Read);
-            StreamReader sr = new StreamReader(cst);
-            return sr.ReadToEnd();
-        }
-        #endregion
-
-        #region MD5加密
         /// <summary>
         /// MD5加密
         /// </summary>
@@ -178,130 +80,12 @@ namespace JdCat.Cat.Common
         }
 
         /// <summary>
-        /// MD5对文件流加密
-        /// </summary>
-        /// <param name="sr"></param>
-        /// <returns></returns>
-        public static string MD5Encrypt(Stream stream)
-        {
-            MD5 md5serv = MD5.Create();
-            byte[] buffer = md5serv.ComputeHash(stream);
-            StringBuilder sb = new StringBuilder();
-            foreach (byte var in buffer)
-                sb.Append(var.ToString("x2"));
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// MD5加密(返回16位加密串)
+        /// AES-128-CBC
         /// </summary>
         /// <param name="input"></param>
-        /// <param name="encode"></param>
+        /// <param name="key"></param>
+        /// <param name="iv"></param>
         /// <returns></returns>
-        public static string MD5Encrypt16(string input, Encoding encode)
-        {
-            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
-            string result = BitConverter.ToString(md5.ComputeHash(encode.GetBytes(input)), 4, 8);
-            result = result.Replace("-", "");
-            return result;
-        }
-        #endregion
-
-        #region 3DES 加密解密
-
-        public static string DES3Encrypt(string data, string key)
-        {
-            TripleDESCryptoServiceProvider DES = new TripleDESCryptoServiceProvider
-            {
-                Key = ASCIIEncoding.ASCII.GetBytes(key),
-                Mode = CipherMode.CBC,
-                Padding = PaddingMode.PKCS7
-            };
-
-            ICryptoTransform DESEncrypt = DES.CreateEncryptor();
-
-            byte[] Buffer = Encoding.ASCII.GetBytes(data);
-            return Convert.ToBase64String(DESEncrypt.TransformFinalBlock(Buffer, 0, Buffer.Length));
-        }
-
-        public static string DES3Decrypt(string data, string key)
-        {
-            TripleDESCryptoServiceProvider DES = new TripleDESCryptoServiceProvider();
-
-            DES.Key = Encoding.ASCII.GetBytes(key);
-            DES.Mode = CipherMode.CBC;
-            DES.Padding = PaddingMode.PKCS7;
-
-            ICryptoTransform DESDecrypt = DES.CreateDecryptor();
-
-            string result = "";
-            try
-            {
-                byte[] Buffer = Convert.FromBase64String(data);
-                result = Encoding.ASCII.GetString(DESDecrypt.TransformFinalBlock(Buffer, 0, Buffer.Length));
-            }
-            catch (Exception)
-            {
-
-            }
-            return result;
-        }
-
-        #endregion
-
-        #region DESEnCode DES加密
-        public static string DESEnCode(string pToEncrypt, string sKey)
-        {
-            DESCryptoServiceProvider des = new DESCryptoServiceProvider();
-            byte[] inputByteArray = Encoding.GetEncoding("UTF-8").GetBytes(pToEncrypt);
-
-            //建立加密对象的密钥和偏移量    
-            //原文使用ASCIIEncoding.ASCII方法的GetBytes方法    
-            //使得输入密码必须输入英文文本    
-            des.Key = Encoding.ASCII.GetBytes(sKey);
-            des.IV = Encoding.ASCII.GetBytes(sKey);
-            var ms = new MemoryStream();
-            CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(), CryptoStreamMode.Write);
-
-            cs.Write(inputByteArray, 0, inputByteArray.Length);
-            cs.FlushFinalBlock();
-
-            StringBuilder ret = new StringBuilder();
-            foreach (byte b in ms.ToArray())
-            {
-                ret.AppendFormat("{0:X2}", b);
-            }
-            ret.ToString();
-            return ret.ToString();
-        }
-        #endregion
-
-        #region DESDeCode DES解密
-        public static string DESDeCode(string pToDecrypt, string sKey)
-        {
-            DESCryptoServiceProvider des = new DESCryptoServiceProvider();
-
-            byte[] inputByteArray = new byte[pToDecrypt.Length / 2];
-            for (int x = 0; x < pToDecrypt.Length / 2; x++)
-            {
-                int i = (Convert.ToInt32(pToDecrypt.Substring(x * 2, 2), 16));
-                inputByteArray[x] = (byte)i;
-            }
-
-            des.Key = Encoding.ASCII.GetBytes(sKey);
-            des.IV = Encoding.ASCII.GetBytes(sKey);
-            MemoryStream ms = new MemoryStream();
-            CryptoStream cs = new CryptoStream(ms, des.CreateDecryptor(), CryptoStreamMode.Write);
-            cs.Write(inputByteArray, 0, inputByteArray.Length);
-            cs.FlushFinalBlock();
-
-            StringBuilder ret = new StringBuilder();
-
-            return Encoding.Default.GetString(ms.ToArray());
-        }
-        #endregion
-
-        #region AES-128-CBC
         public static string AESDecrypt(string input, string key, string iv)
         {
             var encryptedData = Convert.FromBase64String(input);
@@ -317,8 +101,7 @@ namespace JdCat.Cat.Common
             var result = Encoding.UTF8.GetString(plainText);
             return result;
         }
-        #endregion
-
+        
         public static string SHA1(string content, Encoding encode = null)
         {
             if (encode == null)
@@ -343,8 +126,7 @@ namespace JdCat.Cat.Common
                 throw new Exception("SHA1加密出错：" + ex.Message);
             }
         }
-
-
+        
         #endregion
 
         /// <summary>
@@ -504,7 +286,62 @@ namespace JdCat.Cat.Common
             return Color.FromArgb(int_Red, int_Green, int_Blue);// 5+1+a+s+p+x
         }
 
-
         #endregion
+
+        /// <summary>
+        /// 生成二维码
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="gifFileName"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public static byte[] CreateCodeEwm(string message, int width = 400, int height = 400)
+        {
+            int heig = width;
+            if (width > height)
+            {
+                heig = height;
+                width = height;
+            }
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                return null;
+            }
+            var w = new ZXing.QrCode.QRCodeWriter();
+
+            BitMatrix b = w.encode(message, BarcodeFormat.QR_CODE, width, heig);
+            var zzb = new ZXing.ZKWeb.BarcodeWriter
+            {
+                Options = new EncodingOptions { Margin = 0 }
+            };
+            Bitmap bmp = zzb.Write(b);
+            byte[] byteArray = null;
+            using (MemoryStream stream = new MemoryStream())
+            {
+                bmp.Save(stream, ImageFormat.Png);
+                byteArray = stream.GetBuffer();
+            }
+            bmp.Dispose();
+            return byteArray;
+        }
+        /// <summary>
+        /// 生成随机数字
+        /// </summary>
+        /// <param name="len"></param>
+        /// <returns></returns>
+        public static string RandNum(int len = 6)
+        {
+            var arrChar = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+            var num = new StringBuilder();
+            var rnd = new Random(DateTime.Now.Millisecond);
+
+            for (int i = 0; i < len; i++)
+            {
+                num.Append(arrChar[rnd.Next(0, 9)].ToString());
+            }
+            return num.ToString();
+        }
+
+
     }
 }

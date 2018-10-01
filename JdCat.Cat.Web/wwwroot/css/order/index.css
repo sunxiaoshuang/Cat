@@ -11,6 +11,13 @@
     text-align: left !important;
 }
 
+.font-nobold {
+    font-weight: 400 !important;
+}
+.padding-10 {
+    padding: 10px;
+}
+
 .control-label {
     white-space: nowrap;
 }

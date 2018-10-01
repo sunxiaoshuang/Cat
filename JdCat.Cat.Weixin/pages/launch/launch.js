@@ -15,27 +15,22 @@ Page({
         // setTimeout(() => {
 
 
-          qcloud.request({
-            url: `/user/business/${config.businessId}`,
-            method: "GET",
-            success: function (res) {
-              var business = res.data;
+        qcloud.request({
+          url: `/user/business/${config.businessId}`,
+          method: "GET",
+          success: function (res) {
+            var obj = qcloud.getSession();
+            obj.business = res.data;
+            qcloud.setSession(obj);
+            wx.switchTab({
+              url: "/pages/main/main"
+            });
 
-              if(business.isPublish) {
-                wx.switchTab({
-                  url: "/pages/main/main"
-                });
-              } else {
-                wx.redirectTo({
-                  url: "/pages/showPage/showPage"
-                });
-              }
-
-            }
-          });
-          // wx.navigateTo({
-          //   url: "/pages/showPage/showPage"
-          // });
+          }
+        });
+        // wx.navigateTo({
+        //   url: "/pages/showPage/showPage"
+        // });
         // }, 100);
       }
     });

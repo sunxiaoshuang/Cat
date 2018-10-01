@@ -26,3 +26,6 @@ th:nth-child(4) {
 th:nth-child(5) {
     width: 15%;
 }
+th:nth-child(7) {
+    width: 120px;
+}

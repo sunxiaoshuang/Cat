@@ -1,0 +1,50 @@
+﻿@{
+    Layout = null;
+}
+<script>
+    pageObj.dwd = JSON.parse('@Html.Raw(ViewBag.dwd)');
+    pageObj.balance = @ViewBag.balance;
+</script>
+
+<div class="form-horizontal" style="padding-top:20px;" id="infoPage">
+    <div class="form-group">
+        <label class="control-label col-md-1">
+            商户名称：
+        </label>
+        <label class="control-label" style="font-weight: 400;" v-html="shop.shop_title"></label>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-1">
+            商户余额：
+        </label>
+        <label class="control-label" style="font-weight: 400;" v-html="balance / 100 + '元'"></label>
+        <label class="control-label" style="font-weight: 400; padding-left: 20px;">
+            <a href="javascript:void(0)" @@click="recharge()" class="text-primary">充值</a>
+        </label>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-1">
+            所属城市：
+        </label>
+        <label class="control-label" style="font-weight: 400;" v-html="shop.city_name"></label>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-1">
+            联系电话：
+        </label>
+        <label class="control-label" style="font-weight: 400;" v-html="shop.mobile"></label>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-1">
+            地址：
+        </label>
+        <label class="control-label" style="font-weight: 400;" v-html="shop.addr"></label>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                <button class="btn btn-primary" @@click="create()">重新创建商户</button>
+            </div>
+        </div>
+    </div>
+</div>

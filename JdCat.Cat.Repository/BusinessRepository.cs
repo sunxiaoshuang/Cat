@@ -76,6 +76,7 @@ namespace JdCat.Cat.Repository
             entity.Secret = business.Secret;
             entity.MchId = business.MchId;
             entity.MchKey = business.MchKey;
+            entity.TemplateNotifyId = business.TemplateNotifyId;
             return Context.SaveChanges() > 0;
         }
 

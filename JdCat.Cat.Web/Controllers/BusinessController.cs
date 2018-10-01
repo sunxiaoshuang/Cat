@@ -162,6 +162,7 @@ namespace JdCat.Cat.Web.Controllers
             Business.Secret = business.Secret;
             Business.MchId = business.MchId;
             Business.MchKey = business.MchKey;
+            Business.TemplateNotifyId = business.TemplateNotifyId;
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }

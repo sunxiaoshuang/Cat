@@ -8,7 +8,7 @@ App({
         // 程序启动执行一次
         qcloud.setLoginUrl(config.service.loginUrl);
     },
-    onShow: function () {
+    onShow: function (option) {
         // 从后台进入前台执行
         // 每次进入首页，重新加载商户信息
         if (isFirstEnter) {
@@ -25,6 +25,9 @@ App({
                 }
             });
         }
+        // 记录进入下程序的模式
+        wx.setStorageSync("scene", option.scene);
+    
     },
     onHide: function () {
         // 从前台进入后台执行

@@ -95,7 +95,6 @@ Page({
     var self = this;
     wx.chooseLocation({
       success: function (res) {
-        console.log(res);
         if (res.errMsg != "chooseLocation:ok") return;
         var address = self.data.entity;
         address.mapInfo = res.address;
@@ -165,6 +164,7 @@ Page({
             addressList.splice(index, 1, res.data.data);
           }
           wx.setStorageSync("addressList", addressList);
+          wx.setStorageSync("selectAddress", res.data.data);
           setTimeout(() => wx.navigateBack({
             delta: 1
           }), 1500);

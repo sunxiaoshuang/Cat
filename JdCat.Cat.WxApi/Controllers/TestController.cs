@@ -83,6 +83,13 @@ namespace JdCat.Cat.WxApi.Controllers
             return Ok("ok");
         }
 
+        [HttpGet("TestLog")]
+        public IActionResult TestLog()
+        {
+            Log.Debug("函数式");
+            return Json("OK");
+        }
+
         ///// <summary>
         ///// 发送订单通知
         ///// </summary>

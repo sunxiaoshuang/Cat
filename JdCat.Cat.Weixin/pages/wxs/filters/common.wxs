@@ -1,6 +1,9 @@
 var couponStatus = {
     "1": "未使用", "2": "已使用", "3": "已过期", "4": "上架", "5": "下架", "6": "已领完", "7": "未开始"
 };
+var logisticsType = {
+    "0": "", "1": "自己配送", "2": "达达配送", "3": "美团配送", "4": "蜂鸟配送", "5": "点我达配送", 
+};
 var common = {
     formatDate: function(str){
         if(!str)return "";
@@ -27,6 +30,9 @@ var common = {
         var second = (time % 60).toString();
         second.length == 1 && (second = "0" + second);
         return minus + ":" + second;
+    },
+    distributionMode: function(order){
+        return logisticsType[order.logisticsType];
     },
     couponStatusName: function(status){
         return couponStatus[status];

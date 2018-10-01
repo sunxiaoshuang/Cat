@@ -55,6 +55,7 @@ button.btn-bind-phone {
     padding: 5px;
     font-size: 80%;
     color: #f36c21;
+    height: 100rpx;
 }
 .navigate text {
     font-size: 100%;
@@ -68,6 +69,7 @@ view.navigate text {
     flex-direction: row nowrap;
     align-items: center;
     bottom: 10rpx;
+    width: 100%;
 }
 .support .image {
     padding-top: 14rpx;
@@ -79,8 +81,15 @@ view.navigate text {
     flex-direction: column;
     font-size: 26rpx;
     align-items: center;
+    justify-content: center;
+    width: 100%;
     color: rgb(177, 177, 177);
 }
 .support .note text {
     white-space: nowrap;
+}
+.modal-content {
+    height: 750rpx;
+    width: 550rpx;
+    left: 100rpx;
 }

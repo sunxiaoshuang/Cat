@@ -1,4 +1,5 @@
 ﻿using JdCat.Cat.Common;
+using JdCat.Cat.Common.Dianwoda;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Web.Models;
 using Newtonsoft.Json;
@@ -16,6 +17,20 @@ namespace JdCat.Cat.Web.App_Code
     /// </summary>
     public class DwdHelper
     {
+        public static Dictionary<DWD_OrderStatus, string> DwdStatusDic;
+        static DwdHelper()
+        {
+            DwdStatusDic = new Dictionary<DWD_OrderStatus, string> {
+                { DWD_OrderStatus.Assigning, "派单中" },
+                { DWD_OrderStatus.Transfer, "已转单" },
+                { DWD_OrderStatus.Taking, "取餐中" },
+                { DWD_OrderStatus.ArrivedShop, "已到店" },
+                { DWD_OrderStatus.Distribution, "配送中" },
+                { DWD_OrderStatus.Finish, "已完成" },
+                { DWD_OrderStatus.Exception, "异常" },
+                { DWD_OrderStatus.Cancel, "已取消" }
+            };
+        }
         private string _enviroment;
         public string AppKey { get; private set; }
         public string Secret { get; private set; }
@@ -70,28 +85,29 @@ namespace JdCat.Cat.Web.App_Code
                 order_price = (int)order.Price.Value * 100,
                 serial_id = order.Identifier + "",
                 cargo_weight = 0,
-                city_code = business.DwdShop.city_code,
-                seller_id = business.DwdShop.external_shopid,
+                city_code = business.DWDStore.city_code,
+                seller_id = business.DWDStore.external_shopid,
                 seller_name = business.Name,
                 seller_mobile = business.Mobile,
                 seller_address = business.Address,
-                seller_lat = business.Lat,
-                seller_lng = business.Lng,
+                seller_lat = business.DWDStore.lat,
+                seller_lng = business.DWDStore.lng,
                 consignee_name = order.ReceiverName,
                 consignee_mobile = order.Phone,
                 consignee_address = order.ReceiverAddress,
                 consignee_lat = order.Lat,
                 consignee_lng = order.Lng,
-                delivery_fee_from_seller = 0                 // 需要修改
+                delivery_fee_from_seller = 10                 // 需要修改
             };
-            if(_enviroment == "test")
+            if (_enviroment == "test")
             {
+                dwdOrder.city_code = "330100";
                 dwdOrder.seller_lng = 120.165993;
                 dwdOrder.seller_lat = 30.315408;
                 dwdOrder.consignee_lng = 120.168513;
                 dwdOrder.consignee_lat = 30.315272;
             }
-            var products = order.Products.Select(a => new DWD_Product { item_name = a.Name, discount_price = (int)(a.Price.Value * 100), production_time = 0, quantity = (int)a.Quantity.Value, unit = "份", unit_price = (int)(a.OldPrice.Value * 100) });
+            var products = order.Products.Select(a => new DWD_Product { item_name = a.Name, discount_price = (int)(a.Price.Value * 100), production_time = 0, quantity = (int)a.Quantity.Value, unit = "份", unit_price = (int)(a.OldPrice == null ? 0 : a.OldPrice.Value * 100) });
             dwdOrder.items = JsonConvert.SerializeObject(products);
             dwdOrder.Generate();
 
@@ -111,7 +127,12 @@ namespace JdCat.Cat.Web.App_Code
             return await RequestAsync<JsonData>(url, sign, data);
         }
 
-        public async Task<DWD_Result<JsonData>> CreateShop(DWD_Business business)
+        /// <summary>
+        /// 创建商户
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        public async Task<DWD_Result<JsonData>> CreateShop(DWDStore business)
         {
             var url = "/api/v3/batchsave-store.json";
             var shops = new List<DWD_Shop> { new DWD_Shop { addr = business.addr, city_code = business.city_code, external_shopid = business.external_shopid, lat = business.lat, lng = business.lng, mobile = business.mobile, shop_title = business.shop_title } };
@@ -121,6 +142,11 @@ namespace JdCat.Cat.Web.App_Code
             return await RequestAsync<JsonData>(url, sign, data);
         }
 
+        /// <summary>
+        /// 获取商户余额
+        /// </summary>
+        /// <param name="shopId"></param>
+        /// <returns></returns>
         public async Task<DWD_Result<DWD_Balance>> GetBalance(string shopId)
         {
             var url = "/api/v3/account-balance.json";
@@ -129,9 +155,94 @@ namespace JdCat.Cat.Web.App_Code
             return await RequestAsync<DWD_Balance>(url, sign, data);
         }
 
-        private string GetOrderCode(Order order)
+        /// <summary>
+        /// 充值
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DWD_Result<DWD_RechargeBack>> Recharge(DWD_Recharge model)
+        {
+            var url = "/api/v3/recharge.json";
+            var obj = new DWD_Amout
+            {
+                amout = long.Parse((model.Amount * 100).ToString()),
+                rechange_channle = model.Mode.ToString().ToLower(),
+                return_url = "",
+                serial_no = model.Code,
+                store_id = model.DWD_Business.external_shopid
+            };
+            obj.Generate();
+            var sign = obj.Sign();
+            var data = obj.Params();
+            return await RequestAsync<DWD_RechargeBack>(url, sign, data);
+        }
+
+        /// <summary>
+        /// 查看充值结果
+        /// </summary>
+        /// <param name="store"></param>
+        /// <param name="biz_no"></param>
+        /// <returns></returns>
+        public async Task<DWD_Result<DWD_RechargeResult>> RechargeResult(DWDStore store, string biz_no)
+        {
+            var url = "/api/v3/recharge-result.json";
+            var sign = $"biz_no{biz_no}store_id{store.external_shopid}";
+            var data = $"biz_no={biz_no}&store_id={store.external_shopid}";
+            return await RequestAsync<DWD_RechargeResult>(url, sign, data);
+        }
+
+        /// <summary>
+        /// 获取交易列表
+        /// </summary>
+        /// <param name="store"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="pageIndex"></param>
+        /// <returns></returns>
+        public async Task<DWD_Result<DWD_Detail>> GetDetail(DWDStore store, DateTime startDate, DateTime endDate, int pageIndex)
+        {
+            var url = "/api/v3/get-bill-detail.json";
+            var start = startDate.ToString("yyyy-MM-dd HH:mm:ss");
+            endDate = endDate.AddDays(1).AddSeconds(-1);
+            var end = endDate.ToString("yyyy-MM-dd HH:mm:ss");
+            var sign = $"end_time{end}page{pageIndex}start_time{start}store_id{store.external_shopid}";
+            var data = $"end_time={end}&page={pageIndex}&start_time={start}&store_id={store.external_shopid}";
+            return await RequestAsync<DWD_Detail>(url, sign, data);
+        }
+
+        /// <summary>
+        /// 获取订单详情
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public async Task<DWD_Result<DWD_OrderDetail>> GetOrderDetail(string code)
+        {
+            var url = "/api/v3/order-get.json";
+            var sign = $"order_original_id{code}";
+            var data = $"order_original_id={code}";
+            return await RequestAsync<DWD_OrderDetail>(url, sign, data);
+        }
+        
+        /// <summary>
+        /// 获取订单运费
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public async Task<DWD_Result<DWD_Price>> GetOrderPrice(string code)
+        {
+            var url = "/api/v3/order-receivable-price.json";
+            var sign = $"order_original_id{code}";
+            var data = $"order_original_id={code}";
+            return await RequestAsync<DWD_Price>(url, sign, data);
+        }
+
+        #region 私有方法
+
+        public string GetOrderCode(Order order)
         {
             return order.OrderCode + "_" + order.DistributionFlow;
         }
+
+        #endregion
+
     }
 }

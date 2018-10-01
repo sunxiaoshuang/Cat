@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JdCat.Cat.Model.Data
+namespace JdCat.Cat.Common.Dianwoda
 {
     /// <summary>
     /// 调用接口返回的结果对象

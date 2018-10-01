@@ -12,13 +12,24 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace JdCat.Cat.IRepository
 {
-    public interface IDwdRepository : IBaseRepository<DWD_Business>
+    public interface IDwdRepository : IBaseRepository<DWDStore>
     {
         /// <summary>
         /// 创建点我达商户
         /// </summary>
         /// <param name="business"></param>
         /// <returns></returns>
-        bool CreateShop(DWD_Business business);
+        bool CreateShop(DWDStore business);
+        /// <summary>
+        /// 创建点我达充值对象
+        /// </summary>
+        /// <param name="recharge"></param>
+        /// <returns></returns>
+        bool AddRecharge(DWD_Recharge recharge);
+        /// <summary>
+        /// 充值成功
+        /// </summary>
+        /// <param name="bizNo"></param>
+        void RechargeSuccess(string bizNo);
     }
 }

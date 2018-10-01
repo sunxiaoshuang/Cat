@@ -1,4 +1,5 @@
 var defaultImageSrc = "/images/logo-2.jpg";
+var imageUrl = "http://f.jiandanmao.cn";
 var product = {
 
     productImage: function (product, businessId, flag) {
@@ -7,26 +8,26 @@ var product = {
         if(product.images.length == 0)return defaultImageSrc;
         var src;
         if(flag === "big") {
-            src = "http://f.jiandanmao.cn/File/Product/" + businessId + "/400x300/" + product.images[0].name + "." + product.images[0].extensionName;
+            src = imageUrl + "/File/Product/" + businessId + "/400x300/" + product.images[0].name + "." + product.images[0].extensionName;
         } else {
-            src = "http://f.jiandanmao.cn/File/Product/" + businessId + "/100x75/" + product.images[0].name + "." + product.images[0].extensionName;
+            src = imageUrl + "/File/Product/" + businessId + "/100x75/" + product.images[0].name + "." + product.images[0].extensionName;
         }
 
         return src;
     },
     orderProductImage: function(product, businessId){
         if (!product) return defaultImageSrc;
-        if(!product.src)return defaultImageSrc;
+        if(!product.src)return defaultImageSrc;        
 
-        return "http://f.jiandanmao.cn/File/Product/" + businessId + "/100x75/" + product.src;
+        return imageUrl + "/File/Product/" + businessId + "/100x75/" + product.src;
     },
     logoImage: function(url, businessId){
-        if(!url)return null;
-        return "http://f.jiandanmao.cn/File/Logo/" + businessId + "/" + url; 
+        if(!url) return null;
+        return imageUrl + "/File/Logo/" + businessId + "/" + url; 
     },
     licenseImage: function(url, businessId){
         if(!url)return null;
-        return "http://f.jiandanmao.cn/File/License/" + businessId + "/" + url; 
+        return imageUrl + "/File/License/" + businessId + "/" + url; 
     },
     discountLimit: function(limit){
         if(limit == -1) return "不限份";

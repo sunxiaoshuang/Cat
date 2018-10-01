@@ -2,7 +2,9 @@
     var typeName = ["外卖", "堂食"], paymentName = ["", "线上支付"], deliveryName = ["第三方平台", "自己配送", "自提"],
         statusName = {
             "1": "已付款", "2": "已拒单", "4": "待配送", "8": "待配送", "16": "配送中", "32": "配送异常", "64": "已送达", "128": "用户已确认收货", "256": "未付款", "512": "已评价", "1024": "已关闭", "2048": "配送已取消", "4096": "订单已取消"
-        };
+        },
+        providerName = { "0": "未知", "1": "自己配送", "2": "达达配送", "3": "美团配送", "4": "蜂鸟配送", "5": "点我达配送" },
+        delivered = 8 + 16 + 64 + 128 + 256 + 512 + 1024;// 已发货
     var vueReason = null;
     var app = new Vue({
         el: "#app",
@@ -223,6 +225,7 @@
                             $.alert("操作成功", "success");
                             self.curOrder.status = res.data.data.status;
                             self.curOrder.deliveryMode = res.data.data.mode;
+                            self.curOrder.distributionFlow = res.data.data.flow;
                         } else {
                             $.alert(res.data.msg);
                         }
@@ -252,6 +255,19 @@
                 this.initPageObj();
                 this.loadData();
             },
+            checklogistics: function (order) {
+                axios.get(`/Dianwoda/OrderDetail?orderCode=${order.orderCode}_${order.distributionFlow}`)
+                    .then(function (res) {
+                        $.view({
+                            template: res.data,
+                            title: "配送信息"
+
+                        });
+                    })
+                    .catch(function (err) {
+                        $.alert(err);
+                    });
+            },
             category: function (type) {
                 return typeName[type];
             },
@@ -261,8 +277,9 @@
             status: function (type) {
                 return statusName[type];
             },
-            deliveryType: function (type) {
-                return deliveryName[type];
+            deliveryType: function (order) {
+                if (+order.status & delivered == 0) return "";
+                return providerName[order.logisticsType];
             }
         },
         created: function () {

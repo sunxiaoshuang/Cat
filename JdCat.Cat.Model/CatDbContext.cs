@@ -45,7 +45,8 @@ namespace JdCat.Cat.Model
         public DbSet<SaleCoupon> SaleCoupons { get; set; }
         public DbSet<SaleCouponUser> SaleCouponUsers { get; set; }
         public DbSet<SaleProductDiscount> SaleProductDiscount { get; set; }
-        public DbSet<DWD_Business> DWD_Businesses { get; set; }
+        public DbSet<DWDStore> DWDStores { get; set; }
+        public DbSet<DWD_Recharge> DWD_Recharges { get; set; }
 
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace JdCat.Cat.Model
             modelBuilder.HasSequence<int>("StoreNumbers", schema: "shared");            // 门店编号序列
             modelBuilder.HasSequence<int>("OrderNumbers", schema: "shared");            // 订单编号序列
             modelBuilder.HasSequence<int>("FormatNumbers", schema: "shared");           // 规格编码序列
-            modelBuilder.HasSequence<int>("SaleCouponNumbers", schema: "shared");           // 规格编码序列
+            modelBuilder.HasSequence<int>("SaleCouponNumbers", schema: "shared");       // 优惠券编码序列
             modelBuilder.Entity<Business>()
                 .Property(a => a.StoreId)
                 .HasDefaultValueSql("'JD' + dbo.fn_right_padding(NEXT VALUE FOR shared.StoreNumbers, 6)");

@@ -11,7 +11,8 @@
     "inputFiles": [
       "wwwroot/js/site.js",
       "wwwroot/js/lib/plugins.js",
-      "wwwroot/js/lib/common.js"
+      "wwwroot/js/lib/common.js",
+      "wwwroot/js/lib/vue.components.js"
     ],
     "minify": {
       "enabled": true,
@@ -238,6 +239,12 @@
     "outputFileName": "wwwroot/js/dianwoda/index.min.js",
     "inputFiles": [
       "wwwroot/js/dianwoda/index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/dianwoda/index.min.css",
+    "inputFiles": [
+      "wwwroot/css/dianwoda/index.css"
     ]
   }
 

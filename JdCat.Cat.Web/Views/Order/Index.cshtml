@@ -53,9 +53,9 @@
                         搜索
                     </button>
                     @*<button class="btn btn-primary">
-                            <i class="fa fa-file-excel-o"></i>
-                            导出统计表格
-                        </button>*@
+                        <i class="fa fa-file-excel-o"></i>
+                        导出统计表格
+                    </button>*@
                 </div>
             </div>
             <div class="form-group">
@@ -154,7 +154,7 @@
                                             <p>配送时间： <span v-text="order.distributionTime"></span></p>
                                         </div>
                                         <div class="col-md-4 col-xs-6">
-                                            <p>配送方式： <span v-html="deliveryType(order.deliveryMode)"></span></p>
+                                            <p>配送方式： <span v-html="deliveryType(order)"></span> &nbsp;&nbsp;<a href="javascript:void(0)" v-if="order.logisticsType == 5" class="text-primary" @@click="checklogistics(order)">查看</a></p>
                                         </div>
                                         <div class="col-md-4 col-xs-6">
                                             <p>备注： <span v-text="order.remark"></span></p>
@@ -231,7 +231,8 @@
                 </tr>
             </tfoot>
         </table>
-        <div class="pull-right" v-show="pageObj.pageCount > 1">
+        <cat-pager :page-count="pageObj.pageCount" :page-index="pageObj.pageIndex" page-position="right" @@next="nextPage" @@page="changePage" @@prev="prevPage"></cat-pager>
+        @*<div class="pull-right" v-show="pageObj.pageCount > 1">
             <div>
                 <ul class="pagination cat-pagination pagination-sm">
                     <li v-bind:class="{'disabled': pageObj.pageIndex === 1}" v-on:click="prevPage()">
@@ -251,7 +252,7 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </div>*@
     </div>
     <div class="modal fade" id="modal-sendType" aria-hidden="true">
         <div class="modal-dialog modal-sm">

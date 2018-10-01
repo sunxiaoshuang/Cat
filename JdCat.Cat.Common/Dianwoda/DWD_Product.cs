@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JdCat.Cat.Model.Data
+namespace JdCat.Cat.Common.Dianwoda
 {
     /// <summary>
     /// 点我达订单商品信息

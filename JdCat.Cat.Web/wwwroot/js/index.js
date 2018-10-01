@@ -87,37 +87,57 @@
     }).bootstrapSwitch("state", !pageData.business.isClose);
 
     // 新订单提醒
-    var ws = new WebSocket(pageData.orderUrl + "?id=" + pageData.business.id);
+    var ws, $wsModal;
     var newOrder = document.getElementById("newOrder");
     var autoOrder = document.getElementById("autoOrder");
     var exceptionOrder = document.getElementById("exceptionOrder");
 
-    ws.onmessage = function (res) {
-        var time = new Date();
-        var code = res.data;
-        axios.get("/order/MessageHandler?code=" + code)
-            .then(function (res) {
-                if (res.data.data === 1) {
-                    newOrder.play();
-                } else if (res.data.data === 2) {
-                    autoOrder.play();
-                } else if (res.data.data === 3) {
-                    exceptionOrder.play();
-                }
+    function connect() {
 
-                msg.list.push({ code: code, time: time.getHours() + ":" + time.getMinutes(), tip: res.data.success });
-            })
-            .catch(function (msg) {
-                $.alert(msg);
-            });
-        
-    };
-    ws.onopen = function (a) {
-        console.log("服务已连接", a);
-    };
-    ws.onclose = function (a) {
-        $.primary(a.reason || "新订单提醒异常，请<span style='color: red;font-size: 120%;'>刷新页面</span>后重试");
-    };
+        ws = new WebSocket(pageData.orderUrl + "?id=" + pageData.business.id);
+        //ws = new WebSocket("ws://203.195.205.143:5084/ws?id=" + pageData.business.id);
+
+        ws.onmessage = function (res) {
+            var time = new Date();
+            var code = res.data;
+            axios.get("/order/MessageHandler?code=" + code)
+                .then(function (res) {
+                    if (res.data.data === 1) {
+                        newOrder.play();
+                    } else if (res.data.data === 2) {
+                        autoOrder.play();
+                    } else if (res.data.data === 3) {
+                        exceptionOrder.play();
+                    }
+
+                    msg.list.push({ code: code, time: time.getHours() + ":" + time.getMinutes(), tip: res.data.success });
+                })
+                .catch(function (msg) {
+                    $.alert(msg);
+                });
+
+        };
+        ws.onopen = function (a) {
+            console.log("服务已连接", a);
+            if ($wsModal) {
+                $wsModal.modal("hide");
+                $wsModal = null;
+            }
+        };
+        ws.onclose = function (a) {
+            if (a.reason) {
+                $.primary(a.reason);
+                return;
+            }
+            if (!$wsModal) {
+                $wsModal = $.primary("新订单提醒异常，请检查网络连接");
+            }
+            setTimeout(function () {
+                connect();
+            }, 3000);
+        };
+    }
+    connect();
 
     var msg = new Vue({
         el: "#msg",

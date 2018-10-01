@@ -5,6 +5,7 @@
     new Vue({
         el: "#app",
         data: {
+            //templateNotifyUser: pageObj.templateNotifyUser,
             pageIndex: 1,
             list: [],
             pageCount: undefined,
@@ -39,6 +40,17 @@
                 this.pageIndex = num;
                 this.loadData();
             }
+            //primaryUser: function (user) {
+            //    var self = this;
+            //    $.primary(`确定设置用户【${user.nickName}】为关键用户吗？`, function () {
+            //        axios.get("/User/SetPrimaryUser/" + user.openId)
+            //            .then(function (res) {
+            //                self.templateNotifyUser = user.openId;
+            //                $.alert("设置成功", "success");
+            //            });
+            //        return true;
+            //    });
+            //}
         },
         created: function () {
             this.loadData();

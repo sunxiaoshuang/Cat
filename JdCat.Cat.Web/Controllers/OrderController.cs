@@ -167,7 +167,7 @@ namespace JdCat.Cat.Web.Controllers
             var result = new JsonData();
             var helper = HttpContext.RequestServices.GetService<DwdHelper>();
             var shop = GetDwdShop();
-            if(shop == null)
+            if (shop == null)
             {
                 result.Msg = "尚未创建点我达商户，请进入[设置->点我达设置]完成初始化操作";
                 return result;
@@ -176,10 +176,20 @@ namespace JdCat.Cat.Web.Controllers
             // 发送订单未成功
             if (!back.success)
             {
+                if(back.message == "服务不可用")
+                {
+                    back.message = "账户余额不足，请充值，充值方法：设置->点我达设置->充值";
+                }
                 result.Msg = back.message;
                 order.ErrorReason = back.message;
                 Service.Commit();
                 return result;
+            }
+            // 订单发送成功后，调用接口获取当前订单的配送费，并写入订单信息中
+            var priceResult = await helper.GetOrderPrice(helper.GetOrderCode(order));
+            if (priceResult.success)
+            {
+                order.CallbackCost = priceResult.result.receivable_price / 100;
             }
             result.Success = Service.SendDwdSuccess(order, back);
             result.Msg = result.Success ? "配送成功" : "接单异常或者已经接单";
@@ -187,7 +197,8 @@ namespace JdCat.Cat.Web.Controllers
             {
                 Mode = order.DeliveryMode,
                 Logistics = order.LogisticsType,
-                order.Status
+                order.Status,
+                flow = order.DistributionFlow
             };
             return result;
         }
@@ -216,7 +227,7 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         /// <summary>
-        /// 取消达达配送
+        /// 取消配送
         /// </summary>
         /// <param name="id"></param>
         /// <param name="flagId"></param>
@@ -403,13 +414,13 @@ namespace JdCat.Cat.Web.Controllers
             return result;
         }
 
-        private DWD_Business GetDwdShop()
+        private DWDStore GetDwdShop()
         {
-            var shop = Business.DwdShop;
+            var shop = Business.DWDStore;
             if (shop != null) return shop;
             shop = Service.GetDwdShop(Business.ID);
             if (shop == null) return null;
-            Business.DwdShop = shop;
+            Business.DWDStore = shop;
             HttpContext.Session.Set(AppData.Session, Business);
             return shop;
         }

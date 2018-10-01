@@ -11,7 +11,7 @@ namespace JdCat.Cat.Common
 {
     public class AppSetting
     {
-        public static ILoggerRepository LogRepository;
+        public static ILoggerRepository LogRepository { get; }
         static AppSetting()
         {
             LogRepository = LogManager.CreateRepository("NETCoreRepository");

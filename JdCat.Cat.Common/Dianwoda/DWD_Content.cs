@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace JdCat.Cat.Model.Data
+namespace JdCat.Cat.Common.Dianwoda
 {
     /// <summary>
     /// 调用新增订单成功后，返回的点我达信息

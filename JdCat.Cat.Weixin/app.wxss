@@ -6,42 +6,54 @@
   box-sizing: border-box;
   flex: 1;
 }
+
 button[type="primary"] {
   background-color: #f36c1b;
 }
-.button-hover[type="primary"]{
+
+.button-hover[type="primary"] {
   background-color: #cc6138;
 }
+
 .main-bg {
   background-color: #f36c1b;
 }
+
 .btn-none {
   border: 1px solid transparent;
   padding: 0;
   background-color: transparent;
 }
+
 .relative {
   position: relative;
 }
+
 navigator {
   display: flex;
   flex: 1;
 }
-navigator image, .navigate image {
+
+navigator image,
+.navigate image {
   width: 40rpx;
   height: 40rpx;
 }
+
 navigator text {
   font-size: 90%;
 }
+
 navigator input {
   border: none;
   flex-grow: 1;
 }
+
 .navigate-right {
-    width: 50rpx !important;
-    height: 50rpx !important;
+  width: 50rpx !important;
+  height: 50rpx !important;
 }
+
 .navigate {
   display: flex;
   width: 748rpx;
@@ -50,15 +62,19 @@ navigator input {
   height: 68rpx;
   border-bottom: 1px solid #eee;
 }
+
 .navigate-top-border {
   border-top: 1px solid #eee;
 }
+
 .navigate text {
   flex: 1;
 }
+
 .navigate image:first-child {
   margin: 0 15rpx 0 30rpx;
 }
+
 .navigate image:last-child {
   width: 50rpx;
   height: 50rpx;
@@ -68,39 +84,51 @@ navigator input {
 .margin-top-20 {
   margin-top: 40rpx;
 }
+
 .margin-bottom-20 {
   margin-bottom: 40rpx;
 }
+
 .margin-left-20 {
   margin-left: 40rpx;
 }
+
 .margin-left-15 {
   margin-left: 30rpx;
 }
+
 .margin-right-10 {
   margin-right: 20rpx;
 }
+
 .margin-right-30 {
   margin-right: 60rpx;
 }
+
 .padding-10 {
   padding: 20rpx;
 }
+
 .padding-left-10 {
   padding-left: 20rpx;
 }
+
 .padding-right-10 {
   padding-right: 20rpx;
 }
+
 .border-top {
   border-top: 1px solid #eee;
 }
+
 .bold {
   font-weight: bold;
 }
+
 .small {
   font-size: 90%;
 }
+
 .form-input {
   display: flex;
   /* width: 100%; */
@@ -112,22 +140,27 @@ navigator input {
   padding: 30rpx 10rpx;
   font-size: 90%;
 }
+
 .form-input:first-child {
   border-top: 1px solid #eee;
   justify-content: stretch;
 }
+
 .form-input text:first-child {
   flex-basis: 150rpx;
   white-space: nowrap;
 }
+
 .form-input input {
   flex: 1;
   border: none;
 }
+
 .btn-block {
   display: block;
   flex: 1;
 }
+
 .select-address {
   display: flex;
   flex: 1;
@@ -136,9 +169,11 @@ navigator input {
   align-self: stretch;
   align-items: center;
 }
+
 .select-address input {
   align-self: stretch;
 }
+
 /*
   滑动删除
 */
@@ -149,6 +184,7 @@ navigator input {
   width: 100%;
   overflow: hidden;
 }
+
 .touch-item:first-child {
   border-top: 1px solid #eee;
 }
@@ -179,24 +215,58 @@ navigator input {
 .touch-move-active .del {
   transform: translateX(0);
 }
+
 .icon {
   width: 40rpx;
   height: 40rpx;
 }
+
 .nowarp {
   white-space: nowrap;
 }
 
 .right-icon {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
+
 .right-icon image {
-    width: 40rpx;
-    height: 40rpx;
+  width: 40rpx;
+  height: 40rpx;
 }
+
 .text-primary {
   color: #f36c1b;
+}
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-shadow {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: #000;
+  opacity: .7;
+}
+
+.modal-content {
+  position: absolute;
+  top: 150rpx;
+  left: 150rpx;
+  height: 600rpx;
+  width: 450rpx;
+  border-radius: 40rpx;
+  display: flex;
+  background-color: #fff;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: center;
 }

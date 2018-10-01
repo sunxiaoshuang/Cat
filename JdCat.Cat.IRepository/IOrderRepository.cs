@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.Common.Dianwoda;
 using JdCat.Cat.Common.Models;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
@@ -110,6 +111,12 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="businessId"></param>
         /// <returns></returns>
-        DWD_Business GetDwdShop(int businessId);
+        DWDStore GetDwdShop(int businessId);
+        /// <summary>
+        /// 根据点我达的回调，更新订单的状态
+        /// </summary>
+        /// <param name="callback">点我达回调参数</param>
+        /// <param name="cost">订单配送费用</param>
+        Order UpdateOrderByDwd(DWD_Callback callback, double cost);
     }
 }

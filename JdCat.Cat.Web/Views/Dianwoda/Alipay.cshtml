@@ -1,0 +1,38 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-flow: column;
+        }
+
+        p {
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="center">
+    @if (ViewBag.form != null)
+    {
+        @Html.Raw(ViewBag.form)
+    }
+    else
+    {
+        <p>支付出现异常，请<a href="javascript:history.go(-1);" style="color:#ea7042; font-size:1.2em;">返回</a>重新操作。</p>
+    }
+</body>
+</html>

@@ -1,6 +1,7 @@
 .container {
     align-items: stretch;
     background-color: #ECECEC;
+    width: 100%;
 }
 
 .order-info {
@@ -75,7 +76,7 @@
     width: 100rpx;
     text-align: right;
 }
-button {
+.small {
     width: 140rpx;
     font-size: 85%;
     border: 1px solid #fdaa8a;
@@ -100,4 +101,11 @@ button {
     width: 80rpx;
     line-height: 1;
     height: 36rpx;
+}
+.commit{
+  width: 100%;
+  position: fixed;
+  background-color: #f36c21;
+  z-index: 10000;
+  bottom: 0;
 }

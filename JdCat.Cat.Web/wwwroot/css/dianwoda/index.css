@@ -1,0 +1,20 @@
+html {
+    overflow-x: hidden;
+}
+.tab-content > div{
+    min-height: 600px;
+}
+.nav-tabs a {
+    color: #ea7042;
+}
+.noExist {
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+}
+.tab-content {
+    background-color: #fff;
+}

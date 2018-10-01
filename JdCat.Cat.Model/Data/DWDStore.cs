@@ -9,8 +9,8 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 点我达商户表
     /// </summary>
-    [Table("DWDBusiness", Schema = "dbo")]
-    public class DWD_Business : BaseEntity
+    [Table("DWDStore", Schema = "dbo")]
+    public class DWDStore : BaseEntity
     {
         /// <summary>
         /// 行政区划代码
@@ -35,11 +35,11 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 经度
         /// </summary>
-        public long lng { get; set; }
+        public double lng { get; set; }
         /// <summary>
         /// 纬度
         /// </summary>
-        public long lat { get; set; }
+        public double lat { get; set; }
         /// <summary>
         /// 地址
         /// </summary>
@@ -52,5 +52,9 @@ namespace JdCat.Cat.Model.Data
         /// 所属商户
         /// </summary>
         public virtual Business Business { get; set; }
+        /// <summary>
+        /// 点我达充值记录
+        /// </summary>
+        public virtual ICollection<DWD_Recharge> DWD_Recharges { get; set; }
     }
 }

@@ -1,13 +1,9 @@
-﻿using JdCat.Cat.Model.Enum;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace JdCat.Cat.Model.Data
+namespace JdCat.Cat.Common.Dianwoda
 {
-    /// <summary>
-    /// 点我达订单回调信息对象
-    /// </summary>
     public class DWD_Shop
     {
         /// <summary>
@@ -29,11 +25,11 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 经度
         /// </summary>
-        public long lng { get; set; }
+        public double lng { get; set; }
         /// <summary>
         /// 纬度
         /// </summary>
-        public long lat { get; set; }
+        public double lat { get; set; }
         /// <summary>
         /// 地址
         /// </summary>

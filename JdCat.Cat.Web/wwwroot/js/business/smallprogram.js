@@ -19,7 +19,7 @@
                 }
                 this.showError = false;
                 $.loading();
-                axios.post("/business/savesmall", { id: this.entity.id, appId: this.entity.appId, secret: this.entity.secret, mchId: this.entity.mchId, mchKey: this.entity.mchKey })
+                axios.post("/business/savesmall", { id: this.entity.id, appId: this.entity.appId, secret: this.entity.secret, mchId: this.entity.mchId, mchKey: this.entity.mchKey, templateNotifyId: this.entity.templateNotifyId })
                     .then(function (res) {
                         $.loaded();
                         if (!res.data.success) {
