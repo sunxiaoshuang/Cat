@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using JdCat.Cat.Common.Models;
+using JdCat.Cat.Repository.Service;
 
 namespace JdCat.Cat.Web.App_Code
 {

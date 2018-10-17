@@ -13,6 +13,7 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         IQueryable<T> GetAll(Expression<Func<T, bool>> predicate = null);
         T Get(Expression<Func<T, bool>> predicate);
+        T Get(int id);
         DbSet<TEntity> Set<TEntity>() where TEntity : class;
         int Add(T entity, bool commit = true);
         int Delete(T entity, bool commit = true);

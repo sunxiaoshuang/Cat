@@ -1,6 +1,9 @@
 ﻿using JdCat.Cat.Common;
 using JdCat.Cat.Common.Models;
+using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Repository.Model;
+using log4net;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -11,17 +14,30 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JdCat.Cat.Web.App_Code
+namespace JdCat.Cat.Repository.Service
 {
     /// <summary>
     /// 达达请求接口
     /// </summary>
     public class DadaHelper
     {
+        private static DadaHelper helper;
+        static DadaHelper()
+        {
+            helper = new DadaHelper();
+        }
+        protected DadaHelper()
+        {
+
+        }
+        public static DadaHelper GetHelper() => helper;
+
         private AppData _appData;
         private JsonSerializerSettings _setting;
         private string _domain;
-        public DadaHelper(AppData appData, JsonSerializerSettings setting)
+        private static readonly ILog _log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(DadaHelper));
+        public ILog Log => _log;
+        public void Init(AppData appData, JsonSerializerSettings setting)
         {
             this._appData = appData;
             this._domain = _appData.DadaDomain;

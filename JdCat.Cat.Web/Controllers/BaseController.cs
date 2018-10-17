@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using log4net;
+using JdCat.Cat.Repository.Service;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -111,23 +112,29 @@ namespace JdCat.Cat.Web.Controllers
             ViewBag.CompanyName = AppData.Name;
         }
 
-        protected FeYinHelper GetPrintHelper()
-        {
-            var helper = HttpContext.RequestServices.GetService<FeYinHelper>();
-            if (Business.FeyinMemberCode == helper.MemberCode)
-            {
-                return helper;
-            }
-            else
-            {
-                return new FeYinHelper
-                {
-                    MemberCode = Business.FeyinMemberCode,
-                    ApiKey = Business.FeyinApiKey,
-                    Token = Business.FeyinToken
-                };
-            }
-        }
+        //protected FeYinHelper GetPrintHelper()
+        //{
+        //    //var helper = HttpContext.RequestServices.GetService<FeYinHelper>();
+        //    //if (Business.FeyinMemberCode == helper.MemberCode)
+        //    //{
+        //    //    return helper;
+        //    //}
+        //    //else
+        //    //{
+        //    //    return new FeYinHelper
+        //    //    {
+        //    //        MemberCode = Business.FeyinMemberCode,
+        //    //        ApiKey = Business.FeyinApiKey,
+        //    //        Token = Business.FeyinToken
+        //    //    };
+        //    //}
+        //    return new FeYinHelper
+        //    {
+        //        MemberCode = Business.FeyinMemberCode,
+        //        ApiKey = Business.FeyinApiKey,
+        //        Token = Business.FeyinToken
+        //    };
+        //}
 
         /// <summary>
         /// 保存session

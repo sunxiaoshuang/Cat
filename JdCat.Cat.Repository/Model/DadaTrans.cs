@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 
-namespace JdCat.Cat.Common.Models
+namespace JdCat.Cat.Repository.Model
 {
     public class DadaTrans
     {

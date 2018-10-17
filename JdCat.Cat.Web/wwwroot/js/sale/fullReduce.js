@@ -18,10 +18,10 @@
         methods: {
             create: function () {
                 var entity = this.entity, self = this;
-                if (!entity.name || !entity.minPrice || !entity.reduceMoney) {
+                if (!entity.minPrice || !entity.reduceMoney) {
                     $.alert("请将信息输入完整");
                     self.showError = true;
-                    return
+                    return;
                 }
                 if (!entity.isForeverValid) {
                     if (!entity.startDate || !entity.endDate) {
@@ -35,6 +35,7 @@
                     self.showError = true;
                     return;
                 }
+                entity.name = "满" + entity.minPrice + "元减" + entity.reduceMoney + "元";
                 self.showError = false;
                 self.btnDisplay = true;
                 var url = !entity.id ? "/Sale/CreateFullReduce" : "/Sale/UpdateFullReduce";

@@ -8,6 +8,7 @@ using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Repository;
+using JdCat.Cat.Repository.Service;
 using JdCat.Cat.Web.App_Code;
 using JdCat.Cat.Web.Models;
 using Microsoft.AspNetCore.Builder;
@@ -89,9 +90,13 @@ namespace JdCat.Cat.Web
             };
             services.AddSingleton(setting);
             // 达达请求
-            services.AddSingleton(new DadaHelper(config, setting));
+            var dada = DadaHelper.GetHelper();
+            dada.Init(config, setting);
+            services.AddSingleton(dada);
             // 点我达请求
-            services.AddSingleton(new DwdHelper(config));
+            var dwd = DwdHelper.GetHelper();
+            dwd.Init(config);
+            services.AddSingleton(dwd);
             // 飞印
             var feyin = new FeYinHelper
             {

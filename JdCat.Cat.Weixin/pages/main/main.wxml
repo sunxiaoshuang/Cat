@@ -52,9 +52,9 @@
                     <scroll-view class="foodList" scroll-y="true" scroll-with-animation="true" scroll-top="{{scrollTop}}" scroll-into-view="{{foodToView}}" bindscroll="scrollFoodList">
                         <block wx:for="{{productList}}" wx:key="">
                             <view class="food" id="{{'scroll_' + item.menuId + '_' + item.viewIndex}}">
-                                <image class="img" catchtap="productDetail" mode="aspectFill" lazy-load="{{true}}" bindtap="showFoodDetail" data-index="{{index}}" src="{{productFilter.productImage(item, businessId)}}"></image>
+                                <image class="img" catchtap="productDetail" mode="aspectFill" lazy-load="{{true}}" data-index="{{index}}" src="{{productFilter.productImage(item, businessId)}}"></image>
                                 <view class="food-block">
-                                    <view class="food-info" bindtap="showFoodDetail" data-index="{{index}}">
+                                    <view class="food-info" catchtap="productDetail" data-index="{{index}}">
                                         <view class="name">{{item.name}}</view>
                                         <view class="sales">{{item.description}}</view>
                                     </view>

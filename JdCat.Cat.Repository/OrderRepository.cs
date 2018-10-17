@@ -13,6 +13,8 @@ using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Enum;
+using JdCat.Cat.Repository.Model;
+using JdCat.Cat.Repository.Service;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -139,32 +141,6 @@ namespace JdCat.Cat.Repository
             return Context.SaveChanges() > 0;
         }
 
-        public bool SendSuccess(Order order, DadaResult<DadaReturn> back)
-        {
-            back.result.Order = order;
-            if (order.DadaReturn != null)
-            {
-                Context.DadaReturns.Remove(order.DadaReturn);
-            }
-            Context.DadaReturns.Add(back.result);
-            order.Status = OrderStatus.DistributorReceipt;
-            order.DeliveryMode = DeliveryMode.Third;
-            order.LogisticsType = LogisticsType.Dada;
-            order.DistributionTime = DateTime.Now;
-            order.ErrorReason = "";
-            order.IsSendDada = true;
-            return Context.SaveChanges() > 0;
-        }
-        public bool SendDwdSuccess(Order order, DWD_Result<DWD_Content> back)
-        {
-            order.Status = OrderStatus.DistributorReceipt;
-            order.DeliveryMode = DeliveryMode.Third;
-            order.LogisticsType = LogisticsType.Dianwoda;
-            order.DistributionTime = DateTime.Now;
-            order.ErrorReason = "";
-            return Context.SaveChanges() > 0;
-        }
-
         public bool CancelSuccess(Order order, DadaResult<DadaLiquidatedDamages> back)
         {
             back.result.Order = order;
@@ -259,12 +235,17 @@ namespace JdCat.Cat.Repository
 
         public Order GetOrderIncludeProduct(int id)
         {
-            return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).SingleOrDefault(a => a.ID == id);
+            return Context.Orders
+                .Include(a => a.Business)
+                .Include(a => a.DadaReturn)
+                .Include(a => a.Products)
+                .Include(a => a.SaleFullReduce)
+                .Include(a => a.SaleCouponUser).SingleOrDefault(a => a.ID == id);
         }
 
         public Order PaySuccess(WxPaySuccess ret)
         {
-            var order = Context.Orders.SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
+            var order = Context.Orders.Include(a => a.Products).Include(a => a.Business).SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
             if (order == null) return null;
             if (order.Status == OrderStatus.NotPay)
             {
@@ -275,6 +256,33 @@ namespace JdCat.Cat.Repository
                 return order;
             }
             return null;
+        }
+
+        private static readonly Dictionary<int, string> FeyinTokenDic = new Dictionary<int, string>();
+        public async Task<string> Print(Order order, Business business = null, string device_no = null)
+        {
+            if (business == null)
+            {
+                business = Context.Businesses.AsNoTracking().Single(a => a.ID == order.BusinessId.Value);
+            }
+            device_no = string.IsNullOrEmpty(device_no) ? business.DefaultPrinterDevice : device_no;
+            var token = string.Empty;
+            if (string.IsNullOrEmpty(device_no)) return null;
+            if (FeyinTokenDic.ContainsKey(order.BusinessId.Value))
+            {
+                token = FeyinTokenDic[order.BusinessId.Value];
+            }
+            else
+            {
+                FeyinTokenDic.Add(business.ID, "");
+            }
+            var printHelper = new FeYinHelper { ApiKey = business.FeyinApiKey, MemberCode = business.FeyinMemberCode, Token = token };
+            var ret = await printHelper.Print(business.DefaultPrinterDevice, order, business);
+            if (token != printHelper.Token)
+            {
+                FeyinTokenDic[business.ID] = printHelper.Token;
+            }
+            return JsonConvert.SerializeObject(ret);
         }
 
         public Order GetOrderByCode(string code)
@@ -329,5 +337,154 @@ namespace JdCat.Cat.Repository
             return order;
         }
 
+        public async void AutoReceipt(Order order)
+        {
+            if (!order.Business.IsAutoReceipt) return;
+            
+            if (order.Business.ServiceProvider == LogisticsType.None)
+            {
+                order.Status = OrderStatus.Receipted;
+            }
+            else
+            {
+                order.LogisticsType = order.Business.ServiceProvider;
+                // 配送订单
+                await Invoice(order);
+            }
+            Context.SaveChanges();
+        }
+        public async Task<JsonData> Invoice(Order order)
+        {
+            switch (order.LogisticsType)
+            {
+                case LogisticsType.Dada:
+                    return await DadaHandler(order);
+                case LogisticsType.Dianwoda:
+                    return await DwdHandler(order);
+                case LogisticsType.Self:
+                    return SelfHandler(order);
+                default:
+                    break;
+            }
+            return null;
+        }
+        /// <summary>
+        /// 达达配送
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        private async Task<JsonData> DadaHandler(Order order)
+        {
+            var result = new JsonData();
+            var helper = DadaHelper.GetHelper();
+            DadaResult<DadaReturn> back;
+            try
+            {
+                back = await helper.SendOrderAsync(order, order.Business);
+            }
+            catch (Exception e)
+            {
+                Log.Debug("达达配送出错", e);
+                throw;
+            }
+            // 发送订单未成功
+            if (!back.IsSuccess())
+            {
+                result.Msg = back.msg;
+                order.ErrorReason = back.msg;
+                return result;
+            }
+            back.result.Order = order;
+            if (order.DadaReturn != null)
+            {
+                Context.DadaReturns.Remove(order.DadaReturn);
+            }
+            Context.DadaReturns.Add(back.result);
+            order.Status = OrderStatus.DistributorReceipt;
+            order.DeliveryMode = DeliveryMode.Third;
+            order.DistributionTime = DateTime.Now;
+            order.ErrorReason = "";
+            order.IsSendDada = true;
+            result.Success = true;
+            result.Msg = "配送成功";
+            result.Data = new
+            {
+                Mode = DeliveryMode.Third,
+                Logistics = LogisticsType.Dada,
+                order.Status
+            };
+            return result;
+        }
+        /// <summary>
+        /// 点我达配送
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        private async Task<JsonData> DwdHandler(Order order)
+        {
+            var result = new JsonData();
+            var helper = DwdHelper.GetHelper();
+            var shop = Context.DWDStores.SingleOrDefault(a => a.BusinessId == order.BusinessId);
+            if (shop == null)
+            {
+                result.Msg = "尚未创建点我达商户，请进入[第三方外卖管理->点我达设置]完成初始化操作";
+                return result;
+            }
+            order.Business.DWDStore = shop;
+            var back = await helper.SendOrderAsync(order, order.Business);
+            // 发送订单未成功
+            if (!back.success)
+            {
+                if (back.message == "服务不可用")
+                {
+                    back.message = "账户余额不足，请充值，充值方法：第三方外卖管理->点我达设置->充值";
+                }
+                result.Msg = back.message;
+                order.ErrorReason = back.message;
+                return result;
+            }
+            // 订单发送成功后，调用接口获取当前订单的配送费，并写入订单信息中
+            var priceResult = await helper.GetOrderPrice(helper.GetOrderCode(order));
+            if (priceResult.success)
+            {
+                order.CallbackCost = priceResult.result.receivable_price / 100;
+            }
+            order.Status = OrderStatus.DistributorReceipt;
+            order.DeliveryMode = DeliveryMode.Third;
+            order.DistributionTime = DateTime.Now;
+            order.ErrorReason = "";
+            result.Success = true;
+            result.Msg = "配送成功";
+            result.Data = new
+            {
+                Mode = order.DeliveryMode,
+                Logistics = order.LogisticsType,
+                order.Status,
+                flow = order.DistributionFlow
+            };
+            return result;
+        }
+        /// <summary>
+        /// 自己配送
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        private JsonData SelfHandler(Order order)
+        {
+            order.Status = OrderStatus.Distribution;
+            order.DeliveryMode = DeliveryMode.Own;
+            order.DistributionTime = DateTime.Now;
+            order.ErrorReason = "";
+            return new JsonData
+            {
+                Msg = "配送成功",
+                Success = true,
+                Data = new
+                {
+                    Mode = DeliveryMode.Own,
+                    Status = OrderStatus.Distribution,
+                }
+            };
+        }
     }
 }

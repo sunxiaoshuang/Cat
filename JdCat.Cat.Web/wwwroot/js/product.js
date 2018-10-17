@@ -328,7 +328,9 @@
     });
     function loadData() {
         $.loading();
-        axios.get("/Product/GetProducts?pageIndex=" + productList.pageIndex)
+        var types = category.list.filter(function (item) { return item.selected; });
+        var type = types.length === 0 ? "" : types[0].id;
+        axios.get("/Product/GetProducts?pageIndex=" + productList.pageIndex + "&typeId=" + type)
             .then(function (response) {
                 $.loaded();
                 productList.list = response.data.data;

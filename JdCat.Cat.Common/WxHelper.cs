@@ -2,15 +2,19 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace JdCat.Cat.Common
 {
     public static class WxHelper
-    {
+    {   
+        public const string WeChatAppId = "wx37df4bb420888824";                         // 简单猫科技公众号AppId
+        public const string WeChatSecret = "8db34ed73016a5f22878295ed409cc52";          // 简单猫科技公众号Secret
         /// <summary>
         /// 记录小程序访问Token，如果换成分布式部署，需要存在Redis里面
         /// </summary>
@@ -29,7 +33,7 @@ namespace JdCat.Cat.Common
                 var token = TokenDic[appId];
                 var second = (DateTime.Now - token.GetTime.Value).TotalSeconds;
                 // 如果Token没有过期，则直接返回
-                if(second < token.expires_in)
+                if(second < token.expires_in - 60)
                 {
                     return token.access_token;
                 }
@@ -63,7 +67,7 @@ namespace JdCat.Cat.Common
         /// </summary>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public static async Task<string> SendTemplateMessage(WxTemplateMessage msg)
+        public static async Task<string> SendTemplateMessageAsync(WxTemplateMessage msg)
         {
             var body = JsonConvert.SerializeObject(msg);
             var url = $"https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={msg.access_token}";
@@ -72,6 +76,44 @@ namespace JdCat.Cat.Common
                 var post = new StringContent(body);
                 post.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 var result = await client.PostAsync(url, post);
+                var content = await result.Content.ReadAsStringAsync();
+                return content;
+            }
+        }
+        /// <summary>
+        /// 根据商户id与Token获取公众号永久二维码
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task<WxTicket> GetTicketAsync(int businessId, string token)
+        {
+            var url = $"https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={token}";
+            var body = new
+            {
+                action_name = "QR_LIMIT_STR_SCENE",
+                action_info = new { scene = new { scene_str = businessId.ToString() } }
+            };
+            var content = new StringContent(JsonConvert.SerializeObject(body));
+            using (var client = new HttpClient())
+            {
+                var res = await client.PostAsync(url, content);
+                var data = await res.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<WxTicket>(data);
+            }
+        }
+        /// <summary>
+        /// 发送订单通知
+        /// </summary>
+        public static async Task<string> SendEventMessageAsync(WxEventMessage msg)
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            var url = $"https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={token}";
+
+            using (var client = new HttpClient())
+            {
+                var p = new StringContent(JsonConvert.SerializeObject(msg));
+                p.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var result = await client.PostAsync(url, p);
                 var content = await result.Content.ReadAsStringAsync();
                 return content;
             }

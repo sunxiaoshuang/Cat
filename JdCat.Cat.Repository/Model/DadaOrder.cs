@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JdCat.Cat.Common.Models
+namespace JdCat.Cat.Repository.Model
 {
     public class DadaOrder
     {

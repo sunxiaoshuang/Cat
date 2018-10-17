@@ -78,7 +78,9 @@ namespace JdCat.Cat.Web.Controllers
                     Mobile = phone,
                     BusinessLicense = license,
                     Description = mark,
-                    Freight = 4
+                    Freight = 4,
+                    BusinessStartTime = "06:00",
+                    BusinessEndTime = "21:00",
                 };
                 userInfo.FeyinMemberCode = appData.FeyinMemberCode;
                 userInfo.FeyinApiKey = appData.FeyinApiKey;
@@ -87,7 +89,6 @@ namespace JdCat.Cat.Web.Controllers
                 result.Success = true;
                 return Json(result);
             }
-
         }
 
         public IActionResult Login()

@@ -10,12 +10,14 @@ using JdCat.Cat.Common.Dianwoda;
 using JdCat.Cat.Common.Models;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Repository.Service;
 using JdCat.Cat.Web.App_Code;
 using log4net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace JdCat.Cat.Web.Controllers
@@ -79,6 +81,112 @@ namespace JdCat.Cat.Web.Controllers
 
             return Json(new { success = true });
         }
+        /// <summary>
+        /// 微信公众号绑定OpenId页
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> WxUser([FromQuery]string code, [FromQuery]string state)
+        {
+            var appId = "wx37df4bb420888824";                       // 公众号AppId
+            var secret = "8db34ed73016a5f22878295ed409cc52";        // 公众号密钥
+            var tokenUrl = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={appId}&secret={secret}&code={code}&grant_type=authorization_code";
+            using (var client = new HttpClient())
+            {
+                var res = await client.GetAsync(tokenUrl);
+                var content = await res.Content.ReadAsStringAsync();
+                var json = JObject.Parse(content);
+                var openId = json["openid"].Value<string>();
+                ViewBag.body = openId;
+            }
+            return View();
+        }
+        /// <summary>
+        /// 根据商户编码绑定OpenId
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        //public IActionResult BindBusinessCode([FromQuery]string code, [FromQuery]string openId)
+        //{
+
+        //    var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
+        //    log.Debug("上传的code：" + code);
+        //    log.Debug("上传的openId：" + openId);
+        //    var service = HttpContext.RequestServices.GetService<IBusinessRepository>();
+        //    var business = service.GetBusinessByStoreId(code);
+        //    var result = new JsonData();
+        //    if (business == null)
+        //    {
+        //        result.Msg = "绑定失败，商户编码不存在";
+        //        return Json(result);
+        //    }
+        //    business.OpendId = openId;
+        //    service.Commit();
+        //    result.Success = true;
+        //    return Json(result);
+        //}
+        /// <summary>
+        /// 微信事件通知
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> WechatCallback()
+        {
+            var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
+
+            var code = Request.Query["echoStr"].ToString();
+
+            using (StreamReader sr = new StreamReader(Request.Body))
+            {
+                var content = sr.ReadToEnd();
+                log.Info(content);
+                try
+                {
+                    var result = UtilHelper.ReadXml<WxEvent>(content);
+                    if (result.MsgType == "event" && result.Event == "SCAN")
+                    {
+                        await Listen(result);
+                    }
+                }
+                catch (Exception e)
+                {
+                    log.Error("微信公众号开发平台错误：" + e);
+                }
+            }
+
+            return Content(code);
+        }
+
+
+        #region 微信事件
+        private async Task Listen(WxEvent e)
+        {
+            //var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
+            if (!int.TryParse(e.EventKey, out int businessId))
+            {
+                return;
+            }
+            var service = HttpContext.RequestServices.GetService<IBusinessRepository>();
+            var users = service.GetWxListenUser(businessId);
+            if (users.Count >= 3) return;
+
+            var token = await WxHelper.GetTokenAsync(WxHelper.WeChatAppId, WxHelper.WeChatSecret);
+            var url = $"https://api.weixin.qq.com/cgi-bin/user/info?access_token={token}&openid={e.FromUserName}&lang=zh_CN";
+            using (var client = new HttpClient())
+            {
+                var res = client.GetAsync(url);
+                var result = await res.Result.Content.ReadAsStringAsync();
+                var user = JsonConvert.DeserializeObject<WxListenUser>(result);
+                if(users.Exists(a => a.openid == user.openid))
+                {
+                    return;
+                }
+                user.BusinessId = businessId;
+                service.BindWxListen(user);
+            }
+        }
+        #endregion
 
     }
 }

@@ -9,6 +9,8 @@ using JdCat.Cat.Common;
 using JdCat.Cat.Common.Models;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Repository.Model;
+using JdCat.Cat.Repository.Service;
 using JdCat.Cat.Web.App_Code;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;

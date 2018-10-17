@@ -1,22 +1,24 @@
 ﻿using JdCat.Cat.Common;
 using JdCat.Cat.Common.Dianwoda;
 using JdCat.Cat.Model.Data;
-using JdCat.Cat.Web.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
-namespace JdCat.Cat.Web.App_Code
+namespace JdCat.Cat.Repository.Service
 {
     /// <summary>
     /// 点我达接口请求帮助类
     /// </summary>
     public class DwdHelper
     {
+        private static DwdHelper helper;
         public static Dictionary<DWD_OrderStatus, string> DwdStatusDic;
         static DwdHelper()
         {
@@ -30,13 +32,19 @@ namespace JdCat.Cat.Web.App_Code
                 { DWD_OrderStatus.Exception, "异常" },
                 { DWD_OrderStatus.Cancel, "已取消" }
             };
+            helper = new DwdHelper();
         }
+        protected DwdHelper()
+        {
+
+        }
+        public static DwdHelper GetHelper() => helper;
         private string _enviroment;
         public string AppKey { get; private set; }
         public string Secret { get; private set; }
         public string Domain { get; private set; }
 
-        public DwdHelper(AppData data)
+        public void Init(AppData data)
         {
             AppKey = data.DwdAppKey;
             Secret = data.DwdAppSecret;
@@ -81,7 +89,7 @@ namespace JdCat.Cat.Web.App_Code
             {
                 order_original_id = GetOrderCode(order),
                 order_create_time = now,
-                order_remark = order.Remark,
+                order_remark = (order.Remark + "").ToEncodeSpecial(),
                 order_price = (int)order.Price.Value * 100,
                 serial_id = order.Identifier + "",
                 cargo_weight = 0,
@@ -89,12 +97,12 @@ namespace JdCat.Cat.Web.App_Code
                 seller_id = business.DWDStore.external_shopid,
                 seller_name = business.Name,
                 seller_mobile = business.Mobile,
-                seller_address = business.Address,
+                seller_address = business.Address.ToEncodeSpecial(),
                 seller_lat = business.DWDStore.lat,
                 seller_lng = business.DWDStore.lng,
-                consignee_name = order.ReceiverName,
-                consignee_mobile = order.Phone,
-                consignee_address = order.ReceiverAddress,
+                consignee_name = order.ReceiverName.ToEncodeSpecial(),
+                consignee_mobile = order.Phone.ToEncodeSpecial(),
+                consignee_address = order.ReceiverAddress.ToEncodeSpecial(),
                 consignee_lat = order.Lat,
                 consignee_lng = order.Lng,
                 delivery_fee_from_seller = 10                 // 需要修改
@@ -108,7 +116,7 @@ namespace JdCat.Cat.Web.App_Code
                 dwdOrder.consignee_lat = 30.315272;
             }
             var products = order.Products.Select(a => new DWD_Product { item_name = a.Name, discount_price = (int)(a.Price.Value * 100), production_time = 0, quantity = (int)a.Quantity.Value, unit = "份", unit_price = (int)(a.OldPrice == null ? 0 : a.OldPrice.Value * 100) });
-            dwdOrder.items = JsonConvert.SerializeObject(products);
+            dwdOrder.items = JsonConvert.SerializeObject(products).ToEncodeSpecial();
             dwdOrder.Generate();
 
             return await RequestAsync<DWD_Content>("/api/v3/order-send.json", dwdOrder.Sign(), dwdOrder.Params());

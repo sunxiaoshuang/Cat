@@ -237,7 +237,7 @@ Page({
     if (this.data.isClosedCoupon) return; // 如果已经关闭过优惠券窗口，则不再弹出
     if (!this.data.couponList || !this.data.myCoupon || !this.data.unreceived) return;
     var userinfo = qcloud.getSession().userinfo;
-    if (!userinfo.isRegister) return; // 用户没有注册，则不弹出
+    // if (!userinfo.isRegister) return; // 用户没有注册，则不弹出
 
     var self = this;
     this.data.couponList.forEach(a => {

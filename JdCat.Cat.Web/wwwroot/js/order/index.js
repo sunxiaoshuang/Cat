@@ -17,7 +17,7 @@
                 //{ name: "配送中", type: 16, selected: false },
                 { name: "待确认", type: 64, selected: false },
                 { name: "已关闭", type: 1024, selected: false },
-                { name: "已完成", type: 128, selected: false },
+                { name: "已完成", type: 128, selected: false }
             ],
             orderList: [],
             deviceList: pageObj.deviceList,
@@ -278,7 +278,7 @@
                 return statusName[type];
             },
             deliveryType: function (order) {
-                if (+order.status & delivered == 0) return "";
+                if (+order.status & delivered === 0) return "";
                 return providerName[order.logisticsType];
             }
         },

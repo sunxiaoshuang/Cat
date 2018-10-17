@@ -64,18 +64,6 @@ namespace JdCat.Cat.IRepository
         /// <param name="dada"></param>
         void UpdateOrderStatus(DadaCallBack dada);
         /// <summary>
-        /// 达达配送接口调用成功后保存订单状态
-        /// </summary>
-        /// <param name="order"></param>
-        /// <param name="back"></param>
-        bool SendSuccess(Order order, DadaResult<DadaReturn> back);
-        /// <summary>
-        /// 点我达配送接口调用成功后保存订单状态
-        /// </summary>
-        /// <param name="order"></param>
-        /// <param name="back"></param>
-        bool SendDwdSuccess(Order order, DWD_Result<DWD_Content> back);
-        /// <summary>
         /// 达达配送取消后，保存订单状态
         /// </summary>
         /// <param name="order"></param>
@@ -101,6 +89,11 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Order PaySuccess(WxPaySuccess ret);
         /// <summary>
+        /// 打印订单
+        /// </summary>
+        /// <param name="order"></param>
+        Task<string> Print(Order order, Business business = null, string device_no = null);
+        /// <summary>
         /// 根据订单编码获取订单
         /// </summary>
         /// <param name="code"></param>
@@ -118,5 +111,16 @@ namespace JdCat.Cat.IRepository
         /// <param name="callback">点我达回调参数</param>
         /// <param name="cost">订单配送费用</param>
         Order UpdateOrderByDwd(DWD_Callback callback, double cost);
+        /// <summary>
+        /// 自动接单
+        /// </summary>
+        /// <param name="order"></param>
+        void AutoReceipt(Order order);
+        /// <summary>
+        /// 配送订单
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        Task<JsonData> Invoice(Order order);
     }
 }

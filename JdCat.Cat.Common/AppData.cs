@@ -124,5 +124,9 @@ namespace JdCat.Cat.Common
         /// 服务器IP地址
         /// </summary>
         public string HostIpAddress { get; set; }
+        /// <summary>
+        /// 公众号发送订单消息模版id
+        /// </summary>
+        public string EventMessageTemplateId { get; set; }
     }
 }

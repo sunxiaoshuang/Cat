@@ -50,7 +50,7 @@ page {
   margin-top: 10rpx;
   font-size: 70%;
   line-height: 1;
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 
 .head-location-icon {
@@ -717,16 +717,16 @@ page {
   padding-left: 15rpx;
   line-height: 48rpx;
   flex-grow: 1;
-  min-height: 88rpx;
+  min-height: 75rpx;
 }
 
 .food .name {
-  /* font-size: 110%; */
+  font-size: 90%;
   font-weight: 800;
-  /* white-space: nowrap;
+  white-space: nowrap;
   overflow: hidden;
-  text-overflow:ellipsis; */
-  /* max-width:170px; */
+  text-overflow: ellipsis;
+  max-width: 420rpx;
 }
 
 .food .sales {
@@ -1209,9 +1209,9 @@ page {
 
 .coupon-content {
   position: absolute;
-  top: 150rpx;
+  top: 250rpx;
   left: 150rpx;
-  height: 600rpx;
+  height: 700rpx;
   width: 450rpx;
   border-radius: 40rpx;
   display: flex;
@@ -1238,17 +1238,17 @@ page {
 
 .coupon-operate {
   position: absolute;
-  top: 800rpx;
+  top: 100rpx;
   left: 335rpx;
-  height: 80rpx;
-  width: 80rpx;
+  height: 60rpx;
+  width: 60rpx;
   border: 1px solid #fff;
   color: #fff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 80rpx;
+  font-size: 60rpx;
 }
 
 .coupon-operate text {
@@ -1284,7 +1284,7 @@ page {
   left: 50rpx;
   box-sizing: border-box;
   width: 650rpx;
-  height: 670rpx;
+  height: 690rpx;
   background-color: #fff;
   border-radius: 10rpx;
   display: flex;

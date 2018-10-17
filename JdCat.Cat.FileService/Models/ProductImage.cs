@@ -34,6 +34,7 @@ namespace JdCat.Cat.FileService.Models
         public static string _defaultPath = "/File/Product";
         public static string _logoPath = "File/Logo";
         public static string _licencePath = "File/License";
+        public static string _qrcodePath = "File/Qrcode";
         public int BusinessId { get; set; }
         public string Name { get; set; }
         public string Image400 { get; set; }
@@ -86,6 +87,10 @@ namespace JdCat.Cat.FileService.Models
         {
             return Save(_licencePath, environment, true);
         }
+        public string SaveQrcode(IHostingEnvironment environment)
+        {
+            return SaveSource(_qrcodePath, environment);
+        }
 
         #region 私有
         ///
@@ -116,6 +121,22 @@ namespace JdCat.Cat.FileService.Models
             if (waterSign)
             {
                 WaterSign(Path.Combine(dir, filename), "简单猫科技");
+            }
+            return filename;
+        }
+        private string SaveSource(string parentPath, IHostingEnvironment environment)
+        {
+            var dir = Path.Combine(environment.WebRootPath, parentPath);
+            var extension = ".jpg";
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            var filename = Name + extension;
+            using (var file = new FileStream(Path.Combine(dir, filename), FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                byte[] imageBytes = Convert.FromBase64String(Image400);
+                file.Write(imageBytes, 0, imageBytes.Length);
             }
             return filename;
         }

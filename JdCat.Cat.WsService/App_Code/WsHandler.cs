@@ -124,13 +124,17 @@ namespace JdCat.Cat.WsService.App_Code
         /// </summary>
         /// <param name="id">商户id</param>
         /// <param name="code">订单编号</param>
-        public async Task OrderNotifyAsync(int id, string code)
+        public async Task OrderNotifyAsync(int id, string code, int state)
         {
-            var buffer = System.Text.Encoding.Default.GetBytes(code);
+            var data = code + "|" + state;
+            var buffer = System.Text.Encoding.Default.GetBytes(data);
             // 发送客户端消息通知
             if (ClientSocketDictionary.ContainsKey(id))
             {
-                var result = await OrderNotifyAsync(ClientSocketDictionary[id], buffer);
+                // 客户端信息另外处理
+                var dataClient = code;
+                var bufferClient = System.Text.Encoding.Default.GetBytes(dataClient);
+                var result = await OrderNotifyAsync(ClientSocketDictionary[id], bufferClient);
                 if (!result)
                 {
                     ClientSocketDictionary.Remove(id);

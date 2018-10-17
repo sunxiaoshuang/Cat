@@ -77,11 +77,19 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("BusinessEndTime");
 
+                    b.Property<string>("BusinessEndTime2");
+
+                    b.Property<string>("BusinessEndTime3");
+
                     b.Property<string>("BusinessLicense");
 
                     b.Property<string>("BusinessLicenseImage");
 
                     b.Property<string>("BusinessStartTime");
+
+                    b.Property<string>("BusinessStartTime2");
+
+                    b.Property<string>("BusinessStartTime3");
 
                     b.Property<string>("CityCode");
 
@@ -150,6 +158,8 @@ namespace JdCat.Cat.Model.Migrations
                         .HasDefaultValueSql("'JD' + dbo.fn_right_padding(NEXT VALUE FOR shared.StoreNumbers, 6)");
 
                     b.Property<string>("TemplateNotifyId");
+
+                    b.Property<string>("WxQrListenPath");
 
                     b.HasKey("ID");
 
@@ -932,6 +942,36 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("User","dbo");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.WxListenUser", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("city");
+
+                    b.Property<string>("country");
+
+                    b.Property<string>("headimgurl");
+
+                    b.Property<string>("nickname");
+
+                    b.Property<string>("openid");
+
+                    b.Property<string>("province");
+
+                    b.Property<int>("sex");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("WxListenUser","dbo");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.Address", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.User", "User")
@@ -1144,6 +1184,14 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.User", "User")
                         .WithMany("ShoppingCarts")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.WxListenUser", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

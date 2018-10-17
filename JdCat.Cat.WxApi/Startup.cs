@@ -7,6 +7,7 @@ using JdCat.Cat.Common.Filter;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Repository;
+using JdCat.Cat.Repository.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +51,7 @@ namespace JdCat.Cat.WxApi
             services.AddScoped<ISessionDataRepository, SessionDataRepository>();
             // 系统参数
             var appData = Configuration.GetSection("appData");
-            services.AddSingleton(new AppData
+            var config = new AppData
             {
                 OrderUrl = appData["orderUrl"],
                 ServerAppId = appData["serverAppId"],
@@ -58,7 +59,29 @@ namespace JdCat.Cat.WxApi
                 ServerMchId = appData["serverMchId"],
                 PaySuccessUrl = appData["paySuccessUrl"],
                 HostIpAddress = appData["HostIpAddress"],
-            });
+                EventMessageTemplateId = appData["EventMessageTemplateId"],
+                RunMode = appData["runMode"],
+                DadaDomain = appData["dadaDomain"],
+                DadaAppKey = appData["dadaAppKey"],
+                DadaAppSecret = appData["dadaAppSecret"],
+                DadaSourceId = appData["dadaSourceId"],
+                DadaShopNo = appData["dadaShopNo"],
+                DadaCallback = appData["dadaCallback"],
+                DwdDomain = appData["dwdDomain"],
+                DwdAppKey = appData["dwdAppKey"],
+                DwdAppSecret = appData["dwdAppSecret"],
+                DwdShopNo = appData["dwdShopNo"],
+                DwdCallback = appData["dwdCallback"]
+            };
+            services.AddSingleton(config);
+            // 达达请求
+            var dada = DadaHelper.GetHelper();
+            dada.Init(config, AppData.JsonSetting);
+            services.AddSingleton(dada);
+            // 点我达请求
+            var dwd = DwdHelper.GetHelper();
+            dwd.Init(config);
+            services.AddSingleton(dwd);
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

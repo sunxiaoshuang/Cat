@@ -286,7 +286,7 @@ namespace JdCat.Cat.Repository
             Context.Attach(product);
             product.ModifyTime = DateTime.Now;
             product.NotSaleTime = DateTime.Now;
-            product.Status = Model.Enum.ProductStatus.NotSale;
+            product.Status = ProductStatus.NotSale;
         }
     }
 }

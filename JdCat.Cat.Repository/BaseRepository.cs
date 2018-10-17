@@ -33,6 +33,10 @@ namespace JdCat.Cat.Repository
         {
             return _context.Set<T>().FirstOrDefault(predicate);
         }
+        public T Get(int id)
+        {
+            return Context.Set<T>().SingleOrDefault(a => a.ID == id);
+        }
         public IQueryable<T> GetAll(Expression<Func<T, bool>> predicate = null)
         {
             return predicate == null ? _context.Set<T>() : _context.Set<T>().Where(predicate);

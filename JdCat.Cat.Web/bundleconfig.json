@@ -246,6 +246,19 @@
     "inputFiles": [
       "wwwroot/css/dianwoda/index.css"
     ]
+  },
+  // 消息管理
+  {
+    "outputFileName": "wwwroot/js/business/message.min.js",
+    "inputFiles": [
+      "wwwroot/js/business/message.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/business/message.min.css",
+    "inputFiles": [
+      "wwwroot/css/business/message.css"
+    ]
   }
 
 ]

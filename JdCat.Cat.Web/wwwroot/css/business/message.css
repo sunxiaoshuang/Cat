@@ -1,0 +1,42 @@
+.qrcode {
+    background: #f2f5f6;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items:center;
+    margin-top: 10px;
+}
+
+.bg-white {
+    background-color: #fff;
+}
+
+.qrcode img {
+    width: 120px;
+    height: 120px;
+    margin-right: 30px;
+}
+
+    .qrcode p {
+        margin: 5px;
+    }
+.panel-default{
+    margin-bottom: 0;
+}
+.user {
+    display: flex;
+    align-items: center;
+    padding: 10px 30px 10px 20px;
+}
+.user img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 50px;
+}
+    .user p {
+        margin: 2px;
+    }
+    .user .info {
+        flex-grow: 1;
+    }

@@ -29,10 +29,10 @@ namespace JdCat.Cat.WsService.Controllers
         /// <param name="wsList"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id, [FromQuery]string code, [FromServices]WsHandler wsHandler)
+        public async Task<IActionResult> Get(int id, [FromQuery]string code, [FromQuery]int? state, [FromServices]WsHandler wsHandler)
         {
             // 网页通知
-            await wsHandler.OrderNotifyAsync(id, code);
+            await wsHandler.OrderNotifyAsync(id, code, state??99);
             // 客户端通知
             //var state = StateObject.DicSocket.FirstOrDefault(a => a.Key == id);
             //if (state.Value != null)

@@ -18,6 +18,8 @@ using System.Net.Http.Headers;
 using JdCat.Cat.Common.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using log4net;
+using JdCat.Cat.Model.Enum;
 
 namespace JdCat.Cat.WxApi.Controllers
 {
@@ -171,26 +173,29 @@ namespace JdCat.Cat.WxApi.Controllers
         }
 
         [HttpPost("paySuccess")]
-        public IActionResult PaySuccess([FromServices]AppData appData)
+        public async Task<IActionResult> PaySuccess([FromServices]AppData appData, [FromServices]IBusinessRepository businessRepository)
         {
             using (StreamReader sr = new StreamReader(Request.Body))
             {
                 var content = sr.ReadToEnd();
                 var ret = UtilHelper.ReadXml<WxPaySuccess>(content);
-                if (string.IsNullOrEmpty(ret.transaction_id)) return NotFound("支付不成功");
+                if (string.IsNullOrEmpty(ret.transaction_id)) return BadRequest("支付不成功");
                 var order = Service.PaySuccess(ret);
                 if (order != null)
                 {
-                    Task.Run(async () =>
-                    {
-                        using (var hc = new HttpClient())
-                        {
-                            await hc.GetAsync($"{appData.OrderUrl}/api/notify/{order.BusinessId}?code={order.OrderCode}");
-                        }
-                    });
+                    await Service.Print(order);                 // 打印小票
+                    Service.AutoReceipt(order);                 // 自动接单
+                    await Task.Run(async () =>
+                     {
+                         using (var hc = new HttpClient())
+                         {
+                             await hc.GetAsync($"{appData.OrderUrl}/api/notify/{order.BusinessId}?code={order.OrderCode}&state={(int)order.Status}");
+                         }
+                     });
                     try
                     {
-                        TemplateMessage(order);
+                        TemplateMessage(order);             // 小程序模版消息
+                        EventMessage(order, appData);       // 公众号模版消息
                     }
                     catch (Exception ex)
                     {
@@ -199,7 +204,6 @@ namespace JdCat.Cat.WxApi.Controllers
                 }
                 else
                 {
-                    Log.Error(JsonConvert.SerializeObject(ret));
                     return BadRequest("简单猫订单参数错误");
                 }
             }
@@ -223,12 +227,12 @@ namespace JdCat.Cat.WxApi.Controllers
         }
 
         /// <summary>
-        /// 发送模版消息
+        /// 发送模版消息，通知用户付款成功
         /// </summary>
         /// <param name="order"></param>
         private void TemplateMessage(Order order)
         {
-            if (string.IsNullOrEmpty(order.PrepayId)) return;
+            if (string.IsNullOrEmpty(order.PrepayId) || string.IsNullOrEmpty(order.OpenId)) return;
             var businessRep = HttpContext.RequestServices.GetService<IBusinessRepository>();
             var business = businessRep.Get(a => a.ID == order.BusinessId);
             if (string.IsNullOrEmpty(business.TemplateNotifyId)) return;
@@ -253,11 +257,49 @@ namespace JdCat.Cat.WxApi.Controllers
                 keyword6 = new { value = order.Phone }
             };
 
-            var res = WxHelper.SendTemplateMessage(msg);
+            var res = WxHelper.SendTemplateMessageAsync(msg);
             res.Wait();
             var content = res.Result;
-            Log.Debug(JsonConvert.SerializeObject(content));
+            //Log.Debug(JsonConvert.SerializeObject(content));
 
+        }
+        /// <summary>
+        /// 发送事件消息，通知商户订单信息
+        /// </summary>
+        /// <param name="order"></param>
+        private void EventMessage(Order order, AppData appData)
+        {
+            var rep = HttpContext.RequestServices.GetService<IBusinessRepository>();
+            var msg = new WxEventMessage();
+            //msg.miniprogram = new Miniprogram { appid = "wx87eead242d711b2d", path = "pages/order/orderInfo/orderInfo?id=657" };            // 简单猫外卖小程序
+            msg.template_id = appData.EventMessageTemplateId;
+            var productName = string.Empty;
+            foreach (var item in order.Products)
+            {
+                productName += item.Name + " *" + (double)item.Quantity + "、";
+            }
+            productName = productName.Remove(productName.Length - 1);
+            var keyword5 = (order.Status == OrderStatus.Distribution || order.Status == OrderStatus.DistributorReceipt) ? "待配送" : "已付款";
+            msg.data = new
+            {
+                first = new { value = $"流水号：   #{order.Identifier}" },
+                keyword1 = new { value = productName },
+                keyword2 = new { value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
+                keyword3 = new { value = order.ReceiverAddress },
+                keyword4 = new { value = "   " + order.ReceiverName },
+                keyword5 = new { value = keyword5, color = "#ff0000" },
+                remark = new { value = order.Remark }
+            };
+            var users = rep.GetWxListenUser(order.BusinessId.Value);
+            if (users == null || users.Count == 0) return;
+            foreach (var item in users)
+            {
+                Log.Info("事件消息OpenId：" + item.openid);
+                msg.touser = item.openid;
+                var result = WxHelper.SendEventMessageAsync(msg);
+                result.Wait();
+                Log.Debug(result.Result);
+            }
         }
 
     }

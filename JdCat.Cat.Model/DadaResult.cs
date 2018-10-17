@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace JdCat.Cat.Common.Models
+namespace JdCat.Cat.Model
 {
     /// <summary>
     /// 达达接口返回结果

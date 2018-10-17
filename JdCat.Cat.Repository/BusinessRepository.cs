@@ -29,6 +29,11 @@ namespace JdCat.Cat.Repository
         {
             return Context.Businesses.AsNoTracking().SingleOrDefault(expression);
         }
+        public Business GetBusinessByStoreId(string code)
+        {
+            var p = code.ToUpper();
+            return Context.Businesses.SingleOrDefault(a => a.StoreId == p);
+        }
         public bool SaveBase(Business business)
         {
             var entity = new Business { ID = business.ID, Lng = -1, Lat = -1, MinAmount = -1, Range = -1 };
@@ -440,6 +445,26 @@ group by CreateTime");
             return result;
         }
 
-
+        public List<WxListenUser> GetWxListenUser(int businessId)
+        {
+            return Context.WxListenUsers.AsNoTracking().Where(a => a.BusinessId == businessId).ToList();
+        }
+        public void BindWxListen(WxListenUser user)
+        {
+            Context.WxListenUsers.Add(user);
+            Context.SaveChanges();
+        }
+        public void SaveWxQrcode(Business business)
+        {
+            var entity = new Business { ID = business.ID };
+            Context.Attach(entity);
+            entity.WxQrListenPath = business.WxQrListenPath;
+            Context.SaveChanges();
+        }
+        public void RemoveWxListenUser(int id)
+        {
+            Context.WxListenUsers.Remove(new WxListenUser { ID = id});
+            Context.SaveChanges();
+        }
     }
 }

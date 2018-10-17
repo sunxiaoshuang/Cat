@@ -38,5 +38,20 @@ namespace JdCat.Cat.FileService.Controllers
             
         }
 
+        [HttpPost("Qrcode")]
+        public string Qrcode([FromBody]ProductImage image, [FromServices]IHostingEnvironment hosting)
+        {
+            try
+            {
+                var name = image.SaveQrcode(hosting);
+                return name;
+            }
+            catch (Exception e)
+            {
+                UtilHelper.Log(e.ToString());
+                throw;
+            }
+        }
+
     }
 }

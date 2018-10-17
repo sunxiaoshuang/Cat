@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace JdCat.Cat.Web.Models
+namespace JdCat.Cat.Repository.Model
 {
     public class FeyinModel
     {

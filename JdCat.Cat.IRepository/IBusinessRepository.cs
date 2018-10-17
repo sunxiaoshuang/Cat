@@ -18,6 +18,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Business GetBusiness(Expression<Func<Business, bool>> expression);
         /// <summary>
+        /// 根据商户编码获取商户对象
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        Business GetBusinessByStoreId(string code);
+        /// <summary>
         /// 保存商户基本信息
         /// </summary>
         /// <param name="business"></param>
@@ -74,6 +80,28 @@ namespace JdCat.Cat.IRepository
         /// <param name="business"></param>
         /// <returns></returns>
         bool SetDefaultPrinter(Business business);
+        /// <summary>
+        /// 获取监听的用户
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        List<WxListenUser> GetWxListenUser(int businessId);
+        /// <summary>
+        /// 绑定微信监听
+        /// </summary>
+        /// <param name="user">微信用户</param>
+        void BindWxListen(WxListenUser user);
+        /// <summary>
+        /// 保存二维码地址
+        /// </summary>
+        /// <param name="business"></param>
+        void SaveWxQrcode(Business business);
+        /// <summary>
+        /// 移除微信服务通知用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        void RemoveWxListenUser(int id);
 
         #region 报表类方法
 
@@ -92,7 +120,12 @@ namespace JdCat.Cat.IRepository
         /// <param name="date"></param>
         /// <returns></returns>
         List<Report_Product> GetProductTop10(Business business, DateTime date);
-
+        /// <summary>
+        /// 前十
+        /// </summary>
+        /// <param name="business"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
         List<Report_ProductPrice> GetProductPriceTop10(Business business, DateTime date);
 
         #endregion
@@ -201,6 +234,7 @@ namespace JdCat.Cat.IRepository
         #region 客户端请求
         Business Login(string username, string password);
         #endregion
+
 
     }
 }

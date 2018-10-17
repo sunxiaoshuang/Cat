@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Text;
+using System.Web;
 
 namespace JdCat.Cat.Common
 {
@@ -83,6 +84,16 @@ namespace JdCat.Cat.Common
 
 
             return t;
+        }
+
+        public static string ToUrlEncode(this string url)
+        {
+            return HttpUtility.UrlEncode(url, Encoding.GetEncoding(936));
+        }
+
+        public static string ToEncodeSpecial(this string url)
+        {
+            return url.Replace("+", " ");
         }
 
     }

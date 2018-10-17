@@ -70,7 +70,7 @@
     // 店铺营业状态
     $('#cbClose').bootstrapSwitch({
         onSwitchChange: function (e, state) {
-            var state = !state;
+            state = !state;
             if (pageData.business.isClose === state) return;
             pageData.business.isClose = state;
             $.loading();
@@ -98,23 +98,33 @@
         //ws = new WebSocket("ws://203.195.205.143:5084/ws?id=" + pageData.business.id);
 
         ws.onmessage = function (res) {
-            var time = new Date();
-            var code = res.data;
-            axios.get("/order/MessageHandler?code=" + code)
-                .then(function (res) {
-                    if (res.data.data === 1) {
-                        newOrder.play();
-                    } else if (res.data.data === 2) {
-                        autoOrder.play();
-                    } else if (res.data.data === 3) {
-                        exceptionOrder.play();
-                    }
+            var time = new Date(), data = res.data.split("|"), code = data[0], state = data[1];
 
-                    msg.list.push({ code: code, time: time.getHours() + ":" + time.getMinutes(), tip: res.data.success });
-                })
-                .catch(function (msg) {
-                    $.alert(msg);
-                });
+            if (state == 4 || state == 8 || state == 16) {
+                autoOrder.play();
+            } else if (state == 32) {
+                exceptionOrder.play();
+            } else {
+                newOrder.play();
+            }
+
+            msg.list.push({ code: code, time: time.getHours() + ":" + time.getMinutes(), tip: state !== 32 });
+
+            //axios.get("/order/MessageHandler?code=" + code)
+            //    .then(function (res) {
+            //        if (res.data.data === 1) {
+            //            newOrder.play();
+            //        } else if (res.data.data === 2) {
+            //            autoOrder.play();
+            //        } else if (res.data.data === 3) {
+            //            exceptionOrder.play();
+            //        }
+
+            //        msg.list.push({ code: code, time: time.getHours() + ":" + time.getMinutes(), tip: res.data.success });
+            //    })
+            //    .catch(function (msg) {
+            //        $.alert(msg);
+            //    });
 
         };
         ws.onopen = function (a) {

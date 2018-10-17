@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.Common.Models;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Enum;
@@ -212,28 +215,28 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="device"></param>
         /// <param name="helper"></param>
         /// <returns></returns>
-        public async Task<IActionResult> AddBind([FromQuery]FeyinDevice device)
+        public IActionResult AddBind([FromQuery]FeyinDevice device)
         {
             var result = new JsonData();
-            var helper = GetPrintHelper();
+            //var helper = GetPrintHelper();
 
-            var ret = await helper.BindDevice(device.Code);
-            result.Success = ret.ErrCode == null || ret.ErrCode == 0;
-            result.Msg = ret.ErrMsg;
+            //var ret = await helper.BindDevice(device.Code);
+            //result.Success = ret.ErrCode == null || ret.ErrCode == 0;
+            //result.Msg = ret.ErrMsg;
 
-            if (Business.FeyinToken != helper.Token)
-            {
-                // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
-                Business.FeyinToken = helper.Token;
-                HttpContext.Session.Set(AppData.Session, Business);
-            }
+            //if (Business.FeyinToken != helper.Token)
+            //{
+            //    // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
+            //    Business.FeyinToken = helper.Token;
+            //    HttpContext.Session.Set(AppData.Session, Business);
+            //}
 
 
-            if (!result.Success)
-            {
-                // 绑定不成功
-                return Json(result);
-            }
+            //if (!result.Success)
+            //{
+            //    // 绑定不成功
+            //    return Json(result);
+            //}
             result.Success = Service.BindPrintDevice(Business, device);
             if (!result.Success)
             {
@@ -249,7 +252,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="device"></param>
         /// <param name="helper"></param>
         /// <returns></returns>
-        public async Task<IActionResult> UnBind(int id)
+        public IActionResult UnBind(int id)
         {
             var result = new JsonData();
             var device = Service.Set<FeyinDevice>().SingleOrDefault(a => a.ID == id);
@@ -258,24 +261,24 @@ namespace JdCat.Cat.Web.Controllers
                 result.Msg = "设备可以已经被删除，请刷新后重试";
                 return Json(result);
             }
-            var helper = GetPrintHelper();
+            //var helper = GetPrintHelper();
 
-            var ret = await helper.UnBindDevice(device.Code);
-            result.Success = ret.ErrCode == null || ret.ErrCode == 0;
-            result.Msg = ret.ErrMsg;
+            //var ret = await helper.UnBindDevice(device.Code);
+            //result.Success = ret.ErrCode == null || ret.ErrCode == 0;
+            //result.Msg = ret.ErrMsg;
 
-            if (Business.FeyinToken != helper.Token)
-            {
-                // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
-                Business.FeyinToken = helper.Token;
-                HttpContext.Session.Set(AppData.Session, Business);
-            }
+            //if (Business.FeyinToken != helper.Token)
+            //{
+            //    // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
+            //    Business.FeyinToken = helper.Token;
+            //    HttpContext.Session.Set(AppData.Session, Business);
+            //}
 
-            if (!result.Success)
-            {
-                // 解绑失败不成功
-                return Json(result);
-            }
+            //if (!result.Success)
+            //{
+            //    // 解绑失败不成功
+            //    return Json(result);
+            //}
 
             Service.Set<FeyinDevice>().Remove(device);
             result.Success = Service.Commit() > 0;
@@ -342,6 +345,32 @@ namespace JdCat.Cat.Web.Controllers
             result.Msg = "设置成功";
             HttpContext.Session.Set(AppData.Session, Business);
             return Json(result);
+        }
+
+        /// <summary>
+        /// 消息管理
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Message()
+        {
+            if (string.IsNullOrEmpty(Business.WxQrListenPath))
+            {
+                var token = await WxHelper.GetTokenAsync(WxHelper.WeChatAppId, WxHelper.WeChatSecret);
+                var ticket = await WxHelper.GetTicketAsync(Business.ID, token);
+                var qrCode = UtilHelper.CreateCodeEwm(ticket.url);
+                var source = Convert.ToBase64String(qrCode);
+                Business.WxQrListenPath = await Service.UploadAsync(AppData.ApiUri + "/Upload/Qrcode", Business.ID, source);
+                Service.SaveWxQrcode(Business);
+                SaveSession();
+            }
+            ViewBag.list = Service.GetWxListenUser(Business.ID);
+            return View(Business);
+        }
+
+        public IActionResult DeleteWxUser(int id)
+        {
+            Service.RemoveWxListenUser(id);
+            return Content("删除成功");
         }
 
     }

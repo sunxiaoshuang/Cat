@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
 using JdCat.Cat.Model;
 using Microsoft.Extensions.DependencyInjection;
+using JdCat.Cat.Repository.Service;
 
 namespace JdCat.Cat.Web.Controllers
 {

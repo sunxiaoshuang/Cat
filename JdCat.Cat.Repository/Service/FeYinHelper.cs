@@ -1,5 +1,5 @@
 ﻿using JdCat.Cat.Model.Data;
-using JdCat.Cat.Web.Models;
+using JdCat.Cat.Repository.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -10,7 +10,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JdCat.Cat.Web.App_Code
+namespace JdCat.Cat.Repository.Service
 {
     public class FeYinHelper
     {
@@ -45,6 +45,7 @@ namespace JdCat.Cat.Web.App_Code
             Token = result.Access_Token;
             return result;
         }
+
         /// <summary>
         /// 打印小票
         /// </summary>
@@ -217,7 +218,7 @@ namespace JdCat.Cat.Web.App_Code
                 if (ret.ErrCode == 40014)
                 {
                     var tokenResult = await GetToken();
-                    if(tokenResult.ErrCode == 0)
+                    if(tokenResult.ErrCode == null || tokenResult.ErrCode == 0)
                     {
                         return await Request(url, p, method);
                     }

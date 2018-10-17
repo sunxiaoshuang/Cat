@@ -1,0 +1,60 @@
+﻿@model JdCat.Cat.Model.Data.Business
+@{
+    ViewData["Title"] = "消息管理";
+}
+
+@section Styles {
+    <environment include="Development">
+        <link href="~/css/business/message.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/css/business/message.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+}
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/business/message.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/business/message.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe" id="app">
+    <div class="container-fluid bg-white">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">消息通知</span>
+                    </h3>
+                </div>
+            </div>
+            <div class="panel-body form-horizontal bg-white">
+                <div class="qrcode">
+                    <img src="@ViewBag.apiUrl/File/Qrcode/@Model.WxQrListenPath" />
+                    <div>
+                        <p>关注简单猫科技公众号，</p>
+                        <p>将用户添加至后台内部用户，就可以实时接收订单动态提醒啦！</p>
+                        <p><button class="btn btn-primary" id="btnReload">扫码成功后，点击此处刷新！</button><span class="text-danger small"> (最多可添加三人接收新订单提醒！)</span></p>
+                    </div>
+                </div>
+                <ul class="list-group margin-top-10" id="list">
+                    @foreach (WxListenUser user in ViewBag.list)
+                    {
+                    <li class="list-group-item user">
+                        <img src="@user.headimgurl" />
+                        <div class="info">
+                            <p>@user.nickname</p>
+                            <p>性别：@(user.sex == 1 ? "男" : "女")</p>
+                            <p>地区：@user.province @user.city</p>
+                        </div>
+                        <button class="btn btn-primary delete" data-id="@user.ID" data-name="@user.nickname">删除用户</button>
+                    </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+

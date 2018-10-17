@@ -39,13 +39,25 @@
                 </div>
                 <div class="panel-body">
                     <div class="form-horizontal">
-                        <div class="form-group" v-bind:class="{'has-error': (showError && !entity.name)}">
+                        @*<div class="form-group" v-bind:class="{'has-error': (showError && !entity.name)}">
+                                <label class="control-label col-md-1">
+                                    <span class="require">活动名称：</span>
+                                </label>
+                                <div class="col-md-4">
+                                    <input type="text" v-model.trim="entity.name" class="form-control" />
+                                    <span class="text-danger">此名称将会在小程序活动列表中显示，如：（开业酬宾满20减5）</span>
+                                </div>
+                            </div>*@
+                        <div class="form-group" v-bind:class="{'has-error': (showError && !(entity.minPrice && entity.reduceMoney))}">
                             <label class="control-label col-md-1">
-                                <span class="require">活动名称：</span>
+                                <span class="require">活动规则：</span>
                             </label>
-                            <div class="col-md-4">
-                                <input type="text" v-model.trim="entity.name" class="form-control" />
-                                <span class="text-danger">此名称将会在小程序活动列表中显示，如：（开业酬宾满20减5）</span>
+                            <div class="col-md-3">
+                                <span>消费满</span>
+                                <input type="number" v-model.trim="entity.minPrice" v-bind:disabled="entity.id > 0" class="form-control" style="display: inline;width: 100px;" />
+                                <span>元，订单立减</span>
+                                <input type="number" v-model.trim="entity.reduceMoney" v-bind:disabled="entity.id > 0" class="form-control" style="display: inline;width: 100px;" />
+                                <span>元。</span>
                             </div>
                         </div>
                         <div class="form-group" v-bind:class="{'has-error': (showError && !(entity.startDate && entity.endDate) && !entity.isForeverValid)}">
@@ -73,18 +85,6 @@
                                         永久有效
                                     </label>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="form-group" v-bind:class="{'has-error': (showError && !(entity.minPrice && entity.reduceMoney))}">
-                            <label class="control-label col-md-1">
-                                <span class="require">活动规则：</span>
-                            </label>
-                            <div class="col-md-3">
-                                <span>消费满</span>
-                                <input type="number" v-model.trim="entity.minPrice" v-bind:disabled="entity.id > 0" class="form-control" style="display: inline;width: 100px;" />
-                                <span>元，订单立减</span>
-                                <input type="number" v-model.trim="entity.reduceMoney" v-bind:disabled="entity.id > 0" class="form-control" style="display: inline;width: 100px;" />
-                                <span>元。</span>
                             </div>
                         </div>
                         <div class="form-group">

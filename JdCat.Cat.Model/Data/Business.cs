@@ -47,7 +47,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 商户备注
         /// </summary>
-        public string Description { get; set; } = "欢迎光临";
+        public string Description { get; set; }
         /// <summary>
         /// 营业执照
         /// </summary>
@@ -131,8 +131,8 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 飞印临时请求得到的Token
         /// </summary>
-        [NotMapped]
-        public string FeyinToken { get; set; }
+        //[NotMapped]
+        //public string FeyinToken { get; set; }
         /// <summary>
         /// 商铺位置经度
         /// </summary>
@@ -142,13 +142,29 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public double Lat { get; set; }
         /// <summary>
-        /// 经营开始时间
+        /// 经营开始时间1
         /// </summary>
-        public string BusinessStartTime { get; set; } = "06:00";
+        public string BusinessStartTime { get; set; }
         /// <summary>
-        /// 经营结束时间
+        /// 经营结束时间1
         /// </summary>
-        public string BusinessEndTime { get; set; } = "21:00";
+        public string BusinessEndTime { get; set; }
+        /// <summary>
+        /// 经营开始时间2
+        /// </summary>
+        public string BusinessStartTime2 { get; set; }
+        /// <summary>
+        /// 经营结束时间2
+        /// </summary>
+        public string BusinessEndTime2 { get; set; }
+        /// <summary>
+        /// 经营开始时间3
+        /// </summary>
+        public string BusinessStartTime3 { get; set; }
+        /// <summary>
+        /// 经营结束时间3
+        /// </summary>
+        public string BusinessEndTime3 { get; set; }
         /// <summary>
         /// 起送金额
         /// </summary>
@@ -170,6 +186,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public bool IsPublish { get; set; } = true;
         /// <summary>
+        /// 绑定监听服务的二维码地址
+        /// </summary>
+        public string WxQrListenPath { get; set; }
+        /// <summary>
         /// 点我达商户对象
         /// </summary>
         //public int? DWD_BusinessId { get; set; }
@@ -177,7 +197,6 @@ namespace JdCat.Cat.Model.Data
         /// 点我达商户对象
         /// </summary>
         public virtual DWDStore DWDStore { get; set; }
-
         /// <summary>
         /// 产品列表集合
         /// </summary>
@@ -206,7 +225,6 @@ namespace JdCat.Cat.Model.Data
         /// 商品折扣活动
         /// </summary>
         public virtual ICollection<SaleProductDiscount> SaleProductDiscounts { get; set; }
-
 
         public object Clone()
         {

@@ -83,7 +83,7 @@
                         </label>
                         <div class=" col-xs-4 col-md-3">
                             <div v-bind:class="{ 'hide': !entity.logoSrc}">
-                                <img style="width: 200px; height: 150px;margin-right: 20px;" :src="logo" class="img-thumbnail img-responsive" id="img" />
+                                <img style="width: 200px; height: 200px;margin-right: 20px;" :src="logo" class="img-thumbnail img-responsive" id="img" />
                                 <i class="fa fa-times-circle-o" style="color: #808080;cursor: pointer;font-size: 1.5em;" title="删除" v-on:click="remove()"></i>
                             </div>
                             <div class="cat-upload" v-on:click="selectFile()" v-bind:class="{ 'hide': !!entity.logoSrc}">
@@ -209,7 +209,7 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                            <span class="require">经营开始时间</span>
+                            <span class="require">经营时间</span>
                         </label>
                         <div class=" col-xs-4 col-md-3">
                             <div class="input-group">
