@@ -1,7 +1,15 @@
 const qcloud = require("../../vendor/wafer2-client-sdk/index");
 const config = require("../../config");
 const util = require("../../utils/util");
-const weekObj = {"1": 1, "2": 2, "3": 4, "4": 8, "5": 16, "6": 32, "0": 64};
+const weekObj = {
+  "1": 1,
+  "2": 2,
+  "3": 4,
+  "4": 8,
+  "5": 16,
+  "6": 32,
+  "0": 64
+};
 Page({
 
   /**
@@ -140,7 +148,7 @@ Page({
     qcloud.request({
       url: "/business/sale/" + config.businessId,
       method: "GET",
-      success: function(res){
+      success: function (res) {
         // 满减
         that.setData({
           fullReduceList: res.data.fullReduct
@@ -180,26 +188,6 @@ Page({
 
     // 每次显示，均重新计算购物车数据
     setTimeout(function () {
-      var business = qcloud.getSession().business;
-      var submitText = "去结算",
-        isBalance = true,
-        now = new Date();
-      var startTime = business.businessStartTime.split(":"),
-        endTime = business.businessEndTime.split(":");
-      var nowStamp = Date.parse(now),
-        startStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +startTime[0], +startTime[1], 0)),
-        endStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +endTime[0], +endTime[1], 0));
-      if (nowStamp <= startStamp || nowStamp >= endStamp || business.isClose) {
-        submitText = "已暂停营业";
-        isBalance = false;
-      }
-      self.setData({
-        submitText: submitText,
-        isBalance: isBalance,
-        business: business,
-        freight: business.freight,
-        logo: business.logoSrc
-      });
       self.loadData();
     }, 1000);
     this.couponHandler();
@@ -223,15 +211,43 @@ Page({
     }
     wx.setStorageSync("cartList", existCart);
 
+    this.calcSaleText();
+
+    // 每次重新加载数据时，都重新更新一遍商户信息显示
+    var business = qcloud.getSession().business;
+    var submitText = "去结算",
+      isBalance = true;
+    if (business.isClose) {
+      submitText = "已暂停营业";
+      isBalance = false;
+    } else {
+      var time1 = !!business.businessStartTime && this.calcBusinessStatus(business.businessStartTime, business.businessEndTime);
+      var time2 = !!business.businessStartTime2 && this.calcBusinessStatus(business.businessStartTime2, business.businessEndTime2);
+      var time3 = !!business.businessStartTime3 && this.calcBusinessStatus(business.businessStartTime3, business.businessEndTime3);
+      time1 || time2 || time3 || (submitText = "已暂停营业", isBalance = false);
+    }
+
     this.setData({
+      submitText: submitText,
+      isBalance: isBalance,
+      business: business,
+      freight: business.freight,
+      logo: business.logoSrc,
       productList: productArr,
       menu: menuArr,
       cartList: existCart,
       cartQuantity: cartQuantity
     });
-    this.calcSaleText();
     // this.discountHandler();
     // this.cartSync();
+  },
+  calcBusinessStatus: function (start, end) {
+    var now = new Date(), nowStamp = Date.parse(now);
+    var startTime = start.split(":");
+    var endTime = end.split(":");
+    var startStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +startTime[0], +startTime[1], 0));
+    var endStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +endTime[0], +endTime[1], 0));
+    return nowStamp >= startStamp && nowStamp <= endStamp;
   },
   couponHandler: function () {
     if (this.data.isClosedCoupon) return; // 如果已经关闭过优惠券窗口，则不再弹出
@@ -253,32 +269,37 @@ Page({
       wx.hideTabBar();
     }
   },
-  discountHandler: function(){
-    if(!this.data.productList || !this.data.discount) return;
-    if(this.data.productList.length === 0 || this.data.discount.length === 0) return;
-    var self = this, now = new Date(), product, hour = now.getHours().toString(), minus = now.getMinutes().toString(),
-      hourMinus = (hour.length > 1 ? hour : ("0" + hour)) + ":" + (minus.length > 1 ? minus : ("0" + minus)), 
+  discountHandler: function () {
+    if (!this.data.productList || !this.data.discount) return;
+    if (this.data.productList.length === 0 || this.data.discount.length === 0) return;
+    var self = this,
+      now = new Date(),
+      product, hour = now.getHours().toString(),
+      minus = now.getMinutes().toString(),
+      hourMinus = (hour.length > 1 ? hour : ("0" + hour)) + ":" + (minus.length > 1 ? minus : ("0" + minus)),
       weekday = weekObj[now.getDay().toString()];
-    this.data.discount.forEach(function(item){
-      if(!(weekday & item.cycle)) return; // 不在循环周期内
-      var isArea = false;   // 是否在有效时间区间内
-      if(item.startTime1 <= hourMinus && item.endTime1 >= hourMinus) isArea = true;
-      else if(item.startTime2 <= hourMinus && item.endTime2 >= hourMinus) isArea = true;
-      else if(item.startTime3 <= hourMinus && item.endTime3 >= hourMinus) isArea = true;
-      if(!isArea) return;
+    this.data.discount.forEach(function (item) {
+      if (!(weekday & item.cycle)) return; // 不在循环周期内
+      var isArea = false; // 是否在有效时间区间内
+      if (item.startTime1 <= hourMinus && item.endTime1 >= hourMinus) isArea = true;
+      else if (item.startTime2 <= hourMinus && item.endTime2 >= hourMinus) isArea = true;
+      else if (item.startTime3 <= hourMinus && item.endTime3 >= hourMinus) isArea = true;
+      if (!isArea) return;
       product = self.data.productList.filter(a => a.id == item.productId);
-      if(product.length === 0) return;
+      if (product.length === 0) return;
       product[0].discount = item;
     });
-    
+
     this.setData({
       productList: this.data.productList,
     });
-    this.cartSync();    // 同步购物车商品
+    this.cartSync(); // 同步购物车商品
   },
-  cartSync: function(){
-    var productList = this.data.productList, cartList = this.data.cartList, product;
-    if(!cartList || cartList.length === 0)return;
+  cartSync: function () {
+    var productList = this.data.productList,
+      cartList = this.data.cartList,
+      product;
+    if (!cartList || cartList.length === 0) return;
     cartList.forEach(cart => {
       product = productList.filter(a => a.id == cart.productId)[0];
       cart.product = product;
@@ -785,7 +806,8 @@ Page({
     this.calcSaleText();
   },
   calcSaleText: function () {
-    var cartList = this.data.cartList, self = this,
+    var cartList = this.data.cartList,
+      self = this,
       fullReduceList = this.data.fullReduceList.slice(),
       nowItem;
     wx.removeStorageSync("nowFullReduce");
@@ -819,13 +841,16 @@ Page({
       saleText: text
     });
   },
-  calcCartProductPrice: function(cart){
-    var price = cart.price, quantity = cart.quantity, product = cart.product, discount = product.discount;
-    if(!discount)return price * quantity;
-    if(discount.upperLimit == -1) {
+  calcCartProductPrice: function (cart) {
+    var price = cart.price,
+      quantity = cart.quantity,
+      product = cart.product,
+      discount = product.discount;
+    if (!discount) return price * quantity;
+    if (discount.upperLimit == -1) {
       return discount.price * quantity;
     }
-    if(discount.upperLimit >= quantity) {
+    if (discount.upperLimit >= quantity) {
       return discount.price * quantity;
     }
     return (quantity - discount.upperLimit) * price + discount.upperLimit * discount.price;

@@ -211,30 +211,41 @@
                         <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
                             <span class="require">经营时间</span>
                         </label>
-                        <div class=" col-xs-4 col-md-3">
-                            <div class="input-group">
-                                <select class="businessTime" v-model="startHour">
+                        <div class="col-xs-6" style="width: 400px;">
+                            @*<div class="input-group">
+            <select class="businessTime" v-model="startHour">
+                <option v-for="(item, $index) in 24" :value='$index.toString().length == 1 ? ("0" + $index) : $index' v-text='$index.toString().length == 1 ? ("0" + $index) : $index'></option>
+            </select>
+            <select class="businessTime" v-model="startMinus">
+                <option v-for="(item, $index) in 60" :value='$index.toString().length == 1 ? ("0" + $index) : $index' v-text='$index.toString().length == 1 ? ("0" + $index) : $index'></option>
+            </select>
+            至
+            <select class="businessTime" v-model="endHour">
+                <option v-for="(item, $index) in 24" v-text='$index.toString().length == 1 ? ("0" + $index) : $index'></option>
+            </select>
+            <select class="businessTime" v-model="endMinus">
+                <option v-for="(item, $index) in 60" v-text='$index.toString().length == 1 ? ("0" + $index) : $index'></option>
+            </select>
+        </div>*@
+                            <div class="input-group" v-for="item in timeList">
+                                <select class="businessTime" v-model="item.startHour">
                                     <option v-for="(item, $index) in 24" :value='$index.toString().length == 1 ? ("0" + $index) : $index' v-text='$index.toString().length == 1 ? ("0" + $index) : $index'></option>
                                 </select>
-                                <select class="businessTime" v-model="startMinus">
+                                <select class="businessTime" v-model="item.startMinus">
                                     <option v-for="(item, $index) in 60" :value='$index.toString().length == 1 ? ("0" + $index) : $index' v-text='$index.toString().length == 1 ? ("0" + $index) : $index'></option>
                                 </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                            <span class="require">经营结束时间</span>
-                        </label>
-                        <div class=" col-xs-4 col-md-3">
-                            <div class="input-group">
-                                <select class="businessTime" v-model="endHour">
+                                至
+                                <select class="businessTime" v-model="item.endHour">
                                     <option v-for="(item, $index) in 24" v-text='$index.toString().length == 1 ? ("0" + $index) : $index'></option>
                                 </select>
-                                <select class="businessTime" v-model="endMinus">
+                                <select class="businessTime" v-model="item.endMinus">
                                     <option v-for="(item, $index) in 60" v-text='$index.toString().length == 1 ? ("0" + $index) : $index'></option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="col-xs-1">
+                            <button class="btn btn-primary" @@click="addTime()"><i class="fa fa-plus"></i></button> 
+                            <button class="btn btn-primary" @@click="removeTime()"><i class="fa fa-minus"></i></button>
                         </div>
                     </div>
                     <div class="form-group">

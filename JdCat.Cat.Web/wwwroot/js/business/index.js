@@ -5,12 +5,9 @@
         data: {
             entity: pageObj.business,
             cityList: pageObj.cityList,
+            timeList: [],
             showError: false,
-            isChangeLogo: false,
-            startHour: !pageObj.business.businessStartTime ? "06" : pageObj.business.businessStartTime.split(":")[0],
-            startMinus: !pageObj.business.businessStartTime ? "00" : pageObj.business.businessStartTime.split(":")[1],
-            endHour: !pageObj.business.businessEndTime ? "21" : pageObj.business.businessEndTime.split(":")[0],
-            endMinus: !pageObj.business.businessEndTime ? "00" : pageObj.business.businessEndTime.split(":")[1],
+            isChangeLogo: false
         },
         methods: {
             ret: function () {
@@ -27,8 +24,35 @@
                     this.showError = true;
                     return;
                 }
-                entity.businessStartTime = this.startHour + ":" + this.startMinus;
-                entity.businessEndTime = this.endHour + ":" + this.endMinus;
+                // 营业时间
+                var ret = this.timeHandler();
+                if ($.isArray(ret)) {
+                    if (!ret[0]) {
+                        entity.businessStartTime = null;
+                        entity.businessEndTime = null;
+                    } else {
+                        entity.businessStartTime = ret[0].start;
+                        entity.businessEndTime = ret[0].end;
+                    }
+                    if (!ret[1]) {
+                        entity.businessStartTime2 = null;
+                        entity.businessEndTime2 = null;
+                    } else {
+                        entity.businessStartTime2 = ret[1].start;
+                        entity.businessEndTime2 = ret[1].end;
+                    }
+                    if (!ret[2]) {
+                        entity.businessStartTime3 = null;
+                        entity.businessEndTime3 = null;
+                    } else {
+                        entity.businessStartTime3 = ret[2].start;
+                        entity.businessEndTime3 = ret[2].end;
+                    }
+                } else {
+                    $.alert(ret);
+                    return;
+                }
+
                 this.showError = false;
                 $.loading();
                 axios.post("/business/savebase?isChangeLogo=" + (this.isChangeLogo ? 1 : 0), entity)
@@ -80,6 +104,33 @@
                     self.entity.specialImage = e.target.result;
                 };
                 read.readAsDataURL(file);
+            },
+            addTime: function () {
+                if (this.timeList.length >= 3) return;
+                this.timeList.push({
+                    startHour: "06", startMinus: "00", endHour: "20", endMinus: "00"
+                });
+            },
+            removeTime: function () {
+                if (this.timeList.length === 1) return;
+                this.timeList.pop();
+            },
+            timeHandler: function () {
+                var preTime, arr = [], index = 0;
+                for (; index < this.timeList.length;) {
+                    var time = this.timeList[index];
+                    var start = time.startHour + ":" + time.startMinus, end = time.endHour + ":" + time.endMinus;
+                    if (end <= start) {
+                        return "[营业时间" + index + "]结束时间必须大于开始时间";
+                    }
+                    if (preTime && preTime.end >= start) {
+                        return "[营业时间" + (index + 1) + "]必须大于[营业时间" + index + "]";
+                    }
+                    preTime = { start, end };
+                    arr.push(preTime);
+                    index++;
+                }
+                return arr;
             }
         },
         computed: {
@@ -103,8 +154,20 @@
             }
 
         },
-        filters: {
-
+        created: function () {
+            var business = this.entity, start, end;
+            if (!!business.businessStartTime && !!business.businessEndTime) {
+                start = business.businessStartTime.split(":"), end = business.businessEndTime.split(":");
+                this.timeList.push({ startHour: start[0], startMinus: start[1], endHour: end[0], endMinus: end[1] });
+            }
+            if (!!business.businessStartTime2 && !!business.businessEndTime2) {
+                start = business.businessStartTime2.split(":"), end = business.businessEndTime2.split(":");
+                this.timeList.push({ startHour: start[0], startMinus: start[1], endHour: end[0], endMinus: end[1] });
+            }
+            if (!!business.businessStartTime3 && !!business.businessEndTime3) {
+                start = business.businessStartTime3.split(":"), end = business.businessEndTime3.split(":");
+                this.timeList.push({ startHour: start[0], startMinus: start[1], endHour: end[0], endMinus: end[1] });
+            }
         }
     });
 
@@ -116,13 +179,13 @@
             $.loading();
             axios.get(`/business/changeAutoReceipt?isAutoReceipt=${state}`)
                 .then(function (res) {
-                $.loaded();
-                if (!res.data.success) {
-                    $.alert(res.data.msg);
-                    return;
-                }
-                $.alert(state ? "开启自动接单成功" : "关闭自动接单成功", "success");
-            });
+                    $.loaded();
+                    if (!res.data.success) {
+                        $.alert(res.data.msg);
+                        return;
+                    }
+                    $.alert(state ? "开启自动接单成功" : "关闭自动接单成功", "success");
+                });
         }
     }).bootstrapSwitch("state", data.entity.isAutoReceipt);
 

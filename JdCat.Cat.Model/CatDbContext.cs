@@ -14,7 +14,7 @@ namespace JdCat.Cat.Model
     {
         public CatDbContext(DbContextOptions<CatDbContext> options) : base(options)
         {
-
+            
         }
 
         //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

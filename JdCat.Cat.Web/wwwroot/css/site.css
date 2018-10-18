@@ -1990,3 +1990,18 @@ ul.select-type {
         display: none;
     }
 }
+.btn-primary:focus, .btn-primary.focus {
+    border-color: #dc5b2b;
+}
+.btn-primary:hover {
+    border-color: #dc5b2b;
+}
+.btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+    border-color: #dc5b2b;
+}
+    .btn-primary:active:hover, .btn-primary.active:hover, .open > .dropdown-toggle.btn-primary:hover, .btn-primary:active:focus, .btn-primary.active:focus, .open > .dropdown-toggle.btn-primary:focus, .btn-primary:active.focus, .btn-primary.active.focus, .open > .dropdown-toggle.btn-primary.focus {
+        background-color: #ea7042;
+    }
+    .btn-primary:active:hover, .btn-primary.active:hover, .open > .dropdown-toggle.btn-primary:hover, .btn-primary:active:focus, .btn-primary.active:focus, .open > .dropdown-toggle.btn-primary:focus, .btn-primary:active.focus, .btn-primary.active.focus, .open > .dropdown-toggle.btn-primary.focus {
+        border-color: #dc5b2b;
+    }

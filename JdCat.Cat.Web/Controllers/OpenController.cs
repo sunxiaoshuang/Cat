@@ -158,6 +158,16 @@ namespace JdCat.Cat.Web.Controllers
             return Content(code);
         }
 
+        /// <summary>
+        /// 易联云打印回调
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> YLYPrint()
+        {
+
+            return Content("ok");
+        }
+
 
         #region 微信事件
         private async Task Listen(WxEvent e)

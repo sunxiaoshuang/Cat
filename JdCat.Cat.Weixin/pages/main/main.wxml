@@ -168,7 +168,10 @@
                     <image src="../../images/icon/time-1.png" />
                 </view>
                 <view class="item-content">
-                    营业时间：{{business.businessStartTime + '-' + business.businessEndTime}}
+                    <text>营业时间：</text>
+                    <text class="font-size: 80%;">{{business.businessStartTime + '-' + business.businessEndTime}}</text>
+                    <text class="font-size: 80%;" wx:if="{{!!business.businessStartTime2}}">,{{business.businessStartTime2 + '-' + business.businessEndTime2}}</text>
+                    <text class="font-size: 80%;" wx:if="{{!!business.businessStartTime3}}">,{{business.businessStartTime3 + '-' + business.businessEndTime3}}</text>
                 </view>
             </view>
         </swiper-item>
@@ -328,7 +331,7 @@
             </view>
         </view>
     </view>
-    <view class="coupon-operate" bindtap="closeProduct">
+    <view class="coupon-operate productBig" bindtap="closeProduct">
         <text>×</text>
     </view>
 </view>

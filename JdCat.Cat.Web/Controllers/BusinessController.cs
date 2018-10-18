@@ -12,6 +12,7 @@ using JdCat.Cat.Model.Enum;
 using JdCat.Cat.Web.App_Code;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -26,6 +27,11 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
+            var aa = Service.Set<Business>().Include(a => a.DWDStore).ToList();
+            foreach (var item in aa)
+            {
+                var name = item.DWDStore.city_name;
+            }
             ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
             return View();
         }
@@ -108,6 +114,10 @@ namespace JdCat.Cat.Web.Controllers
             Business.Lat = business.Lat;
             Business.BusinessStartTime = business.BusinessStartTime;
             Business.BusinessEndTime = business.BusinessEndTime;
+            Business.BusinessStartTime2 = business.BusinessStartTime2;
+            Business.BusinessEndTime2 = business.BusinessEndTime2;
+            Business.BusinessStartTime3 = business.BusinessStartTime3;
+            Business.BusinessEndTime3 = business.BusinessEndTime3;
             Business.MinAmount = business.MinAmount;
             Business.ServiceProvider = business.ServiceProvider;
             HttpContext.Session.Set(AppData.Session, Business);

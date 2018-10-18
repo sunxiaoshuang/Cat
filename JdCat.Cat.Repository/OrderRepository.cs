@@ -27,7 +27,7 @@ namespace JdCat.Cat.Repository
     public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         private static object loop = new object();
-        public Order Get(int id)
+        public new Order Get(int id)
         {
             return Context.Orders
                 .Include(a => a.DadaReturn)
@@ -48,11 +48,12 @@ namespace JdCat.Cat.Repository
                 return result;
             }
             var now = DateTime.Now;
-            var startTime = new DateTime(now.Year, now.Month, now.Day, int.Parse(business.BusinessStartTime.Split(':')[0]), int.Parse(business.BusinessStartTime.Split(':')[1]), 0);
-            var endTime = new DateTime(now.Year, now.Month, now.Day, int.Parse(business.BusinessEndTime.Split(':')[0]), int.Parse(business.BusinessEndTime.Split(':')[1]), 0);
-            if (startTime > now || endTime < now)
+            var time1 = IsDoing(business.BusinessStartTime, business.BusinessEndTime);
+            var time2 = IsDoing(business.BusinessStartTime2, business.BusinessEndTime2);
+            var time3 = IsDoing(business.BusinessStartTime3, business.BusinessEndTime3);
+            if (!(time1 || time2 || time3))
             {
-                result.Msg = $"本店营业时间：{business.BusinessStartTime}-{business.BusinessEndTime}";
+                result.Msg = "厨师正在休息，请在营业时间内点单噢！";
                 return result;
             }
             lock (loop)
@@ -90,6 +91,19 @@ namespace JdCat.Cat.Repository
             // 清空购物车
             Context.Database.ExecuteSqlCommand("delete dbo.ShoppingCart where userid={0}", order.UserId);
             return result;
+        }
+
+        /// <summary>
+        /// 是否正在营业
+        /// </summary>
+        /// <returns></returns>
+        private bool IsDoing(string start, string end)
+        {
+            if (start == null) return true;
+            var now = DateTime.Now;
+            var startTime = new DateTime(now.Year, now.Month, now.Day, int.Parse(start.Split(':')[0]), int.Parse(start.Split(':')[1]), 0);
+            var endTime = new DateTime(now.Year, now.Month, now.Day, int.Parse(end.Split(':')[0]), int.Parse(end.Split(':')[1]), 0);
+            return startTime <= now && endTime >= now;
         }
 
         public IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null, DateTime? createTime = null)

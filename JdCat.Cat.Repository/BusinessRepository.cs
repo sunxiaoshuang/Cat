@@ -54,6 +54,10 @@ namespace JdCat.Cat.Repository
             entity.Lat = business.Lat;
             entity.BusinessStartTime = business.BusinessStartTime;
             entity.BusinessEndTime = business.BusinessEndTime;
+            entity.BusinessStartTime2 = business.BusinessStartTime2;
+            entity.BusinessEndTime2 = business.BusinessEndTime2;
+            entity.BusinessStartTime3 = business.BusinessStartTime3;
+            entity.BusinessEndTime3 = business.BusinessEndTime3;
             entity.MinAmount = business.MinAmount;
             entity.ServiceProvider = business.ServiceProvider;
             return Context.SaveChanges() > 0;

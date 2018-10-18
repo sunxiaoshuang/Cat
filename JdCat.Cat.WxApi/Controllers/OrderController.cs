@@ -294,11 +294,11 @@ namespace JdCat.Cat.WxApi.Controllers
             if (users == null || users.Count == 0) return;
             foreach (var item in users)
             {
-                Log.Info("事件消息OpenId：" + item.openid);
+                //Log.Info("事件消息OpenId：" + item.openid);
                 msg.touser = item.openid;
                 var result = WxHelper.SendEventMessageAsync(msg);
                 result.Wait();
-                Log.Debug(result.Result);
+                //Log.Debug(result.Result);
             }
         }
 
