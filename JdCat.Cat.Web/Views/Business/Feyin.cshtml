@@ -76,7 +76,7 @@
                     </h3>
                 </div>
                 <div class="panel-body">
-                    <div class="col-md-6 col-xs-12">
+                    <div class="col-md-8 col-xs-12">
                         <div class="kui-button" style="margin-bottom: 10px;">
                             <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" @@click="addBind()">
                                 <i class="fa fa-plus"></i> 添加绑定
@@ -88,14 +88,16 @@
                                     <th></th>
                                     <th>打印机名称</th>
                                     <th>打印机编码</th>
+                                    <th>打印机类型</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(printer, index) in list" class="printer">
                                     <td class="text-center" v-text="index + 1"></td>
-                                    <td><span v-text="printer.name"></span><span class="badge pull-right" v-show="entity.defaultPrinterDevice == printer.code">默认</span></td>
+                                    <td width="300"><span v-text="printer.name"></span><span class="badge pull-right" v-show="printer.isDefault">默认</span></td>
                                     <td v-text="printer.code"></td>
+                                    <td v-text="printer.type == 0 ? '佳博' : '易联云'"></td>
                                     <td>
                                         <a class="jdcat-link" href="javascript:void(0);" @@click="unbind(printer)">解除绑定</a>
                                         &nbsp;&nbsp;&nbsp;&nbsp;

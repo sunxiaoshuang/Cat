@@ -25,9 +25,17 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string Code { get; set; }
         /// <summary>
+        /// 打印机类型
+        /// </summary>
+        public PrinterType Type { get; set; }
+        /// <summary>
         /// 打印机名称
         /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// 是否是默认打印机
+        /// </summary>
+        public bool IsDefault { get; set; }
         public int BusinessId { get; set; }
         /// <summary>
         /// 所属商户

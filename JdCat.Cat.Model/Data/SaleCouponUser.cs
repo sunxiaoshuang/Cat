@@ -96,16 +96,16 @@ namespace JdCat.Cat.Model.Data
         /// 所属用户
         /// </summary>
         public int UserId { get; set; }
-        public User User { get; set; }
+        public virtual User User { get; set; }
         /// <summary>
         /// 商户优惠券id
         /// </summary>
         public int CouponId { get; set; }
-        public SaleCoupon Coupon { get; set; }
+        public virtual SaleCoupon Coupon { get; set; }
         /// <summary>
         /// 关联的订单id
         /// </summary>
         public int? OrderId { get; set; }
-        public Order Order { get; set; }
+        public virtual Order Order { get; set; }
     }
 }

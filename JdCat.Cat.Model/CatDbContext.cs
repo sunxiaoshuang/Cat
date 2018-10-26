@@ -14,13 +14,13 @@ namespace JdCat.Cat.Model
     {
         public CatDbContext(DbContextOptions<CatDbContext> options) : base(options)
         {
-            
+
         }
 
-        //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //        {
-        //            optionsBuilder.UseSqlServer("Server=.;Database=jdcat;uid=sa;pwd=sa;");
-        //        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    //optionsBuilder.UseLazyLoadingProxies(); // 使用延迟加载
+        //}
 
         public DbSet<Business> Businesses { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }

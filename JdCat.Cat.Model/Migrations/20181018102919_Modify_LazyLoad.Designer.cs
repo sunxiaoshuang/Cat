@@ -4,14 +4,16 @@ using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181018102919_Modify_LazyLoad")]
+    partial class Modify_LazyLoad
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,8 +75,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<string>("Address");
 
                     b.Property<string>("AppId");
-
-                    b.Property<string>("AppQrCode");
 
                     b.Property<string>("BusinessEndTime");
 
@@ -362,13 +362,9 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<DateTime?>("CreateTime");
 
-                    b.Property<bool>("IsDefault");
-
                     b.Property<string>("MemberCode");
 
                     b.Property<string>("Name");
-
-                    b.Property<int>("Type");
 
                     b.HasKey("ID");
 

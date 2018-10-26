@@ -45,7 +45,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 最小购买量
         /// </summary>
-        public decimal? MinBuyQuantity { get; set; } = 1;
+        public double? MinBuyQuantity { get; set; } = 1;
         /// <summary>
         /// 产品状态
         /// </summary>

@@ -1,4 +1,23 @@
-﻿body {
+﻿::-webkit-scrollbar {
+    width: 12px;
+}
+/* 滚动槽 */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset006pxrgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0,0,0,0.1);
+    -webkit-box-shadow: inset006pxrgba(0,0,0,0.5);
+}
+
+    ::-webkit-scrollbar-thumb:window-inactive {
+        background: rgba(255,0,0,0.4);
+    }
+
+body {
     padding-bottom: 20px;
 }
 
@@ -422,6 +441,7 @@ p {
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
     background-color: #ea7042 !important;
 }
+
 #wrapper .bootstrap-switch {
     border: 1px solid #fff;
 }
@@ -843,6 +863,7 @@ div#sideNav:hover {
 .sidebar-collapse {
     height: 100%;
     overflow: auto;
+    padding-bottom: 50px;
 }
 
     .sidebar-collapse, .sidebar-collapse .nav {
@@ -1924,15 +1945,16 @@ ul.select-type {
             background-color: #ea7042;
             color: #fff;
         }
+
         ul.select-type li.doing {
             background-color: #fff;
             border: 1px solid #999;
             color: #999;
         }
 
-            ul.select-type li.active:hover {
-                background-color: #ec5e28;
-            }
+        ul.select-type li.active:hover {
+            background-color: #ec5e28;
+        }
 
 .nowarp {
     white-space: nowrap;
@@ -1980,28 +2002,35 @@ ul.select-type {
         display: none;
     }
 }
+
 @media (min-width: 1200px) {
     .my-back2 {
         display: none;
     }
 }
+
 @media (min-width: 1200px) {
     .my-order1 {
         display: none;
     }
 }
+
 .btn-primary:focus, .btn-primary.focus {
     border-color: #dc5b2b;
 }
+
 .btn-primary:hover {
     border-color: #dc5b2b;
 }
+
 .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
     border-color: #dc5b2b;
 }
+
     .btn-primary:active:hover, .btn-primary.active:hover, .open > .dropdown-toggle.btn-primary:hover, .btn-primary:active:focus, .btn-primary.active:focus, .open > .dropdown-toggle.btn-primary:focus, .btn-primary:active.focus, .btn-primary.active.focus, .open > .dropdown-toggle.btn-primary.focus {
         background-color: #ea7042;
     }
+
     .btn-primary:active:hover, .btn-primary.active:hover, .open > .dropdown-toggle.btn-primary:hover, .btn-primary:active:focus, .btn-primary.active:focus, .open > .dropdown-toggle.btn-primary:focus, .btn-primary:active.focus, .btn-primary.active.focus, .open > .dropdown-toggle.btn-primary.focus {
         border-color: #dc5b2b;
     }

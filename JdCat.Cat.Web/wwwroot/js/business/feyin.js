@@ -42,13 +42,24 @@
                     footDisplay: true,
                     template: `
                         <div class='row form-horizontal' id='bindView'>
+                            <label class='col-md-3 col-xs-12 control-label'>打印机名称：</label>
+                            <div class='col-md-8 col-xs-12' style='margin-bottom: 10px;'>
+                                <input type='text' class='form-control' v-model.trim='name' />
+                            </div>
                             <label class='col-md-3 col-xs-12 control-label'>打印机编号：</label>
                             <div class='col-md-8 col-xs-12' style='margin-bottom: 10px;'>
                                 <input type='text' class='form-control' v-model.trim='code' />
                             </div>
-                            <label class='col-md-3 col-xs-12 control-label'>打印机名称：</label>
+                            <label class='col-md-3 col-xs-12 control-label'>打印机密钥：</label>
+                            <div class='col-md-8 col-xs-12' style='margin-bottom: 10px;'>
+                                <input type='text' class='form-control' v-model.trim='apiKey' />
+                            </div>
+                            <label class='col-md-3 col-xs-12 control-label'>打印机类别：</label>
                             <div class='col-md-8 col-xs-12'>
-                                <input type='text' class='form-control' v-model.trim='name' />
+                                <select class='form-control' v-model='type'>
+                                    <option value='0'>佳博</option>
+                                    <option value='1'>易联云</option>
+                                </select>
                             </div>
                         </div>`,
                     load: function () {
@@ -56,7 +67,9 @@
                             el: "#bindView",
                             data: {
                                 code: '',
-                                name: ''
+                                name: '',
+                                type: "1",
+                                apiKey: ""
                             }
                         });
                         this.on("hidden.bs.modal", function () {
@@ -68,11 +81,22 @@
                     submit: function (e, $modal) {
                         var code = bindView.code;
                         var name = bindView.name;
-                        if (!code || !name) {
-                            $.alert("请将表单输入完整");
+                        var type = bindView.type;
+                        var apiKey = bindView.apiKey;
+                        if (!name) {
+                            $.alert("请输入打印机名称");
                             return false;
                         }
-                        axios.get(`/business/addbind?code=${code}&name=${name}`)
+                        if (!code) {
+                            $.alert("请输入打印机编号");
+                            return false;
+                        }
+                        if (type == 1 && !apiKey) {
+                            $.alert("易联云打印机需要填写打印机密钥");
+                            return false;
+                        }
+                        
+                        axios.get(`/business/addbind?code=${code}&name=${name}&type=${type}&apiKey=${apiKey}`)
                             .then(function (res) {
                                 if (res.data.success) {
                                     $.alert(res.data.msg, "success");
@@ -107,12 +131,16 @@
                 });
             },
             printerDefault: function (printer) {
-                if (this.entity.defaultPrinterDevice === printer.code) return;
-                this.entity.defaultPrinterDevice = printer.code;
-                axios.get("/business/setDefaultPrinter?code=" + printer.code)
+                if (printer.isDefault) return;
+                var self = this;
+                axios.get("/business/setDefaultPrinter/" + printer.id)
                     .then(function (res) {
                         if (res.data.success) {
                             $.alert(res.data.msg, "success");
+                            self.list.forEach(function (obj) {
+                                obj.isDefault = false;
+                            });
+                            printer.isDefault = true;
                         } else {
                             $.alert(res.data.msg);
                         }

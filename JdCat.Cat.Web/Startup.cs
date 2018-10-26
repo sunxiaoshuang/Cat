@@ -14,6 +14,7 @@ using JdCat.Cat.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -36,7 +37,8 @@ namespace JdCat.Cat.Web
             {
                 // 注册全局异常过滤器
                 options.Filters.Add<GlobalExceptionAttribute>();
-            });
+            })
+            .AddJsonOptions(a => a.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             // 配置会话应用状态
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
@@ -45,7 +47,11 @@ namespace JdCat.Cat.Web
                 options.Cookie.HttpOnly = true;
             });
             // 配置依赖
+            //services.AddDbContext<CatDbContext>(a => a.UseLazyLoadingProxies()
+            //.ConfigureWarnings(b => b.Log(CoreEventId.DetachedLazyLoadingWarning))
+            //.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
             services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
+
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
@@ -105,6 +111,10 @@ namespace JdCat.Cat.Web
                 ApiKey = config.FeyinApiKey
             };
             services.AddSingleton(feyin);
+            // 易联云
+            var yly = YlyHelper.GetHelper();
+            yly.Init(appData["YlyPartnerId"], appData["YlyApiKey"]);
+            services.AddSingleton(yly);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

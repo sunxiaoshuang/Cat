@@ -29,11 +29,11 @@
                         self.showError = true;
                         return;
                     }
-                }
-                if (entity.endDate < entity.startDate) {
-                    $.alert("截止日期不能小于起始日期");
-                    self.showError = true;
-                    return;
+                    if (entity.endDate < entity.startDate) {
+                        $.alert("截止日期不能小于起始日期");
+                        self.showError = true;
+                        return;
+                    }
                 }
                 entity.name = "满" + entity.minPrice + "元减" + entity.reduceMoney + "元";
                 self.showError = false;

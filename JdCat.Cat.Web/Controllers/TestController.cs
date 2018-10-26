@@ -25,6 +25,7 @@ namespace JdCat.Cat.Web.Controllers
     {
         public IActionResult Index()
         {
+
             return View();
         }
 
@@ -84,6 +85,12 @@ namespace JdCat.Cat.Web.Controllers
         {
             var result = await helper.UnBindDevice(device_no);
             return Ok(result.ErrMsg ?? "设备解绑成功");
+        }
+
+        public IActionResult LazyLoad([FromServices]IBusinessRepository service)
+        {
+            var business = service.Get(1);
+            return Content(business.Orders.First().CreateTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
         }
 
         #region 达达

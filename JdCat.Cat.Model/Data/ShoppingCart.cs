@@ -30,7 +30,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 金额
         /// </summary>
-        public decimal? Price { get; set; }
+        public double? Price { get; set; }
         /// <summary>
         /// 商品id
         /// </summary>
@@ -40,7 +40,7 @@ namespace JdCat.Cat.Model.Data
         /// 购物车商品规格id
         /// </summary>
         public int FormatId { get; set; }
-        public ProductFormat Format { get; set; }
+        public virtual ProductFormat Format { get; set; }
         /// <summary>
         /// 购物车备注描述（规格、属性）
         /// </summary>

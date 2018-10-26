@@ -183,8 +183,8 @@ namespace JdCat.Cat.WxApi.Controllers
                 var order = Service.PaySuccess(ret);
                 if (order != null)
                 {
-                    await Service.Print(order);                 // 打印小票
-                    Service.AutoReceipt(order);                 // 自动接单
+                    await Service.Print(order, business: order.Business);                 // 打印小票
+                    await Service.AutoReceipt(order);                 // 自动接单
                     await Task.Run(async () =>
                      {
                          using (var hc = new HttpClient())
@@ -195,7 +195,7 @@ namespace JdCat.Cat.WxApi.Controllers
                     try
                     {
                         TemplateMessage(order);             // 小程序模版消息
-                        EventMessage(order, appData);       // 公众号模版消息
+                        await EventMessage(order, appData);       // 公众号模版消息
                     }
                     catch (Exception ex)
                     {
@@ -232,7 +232,13 @@ namespace JdCat.Cat.WxApi.Controllers
         /// <param name="order"></param>
         private void TemplateMessage(Order order)
         {
-            if (string.IsNullOrEmpty(order.PrepayId) || string.IsNullOrEmpty(order.OpenId)) return;
+            if (string.IsNullOrEmpty(order.PrepayId)) return;
+            var openId = order.OpenId;
+            if (string.IsNullOrEmpty(openId))
+            {
+                var rep = HttpContext.RequestServices.GetService<IUserRepository>();
+                openId = rep.Get(order.UserId.Value).OpenId;
+            }
             var businessRep = HttpContext.RequestServices.GetService<IBusinessRepository>();
             var business = businessRep.Get(a => a.ID == order.BusinessId);
             if (string.IsNullOrEmpty(business.TemplateNotifyId)) return;
@@ -240,7 +246,7 @@ namespace JdCat.Cat.WxApi.Controllers
             {
                 emphasis_keyword = "keyword2.DATA",
                 template_id = business.TemplateNotifyId,
-                touser = order.OpenId,
+                touser = openId,
                 form_id = order.PrepayId,
                 page = "pages/order/orderInfo/orderInfo?id=" + order.ID
             };
@@ -260,14 +266,13 @@ namespace JdCat.Cat.WxApi.Controllers
             var res = WxHelper.SendTemplateMessageAsync(msg);
             res.Wait();
             var content = res.Result;
-            //Log.Debug(JsonConvert.SerializeObject(content));
 
         }
         /// <summary>
         /// 发送事件消息，通知商户订单信息
         /// </summary>
         /// <param name="order"></param>
-        private void EventMessage(Order order, AppData appData)
+        private async Task EventMessage(Order order, AppData appData)
         {
             var rep = HttpContext.RequestServices.GetService<IBusinessRepository>();
             var msg = new WxEventMessage();
@@ -294,11 +299,16 @@ namespace JdCat.Cat.WxApi.Controllers
             if (users == null || users.Count == 0) return;
             foreach (var item in users)
             {
-                //Log.Info("事件消息OpenId：" + item.openid);
                 msg.touser = item.openid;
-                var result = WxHelper.SendEventMessageAsync(msg);
-                result.Wait();
-                //Log.Debug(result.Result);
+                var result = await WxHelper.SendEventMessageAsync(msg);
+                var ret = JsonConvert.DeserializeObject<WxMessageReturn>(result);
+                if(ret.errcode == 40001)
+                {
+                    // 如果发送消息提示token失效，则重新获取token，再发送一次
+                    await WxHelper.SetTokenAsync(WxHelper.WeChatAppId, WxHelper.WeChatSecret);
+                    result = await WxHelper.SendEventMessageAsync(msg);
+                    Log.Info(result);
+                }
             }
         }
 

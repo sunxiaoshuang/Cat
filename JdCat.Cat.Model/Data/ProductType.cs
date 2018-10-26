@@ -28,7 +28,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 所属分类产品
         /// </summary>
-        public ICollection<Product> Products { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
         /// <summary>
         /// 分类所属商家id
         /// </summary>

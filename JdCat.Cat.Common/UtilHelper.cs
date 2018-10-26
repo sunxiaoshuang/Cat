@@ -342,7 +342,42 @@ namespace JdCat.Cat.Common
             return num.ToString();
         }
 
-        
+        /// <summary>
+        /// 计算出文本中的中文字符数量
+        /// </summary>
+        /// <returns></returns>
+        public static int CalcZhQuantity(string text)
+        {
+            // 一个中文字符占用三个字节，一个其他字符占用一个字节
+            var len = text.Length;
+            var byteLen = Encoding.UTF8.GetByteCount(text);
+            return (byteLen - len) / 2;
+        }
+
+        #region 打印相关方法
+
+        /// <summary>
+        /// 打印一行，左右两边对齐
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static string PrintLineLeftRight(string left, string right, int width = 32)
+        {
+            var zhLeft = CalcZhQuantity(left);          // 左边文本的中文字符长度
+            var enLeft = left.Length - zhLeft;          // 左边文本的其他字符长度
+            var zhRight = CalcZhQuantity(right);        // 右边文本的中文字符长度
+            var enRight = right.Length - zhRight;       // 右边文本的其他字符长度
+            var len = width - (zhLeft * 2 + enLeft + zhRight * 2 + enRight);            // 缺少的字符长度
+            for (int i = 0; i < len; i++)
+            {
+                left += " ";
+            }
+            return left + right;
+        }
+
+        #endregion
+
 
 
     }

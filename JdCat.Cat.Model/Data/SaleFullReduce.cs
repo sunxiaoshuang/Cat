@@ -31,11 +31,11 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 最低消费金额
         /// </summary>
-        public decimal MinPrice { get; set; }
+        public double MinPrice { get; set; }
         /// <summary>
         /// 减少金额
         /// </summary>
-        public decimal ReduceMoney { get; set; }
+        public double ReduceMoney { get; set; }
         /// <summary>
         /// 是否被删除
         /// </summary>
@@ -52,7 +52,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 参与满减的订单
         /// </summary>
-        public ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
 
         /// <summary>
         /// 当前的活动是否有效

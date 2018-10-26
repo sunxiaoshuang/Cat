@@ -247,6 +247,11 @@ namespace JdCat.Cat.Repository
             return Context.FeyinDevices.Where(a => a.BusinessId == business.ID).ToList();
         }
 
+        public FeyinDevice GetPrinter(int id)
+        {
+            return Context.FeyinDevices.FirstOrDefault(a => a.ID == id);
+        }
+
         public Order GetOrderIncludeProduct(int id)
         {
             return Context.Orders
@@ -259,7 +264,12 @@ namespace JdCat.Cat.Repository
 
         public Order PaySuccess(WxPaySuccess ret)
         {
-            var order = Context.Orders.Include(a => a.Products).Include(a => a.Business).SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
+            var order = Context.Orders
+            .Include(a => a.Business)
+            .Include(a => a.Products)
+            .Include(a => a.SaleFullReduce)
+            .Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
+            //var order = Context.Orders.Include(a => a.Products).Include(a => a.Business).SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
             if (order == null) return null;
             if (order.Status == OrderStatus.NotPay)
             {
@@ -273,15 +283,37 @@ namespace JdCat.Cat.Repository
         }
 
         private static readonly Dictionary<int, string> FeyinTokenDic = new Dictionary<int, string>();
-        public async Task<string> Print(Order order, Business business = null, string device_no = null)
+        public async Task<string> Print(Order order, FeyinDevice device = null, Business business = null)
         {
+            if (device == null)
+            {
+                device = Context.FeyinDevices.AsNoTracking().FirstOrDefault(a => a.BusinessId == order.BusinessId.Value && a.IsDefault);
+                if (device == null) return null;
+            }
             if (business == null)
             {
                 business = Context.Businesses.AsNoTracking().Single(a => a.ID == order.BusinessId.Value);
             }
-            device_no = string.IsNullOrEmpty(device_no) ? business.DefaultPrinterDevice : device_no;
+            if (device.Type == PrinterType.Feyin)
+            {
+                return await PrintFeyin(order, device, business);
+            }
+            else
+            {
+                return await PrintYilianyun(order, device, business);
+            }
+        }
+        /// <summary>
+        /// 飞印打印
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="device"></param>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        private async Task<string> PrintFeyin(Order order, FeyinDevice device, Business business)
+        {
             var token = string.Empty;
-            if (string.IsNullOrEmpty(device_no)) return null;
+            // 记录token
             if (FeyinTokenDic.ContainsKey(order.BusinessId.Value))
             {
                 token = FeyinTokenDic[order.BusinessId.Value];
@@ -291,12 +323,25 @@ namespace JdCat.Cat.Repository
                 FeyinTokenDic.Add(business.ID, "");
             }
             var printHelper = new FeYinHelper { ApiKey = business.FeyinApiKey, MemberCode = business.FeyinMemberCode, Token = token };
-            var ret = await printHelper.Print(business.DefaultPrinterDevice, order, business);
+            var ret = await printHelper.Print(device.Code, order, business);
             if (token != printHelper.Token)
             {
                 FeyinTokenDic[business.ID] = printHelper.Token;
             }
             return JsonConvert.SerializeObject(ret);
+        }
+        /// <summary>
+        /// 易联云打印
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="device"></param>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        private async Task<string> PrintYilianyun(Order order, FeyinDevice device, Business business)
+        {
+            var helper = YlyHelper.GetHelper();
+            var res = await helper.Print(order, device, business);
+            return res;
         }
 
         public Order GetOrderByCode(string code)
@@ -351,10 +396,10 @@ namespace JdCat.Cat.Repository
             return order;
         }
 
-        public async void AutoReceipt(Order order)
+        public async Task AutoReceipt(Order order)
         {
             if (!order.Business.IsAutoReceipt) return;
-            
+
             if (order.Business.ServiceProvider == LogisticsType.None)
             {
                 order.Status = OrderStatus.Receipted;

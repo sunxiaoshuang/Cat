@@ -461,12 +461,20 @@ page {
   align-items: center;
   justify-content: center;
 }
+.detail-title {
+  position: relative;
+  width: 600rpx;
+  height: 60rpx;
+  background: white;
+  border-radius: 7px 7px 0 0;
+}
 
 .detail-main {
   position: relative;
   width: 600rpx;
+  max-height: 700rpx;
+  overflow: scroll;
   background: white;
-  border-radius: 7px;
   left: 0;
   right: 0;
 }
@@ -778,6 +786,7 @@ page {
 }
 
 .multi-format {
+  position: relative;
   display: flex;
   flex-direction: row;
   margin-bottom: 6rpx;
@@ -798,15 +807,16 @@ page {
   padding: 5rpx 10rpx;
 }
 
-.formtCount {
+.formCount {
+  position: absolute;
   font-size: 30rpx;
   height: 40rpx;
   width: 40rpx;
   background: red;
   border-radius: 50%;
   color: #FFF;
-  margin: -20rpx;
-  margin-right: 10rpx;
+  top: -20rpx;
+  right: -10rpx;
   text-align: center;
 }
 
@@ -1022,6 +1032,7 @@ page {
   font-size: 90%;
   color: #000;
   margin-right: 20rpx;
+  margin-bottom: 20rpx;
   border: 2rpx solid #ACACAC;
   background: rgba(15, 15, 26, 0);
   text-align: center;
@@ -1044,22 +1055,23 @@ page {
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
+  width: 600rpx;
   height: 60rpx;
   padding: 10rpx 0;
   border-radius: 0 0 7px 7px;
 }
 
-.detail-main .close {
+.detail-dialog .close {
   position: absolute;
   right: 10rpx;
-  top: 5rpx;
+  top: 10rpx;
   width: 50rpx;
   height: 50rpx;
 }
 
-.detail-main .close image {
-  width: 50rpx;
-  height: 50rpx;
+.detail-dialog .close image {
+  width: 40rpx;
+  height: 40rpx;
 }
 
 .item-food-numb image {
@@ -1138,7 +1150,9 @@ page {
   flex-grow: 1;
   line-height: 60rpx;
   white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 680rpx;
 }
 
 .sale {

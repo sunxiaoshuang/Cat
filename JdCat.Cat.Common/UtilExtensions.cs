@@ -86,14 +86,30 @@ namespace JdCat.Cat.Common
             return t;
         }
 
-        public static string ToUrlEncode(this string url)
+        /// <summary>
+        /// 将内容进行UrlEncode编码
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static string ToUrlEncoding(this string content)
         {
-            return HttpUtility.UrlEncode(url, Encoding.GetEncoding(936));
+            return HttpUtility.UrlEncode(content, Encoding.UTF8);
         }
 
         public static string ToEncodeSpecial(this string url)
         {
             return url.Replace("+", " ");
+        }
+
+        /// <summary>
+        /// 将时间转化为时间戳
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static long ToInt(this DateTime dateTime)
+        {
+            var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return Convert.ToInt64(ts.TotalSeconds);
         }
 
     }

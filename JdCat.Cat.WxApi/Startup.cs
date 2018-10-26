@@ -11,6 +11,7 @@ using JdCat.Cat.Repository.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -43,7 +44,11 @@ namespace JdCat.Cat.WxApi
                 options.Cookie.HttpOnly = true;
             });
             // 配置依赖
+            //services.AddDbContext<CatDbContext>(a => a.UseLazyLoadingProxies()
+            //.ConfigureWarnings(b => b.Log(CoreEventId.DetachedLazyLoadingWarning))
+            //.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
             services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
+
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
@@ -82,6 +87,10 @@ namespace JdCat.Cat.WxApi
             var dwd = DwdHelper.GetHelper();
             dwd.Init(config);
             services.AddSingleton(dwd);
+            // 易联云
+            var yly = YlyHelper.GetHelper();
+            yly.Init(appData["YlyPartnerId"], appData["YlyApiKey"]);
+            services.AddSingleton(yly);
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

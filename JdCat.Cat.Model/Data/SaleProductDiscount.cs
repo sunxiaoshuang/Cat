@@ -31,15 +31,15 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 原价
         /// </summary>
-        public decimal OldPrice { get; set; }
+        public double OldPrice { get; set; }
         /// <summary>
         /// 折扣
         /// </summary>
-        public decimal Discount { get; set; }
+        public double Discount { get; set; }
         /// <summary>
         /// 活动价
         /// </summary>
-        public decimal Price { get; set; }
+        public double Price { get; set; }
         /// <summary>
         /// 循环周期
         /// </summary>

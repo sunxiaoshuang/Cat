@@ -95,7 +95,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 运费
         /// </summary>
-        public decimal? Freight { get; set; }
+        public double? Freight { get; set; }
         /// <summary>
         /// 商户编号
         /// </summary>
@@ -168,7 +168,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 起送金额
         /// </summary>
-        public decimal MinAmount { get; set; }
+        public double MinAmount { get; set; }
         /// <summary>
         /// 是否打烊
         /// </summary>
@@ -189,6 +189,10 @@ namespace JdCat.Cat.Model.Data
         /// 绑定监听服务的二维码地址
         /// </summary>
         public string WxQrListenPath { get; set; }
+        /// <summary>
+        /// 小程序二维码字符串
+        /// </summary>
+        public string AppQrCode { get; set; }
         /// <summary>
         /// 点我达商户对象
         /// </summary>

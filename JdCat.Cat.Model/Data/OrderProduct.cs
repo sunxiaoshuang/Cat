@@ -18,19 +18,19 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 商品数量
         /// </summary>
-        public decimal? Quantity { get; set; }
+        public double? Quantity { get; set; }
         /// <summary>
         /// 商品价格（折扣价）
         /// </summary>
-        public decimal? Price { get; set; }
+        public double? Price { get; set; }
         /// <summary>
         /// 原价
         /// </summary>
-        public decimal? OldPrice { get; set; }
+        public double? OldPrice { get; set; }
         /// <summary>
         /// 折扣
         /// </summary>
-        public decimal? Discount { get; set; }
+        public double? Discount { get; set; }
         /// <summary>
         /// 商品图片地址
         /// </summary>

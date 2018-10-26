@@ -30,10 +30,10 @@ namespace JdCat.Cat.Web.Controllers
         /// </summary>
         /// <param name="settings"></param>
         /// <returns></returns>
-        public IActionResult Index([FromServices] JsonSerializerSettings settings)
+        public IActionResult Index()
         {
             var types = Service.GetTypes(Business);
-            ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name, Count = a.Products?.Count() }), settings);
+            ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name, Count = a.Products?.Count() }), AppData.JsonSetting);
             return View();
         }
 
@@ -234,10 +234,10 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="pageIndex"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetProducts([FromQuery]int? typeId, [FromServices]JsonSerializerSettings setting, [FromQuery]int pageIndex = 1)
+        public IActionResult GetProducts([FromQuery]int? typeId, [FromQuery]int pageIndex = 1)
         {
             var list = Service.GetProducts(Business, typeId, pageIndex, out int count);
-            return Json(new { data = list, count }, setting);
+            return Json(new { data = list, count });
         }
 
         /// <summary>

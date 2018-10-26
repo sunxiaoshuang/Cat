@@ -1,5 +1,5 @@
 ﻿; (function ($) {
-    var typeName = ["外卖", "堂食"], paymentName = ["", "线上支付"], deliveryName = ["第三方平台", "自己配送", "自提"],
+    var typeName = ["外卖", "堂食"], paymentName = ["", "线上支付"],
         statusName = {
             "1": "已付款", "2": "已拒单", "4": "待配送", "8": "待配送", "16": "配送中", "32": "配送异常", "64": "已送达", "128": "用户已确认收货", "256": "未付款", "512": "已评价", "1024": "已关闭", "2048": "配送已取消", "4096": "订单已取消"
         },
@@ -239,7 +239,13 @@
                 localStorage.setItem("defaultPrinter", this.printerCode);       // 每次选择打印机后，将当前选择的打印机编码存储在本地
             },
             print: function (order) {
-                axios.get(`/order/print/${order.id}?device_no=${this.printerCode}`)
+                var self = this;
+                var printer = this.deviceList.filter(function (obj) { return obj.code == self.printerCode; })[0];
+                if (!printer) {
+                    $.alert("请选择小票打印设备！");
+                    return;
+                }
+                axios.get(`/order/print/${order.id}?device_id=${printer.id}`)
                     .then(function (res) {
                         if (res.data.success) {
                             $.alert(res.data.msg, "success");

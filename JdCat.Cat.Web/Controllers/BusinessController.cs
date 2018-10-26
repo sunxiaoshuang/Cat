@@ -27,11 +27,6 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            var aa = Service.Set<Business>().Include(a => a.DWDStore).ToList();
-            foreach (var item in aa)
-            {
-                var name = item.DWDStore.city_name;
-            }
             ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
             return View();
         }
@@ -65,9 +60,8 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult Feyin()
         {
             var printers = Service.GetPrinters(Business.ID);
-            var business = (Business)Business.Clone();
-            business.FeyinApiKey = "";
-            ViewBag.business = JsonConvert.SerializeObject(business, AppData.JsonSetting);
+            Business.FeyinApiKey = "";
+            ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
             ViewBag.printers = JsonConvert.SerializeObject(printers, AppData.JsonSetting);
             return View();
         }
@@ -176,6 +170,7 @@ namespace JdCat.Cat.Web.Controllers
             Business.MchId = business.MchId;
             Business.MchKey = business.MchKey;
             Business.TemplateNotifyId = business.TemplateNotifyId;
+            Business.AppQrCode = business.AppQrCode;
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }
@@ -228,25 +223,6 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult AddBind([FromQuery]FeyinDevice device)
         {
             var result = new JsonData();
-            //var helper = GetPrintHelper();
-
-            //var ret = await helper.BindDevice(device.Code);
-            //result.Success = ret.ErrCode == null || ret.ErrCode == 0;
-            //result.Msg = ret.ErrMsg;
-
-            //if (Business.FeyinToken != helper.Token)
-            //{
-            //    // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
-            //    Business.FeyinToken = helper.Token;
-            //    HttpContext.Session.Set(AppData.Session, Business);
-            //}
-
-
-            //if (!result.Success)
-            //{
-            //    // 绑定不成功
-            //    return Json(result);
-            //}
             result.Success = Service.BindPrintDevice(Business, device);
             if (!result.Success)
             {
@@ -271,24 +247,6 @@ namespace JdCat.Cat.Web.Controllers
                 result.Msg = "设备可以已经被删除，请刷新后重试";
                 return Json(result);
             }
-            //var helper = GetPrintHelper();
-
-            //var ret = await helper.UnBindDevice(device.Code);
-            //result.Success = ret.ErrCode == null || ret.ErrCode == 0;
-            //result.Msg = ret.ErrMsg;
-
-            //if (Business.FeyinToken != helper.Token)
-            //{
-            //    // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
-            //    Business.FeyinToken = helper.Token;
-            //    HttpContext.Session.Set(AppData.Session, Business);
-            //}
-
-            //if (!result.Success)
-            //{
-            //    // 解绑失败不成功
-            //    return Json(result);
-            //}
 
             Service.Set<FeyinDevice>().Remove(device);
             result.Success = Service.Commit() > 0;
@@ -341,11 +299,10 @@ namespace JdCat.Cat.Web.Controllers
         /// 设置默认打印机
         /// </summary>
         /// <returns></returns>
-        public IActionResult SetDefaultPrinter([FromQuery]string code)
+        public IActionResult SetDefaultPrinter(int id)
         {
             var result = new JsonData();
-            Business.DefaultPrinterDevice = code;
-            result.Success =  Service.SetDefaultPrinter(Business);
+            result.Success =  Service.SetDefaultPrinter(Business, id);
 
             if (!result.Success)
             {
@@ -353,7 +310,6 @@ namespace JdCat.Cat.Web.Controllers
                 return Json(result);
             }
             result.Msg = "设置成功";
-            HttpContext.Session.Set(AppData.Session, Business);
             return Json(result);
         }
 

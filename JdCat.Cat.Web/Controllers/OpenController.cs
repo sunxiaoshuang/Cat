@@ -165,7 +165,7 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> YLYPrint()
         {
 
-            return Content("ok");
+            return Json(new { data = "OK" });
         }
 
 
@@ -188,7 +188,7 @@ namespace JdCat.Cat.Web.Controllers
                 var res = client.GetAsync(url);
                 var result = await res.Result.Content.ReadAsStringAsync();
                 var user = JsonConvert.DeserializeObject<WxListenUser>(result);
-                if(users.Exists(a => a.openid == user.openid))
+                if (users.Exists(a => a.openid == user.openid))
                 {
                     return;
                 }

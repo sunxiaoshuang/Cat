@@ -1,5 +1,6 @@
 ﻿using JdCat.Cat.Model.Data;
 using JdCat.Cat.Repository.Model;
+using JdCat.Cat.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -86,7 +87,7 @@ namespace JdCat.Cat.Repository.Service
                     var cutName = string.Empty;      // 截取的名称
                     while (true)
                     {
-                        zhQuantity = CalcZhQuantity(name);
+                        zhQuantity = UtilHelper.CalcZhQuantity(name);
                         enQuantity = name.Length - zhQuantity;
                         if (zhQuantity * 2 + enQuantity > position)
                         {
@@ -128,14 +129,14 @@ namespace JdCat.Cat.Repository.Service
                     }
                 }
                 content.Append("--------------其他--------------\n");
-                content.Append($"<left>{PrintLineLeftRight("配送费", Convert.ToDouble(order.Freight.Value) + "")}\n");
+                content.Append($"<left>{UtilHelper.PrintLineLeftRight("配送费", Convert.ToDouble(order.Freight.Value) + "")}\n");
                 if (order.SaleCouponUser != null)
                 {
-                    content.Append($"{PrintLineLeftRight("[" + order.SaleCouponUser.Name + "]", "-￥" + Convert.ToDouble(order.SaleCouponUser.Value) + "")}\n");
+                    content.Append($"{UtilHelper.PrintLineLeftRight("[" + order.SaleCouponUser.Name + "]", "-￥" + Convert.ToDouble(order.SaleCouponUser.Value) + "")}\n");
                 }
                 if (order.SaleFullReduce != null)
                 {
-                    content.Append($"{PrintLineLeftRight("[" + order.SaleFullReduce.Name + "]", "-￥" + Convert.ToDouble(order.SaleFullReduce.ReduceMoney) + "")}\n");
+                    content.Append($"{UtilHelper.PrintLineLeftRight("[" + order.SaleFullReduce.Name + "]", "-￥" + Convert.ToDouble(order.SaleFullReduce.ReduceMoney) + "")}\n");
                 }
                 content.Append("--------------------------------\n");
                 if (order.SaleFullReduce != null)
@@ -228,35 +229,5 @@ namespace JdCat.Cat.Repository.Service
             }
         }
 
-        /// <summary>
-        /// 计算出文本中的中文字符数量
-        /// </summary>
-        /// <returns></returns>
-        private int CalcZhQuantity(string text)
-        {
-            // 一个中文字符占用三个字节，一个其他字符占用一个字节
-            var len = text.Length;
-            var byteLen = Encoding.UTF8.GetByteCount(text);
-            return (byteLen - len) / 2;
-        }
-        /// <summary>
-        /// 打印一行，左右两边对齐
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        private string PrintLineLeftRight(string left, string right, int width = 32)
-        {
-            var zhLeft = CalcZhQuantity(left);          // 左边文本的中文字符长度
-            var enLeft = left.Length - zhLeft;          // 左边文本的其他字符长度
-            var zhRight = CalcZhQuantity(right);        // 右边文本的中文字符长度
-            var enRight = right.Length - zhRight;       // 右边文本的其他字符长度
-            var len = width - (zhLeft * 2 + enLeft + zhRight * 2 + enRight);            // 缺少的字符长度
-            for (int i = 0; i < len; i++)
-            {
-                left += " ";
-            }
-            return left + right;
-        }
     }
 }

@@ -53,6 +53,7 @@ namespace JdCat.Cat.Web
                 {
                     var context = serviceProvider.GetService<CatDbContext>();
                     new SeedData(context).Seed();
+                    SyncProgram(context);
                 }
                 catch (Exception ex)
                 {
@@ -60,6 +61,25 @@ namespace JdCat.Cat.Web
                 }
             }
         }
+
+        /// <summary>
+        /// 系统更改后的同步方法
+        /// </summary>
+        private static void SyncProgram(CatDbContext context)
+        {
+            // 同步默认打印机
+            //var businesses = context.Businesses.ToList();
+            //foreach (var business in businesses)
+            //{
+            //    if (string.IsNullOrEmpty(business.DefaultPrinterDevice)) continue;
+            //    var device = context.FeyinDevices.FirstOrDefault(a => a.Code == business.DefaultPrinterDevice);
+            //    business.DefaultPrinterDevice = null;
+            //    if (device == null || device.IsDefault) return;
+            //    device.IsDefault = true;
+            //}
+            //context.SaveChanges();
+        }
+
         /// <summary>
         /// 自动迁移
         /// </summary>

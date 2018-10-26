@@ -29,7 +29,7 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string DwdCode { get; set; }
         public int DWD_BusinessId { get; set; }
-        public DWDStore DWD_Business { get; set; }
+        public virtual DWDStore DWD_Business { get; set; }
 
     }
 }

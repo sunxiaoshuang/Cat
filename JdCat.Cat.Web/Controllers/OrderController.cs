@@ -240,10 +240,11 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="id"></param>
         /// <param name="device_no"></param>
         /// <returns></returns>
-        public async Task<IActionResult> Print(int id, [FromQuery]string device_no)
+        public async Task<IActionResult> Print(int id, [FromQuery]int device_id)
         {
             var order = Service.GetOrderIncludeProduct(id);
-            var result = await Print(order, device_no);
+            var device = Service.GetPrinter(device_id);
+            var result = await Print(order, device);
             return Json(result);
         }
 
@@ -317,22 +318,26 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="order"></param>
         /// <param name="device_no"></param>
         /// <returns></returns>
-        private async Task<JsonData> Print(Order order, string device_no)
+        private async Task<JsonData> Print(Order order, FeyinDevice device)
         {
             var result = new JsonData();
-            //var helper = GetPrintHelper();
-            //var ret = await helper.Print(device_no, order, Business);
-            //if (Business.FeyinToken != helper.Token)
-            //{
-            //    // 如果商户Session中保存的令牌与执行打印后的Token不一致，则修改商户中的Token
-            //    Business.FeyinToken = helper.Token;
-            //    HttpContext.Session.Set(AppData.Session, Business);
-            //}
 
-            var content = await Service.Print(order, Business, device_no);
-            var ret = JsonConvert.DeserializeObject<FeyinModel>(content);
-            result.Success = ret.ErrCode == null || ret.ErrCode == 0;
-            result.Msg = ret.ErrMsg;
+            var content = await Service.Print(order, device, Business);
+            if(device.Type == PrinterType.Feyin)
+            {
+                var ret = JsonConvert.DeserializeObject<FeyinModel>(content);
+                result.Success = ret.ErrCode == null || ret.ErrCode == 0;
+                result.Msg = ret.ErrMsg;
+            }
+            else
+            {
+                var ret = JsonConvert.DeserializeObject<YlyReturn>(content);
+                result.Success = ret.state == "1";
+                if (!result.Success)
+                {
+                    result.Msg = ret.state == "4" ? "打印签名错误" : "打印参数错误";
+                }
+            }
 
             if (!result.Success)
             {

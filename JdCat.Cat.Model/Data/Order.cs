@@ -19,15 +19,15 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 订单金额
         /// </summary>
-        public decimal? Price { get; set; }
+        public double? Price { get; set; }
         /// <summary>
         /// 原价
         /// </summary>
-        public decimal? OldPrice { get; set; }
+        public double? OldPrice { get; set; }
         /// <summary>
         /// 运费
         /// </summary>
-        public decimal? Freight { get; set; }
+        public double? Freight { get; set; }
         /// <summary>
         /// 收货人姓名
         /// </summary>
@@ -51,7 +51,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 小费
         /// </summary>
-        public decimal? Tips { get; set; }
+        public double? Tips { get; set; }
         /// <summary>
         /// 备注
         /// </summary>
@@ -175,6 +175,6 @@ namespace JdCat.Cat.Model.Data
         /// 优惠券id
         /// </summary>
         public int? SaleCouponUserId { get; set; }
-        public SaleCouponUser SaleCouponUser { get; set; }
+        public virtual SaleCouponUser SaleCouponUser { get; set; }
     }
 }

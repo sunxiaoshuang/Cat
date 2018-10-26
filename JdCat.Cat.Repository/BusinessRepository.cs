@@ -36,8 +36,9 @@ namespace JdCat.Cat.Repository
         }
         public bool SaveBase(Business business)
         {
-            var entity = new Business { ID = business.ID, Lng = -1, Lat = -1, MinAmount = -1, Range = -1 };
-            Context.Attach(entity);
+            //var entity = new Business { ID = business.ID, Lng = -1, Lat = -1, MinAmount = -1, Range = -1 };
+            var entity = Get(business.ID);
+            //Context.Attach(entity);
             entity.Name = business.Name;
             entity.Email = business.Email;
             entity.Address = business.Address;
@@ -86,6 +87,7 @@ namespace JdCat.Cat.Repository
             entity.MchId = business.MchId;
             entity.MchKey = business.MchKey;
             entity.TemplateNotifyId = business.TemplateNotifyId;
+            entity.AppQrCode = business.AppQrCode;
             return Context.SaveChanges() > 0;
         }
 
@@ -135,9 +137,12 @@ namespace JdCat.Cat.Repository
         }
         public bool BindPrintDevice(Business business, FeyinDevice device)
         {
-            device.MemberCode = business.FeyinMemberCode;
-            device.ApiKey = business.FeyinApiKey;
             device.BusinessId = business.ID;
+            if (device.Type == PrinterType.Feyin)
+            {
+                device.MemberCode = business.FeyinMemberCode;
+                device.ApiKey = business.FeyinApiKey;
+            }
             Context.FeyinDevices.Add(device);
             return Context.SaveChanges() > 0;
         }
@@ -150,11 +155,14 @@ namespace JdCat.Cat.Repository
             return Context.SaveChanges() > 0;
         }
 
-        public bool SetDefaultPrinter(Business business)
+        public bool SetDefaultPrinter(Business business, int id)
         {
-            var entity = new Business { ID = business.ID };
-            Context.Attach(entity);
-            entity.DefaultPrinterDevice = business.DefaultPrinterDevice;
+            var printers = Context.FeyinDevices.Where(a => a.BusinessId == business.ID).ToList();
+            foreach (var item in printers)
+            {
+                item.IsDefault = item.ID == id;
+            }
+
             return Context.SaveChanges() > 0;
         }
 

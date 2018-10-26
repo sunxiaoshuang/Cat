@@ -486,7 +486,7 @@ Page({
       showDetail: false
     });
   },
-  attch1: function () {},
+  attch1: function(){},
   add: function (e) { // 添加商品
     var user = qcloud.getSession().userinfo;
     if (!user.isRegister) {

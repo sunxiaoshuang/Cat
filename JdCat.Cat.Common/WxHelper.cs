@@ -12,7 +12,7 @@ using System.Web;
 namespace JdCat.Cat.Common
 {
     public static class WxHelper
-    {   
+    {
         public const string WeChatAppId = "wx37df4bb420888824";                         // 简单猫科技公众号AppId
         public const string WeChatSecret = "8db34ed73016a5f22878295ed409cc52";          // 简单猫科技公众号Secret
         /// <summary>
@@ -24,6 +24,7 @@ namespace JdCat.Cat.Common
         /// </summary>
         /// <param name="appId"></param>
         /// <param name="secret"></param>
+        /// <param name="是否重置Token"></param>
         /// <returns></returns>
         public static async Task<string> GetTokenAsync(string appId, string secret)
         {
@@ -33,34 +34,39 @@ namespace JdCat.Cat.Common
                 var token = TokenDic[appId];
                 var second = (DateTime.Now - token.GetTime.Value).TotalSeconds;
                 // 如果Token没有过期，则直接返回
-                if(second < token.expires_in - 60)
+                if (second < token.expires_in - 360)
                 {
                     return token.access_token;
                 }
-                else
-                {
-                    // 过期后从缓存中删除
-                    TokenDic.Remove(appId);
-                }
             }
-            // 获取小程序访问Token
+            // 重新设置Token
+            return await SetTokenAsync(appId, secret);
+        }
+        /// <summary>
+        /// 根据id与密钥，设置Token
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="secret"></param>
+        /// <returns></returns>
+        public static async Task<string> SetTokenAsync(string appId, string secret)
+        {
+            if (TokenDic.ContainsKey(appId))
+            {
+                TokenDic.Remove(appId);
+            }
             var url = $"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appId}&secret={secret}";
             using (var client = new HttpClient())
             {
                 var result = await client.GetAsync(url);
                 var token = JsonConvert.DeserializeObject<WxToken>(await result.Content.ReadAsStringAsync());
-                if(token.errcode == null)
+                if (token.errcode == null)
                 {
                     token.GetTime = DateTime.Now;
                     TokenDic.Add(appId, token);
                     return token.access_token;
                 }
-                else
-                {
-                    // 获取Token失败时，重新调用访问方法
-                    return await GetTokenAsync(appId, secret);
-                }
             }
+            return null;
         }
         /// <summary>
         /// 发送模版消息

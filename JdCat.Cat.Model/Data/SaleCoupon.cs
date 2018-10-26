@@ -93,10 +93,10 @@ namespace JdCat.Cat.Model.Data
         /// 优惠券所属商户
         /// </summary>
         public int BusinessId { get; set; }
-        public Business Business { get; set; }
+        public virtual Business Business { get; set; }
         /// <summary>
         /// 已经领取的优惠券
         /// </summary>
-        public ICollection<SaleCouponUser> CouponUsers { get; set; }
+        public virtual ICollection<SaleCouponUser> CouponUsers { get; set; }
     }
 }

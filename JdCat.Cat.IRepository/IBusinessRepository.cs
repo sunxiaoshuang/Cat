@@ -75,11 +75,12 @@ namespace JdCat.Cat.IRepository
         /// <param name="business"></param>
         bool UpdatePassword(Business business);
         /// <summary>
-        /// 设置默认打印机编码
+        /// 设置商户的默认打印机
         /// </summary>
         /// <param name="business"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        bool SetDefaultPrinter(Business business);
+        bool SetDefaultPrinter(Business business, int id);
         /// <summary>
         /// 获取监听的用户
         /// </summary>

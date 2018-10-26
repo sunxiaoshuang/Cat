@@ -61,12 +61,15 @@
     <Compile Remove="Migrations\20180915095943_Modify_DWDBusiness.cs" />
     <Compile Remove="Migrations\20180915125705_Modify_DWDBusiness.cs" />
     <Compile Remove="Migrations\20180927145143_Modify_TemplateMessage.cs" />
+    <Compile Remove="Migrations\20181018102333_Modify_LazyLoad.cs" />
+    <Compile Remove="Migrations\20181018102630_Modify_LazyLoad.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.2" />
+    <!--<DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.2" />-->
   </ItemGroup>
 
   <ItemGroup>

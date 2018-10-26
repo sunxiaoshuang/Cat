@@ -19,7 +19,7 @@ namespace JdCat.Cat.Model.Data
         public string country { get; set; }
         public string headimgurl { get; set; }
         public int BusinessId { get; set; }
-        public Business Business { get; set; }
+        public virtual Business Business { get; set; }
 
     }
 }

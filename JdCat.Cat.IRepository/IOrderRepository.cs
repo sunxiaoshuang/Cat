@@ -77,6 +77,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         IEnumerable<FeyinDevice> GetPrinters(Business business);
         /// <summary>
+        /// 获取打印机
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        FeyinDevice GetPrinter(int id);
+        /// <summary>
         /// 获取订单，包含产品集合
         /// </summary>
         /// <param name="id"></param>
@@ -91,8 +97,10 @@ namespace JdCat.Cat.IRepository
         /// <summary>
         /// 打印订单
         /// </summary>
-        /// <param name="order"></param>
-        Task<string> Print(Order order, Business business = null, string device_no = null);
+        /// <param name="order">订单</param>
+        /// <param name="business">商户</param>
+        /// <param name="device">打印机</param>
+        Task<string> Print(Order order, FeyinDevice device = null, Business business = null);
         /// <summary>
         /// 根据订单编码获取订单
         /// </summary>
@@ -115,7 +123,7 @@ namespace JdCat.Cat.IRepository
         /// 自动接单
         /// </summary>
         /// <param name="order"></param>
-        void AutoReceipt(Order order);
+        Task AutoReceipt(Order order);
         /// <summary>
         /// 配送订单
         /// </summary>

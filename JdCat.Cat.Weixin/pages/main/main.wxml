@@ -86,11 +86,11 @@
                                                 <image src="../../images/icon/plus-5.png" />
                                             </view>
                                         </view>
-                                        <view class="multi-format" wx:else>
+                                        <view class="multi-format" style="margin-right: 10rpx;" wx:else>
                                             <view class="selectFormat" bindtap="showFormat" data-index="{{index}}">
                                                 选规格
                                             </view>
-                                            <view class="formtCount" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
+                                            <view class="formCount" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
                                                 <text>{{item.quantity}}</text>
                                             </view>
                                         </view>
@@ -167,11 +167,11 @@
                 <view class="item-image">
                     <image src="../../images/icon/time-1.png" />
                 </view>
-                <view class="item-content">
+                <view class="item-content" style="display: flex;">
                     <text>营业时间：</text>
-                    <text class="font-size: 80%;">{{business.businessStartTime + '-' + business.businessEndTime}}</text>
-                    <text class="font-size: 80%;" wx:if="{{!!business.businessStartTime2}}">,{{business.businessStartTime2 + '-' + business.businessEndTime2}}</text>
-                    <text class="font-size: 80%;" wx:if="{{!!business.businessStartTime3}}">,{{business.businessStartTime3 + '-' + business.businessEndTime3}}</text>
+                    <text>{{business.businessStartTime + '-' + business.businessEndTime}}</text>
+                    <text wx:if="{{!!business.businessStartTime2}}">,{{business.businessStartTime2 + '-' + business.businessEndTime2}}</text>
+                    <text wx:if="{{!!business.businessStartTime3}}">,{{business.businessStartTime3 + '-' + business.businessEndTime3}}</text>
                 </view>
             </view>
         </swiper-item>
@@ -235,13 +235,15 @@
     </view>
 </view>
 <view class="detail-dialog" wx:if="{{showDetail}}" catchtap="closeFormat">
-    <view class="detail-main" catchtap="attch1">
+    <view class="detail-title">
         <view class="close" bindtap="closeFormat">
             <image src="../../images/icon/cha-3.png" />
         </view>
         <view class="format-title">
             <text>{{productList[productIndex].name}}</text>
         </view>
+    </view>
+    <scroll-view class="detail-main" scroll-y="{{true}}" catchtap="attch1">
         <view class="format-format" wx:if="{{productList[productIndex].formats.length > 1}}">
             <text>规格：</text>
             <view class="format-list">
@@ -279,18 +281,18 @@
                 </view>
             </view>
         </view>
-        <view class="format-footer">
-            <view class="format-price">￥ {{productList[productIndex].price}}</view>
-            <view class="item-food-numb">
-                <view class="item-remove" bindtap="remove">
-                    <image src="../../images/icon/minus-5.png" />
-                </view>
-                <view class="item-food-text">
-                    <text>{{curQuantity}}</text>
-                </view>
-                <view class="item-add" bindtap="add">
-                    <image src="../../images/icon/plus-5.png" />
-                </view>
+    </scroll-view>
+    <view class="format-footer" catchtap="attch1">
+        <view class="format-price">￥ {{productList[productIndex].price}}</view>
+        <view class="item-food-numb">
+            <view class="item-remove" bindtap="remove">
+                <image src="../../images/icon/minus-5.png" />
+            </view>
+            <view class="item-food-text">
+                <text>{{curQuantity}}</text>
+            </view>
+            <view class="item-add" bindtap="add">
+                <image src="../../images/icon/plus-5.png" />
             </view>
         </view>
     </view>
