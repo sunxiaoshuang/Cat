@@ -36,9 +36,9 @@
     <swiper class="swiper" current="{{currentPage}}" bindchange="turnTitle">
         <swiper-item id="orderPage">
             <view class="orderMain">
-                <scroll-view class="orderPage-sideBar" bindscrolltolower="lower" scroll-y="{{true}}">
+                <scroll-view class="orderPage-sideBar" bindscrolltolower="lower" scroll-y="{{true}}" scroll-with-animation="{{true}}" scroll-into-view="{{'menuType_' + selected}}">
                     <view class="menuList" wx:for="{{menu}}" wx:key="">
-                        <view class="menu {{index==selected?'selected':''}}" data-index="{{index}}" catchtap="turnMenu">
+                        <view id="{{'menuType_' + index}}" class="menu {{index==selected?'selected':''}}" data-index="{{index}}" catchtap="turnMenu">
                             <text>{{item.name}}</text>
                         </view>
                     </view>
