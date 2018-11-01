@@ -1,7 +1,7 @@
 <wxs module="calc" src="../wxs/calc/order.wxs"></wxs>
 <scroll-view class="payMain" scroll-y="true">
     <view class="address">
-        <view class="select-address" wx:if="{{!address}}">
+        <view class="select-address" wx:if="{{!address.id}}">
             <button plain="true" bindtap="selectAddress">
                 <image src="../../images/icon/plus-4.png" style="width: 30rpx;height: 30rpx;" />
                 <text>选择收货地址</text>
@@ -59,7 +59,7 @@
             <image src="../../images/icon/right-1.png" style="width: 60rpx;height: 60rpx;"></image>
         </view>
     </view>
-    <view class="deliver" wx:if="{{isSaleFullReduce}}">
+    <view class="deliver" wx:if="{{!!saleFullReduce.id}}">
         <view style="display:flex;">
             <view class="slide-image">减</view>
             <text>满减优惠</text>

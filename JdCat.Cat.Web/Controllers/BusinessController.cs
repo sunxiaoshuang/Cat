@@ -97,6 +97,7 @@ namespace JdCat.Cat.Web.Controllers
             Business.Address = business.Address;
             Business.Contact = business.Contact;
             Business.Mobile = business.Mobile;
+            Business.FreightMode = business.FreightMode;
             Business.Freight = business.Freight;
             Business.Description = business.Description;
             Business.Range = business.Range;

@@ -63,6 +63,7 @@
     <Compile Remove="Migrations\20180927145143_Modify_TemplateMessage.cs" />
     <Compile Remove="Migrations\20181018102333_Modify_LazyLoad.cs" />
     <Compile Remove="Migrations\20181018102630_Modify_LazyLoad.cs" />
+    <Compile Remove="Migrations\20181030034742_Modify_Order_Sale2.cs" />
   </ItemGroup>
 
   <ItemGroup>

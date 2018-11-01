@@ -172,9 +172,21 @@ namespace JdCat.Cat.Model.Data
         public int? SaleFullReduceId { get; set; }
         public virtual SaleFullReduce SaleFullReduce { get; set; }
         /// <summary>
+        /// 满减优惠的金额
+        /// </summary>
+        public double? SaleFullReduceMoney { get; set; }
+        /// <summary>
         /// 优惠券id
         /// </summary>
         public int? SaleCouponUserId { get; set; }
         public virtual SaleCouponUser SaleCouponUser { get; set; }
+        /// <summary>
+        /// 使用的优惠券金额
+        /// </summary>
+        public double? SaleCouponUserMoney { get; set; }
+        /// <summary>
+        /// 配送距离
+        /// </summary>
+        public int? Distance { get; set; }
     }
 }

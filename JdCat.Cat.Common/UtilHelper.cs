@@ -252,14 +252,14 @@ namespace JdCat.Cat.Common
             }
             //随机字体和颜色的验证码字符
 
-            int findex;
+            //int findex;
             for (int int_index = 0; int_index < code.Length; int_index++)
             {
-                findex = newRandom.Next(fonts.Length - 1);
+                //findex = newRandom.Next(fonts.Length - 1);
                 string str_char = code.Substring(int_index, 1);
                 Brush newBrush = new SolidBrush(GetRandomColor());
                 Point thePos = new Point(int_index * letterWidth + 1 + newRandom.Next(3), 1 + newRandom.Next(3));//5+1+a+s+p+x
-                g.DrawString(str_char, new Font(fonts[findex], 12, FontStyle.Bold), newBrush, thePos);
+                g.DrawString(str_char, new Font(FontFamily.GenericMonospace, 12, FontStyle.Bold), newBrush, thePos);
             }
             //灰色边框
             g.DrawRectangle(new Pen(Color.LightGray, 1), 0, 0, int_ImageWidth - 1, (letterHeight - 1));

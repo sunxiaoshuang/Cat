@@ -118,6 +118,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<double?>("Freight");
 
+                    b.Property<int>("FreightMode");
+
                     b.Property<string>("InvitationCode");
 
                     b.Property<bool>("IsAutoReceipt");
@@ -397,6 +399,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("DeliveryMode");
 
+                    b.Property<int?>("Distance");
+
                     b.Property<int>("DistributionFlow");
 
                     b.Property<DateTime?>("DistributionTime");
@@ -443,7 +447,11 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int?>("SaleCouponUserId");
 
+                    b.Property<double?>("SaleCouponUserMoney");
+
                     b.Property<int?>("SaleFullReduceId");
+
+                    b.Property<double?>("SaleFullReduceMoney");
 
                     b.Property<int>("Status");
 

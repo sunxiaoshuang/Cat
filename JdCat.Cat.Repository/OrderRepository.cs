@@ -427,6 +427,27 @@ namespace JdCat.Cat.Repository
             }
             return null;
         }
+
+        public async Task<JsonData> EstimateFreight(int businessId, double lat, double lng, string address)
+        {
+            var result = new JsonData { Success = true};
+            var store = Context.DWDStores.FirstOrDefault(a => a.BusinessId == businessId);
+            if(store != null)
+            {
+                var helper = DwdHelper.GetHelper();
+                var ret = await helper.CostAsync(lng, lat, address, store);
+                Log.Debug(ret);
+                if (ret.errorCode == "0")
+                {
+                    result.Data = ret.result.total;
+                    return result;
+                }
+            }
+            // 如果没有创建点我达商户或者点我达预估接口异常，则返回商户设置的运费
+            result.Data = Context.Businesses.Single(a => a.ID == businessId).Freight.Value * 100;
+            return result;
+        }
+
         /// <summary>
         /// 达达配送
         /// </summary>
@@ -545,5 +566,6 @@ namespace JdCat.Cat.Repository
                 }
             };
         }
+
     }
 }

@@ -27,7 +27,7 @@
     </view>
     <view class="form-input">
         <text>门牌号：</text>
-        <input placeholder="例如：3栋2单元1103" bindblur="blurDetailInfo" value="{{entity.detailInfo}}"></input>
+        <input placeholder="例如：xx大厦3栋2单元1103号" bindblur="blurDetailInfo" value="{{entity.detailInfo}}"></input>
     </view>
     <view class="form-input" style="border: none;">
         <button class="btn-block" type="primary" bindtap="saveAddress">

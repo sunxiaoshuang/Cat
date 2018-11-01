@@ -66,7 +66,6 @@ Page({
     wx.setNavigationBarTitle({
       title: business.name
     });
-    util.showBusy("loading");
     // 首次加载时，将获取商品信息，并将其缓存
     qcloud.request({
       url: "/product/menus/" + config.businessId,
@@ -137,7 +136,6 @@ Page({
           url: `/user/carts/${user.id}`,
           method: "GET",
           success: function (res) {
-            wx.hideToast();
             wx.setStorageSync("cartList", res.data);
             that.loadData();
           }
@@ -252,7 +250,7 @@ Page({
   couponHandler: function () {
     if (this.data.isClosedCoupon) return; // 如果已经关闭过优惠券窗口，则不再弹出
     if (!this.data.couponList || !this.data.myCoupon || !this.data.unreceived) return;
-    var userinfo = qcloud.getSession().userinfo;
+    // var userinfo = qcloud.getSession().userinfo;
     // if (!userinfo.isRegister) return; // 用户没有注册，则不弹出
 
     var self = this;
@@ -469,10 +467,12 @@ Page({
     });
   },
   showFormat: function (e) { // 显示规格、属性选择框
+    var index = !!e ? e.currentTarget.dataset.index : this.data.productIndex;
+    this.data.productIndex = index;
     this.setData({
       curQuantity: this.calcQuantity(),
       showDetail: true,
-      productIndex: !!e ? e.currentTarget.dataset.index : this.data.productIndex
+      productIndex: index
     });
   },
   showFormatAtDetail: function () {

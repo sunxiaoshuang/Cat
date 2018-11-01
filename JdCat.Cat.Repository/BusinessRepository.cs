@@ -44,6 +44,7 @@ namespace JdCat.Cat.Repository
             entity.Address = business.Address;
             entity.Contact = business.Contact;
             entity.Mobile = business.Mobile;
+            entity.FreightMode = business.FreightMode;
             entity.Freight = business.Freight;
             entity.Description = business.Description;
             entity.Range = business.Range;

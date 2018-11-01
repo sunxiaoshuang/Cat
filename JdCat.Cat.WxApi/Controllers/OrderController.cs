@@ -89,6 +89,17 @@ namespace JdCat.Cat.WxApi.Controllers
             return Json(order, JsSetting);
         }
 
+        ///// <summary>
+        ///// 获取订单
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpGet("estimateFreight/{id}")]
+        //public async Task<IActionResult> EstimateFreight(int id, [FromQuery]double lat, [FromQuery]double lng, [FromQuery]string address)
+        //{
+        //    var result = await Service.EstimateFreight(id, lat, lng, address);
+        //    return Json(result);
+        //}
+
         [HttpPost("createOrder")]
         public IActionResult CreateOrder([FromBody]Order order)
         {

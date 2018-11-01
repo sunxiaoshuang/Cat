@@ -93,6 +93,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public bool IsAutoReceipt { get; set; }
         /// <summary>
+        /// 运费计算模式
+        /// </summary>
+        public FreightMode FreightMode { get; set; }
+        /// <summary>
         /// 运费
         /// </summary>
         public double? Freight { get; set; }

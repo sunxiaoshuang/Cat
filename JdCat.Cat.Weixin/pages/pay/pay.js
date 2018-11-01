@@ -3,77 +3,104 @@ const util = require("../../utils/util");
 
 Page({
   data: {
-    address: "",
+    address: {},
     cartList: [],
     freight: 0,
     total: 0,
     oldPrice: 0,
     remark: "",
+    productCost: 0,
     tablewareQuantity: 0,
     tablewareQuantitys: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     couponQuantity: 0,
-    coupon: {}
+    coupon: {},
+    saleFullReduce: {}
   },
   onLoad: function () {
     wx.setNavigationBarTitle({
       title: "订单下单"
     });
+    /** 页面加载时操作：
+     * 1. 查询购物车信息
+     * 2. 计算购物车总价格，餐盒数
+     * 3. 计算出可使用的优惠券
+     * 4. 初始化配送费
+     */
     var cartList = wx.getStorageSync('cartList') || [],
-      total = 0,
-      oldPrice = 0,
-      tablewareQuantity = 0,
-      freight = qcloud.getSession().business.freight;
+      business = qcloud.getSession().business,
+      productCost = 0,
+      tablewareQuantity = 0;
     cartList.forEach(a => {
-      // var format = a.product.formats.filter(b => b.id = a.formatId)[0];
-      // oldPrice += a.price * a.quantity + a.quantity * format.packingPrice;      
-      oldPrice += a.price * a.quantity;      
+      productCost += a.price * a.quantity;
       tablewareQuantity += a.packingQuantity * a.quantity;
     });
-    oldPrice = qcloud.utils.getNumber(oldPrice + freight, 2);
-    var saleFullReduce = wx.getStorageSync("nowFullReduce"),
-      isSaleFullReduce = true;
-    if (!saleFullReduce) {
-      saleFullReduce = {};
-      isSaleFullReduce = false;
-      total = oldPrice;
-    } else {
-      total = qcloud.utils.getNumber(oldPrice - saleFullReduce.reduceMoney, 2);
-    }
 
-    if (total < 0) total = 0;
-    // 优惠券
-    var myCoupon = wx.getStorageSync("myCoupon");
-    var notUse = myCoupon.filter(a => {
+    this.data.productCost = qcloud.utils.getNumber(productCost, 2); // 产品费用总和
+    this.data.saleFullReduce = wx.getStorageSync("nowFullReduce") || {}; // 当前使用的满减活动
+
+    var coupons = wx.getStorageSync("myCoupon").filter(a => { // 优惠券列表
       if (a.status != 1) return false;
-      if (oldPrice >= a.minConsume) return true;
+      if (productCost >= a.minConsume) return true;
       return false;
     });
-    
+
+    var freight = business.freightMode == 1 ? 0 : business.freight;
+
     this.setData({
-      cartList: cartList,
-      freight: freight,
-      total: total,
-      oldPrice: oldPrice,
-      tablewareQuantity: tablewareQuantity,
-      saleFullReduce: saleFullReduce,
-      isSaleFullReduce: isSaleFullReduce,
-      couponQuantity: notUse.length
+      cartList,
+      tablewareQuantity,
+      freight,
+      couponQuantity: coupons.length,
+      saleFullReduce: this.data.saleFullReduce
     });
   },
   onShow: function () {
-    var address = wx.getStorageSync("selectAddress") || "";
-    // 优惠券
-    var coupon = wx.getStorageSync("selectCoupon") || "";
-    wx.removeStorageSync("selectCoupon");
+    var business = qcloud.getSession().business;
+    /** 页面每次展示时，执行的操作：
+     * 1. 载入正在使用的优惠券
+     * 2. 载入正在使用的地址
+     * 3. 如有必要，计算订单的阶梯运费
+     * 4. 重新计算订单费用
+     */
 
-    var oldPrice = this.data.oldPrice,
-      fullReducePrice = this.data.saleFullReduce.reduceMoney || 0;
-    var total = qcloud.utils.getNumber(oldPrice - fullReducePrice - (coupon.value || 0), 2);
-    if (total < 0) total = 0;
+    var coupon = wx.getStorageSync("selectCoupon") || {};
+    wx.removeStorageSync("selectCoupon"); // 载入之后删除缓存
+
+    var address = wx.getStorageSync("selectAddress") || {},
+      oldAddress = this.data.address;
     this.setData({
       address,
-      coupon,
-      total
+      coupon
+    });
+
+    if (business.freightMode == 1 && !!address && !!oldAddress && address.id != oldAddress.id) {
+      this.changeAddress();
+    } else {
+      this.calcCost();
+    }
+  },
+  changeAddress: function () {                    // 改变地址后，重新计算配送费
+    var business = qcloud.getSession().business;
+    this.data.freight = business.freight;
+    this.calcCost();
+  },
+  calcCost: function () {
+    /** 计算订单各种费用：
+     * 1. 涉及的费用：产品总价、配送费、满减、优惠券
+     * 2. 计算总价，原价
+     * 3. 载入视图
+     */
+    var productCost = this.data.productCost,
+      freight = this.data.freight,
+      fullReduce = this.data.saleFullReduce.reduceMoney || 0,
+      coupon = this.data.coupon.value || 0;
+
+    var total = qcloud.utils.getNumber(productCost + freight - fullReduce - coupon, 2);
+    var oldPrice = qcloud.utils.getNumber(productCost + freight, 2);
+    this.setData({
+      total,
+      freight,
+      oldPrice
     });
   },
   selectAddress: function () {
@@ -83,7 +110,7 @@ Page({
   },
   selectCoupon: function () {
     wx.navigateTo({
-      url: `/pages/user/selectcoupon/selectcoupon?total=${this.data.oldPrice}&id=${this.data.coupon.id}`
+      url: `/pages/user/selectcoupon/selectcoupon?total=${this.data.productCost}&id=${this.data.coupon.id}`
     });
   },
   blurRemark: function (e) {
@@ -103,12 +130,10 @@ Page({
     var self = this,
       business = qcloud.getSession().business,
       user = qcloud.getSession().userinfo;
-    if (business.range > 0) {
-      var distance = util.calcDistance(this.data.address, business);
-      if (business.range - distance / 1000 < 0) {
-        util.showError("地址超出商家配送范围");
-        return;
-      }
+    var distance = util.calcDistance(this.data.address, business);
+    if (business.range > 0 && (business.range - distance / 1000 < 0)) {
+      util.showError("地址超出商家配送范围");
+      return;
     }
     var order = {
       price: this.data.total,
@@ -125,9 +150,12 @@ Page({
       userId: user.id,
       businessId: business.id,
       saleFullReduceId: this.data.saleFullReduce.id,
+      saleFullReduceMoney: this.data.saleFullReduce.reduceMoney,
       saleCouponUserId: this.data.coupon.id,
+      saleCouponUserMoney: this.data.coupon.value,
       products: [],
-      openId: user.openId
+      openId: user.openId,
+      distance: +distance.toFixed(0)
     };
     
     this.data.cartList.forEach(a => {

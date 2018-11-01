@@ -23,6 +23,11 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         JsonData CreateOrder(Order order);
         /// <summary>
+        /// 预估运费
+        /// </summary>
+        /// <returns></returns>
+        Task<JsonData> EstimateFreight(int businessId, double lat, double lng, string address);
+        /// <summary>
         /// 获取订单
         /// </summary>
         /// <param name="business">商户对象</param>

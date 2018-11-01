@@ -76,6 +76,33 @@ namespace JdCat.Cat.Repository.Service
         }
 
         /// <summary>
+        /// 预估费用
+        /// </summary>
+        /// <param name="lng"></param>
+        /// <param name="lat"></param>
+        /// <param name="address"></param>
+        /// <param name="store"></param>
+        /// <returns></returns>
+        public async Task<DWD_Result<DWD_CostResult>> CostAsync(double lng, double lat, string address, DWDStore store)
+        {
+            var cost = new DWD_Cost
+            {
+                city_code = store.city_code,
+                seller_id = store.external_shopid,
+                seller_name = store.shop_title,
+                seller_mobile = store.mobile,
+                seller_address = store.addr,
+                seller_lat = store.lat,
+                seller_lng = store.lng,
+                consignee_address = address,
+                consignee_lat = lat,
+                consignee_lng = lng
+            };
+            cost.Generate();
+            return await RequestAsync<DWD_CostResult>("/api/v3/cost-estimate.json", cost.Sign(), cost.Params());
+        }
+
+        /// <summary>
         /// 创建订单
         /// </summary>
         /// <param name="order"></param>
