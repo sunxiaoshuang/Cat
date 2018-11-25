@@ -16,6 +16,7 @@ namespace JdCat.Cat.Repository.Service
     {
         private string partner;
         private string apikey;
+        private string url;
 
         private static YlyHelper _helper;
         static YlyHelper()
@@ -29,10 +30,11 @@ namespace JdCat.Cat.Repository.Service
         private YlyHelper()
         {
         }
-        public void Init(string partnerId, string apikey)
+        public void Init(string partnerId, string apikey, string url)
         {
             this.partner = partnerId;
             this.apikey = apikey;
+            this.url = url;
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace JdCat.Cat.Repository.Service
         /// <param name="device"></param>
         /// <param name="business"></param>
         /// <returns></returns>
-        public async Task<string> Print(Order order, FeyinDevice device, Business business)
+        public async Task<string> PrintAsync(Order order, FeyinDevice device, Business business)
         {
             var time = DateTime.Now.ToInt().ToString();
             var dic = new Dictionary<string, string>
@@ -79,6 +81,10 @@ namespace JdCat.Cat.Repository.Service
                 content.Append("</table>");
             }
             content.Append("--------------------------------");
+            if (order.PackagePrice.HasValue)
+            {
+                content.Append($"{UtilHelper.PrintLineLeftRight("包装费", Convert.ToDouble(order.PackagePrice.Value) + "")}\n");
+            }
             content.Append($"{UtilHelper.PrintLineLeftRight("配送费", Convert.ToDouble(order.Freight.Value) + "")}\n");
             if (order.SaleCouponUser != null)
             {
@@ -97,7 +103,7 @@ namespace JdCat.Cat.Repository.Service
             content.Append("--------------------------------");
             content.Append($"<FS2>{order.ReceiverAddress}</FS2>\r\n");
             content.Append($"<FS2>{order.Phone}</FS2>\r\n");
-            content.Append($"<FS2>{order.ReceiverName}</FS2>\r\n");
+            content.Append($"<FS2>{order.GetUserCall()}</FS2>\r\n");
             if (!string.IsNullOrEmpty(business.AppQrCode))
             {
                 content.Append($"<QR>{business.AppQrCode}</QR>");
@@ -110,7 +116,37 @@ namespace JdCat.Cat.Repository.Service
             {
                 var body = new StringContent(trans);
                 body.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-                var res = await client.PostAsync("http://open.10ss.net:8888", body);
+                var res = await client.PostAsync(url, body);
+                var result = await res.Content.ReadAsStringAsync();
+                return result;
+            }
+        }
+        /// <summary>
+        /// 打印提示信息
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="device_no"></param>
+        /// <returns></returns>
+        public async Task<string> PrintAsync(string content, FeyinDevice device)
+        {
+            var str = string.Empty;
+            str += "**************通知**************\r\n";
+            str += "<FS2>简单猫提示您：</FS2>\r\n" + $"<FS2>{content}</FS2>\r\n\r\n";
+            str += "********************************\r\n";
+            var time = DateTime.Now.ToInt().ToString();
+            var dic = new Dictionary<string, string>
+            {
+                { "machine_code", device.Code },
+                { "partner", partner },
+                { "time", time }
+            };
+            var sign = GetSign(dic, apikey, device.ApiKey).ToUpper();
+            var trans = $"partner={partner}&machine_code={device.Code}&time={time}&sign={sign}&content={str}";
+            using (var client = new HttpClient())
+            {
+                var body = new StringContent(trans);
+                body.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+                var res = await client.PostAsync(url, body);
                 var result = await res.Content.ReadAsStringAsync();
                 return result;
             }

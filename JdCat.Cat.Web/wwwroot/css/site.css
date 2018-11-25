@@ -1100,6 +1100,11 @@ ul.dropdown-menu.dropdown-messages li a div {
 .text-primary {
     color: #ea7042;
 }
+a.text-primary:hover {
+    cursor: pointer;
+    text-decoration: none;
+    color: #d6440d !important;
+}
 
 
 .mainframe {
@@ -1367,6 +1372,10 @@ input[type="radio"] + .custom-checkbox, input[type="radio"]:disabled + .custom-c
 }
 
 .kui-button-primary:hover {
+    background-color: #f3d2c5;
+}
+
+.kui-button-primary.hover {
     background-color: #f3d2c5;
 }
 
@@ -1757,7 +1766,7 @@ input[type="checkbox"] {
             }
 
             .products .product .product-content .product-operate {
-                width: 100px;
+                width: 120px;
                 float: left;
                 padding-top: 10px;
             }
@@ -2033,4 +2042,17 @@ ul.select-type {
 
     .btn-primary:active:hover, .btn-primary.active:hover, .open > .dropdown-toggle.btn-primary:hover, .btn-primary:active:focus, .btn-primary.active:focus, .open > .dropdown-toggle.btn-primary:focus, .btn-primary:active.focus, .btn-primary.active.focus, .open > .dropdown-toggle.btn-primary.focus {
         border-color: #dc5b2b;
+    }
+
+.setMeal {
+    display: flex;
+    flex-flow: row;
+    padding: 10px;
+    list-style: none;
+    border: 1px solid #ccc;
+}
+    .setMeal > li {
+        border: 1px solid #ccc;
+        padding: 5px;
+        margin-right: 10px;
     }

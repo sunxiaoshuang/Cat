@@ -31,7 +31,6 @@ namespace JdCat.Cat.Web.Controllers
         {
             return View();
         }
-
         public IActionResult CreateOrder([FromBody]Order order)
         {
             var service = HttpContext.RequestServices.GetService<IOrderRepository>();
@@ -45,6 +44,12 @@ namespace JdCat.Cat.Web.Controllers
             order.BusinessId = Business.ID;
             var result = new JsonData { Success = service.Add(order) > 0};
             return Ok(result);
+        }
+        public IActionResult Print()
+        {
+            var rep = HttpContext.RequestServices.GetService<IOrderRepository>();
+            rep.Print(Business);
+            return Content("ok");
         }
     }
 }

@@ -79,7 +79,7 @@ namespace JdCat.Cat.Web.Controllers
                     //    }
                     //    HttpContext.Session.Set(AppData.Session, _business);
                     //}
-                    _business = Service.Set<Business>().AsNoTracking().SingleOrDefault(a => a.ID == int.Parse(id));
+                    _business = Service.Set<Business>().AsNoTracking().SingleOrDefault(a => a.ObjectId == id);
                     if (_business == null)
                     {
                         context.Result = new RedirectResult("~/Login");

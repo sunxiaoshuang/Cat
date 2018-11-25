@@ -16,7 +16,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    swiperTitle: [{
+    swiperTitle: [{ // 定义选项卡
       text: "点单",
       id: 1
     }, {
@@ -26,27 +26,24 @@ Page({
       text: "商家",
       id: 3
     }],
-    logo: "",
-    businessId: config.businessId,
-    freight: 0,
-    menu: [],
-    productList: [],
-    cartList: [],
-    currentPage: 0,
-    selected: 0,
-    showCart: false,
-    showDetail: false,
-    pullBar: false,
-    animationData: "",
-    location: "",
-    foodToView: "scroll21",
-    cartQuantity: 0,
-    scrollTop: 0,
-    formatIndex: 0,
+    logo: "", // 商户logo
+    businessId: config.businessId, // 商户id
+    freight: 0, // 配送费
+    menu: [], // 商品类别
+    productList: [], // 商品列表
+    cartList: [], // 购物车列表
+    cartLoaded: false, // 购物车是否请求加载完成
+    currentPage: 0, // 选项卡当前的下标
+    selected: 0, // 选择的选项卡下标                
+    showCart: false, // 是否显示购物车
+    showDetail: false, // 是否显示商品详情
+    animationData: "", // 显示商品详情时的动画
+    foodToView: "", // 当前跳转到的商品栏目id
+    cartQuantity: 0, // 购物车数量
     productIndex: 0, // 选择的商品在列表中的序号
-    curQuantity: 0,
-    isShowFoot: true,
-    submitText: "去结算",
+    curQuantity: 0, // 当前选择规格商品的数量
+    isShowFoot: true, // 是否显示底部结算栏
+    submitText: "去结算", // 结算按钮文本显示 
     isBalance: true, // 是否可以结算
     fullReduceList: [], // 商户满减活动列表
     saleText: "", // 购买商品时，根据满减活动，提示用户的显示信息
@@ -54,126 +51,55 @@ Page({
     isClosedCoupon: false, // 是否显示过领取优惠券
     couponList: [], // 商户优惠券列表
     myCoupon: [], // 我的优惠券列表
-    isShowProductDetail: false
+    isShowProductDetail: false, // 是否显示商品详情
+    packagePrice: 0 // 餐盒费
   },
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad: function (options) {
-    var that = this;
-    var session = qcloud.getSession(),
-      business = session.business;
+    var that = this,
+      session = qcloud.getSession(),
+      business = session.business,
+      user = qcloud.getSession().userinfo;
+    // 设置标题
     wx.setNavigationBarTitle({
       title: business.name
     });
-    // 首次加载时，将获取商品信息，并将其缓存
+
+    // 加载商户营销方案：满减、优惠券、折扣券及用户优惠券
     qcloud.request({
-      url: "/product/menus/" + config.businessId,
+      url: `/business/sale/${config.businessId}?userId=${user.id}`,
       method: "GET",
       success: function (res) {
-        // 1. 首先加载商户产品
-        var menuArr = [];
-        var productArr = [];
-        for (var i in res.data) {
-          var menuItem = res.data[i];
-          menuArr.push(menuItem);
-          menuItem.products.forEach(function (product, index) {
-            product.quantity = 0; // 购物车中该商品的总数
-            product.viewIndex = index;
-            product.menuId = menuItem.id;
-            productArr.push(product);
-          });
-        }
-        productArr.forEach(function (product, index) {
-          // 初始化时，默认规格、属性均选择第一个
-          product.formats[0].selected = true;
-          product.price = product.formats[0].price;
-          if (product.attributes.length > 0) {
-            product.attributes.forEach(function (attr) {
-              if (attr.item1) {
-                attr.selectedValue = attr.item1;
-                attr.item1 = {
-                  name: attr.item1,
-                  selected: true
-                };
-              }
-              attr.item2 && (attr.item2 = {
-                name: attr.item2,
-                selected: false
-              });
-              attr.item3 && (attr.item3 = {
-                name: attr.item3,
-                selected: false
-              });
-              attr.item4 && (attr.item4 = {
-                name: attr.item4,
-                selected: false
-              });
-              attr.item5 && (attr.item5 = {
-                name: attr.item5,
-                selected: false
-              });
-              attr.item6 && (attr.item6 = {
-                name: attr.item6,
-                selected: false
-              });
-              attr.item7 && (attr.item7 = {
-                name: attr.item7,
-                selected: false
-              });
-              attr.item8 && (attr.item8 = {
-                name: attr.item8,
-                selected: false
-              });
-            });
-          }
-        });
-        wx.setStorageSync("businessMenu", menuArr);
-        wx.setStorageSync("businessProduct", productArr);
-
-        var user = qcloud.getSession().userinfo;
-        qcloud.request({
-          url: `/user/carts/${user.id}`,
-          method: "GET",
-          success: function (res) {
-            wx.setStorageSync("cartList", res.data);
-            that.loadData();
-          }
-        });
-      }
-    });
-
-    qcloud.request({
-      url: "/business/sale/" + config.businessId,
-      method: "GET",
-      success: function (res) {
-        // 满减
+        // 商户满减活动
         that.setData({
           fullReduceList: res.data.fullReduct
         });
-        // 优惠券
-        var couponList = res.data.coupon;
-        qcloud.request({
-          url: `/user/userCoupon/${session.userinfo.id}`,
-          method: "GET",
-          success: function (res) {
-            var myCoupon = res.data,
-              unreceived = [];
-            wx.setStorageSync("myCoupon", myCoupon);
-            that.data.couponList = couponList;
-            that.data.myCoupon = myCoupon;
-            that.data.unreceived = unreceived;
-            if (couponList.length === 0) return;
-            that.couponHandler();
-          }
-        });
-        // 商品打折
+        var couponList = res.data.coupon, // 商户优惠券
+          myCoupon = res.data.userCoupon, // 用户优惠券
+          unreceived = [];
+        wx.setStorageSync("myCoupon", myCoupon); // 将用户优惠券缓存起来
+        that.data.couponList = couponList;
+        that.data.myCoupon = myCoupon;
+        that.data.unreceived = unreceived;
         that.data.discount = res.data.discount;
-        that.discountHandler();
+        that.data.saleLoaded = true; // 标识营销数据加载完成
+        if (couponList.length > 0) {
+          that.couponHandler();
+        }
       }
     });
 
+    // 加载购物车
+    qcloud.request({
+      url: `/user/carts/${user.id}`,
+      method: "GET",
+      success: function (res) {
+        that.data.cartList = res.data;
+        wx.setStorageSync("cartList", that.data.cartList);      // 将初次读取的购物车写入缓存
+        that.data.cartLoaded = true;
+      }
+    });
   },
+  // 分享
   onShareAppMessage: function () {
     var session = qcloud.getSession();
     return {
@@ -183,37 +109,118 @@ Page({
   },
   onShow: function () {
     var self = this;
-
-    // 每次显示，均重新计算购物车数据
-    setTimeout(function () {
-      self.loadData();
-    }, 1000);
-    this.couponHandler();
+    // 每次从后台进入小程序，重新载入商户信息和商品信息
+    if (this.data.enterAgain) { // 是否是二次进入
+      qcloud.request({
+        url: `/user/business/${config.businessId}`,
+        method: "GET",
+        success: function (res) {
+          var session = qcloud.getSession();
+          session.business = res.data;
+          qcloud.setSession(session);
+          self.loadProduct();
+        }
+      });
+    } else {
+      self.loadProduct();
+      this.data.enterAgain = true;
+    }
   },
+  // 加载商品与用户购物车
+  loadProduct: function () {
+    var self = this;
+    this.data.productLoaded = false; // 标识商品是否请求加载完成
+
+    // 加载菜单类别及产品
+    qcloud.request({
+      url: "/product/menus/" + config.businessId,
+      method: "GET",
+      success: function (res) {
+        var menuArr = [];
+        var productArr = [];
+        res.data.forEach(function (menuItem) {
+          menuArr.push(menuItem); // 菜单类别初始化
+          menuItem.products.forEach(function (product, index) {
+            // 产品初始化
+            product.quantity = 0; // 设置每个商品在购物车中的数量值为0
+            product.viewIndex = index; // 商品序号
+            product.menuId = menuItem.id; // 菜单类别id
+            product.formats[0].selected = true; // 设置第一个规格为选中状态
+            product.price = product.formats[0].price; // 商品的价格为第一个规格的价格
+            if (product.attributes.length > 0) {
+              product.attributes.forEach(function (attr) {  // 格式化属性，默认选中第一个
+                var i = 1;
+                for (; i < 9;) {
+                  if (attr['item' + i]) {
+                    attr['item' + i] = {
+                      name: attr['item' + i],
+                      selected: false
+                    };
+                    if (!attr.selectedValue) {
+                      attr.selectedValue = attr['item' + i].name;
+                      attr['item' + i].selected = true;
+                    }
+                  }
+                  i++;
+                }
+              });
+            }
+            productArr.push(product);
+          });
+        });
+
+        self.data.menu = menuArr;
+        self.data.productList = productArr;
+        self.data.productLoaded = true;
+      }
+    });
+
+    // 加载数据
+    util.method.delayExec(function () {
+      // 当购物车、商品、营销数据均加载完成后，才执行数据计算
+      if (!self.data.cartLoaded || !self.data.productLoaded || !self.data.saleLoaded) return false;
+      self.loadData();
+      return true;
+    }, 200);
+  },
+  // 当用户每次进入页面时，重新根据购物车加载数据
   loadData: function () {
-    var menuArr = wx.getStorageSync("businessMenu");
-    if (!menuArr) return;
-    var productArr = wx.getStorageSync("businessProduct");
-    var cartList = wx.getStorageSync("cartList");
-    var cartQuantity = 0;
-    var existCart = []; // 存储购物车与商品可以匹配的记录
+    var menu = this.data.menu,
+      productList = this.data.productList,
+      self = this,
+      cartList = wx.getStorageSync("cartList") || [],
+      cartQuantity = 0,
+      packagePrice = 0,
+      format,
+      existCart = []; // 存储购物车与商品可以匹配的记录
+    this.data.cartList = cartList;
+    // 商品与折扣券关联
+    this.discountHandler();
+    // 商品与购物车关联
     if (cartList.length > 0) {
       cartList.forEach(function (obj) {
-        var products = productArr.filter(a => a.id == obj.productId);
+        var products = productList.filter(a => a.id == obj.productId);
         if (products.length === 0) return;
         obj.product = products[0];
         existCart.push(obj);
-        products[0].quantity += obj.quantity;
-        cartQuantity += obj.quantity;
+        products[0].quantity += obj.quantity; // 记录购物车有多少该类型的产品
+        cartQuantity += obj.quantity; // 累加购物车商品数量
+        format = self.findCartFormat(obj, products[0]); // 找到购物车对应的商品规格
+        obj.format = format;
+        packagePrice += format.packingPrice * obj.quantity; // 累加餐盒费
+        self.reloadCart(obj); // 商品可能有变动，每次进入页面重新加载一遍购物车
       });
     }
-    wx.setStorageSync("cartList", existCart);
+    this.reloadCartByDiscount();
+    this.data.cartList = existCart;
+    this.data.packagePrice = packagePrice;
 
+    // 根据购物车，计算营销文本展示
     this.calcSaleText();
 
-    // 每次重新加载数据时，都重新更新一遍商户信息显示
-    var business = qcloud.getSession().business;
-    var submitText = "去结算",
+    // 更新商户信息
+    var business = qcloud.getSession().business,
+      submitText = "去结算",
       isBalance = true;
     if (business.isClose) {
       submitText = "已暂停营业";
@@ -226,32 +233,140 @@ Page({
     }
 
     this.setData({
-      submitText: submitText,
-      isBalance: isBalance,
-      business: business,
+      submitText,
+      isBalance,
+      business,
       freight: business.freight,
       logo: business.logoSrc,
-      productList: productArr,
-      menu: menuArr,
+      productList,
+      menu,
       cartList: existCart,
-      cartQuantity: cartQuantity
+      cartQuantity,
+      packagePrice
     });
-    // this.discountHandler();
-    // this.cartSync();
   },
+  // 折扣券处理
+  discountHandler: function () {
+    var products, productList = this.data.productList, menus = this.data.menu,
+      now = new Date(),
+      hour = now.getHours().toString(),
+      minus = now.getMinutes().toString(),
+      hourMinus = (hour.length > 1 ? hour : ("0" + hour)) + ":" + (minus.length > 1 ? minus : ("0" + minus)),
+      weekday = weekObj[now.getDay().toString()];
+    // 筛选出当前有效的优惠券
+    var validCoupon = [];
+    this.data.discount.forEach(function (item) {
+      if (!(weekday & item.cycle)) return; // 不在循环周期内
+      var isArea = false; // 是否在有效时间区间内
+      if (item.startTime1 <= hourMinus && item.endTime1 >= hourMinus) isArea = true;
+      else if (item.startTime2 <= hourMinus && item.endTime2 >= hourMinus) isArea = true;
+      else if (item.startTime3 <= hourMinus && item.endTime3 >= hourMinus) isArea = true;
+      if (!isArea) return;
+      validCoupon.push(item);
+    });
+
+    if (validCoupon.length === 0) return;
+    var discountProducts = [];
+    // 将商品与折扣券关联
+    validCoupon.forEach(function (coupon) {
+      products = productList.filter(a => a.id == coupon.productId);
+      if (products.length > 0) {
+        products[0].discount = coupon;
+        discountProducts.push(products[0]);
+        var productIndex = productList.indexOf(products[0]);
+        productList.splice(productIndex, 1);
+      }
+    });
+    // 如果折扣商品大于零
+    if(discountProducts.length > 0){
+      var menu = {name: "折扣优惠", id: 0, products: discountProducts};
+      menus.unshift(menu);
+      discountProducts.reverse().forEach(product => {
+        product.menuId = menu.id;
+        productList.unshift(product);
+      });
+    }
+  },
+  // 重新加载单个购物车的价格与名称（购物车加载，更新时均需要执行）
+  reloadCart: function (cart) {
+    var product = cart.product,
+      format = cart.format,
+      discount = product.discount;
+    if (discount) {
+      var oldQuantity = cart.quantity - discount.upperLimit, // 原价商品数量
+        amount = 0,
+        oldPrice = cart.quantity * discount.oldPrice;
+      if (oldQuantity > 0) {
+        amount += discount.upperLimit * discount.price;
+        amount += oldQuantity * discount.oldPrice;
+        cart.discountProductQuantity = discount.upperLimit;
+      } else {
+        amount = cart.quantity * discount.price;
+        cart.discountProductQuantity = cart.quantity;
+      }
+
+      cart.name = product.name;
+      cart.price = qcloud.utils.getNumber(amount, 2);
+      cart.saleProductDiscountId = discount.id;
+      cart.oldPrice = oldPrice;
+      cart.discount = discount;
+    } else {
+      cart.name = product.name;
+      cart.price = qcloud.utils.getNumber(format.price * cart.quantity, 2);
+      cart.oldPrice = cart.price;
+    }
+  },
+  // 因为商品折扣数量限制，重新计算购物车折扣数据（初次加载，购物车改变时均需要执行，同类规格计算）
+  reloadCartByDiscount: function () {
+    var carts = this.data.cartList;
+    if (carts.length === 0) return;
+    var groups = this.cartGroupByFormat(carts),
+      group, quantity, discount, limit;
+    for (var key in groups) {
+      group = groups[key];
+      if (group.length === 1) continue;
+      group.some(cart => {
+        discount = cart.discount;
+        return !!discount;
+      });
+      if (!discount) continue;
+      quantity = 0;
+      limit = discount.upperLimit;
+      group.forEach(cart => quantity += cart.quantity);
+      group.forEach(cart => {
+        if (limit <= 0) {
+          cart.saleProductDiscountId = null;
+          cart.discountProductQuantity = null;
+          cart.discount = null;
+          cart.price = cart.oldPrice;
+          return;
+        }
+        var count = limit - cart.quantity;
+        if (count < 0) {
+          cart.saleProductDiscountId = discount.id;
+          cart.discountProductQuantity = limit;
+          cart.discount = discount;
+          cart.price = discount.price * limit - count * discount.oldPrice;
+        }
+        limit = count;
+      });
+    }
+    wx.setStorageSync("cartList", this.data.cartList);
+  },
+  // 计算当前商户的营业状态
   calcBusinessStatus: function (start, end) {
-    var now = new Date(), nowStamp = Date.parse(now);
+    var now = new Date(),
+      nowStamp = Date.parse(now);
     var startTime = start.split(":");
     var endTime = end.split(":");
     var startStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +startTime[0], +startTime[1], 0));
     var endStamp = Date.parse(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +endTime[0], +endTime[1], 0));
     return nowStamp >= startStamp && nowStamp <= endStamp;
   },
+  // 提示用户领取优惠券
   couponHandler: function () {
     if (this.data.isClosedCoupon) return; // 如果已经关闭过优惠券窗口，则不再弹出
     if (!this.data.couponList || !this.data.myCoupon || !this.data.unreceived) return;
-    // var userinfo = qcloud.getSession().userinfo;
-    // if (!userinfo.isRegister) return; // 用户没有注册，则不弹出
 
     var self = this;
     this.data.couponList.forEach(a => {
@@ -267,50 +382,12 @@ Page({
       wx.hideTabBar();
     }
   },
-  discountHandler: function () {
-    if (!this.data.productList || !this.data.discount) return;
-    if (this.data.productList.length === 0 || this.data.discount.length === 0) return;
-    var self = this,
-      now = new Date(),
-      product, hour = now.getHours().toString(),
-      minus = now.getMinutes().toString(),
-      hourMinus = (hour.length > 1 ? hour : ("0" + hour)) + ":" + (minus.length > 1 ? minus : ("0" + minus)),
-      weekday = weekObj[now.getDay().toString()];
-    this.data.discount.forEach(function (item) {
-      if (!(weekday & item.cycle)) return; // 不在循环周期内
-      var isArea = false; // 是否在有效时间区间内
-      if (item.startTime1 <= hourMinus && item.endTime1 >= hourMinus) isArea = true;
-      else if (item.startTime2 <= hourMinus && item.endTime2 >= hourMinus) isArea = true;
-      else if (item.startTime3 <= hourMinus && item.endTime3 >= hourMinus) isArea = true;
-      if (!isArea) return;
-      product = self.data.productList.filter(a => a.id == item.productId);
-      if (product.length === 0) return;
-      product[0].discount = item;
-    });
-
-    this.setData({
-      productList: this.data.productList,
-    });
-    this.cartSync(); // 同步购物车商品
-  },
-  cartSync: function () {
-    var productList = this.data.productList,
-      cartList = this.data.cartList,
-      product;
-    if (!cartList || cartList.length === 0) return;
-    cartList.forEach(cart => {
-      product = productList.filter(a => a.id == cart.productId)[0];
-      cart.product = product;
-    });
-    this.setData({
-      cartList
-    });
-  },
   catLicense: function () {
     wx.navigateTo({
       url: "/pages/main/license/license"
     });
   },
+  // 查看商户地址
   catAddress: function () {
     var business = qcloud.getSession().business;
     wx.openLocation({
@@ -320,23 +397,21 @@ Page({
       address: business.address
     });
   },
+  // 拨打商户电话
   callPhone: function () {
     var business = qcloud.getSession().business;
     wx.makePhoneCall({
       phoneNumber: business.mobile
     });
   },
-  pullBar: function () {
-    this.setData({
-      pullBar: !this.data.pullBar
-    });
-  },
+  // 点击跳转选项卡
   turnPage: function (e) {
     this.setData({
       currentPage: e.currentTarget.dataset.index,
       isShowFoot: e.currentTarget.dataset.index == 0
     });
   },
+  // 滑动跳转选项卡
   turnTitle: function (e) {
     if (e.detail.source == "touch") {
       this.setData({
@@ -345,6 +420,7 @@ Page({
       });
     }
   },
+  // 点击类别跳转到指定的商品
   turnMenu: function (e) {
     var menu = this.data.menu[e.currentTarget.dataset.index];
     var currentToView = "scroll_" + menu.id + '_0';
@@ -353,12 +429,14 @@ Page({
       foodToView: currentToView
     });
   },
+  // 关闭购物车
   closeCartDialog: function () {
     this.showCartAnimation(false);
   },
   showCart: function () {
     this.showCartAnimation(!this.data.showCart);
   },
+  // 清空购物车
   clearCart: function (e) {
     var self = this;
     var session = qcloud.getSession();
@@ -367,14 +445,7 @@ Page({
       method: "DELETE",
       success: function (res) {
         if (res.data.success) {
-          self.data.productList.forEach(a => a.quantity = 0);
-          wx.setStorageSync("cartList", []);
-          self.setData({
-            productList: self.data.productList,
-            cartList: [],
-            curQuantity: 0,
-            cartQuantity: 0
-          });
+          self.reset();
         } else {
           util.showModel("提示", res.data.msg);
         }
@@ -385,6 +456,20 @@ Page({
       }
     });
   },
+  // 所有数据还原
+  reset: function () {
+    var productList = this.data.productList;
+    productList.forEach(a => a.quantity = 0);
+    wx.removeStorageSync("cartList");
+    this.setData({
+      productList,
+      cartList: [],
+      curQuantity: 0,
+      cartQuantity: 0,
+      packagePrice: 0
+    });
+  },
+  // 滚动商品列表时，自动切换商品类别选择状态
   scrollFoodList: function (e) {
     var menus = this.data.menu,
       self = this;
@@ -410,50 +495,14 @@ Page({
         }
       });
     }).exec();
-
   },
-  showFoodDetail: function () {
-
-  },
+  // 控制购物车的显示与隐藏
   showCartAnimation: function (isShow) {
     this.setData({
       showCart: isShow
     });
-    // var animation = wx.createAnimation({
-    //   duration: 200,
-    //   timingFunction: "ease-out",
-    //   delay: 0
-    // });
-
-    // this.animation = animation;
-
-    // animation.opacity(0).translateX(-100).step();
-
-    // this.setData({
-    //   animationData: animation.export()
-    // })
-
-    // setTimeout(function () {
-
-    //   animation.opacity(1).translateX(0).step();
-
-    //   this.setData({
-    //     animationData: animation
-    //   })
-
-    //   if (!isShow) {
-    //     this.setData({
-    //       showCart: false
-    //     });
-    //   }
-    // }.bind(this), 200)
-
-    // if (isShow) {
-    //   this.setData({
-    //     showCart: true
-    //   });
-    // }
   },
+  // 支付
   pay: function () {
     if (!this.data.isBalance) {
       return;
@@ -462,11 +511,14 @@ Page({
       util.showError("请选择需要的商品再结算");
       return;
     }
+    wx.setStorageSync("packagePrice", this.data.packagePrice);
+    wx.setStorageSync("cartList", this.data.cartList);
     wx.navigateTo({
       url: '/pages/pay/pay'
     });
   },
-  showFormat: function (e) { // 显示规格、属性选择框
+  // 显示规格、属性选择框
+  showFormat: function (e) {
     var index = !!e ? e.currentTarget.dataset.index : this.data.productIndex;
     this.data.productIndex = index;
     this.setData({
@@ -475,19 +527,22 @@ Page({
       productIndex: index
     });
   },
+  // 在订单详情里选择规格
   showFormatAtDetail: function () {
     this.setData({
       isShowProductDetail: false
     });
     this.showFormat();
   },
-  closeFormat: function () { // 关闭规格、属性选择框
+  // 关闭规格、属性选择框
+  closeFormat: function () {
     this.setData({
       showDetail: false
     });
   },
-  attch1: function(){},
-  add: function (e) { // 添加商品
+  attch1: function () {}, // 不要删除，有用
+  // 加入购物车
+  add: function (e) {
     var user = qcloud.getSession().userinfo;
     if (!user.isRegister) {
       wx.showModal({
@@ -529,12 +584,14 @@ Page({
       productIndex: this.data.productIndex
     });
   },
+  // 在商品详情页中添加购物车
   addAtDetail: function () {
     this.setData({
       isShowProductDetail: false
     });
     this.add();
   },
+  // 删除购物车
   remove: function (e) {
     var index = e.currentTarget.dataset.index;
     if (Object.prototype.toString.call(index) == "[object Number]") {
@@ -549,7 +606,8 @@ Page({
       productIndex: this.data.productIndex
     });
   },
-  selectFormat: function (e) { // 选择规格事件
+  // 选择规格
+  selectFormat: function (e) {
     var product = this.data.productList[this.data.productIndex]; // 取到列表中的产品对象
     product.formats.forEach(a => a.selected = false);
     var format = product.formats[e.currentTarget.dataset.index];
@@ -560,7 +618,8 @@ Page({
       curQuantity: this.calcQuantity()
     });
   },
-  selectAttribute: function (e) { // 选择属性事件
+  // 选择属性
+  selectAttribute: function (e) {
     var product = this.data.productList[this.data.productIndex]; // 取到列表中的产品对象
     var attr = product.attributes[e.currentTarget.dataset.num],
       i = 1,
@@ -577,10 +636,14 @@ Page({
       curQuantity: this.calcQuantity()
     });
   },
-  addCart: function (e) { // 增加购物车数量
+  // 在购物车中增加同类商品数量
+  addCart: function (e) {
     var index = e.currentTarget.dataset.index,
       self = this,
       cart = this.data.cartList[index],
+      product = this.data.productList.filter(a => a.id == cart.productId)[0],
+      productQuantity = product.quantity,
+      packagePrice = self.data.packagePrice,
       quantity = cart.quantity + 1;
     qcloud.request({
       url: "/user/updateCart/" + cart.id + "?quantity=" + quantity,
@@ -588,14 +651,14 @@ Page({
       success: function (res) {
         if (res.data.success) {
           cart.quantity = quantity;
-          var product = self.data.productList.filter(a => a.id == cart.productId);
-          if (product && product.length > 0) {
-            product[0].quantity++;
-          }
-          wx.setStorageSync("cartList", self.data.cartList);
+          product.quantity = productQuantity + 1;
+          packagePrice += cart.format.packingPrice;
+          self.reloadCart(cart);
+          self.reloadCartByDiscount();
           self.setData({
             productList: self.data.productList,
             cartList: self.data.cartList,
+            packagePrice
           });
           self.calcCartQuantity();
         } else {
@@ -607,11 +670,15 @@ Page({
       }
     });
   },
-  removeCart: function (e) { // 减少购物车数量                 // 增加购物车数量
+  // 在购物车中减少同类商品数量
+  removeCart: function (e) {
     var index = e.currentTarget.dataset.index,
       self = this,
       cart = this.data.cartList[index],
-      quantity = cart.quantity - 1;
+      quantity = cart.quantity - 1,
+      product = this.data.productList.filter(a => a.id == cart.productId)[0],
+      productQuantity = product.quantity,
+      packagePrice = this.data.packagePrice;
     qcloud.request({
       url: "/user/updateCart/" + cart.id + "?quantity=" + quantity,
       method: "GET",
@@ -620,15 +687,16 @@ Page({
           cart.quantity = quantity;
           if (quantity <= 0) {
             self.data.cartList.splice(index, 1);
+          } else {
+            self.reloadCart(cart);
           }
-          var product = self.data.productList.filter(a => a.id == cart.productId);
-          if (product && product.length > 0) {
-            product[0].quantity--;
-          }
-          wx.setStorageSync("cartList", self.data.cartList);
+          product.quantity = productQuantity - 1;
+          packagePrice -= cart.format.packingPrice;
+          self.reloadCartByDiscount();
           self.setData({
             productList: self.data.productList,
             cartList: self.data.cartList,
+            packagePrice
           });
           self.calcCartQuantity();
         } else {
@@ -640,6 +708,7 @@ Page({
       }
     });
   },
+  // 领取优惠券
   openCoupon: function () {
     if (!this.data.unreceived || this.data.unreceived.length == 0) return;
     var ids = this.data.unreceived.map(a => a.id);
@@ -663,6 +732,7 @@ Page({
       }
     });
   },
+  // 关闭优惠券窗口
   closeCoupon: function () {
     this.setData({
       isShowCoupon: false,
@@ -670,6 +740,7 @@ Page({
     });
     wx.showTabBar();
   },
+  // 打开商品详情
   productDetail: function (e) {
     var index = e.currentTarget.dataset.index,
       self = this;
@@ -696,11 +767,13 @@ Page({
       });
     }, 100);
   },
+  // 关闭商品详情
   closeProduct: function () {
     this.setData({
       isShowProductDetail: false
     });
   },
+
   // 以下均为方法，不代表各类事件
   cartHandler: function (flag) {
     var self = this,
@@ -708,15 +781,18 @@ Page({
       cart, // 购物车
       cartIndex = -1, // 当前选择的购物车在列表中的序号
       description = "", // 购物车描述
-      format; // 选中的规格
+      format = product.formats.filter(a => a.selected)[0], // 选中的规格
+      packagePrice = this.data.packagePrice; // 当前包装费
 
-    if (flag === "add") product.quantity++;
-    else product.quantity--;
-
-    format = product.formats.filter(a => a.selected)[0];
+    if (flag === "add") {
+      product.quantity++;
+      packagePrice += format.packingPrice;
+    } else {
+      product.quantity--;
+      packagePrice -= format.packingPrice;
+    }
     // 处理购物车描述
     description = this.calcDescription(product);
-
     // 处理购物车
     this.data.cartList.forEach((obj, index) => {
       if (obj.productId === product.id && obj.description === description) {
@@ -727,26 +803,34 @@ Page({
     });
     if (!cart) { // 不存在相同的购物车信息
       var imgSrc = product.images.length > 0 ? (product.images[0].name + "." + product.images[0].extensionName) : null;
+      var discount = product.discount;
       cart = {
         name: product.name,
         src: imgSrc,
         quantity: 1,
-        price: qcloud.utils.getNumber(format.price + format.packingPrice, 2),
         productId: product.id,
         product: product,
         formatId: format.id,
+        format: format,
         packingQuantity: format.packingQuantity,
+        saleProductDiscountId: discount ? discount.id : null,
         description: description,
         userId: qcloud.getSession().userinfo.id,
         businessId: config.businessId
       };
+      if(discount) {
+        util.showError("折扣商品不参与满减活动");
+      }
       this.data.cartList.push(cart);
     } else {
       if (flag === "add") cart.quantity++;
       else cart.quantity--;
     }
+    this.reloadCart(cart);
     var cartClone = qcloud.utils.extend({}, cart);
     cartClone.product = null;
+    cartClone.discount = null;
+    cartClone.format = null;
     // 请求服务器
     qcloud.request({
       url: "/user/carthandler",
@@ -757,10 +841,11 @@ Page({
         if (cart.quantity <= 0) {
           self.data.cartList.splice(cartIndex, 1);
         }
-        wx.setStorageSync("cartList", self.data.cartList);
+        self.reloadCartByDiscount();
         self.setData({
           productList: self.data.productList,
-          cartList: self.data.cartList
+          cartList: self.data.cartList,
+          packagePrice
         });
         self.calcCartQuantity();
       },
@@ -769,7 +854,8 @@ Page({
       }
     });
   },
-  calcQuantity: function () { // 选择规格或属性时，计算当前已经添加同类商品的数量
+  // 选择规格或属性时，计算当前已经添加同类商品的数量
+  calcQuantity: function () {
     var description = this.calcDescription(),
       productId = this.data.productList[this.data.productIndex].id,
       cart = this.data.cartList.filter(a => a.description == description && a.productId == productId);
@@ -778,7 +864,8 @@ Page({
     }
     return 0;
   },
-  calcDescription: function (product) { // 拿到商品的规格、属性组合
+  // 拿到商品的规格、属性组合
+  calcDescription: function (product) {
     product = product || this.data.productList[this.data.productIndex];
     var format = product.formats.filter(a => a.selected)[0],
       attrs = product.attributes,
@@ -797,6 +884,7 @@ Page({
     }
     return description;
   },
+  // 计算购物车商品总数和满减显示文本
   calcCartQuantity: function () {
     var cartQuantity = 0;
     this.data.cartList.forEach(a => cartQuantity += a.quantity);
@@ -805,21 +893,17 @@ Page({
     });
     this.calcSaleText();
   },
+  // 根据购物车内容，计算满减活动的文本
   calcSaleText: function () {
-    var cartList = this.data.cartList,
-      self = this,
-      fullReduceList = this.data.fullReduceList.slice(),
+    var fullReduceList = this.data.fullReduceList.slice(),
       nowItem;
-    wx.removeStorageSync("nowFullReduce");
-    if (cartList.length === 0 || fullReduceList.length === 0) return;
+    wx.removeStorageSync("nowFullReduce"); // 移除当前实现的满减活动
+    if (this.data.cartList.length === 0 || fullReduceList.length === 0) return;
+    // 折扣商品不参与满减
     var total = 0,
       list = fullReduceList.reverse(),
       text = "";
-    cartList.forEach(function (a) {
-      // total += a.quantity * a.price;
-      total += self.calcCartProductPrice(a);
-    });
-    total = qcloud.utils.getNumber(total, 2);
+    total = qcloud.utils.getNumber(this.fullAmount() + this.data.packagePrice, 2);
     list.some(function (item, index) {
       if (total >= item.minPrice) {
         text += "已满" + item.minPrice + "元，结算减" + item.reduceMoney + "元";
@@ -841,18 +925,53 @@ Page({
       saleText: text
     });
   },
-  calcCartProductPrice: function (cart) {
-    var price = cart.price,
-      quantity = cart.quantity,
-      product = cart.product,
-      discount = product.discount;
-    if (!discount) return price * quantity;
-    if (discount.upperLimit == -1) {
-      return discount.price * quantity;
+  // 计算购物车参与满减的价格（折扣商品不参与满减）
+  fullAmount: function () {
+    var carts = this.data.cartList;
+    if (carts.length === 0) return;
+    // 按规格分组
+    var groups = this.cartGroupByFormat(carts);
+    // 计算总额
+    var arr, quantity, amount = 0,
+      overQuantity;
+    for (var key in groups) {
+      arr = groups[key];
+      quantity = 0;
+      if (!arr[0].discount) {
+        arr.forEach(function (cart) {
+          amount += cart.price;
+        });
+        continue;
+      }
+      arr.forEach(function (cart) {
+        quantity += cart.quantity;
+      });
+      overQuantity = quantity - arr[0].discount.upperLimit;
+      if (overQuantity > 0) {
+        amount += overQuantity * arr[0].discount.oldPrice;
+      }
     }
-    if (discount.upperLimit >= quantity) {
-      return discount.price * quantity;
+    return amount;
+  },
+  cartGroupByFormat: function (carts) {
+    var groups = {};
+    carts.forEach(function (cart) {
+      var group = groups[cart.formatId];
+      if (group) {
+        group.push(cart);
+      } else {
+        group = [cart];
+        groups[cart.formatId] = group;
+      }
+    });
+    return groups;
+  },
+  // 找到购物车中对应商品的规格
+  findCartFormat: function (cart, product) {
+    if (product.formats.length == 1) {
+      return product.formats[0];
+    } else {
+      return product.formats.filter(a => a.name == cart.description.split("|")[0])[0];
     }
-    return (quantity - discount.upperLimit) * price + discount.upperLimit * discount.price;
   }
 });

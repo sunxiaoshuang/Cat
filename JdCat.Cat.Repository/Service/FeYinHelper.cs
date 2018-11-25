@@ -39,10 +39,10 @@ namespace JdCat.Cat.Repository.Service
         /// <summary>
         /// 获取token令牌
         /// </summary>
-        public async Task<FeyinModel> GetToken()
+        public async Task<FeyinModel> GetTokenAsync()
         {
             var url = $"https://api.open.feyin.net/token?code={_memberCode}&secret={_apiKey}";
-            var result = await Request(url, method: "get", isToken: false);
+            var result = await RequestAsync(url, method: "get", isToken: false);
             Token = result.Access_Token;
             return result;
         }
@@ -50,7 +50,7 @@ namespace JdCat.Cat.Repository.Service
         /// <summary>
         /// 打印小票
         /// </summary>
-        public async Task<FeyinModel> Print(string device_no, Order order, Business business = null)
+        public async Task<FeyinModel> PrintAsync(string device_no, Order order, Business business = null)
         {
             var url = $"https://api.open.feyin.net/msg";
             var businessName = business == null ? "简单猫外卖" : business.Name;
@@ -119,7 +119,7 @@ namespace JdCat.Cat.Repository.Service
                         price = " " + price;
                     }
                     content.Append($"<Font# Bold=1 Width=1 Height=1>{name + quantity + price}</Font#>\n");
-                    if(!string.IsNullOrEmpty(cutName))
+                    if (!string.IsNullOrEmpty(cutName))
                     {
                         content.Append($"<Font# Bold=1 Width=1 Height=1>{cutName}</Font#>\n");
                     }
@@ -128,35 +128,61 @@ namespace JdCat.Cat.Repository.Service
                         content.Append($"<Font# Bold=0 Width=1 Height=1>（{product.Description}）</Font#>\n");
                     }
                 }
-                content.Append("--------------其他--------------\n");
-                content.Append($"<left>{UtilHelper.PrintLineLeftRight("配送费", Convert.ToDouble(order.Freight.Value) + "")}\n");
-                if (order.SaleCouponUser != null)
-                {
-                    content.Append($"{UtilHelper.PrintLineLeftRight("[" + order.SaleCouponUser.Name + "]", "-￥" + Convert.ToDouble(order.SaleCouponUser.Value) + "")}\n");
-                }
-                if (order.SaleFullReduce != null)
-                {
-                    content.Append($"{UtilHelper.PrintLineLeftRight("[" + order.SaleFullReduce.Name + "]", "-￥" + Convert.ToDouble(order.SaleFullReduce.ReduceMoney) + "")}\n");
-                }
-                content.Append("--------------------------------\n");
-                if (order.SaleFullReduce != null)
-                {
-                    content.Append($"<right>原价：{Convert.ToDouble(order.OldPrice.Value)}元\n");
-                }
-                content.Append($"<right>实付：<Font# Bold=1 Width=2 Height=2>{Convert.ToDouble(order.Price)}元</Font#>\n");
-                content.Append("********************************\n");
-                content.Append($"<left><Font# Bold=1 Width=2 Height=2>{order.ReceiverAddress}</Font#>\n");
-                content.Append($"<Font# Bold=1 Width=2 Height=2>{order.Phone}</Font#>\n");
-                content.Append($"<Font# Bold=1 Width=2 Height=2>{order.ReceiverName}</Font#>\n");
-                content.Append($"<center>***********<Font# Bold=1 Width=2 Height=2>#{order.Identifier}</Font#>完***********\n");
             }
+            content.Append("--------------其他--------------\n");
+            if (order.PackagePrice.HasValue)
+            {
+                content.Append($"<left>{UtilHelper.PrintLineLeftRight("包装费", order.PackagePrice.Value + "")}\n");
+            }
+            content.Append($"<left>{UtilHelper.PrintLineLeftRight("配送费", Convert.ToDouble(order.Freight.Value) + "")}\n");
+            if (order.SaleCouponUser != null)
+            {
+                content.Append($"{UtilHelper.PrintLineLeftRight("[" + order.SaleCouponUser.Name + "]", "-￥" + Convert.ToDouble(order.SaleCouponUser.Value) + "")}\n");
+            }
+            if (order.SaleFullReduce != null)
+            {
+                content.Append($"{UtilHelper.PrintLineLeftRight("[" + order.SaleFullReduce.Name + "]", "-￥" + Convert.ToDouble(order.SaleFullReduce.ReduceMoney) + "")}\n");
+            }
+            content.Append("--------------------------------\n");
+            if (order.SaleFullReduce != null)
+            {
+                content.Append($"<right>原价：{Convert.ToDouble(order.OldPrice.Value)}元\n");
+            }
+            content.Append($"<right>实付：<Font# Bold=1 Width=2 Height=2>{Convert.ToDouble(order.Price)}元</Font#>\n");
+            content.Append("********************************\n");
+            content.Append($"<left><Font# Bold=1 Width=2 Height=2>{order.ReceiverAddress}</Font#>\n");
+            content.Append($"<Font# Bold=1 Width=2 Height=2>{order.Phone}</Font#>\n");
+            content.Append($"<Font# Bold=1 Width=2 Height=2>{order.GetUserCall()}</Font#>\n");
+            content.Append($"<center>***********<Font# Bold=1 Width=2 Height=2>#{order.Identifier}</Font#>完***********\n");
 
-            return await Request(url, new
+
+            return await RequestAsync(url, new
             {
                 device_no,
                 msg_no = Guid.NewGuid().ToString(),//order.OrderCode,
                 appid = appId,
                 msg_content = content.ToString()
+            });
+        }
+        /// <summary>
+        /// 打印提示信息
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="device_no"></param>
+        /// <returns></returns>
+        public async Task<FeyinModel> PrintAsync(string content, string device_no)
+        {
+            var url = $"https://api.open.feyin.net/msg";
+            var str = string.Empty;
+            str += "**************通知**************\n";
+            str += "<left><Font# Bold=1 Width=2 Height=2>简单猫提示您：</Font#>\n" + $"<Font# Bold=1 Width=2 Height=2>{content}</Font#>\n\n";
+            str += "********************************\n";
+            return await RequestAsync(url, new
+            {
+                device_no,
+                msg_no = Guid.NewGuid().ToString(),
+                appid = appId,
+                msg_content = str.ToString()
             });
         }
 
@@ -170,18 +196,18 @@ namespace JdCat.Cat.Repository.Service
         /// <summary>
         /// 绑定设备
         /// </summary>
-        public async Task<FeyinModel> BindDevice(string device_no)
+        public async Task<FeyinModel> BindDeviceAsync(string device_no)
         {
             var url = $"https://api.open.feyin.net/device/{device_no}/bind";
-            return await Request(url);
+            return await RequestAsync(url);
         }
         /// <summary>
         /// 解除设备
         /// </summary>
-        public async Task<FeyinModel> UnBindDevice(string device_no)
+        public async Task<FeyinModel> UnBindDeviceAsync(string device_no)
         {
             var url = $"https://api.open.feyin.net/device/{device_no}/unbind";
-            return await Request(url);
+            return await RequestAsync(url);
         }
         /// <summary>
         /// 发送请求
@@ -189,7 +215,7 @@ namespace JdCat.Cat.Repository.Service
         /// <param name="url"></param>
         /// <param name="p"></param>
         /// <returns></returns>
-        private async Task<FeyinModel> Request(string url, object p = null, string method = "post", bool isToken = true)
+        private async Task<FeyinModel> RequestAsync(string url, object p = null, string method = "post", bool isToken = true)
         {
             var api = url;
             if (isToken)
@@ -218,10 +244,10 @@ namespace JdCat.Cat.Repository.Service
                 // 如果返回的结果是40014【token不存在或已过期】，则重新请求服务器得到Token
                 if (ret.ErrCode == 40014)
                 {
-                    var tokenResult = await GetToken();
-                    if(tokenResult.ErrCode == null || tokenResult.ErrCode == 0)
+                    var tokenResult = await GetTokenAsync();
+                    if (tokenResult.ErrCode == null || tokenResult.ErrCode == 0)
                     {
-                        return await Request(url, p, method);
+                        return await RequestAsync(url, p, method);
                     }
                     return tokenResult;
                 }

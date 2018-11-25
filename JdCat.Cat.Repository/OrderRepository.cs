@@ -41,6 +41,11 @@ namespace JdCat.Cat.Repository
         public JsonData CreateOrder(Order order)
         {
             var result = new JsonData();
+            if (order.ReceiverAddress.Contains("undefined"))
+            {
+                result.Msg = "请选择收货地址";
+                return result;
+            }
             var business = Context.Businesses.Single(a => a.ID == order.BusinessId);
             if (business.IsClose)
             {
@@ -266,6 +271,7 @@ namespace JdCat.Cat.Repository
         {
             var order = Context.Orders
             .Include(a => a.Business)
+            .Include(a => a.User)
             .Include(a => a.Products)
             .Include(a => a.SaleFullReduce)
             .Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
@@ -276,6 +282,7 @@ namespace JdCat.Cat.Repository
                 order.WxPayCode = ret.transaction_id;
                 order.PayTime = DateTime.Now;
                 order.Status = OrderStatus.Payed;
+                order.User.PurchaseTimes++;
                 Context.SaveChanges();
                 return order;
             }
@@ -298,11 +305,16 @@ namespace JdCat.Cat.Repository
             {
                 return await PrintFeyin(order, device, business);
             }
-            else
+            else if (device.Type == PrinterType.Yilianyue)
             {
                 return await PrintYilianyun(order, device, business);
             }
+            else
+            {
+                return await PrintFeie(order, device, business);
+            }
         }
+
         /// <summary>
         /// 飞印打印
         /// </summary>
@@ -312,24 +324,30 @@ namespace JdCat.Cat.Repository
         /// <returns></returns>
         private async Task<string> PrintFeyin(Order order, FeyinDevice device, Business business)
         {
-            var token = string.Empty;
-            // 记录token
-            if (FeyinTokenDic.ContainsKey(order.BusinessId.Value))
-            {
-                token = FeyinTokenDic[order.BusinessId.Value];
-            }
-            else
-            {
-                FeyinTokenDic.Add(business.ID, "");
-            }
+            var token = GetFeyinToken(business);
             var printHelper = new FeYinHelper { ApiKey = business.FeyinApiKey, MemberCode = business.FeyinMemberCode, Token = token };
-            var ret = await printHelper.Print(device.Code, order, business);
+            var ret = await printHelper.PrintAsync(device.Code, order, business);
             if (token != printHelper.Token)
             {
                 FeyinTokenDic[business.ID] = printHelper.Token;
             }
             return JsonConvert.SerializeObject(ret);
         }
+        private string GetFeyinToken(Business business)
+        {
+            var token = string.Empty;
+            // 记录token
+            if (FeyinTokenDic.ContainsKey(business.ID))
+            {
+                token = FeyinTokenDic[business.ID];
+            }
+            else
+            {
+                FeyinTokenDic.Add(business.ID, "");
+            }
+            return token;
+        }
+
         /// <summary>
         /// 易联云打印
         /// </summary>
@@ -340,13 +358,49 @@ namespace JdCat.Cat.Repository
         private async Task<string> PrintYilianyun(Order order, FeyinDevice device, Business business)
         {
             var helper = YlyHelper.GetHelper();
-            var res = await helper.Print(order, device, business);
+            var res = await helper.PrintAsync(order, device, business);
+            return res;
+        }
+
+        private async Task<string> PrintFeie(Order order, FeyinDevice device, Business business)
+        {
+            var helper = FeieHelper.GetHelper();
+            var res = await helper.PrintAsync(order, device, business);
             return res;
         }
 
         public Order GetOrderByCode(string code)
         {
             return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == code);
+        }
+
+        public void QuarySetMealProduct(IEnumerable<OrderProduct> products)
+        {
+            var arr = new List<int>();
+            foreach (var item in products)
+            {
+                var ids = item.ProductIdSet.Split(',').Select(b => int.Parse(b));
+                if (ids.Count() == 0) continue;
+                foreach (var id in ids)
+                {
+                    if (arr.Contains(id)) continue;
+                    arr.Add(id);
+                }
+                item.Tag1 = ids;
+            }
+            var productList = Context.Products.AsNoTracking().Where(a => arr.Contains(a.ID));
+            foreach (var item in products)
+            {
+                if (item.Tag1 == null) continue;
+                var productArr = new List<Product>();
+                foreach (var id in (IEnumerable<int>)item.Tag1)
+                {
+                    var product = productList.FirstOrDefault(b => b.ID == id);
+                    if (product == null) continue;
+                    productArr.Add(product);
+                }
+                item.Tag1 = productArr;
+            }
         }
 
         public DWDStore GetDwdShop(int businessId)
@@ -412,6 +466,7 @@ namespace JdCat.Cat.Repository
             }
             Context.SaveChanges();
         }
+
         public async Task<JsonData> Invoice(Order order)
         {
             switch (order.LogisticsType)
@@ -420,6 +475,10 @@ namespace JdCat.Cat.Repository
                     return await DadaHandler(order);
                 case LogisticsType.Dianwoda:
                     return await DwdHandler(order);
+                case LogisticsType.Fengniao:
+                    return null;
+                case LogisticsType.Meituan:
+                    return null;
                 case LogisticsType.Self:
                     return SelfHandler(order);
                 default:
@@ -430,9 +489,9 @@ namespace JdCat.Cat.Repository
 
         public async Task<JsonData> EstimateFreight(int businessId, double lat, double lng, string address)
         {
-            var result = new JsonData { Success = true};
+            var result = new JsonData { Success = true };
             var store = Context.DWDStores.FirstOrDefault(a => a.BusinessId == businessId);
-            if(store != null)
+            if (store != null)
             {
                 var helper = DwdHelper.GetHelper();
                 var ret = await helper.CostAsync(lng, lat, address, store);
@@ -495,6 +554,7 @@ namespace JdCat.Cat.Repository
             };
             return result;
         }
+
         /// <summary>
         /// 点我达配送
         /// </summary>
@@ -512,6 +572,17 @@ namespace JdCat.Cat.Repository
             }
             order.Business.DWDStore = shop;
             var back = await helper.SendOrderAsync(order, order.Business);
+
+            // 每次发单后，均检查点我达余额，如果不足20元，则通过打印机提示用户
+            var balance = await helper.GetBalanceAsync(shop.external_shopid);
+            if (balance.errorCode == "0")
+            {
+                if (balance.result.balance < 2000)
+                {
+                    PrintBalanceTipsAsync($"您的点我达账户余额为：{((double)balance.result.balance) / 100}，请及时充值，余额不足时，配送服务将不可用", order.Business);
+                }
+            }
+
             // 发送订单未成功
             if (!back.success)
             {
@@ -524,7 +595,7 @@ namespace JdCat.Cat.Repository
                 return result;
             }
             // 订单发送成功后，调用接口获取当前订单的配送费，并写入订单信息中
-            var priceResult = await helper.GetOrderPrice(helper.GetOrderCode(order));
+            var priceResult = await helper.GetOrderPriceAsync(helper.GetOrderCode(order));
             if (priceResult.success)
             {
                 order.CallbackCost = priceResult.result.receivable_price / 100;
@@ -544,6 +615,7 @@ namespace JdCat.Cat.Repository
             };
             return result;
         }
+
         /// <summary>
         /// 自己配送
         /// </summary>
@@ -565,6 +637,38 @@ namespace JdCat.Cat.Repository
                     Status = OrderStatus.Distribution,
                 }
             };
+        }
+
+        /// <summary>
+        /// 打印配送服务余额不足的提示
+        /// </summary>
+        /// <param name="business"></param>
+        private async void PrintBalanceTipsAsync(string content, Business business)
+        {
+            var device = Context.FeyinDevices.FirstOrDefault(a => a.BusinessId == business.ID && a.IsDefault);
+            if (device == null) return;
+            switch (device.Type)
+            {
+                case PrinterType.Feyin:
+                    var feyin = new FeYinHelper() { ApiKey = business.FeyinApiKey, MemberCode = business.FeyinMemberCode, Token = GetFeyinToken(business) };
+                    await feyin.PrintAsync(content, device.Code);
+                    break;
+                case PrinterType.Yilianyue:
+                    var yly = YlyHelper.GetHelper();
+                    await yly.PrintAsync(content, device);
+                    break;
+                case PrinterType.Feie:
+                    var feie = FeieHelper.GetHelper();
+                    await feie.PrintAsync(content, device);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void Print(Business business)
+        {
+            PrintBalanceTipsAsync("的点点滴滴所多所多", business);
         }
 
     }

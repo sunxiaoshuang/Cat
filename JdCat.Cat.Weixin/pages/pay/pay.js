@@ -3,7 +3,7 @@ const util = require("../../utils/util");
 
 Page({
   data: {
-    address: {},
+    address: "",
     cartList: [],
     freight: 0,
     total: 0,
@@ -14,24 +14,44 @@ Page({
     tablewareQuantitys: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     couponQuantity: 0,
     coupon: {},
-    saleFullReduce: {}
+    saleFullReduce: {},
+    packagePrice: 0
   },
   onLoad: function () {
-    wx.setNavigationBarTitle({
-      title: "订单下单"
-    });
     /** 页面加载时操作：
      * 1. 查询购物车信息
-     * 2. 计算购物车总价格，餐盒数
-     * 3. 计算出可使用的优惠券
-     * 4. 初始化配送费
+     * 2. 将购物车中折扣商品与原价商品分开
+     * 3. 计算购物车总价格，餐盒数
+     * 4. 计算出可使用的优惠券
+     * 5. 初始化配送费
      */
-    var cartList = wx.getStorageSync('cartList') || [],
+    var cartList = wx.getStorageSync('cartList') || [], carts = [],
       business = qcloud.getSession().business,
       productCost = 0,
-      tablewareQuantity = 0;
-    cartList.forEach(a => {
-      productCost += a.price * a.quantity;
+      tablewareQuantity = 0,
+      packagePrice = +wx.getStorageSync("packagePrice");
+    
+    cartList.forEach(cart => {
+      if(cart.discount && cart.discountProductQuantity < cart.quantity) {   // 当商品存在折扣，商品数量大于折扣商品数量时
+        var discountProduct = qcloud.utils.extend({}, cart);
+        discountProduct.quantity = cart.discountProductQuantity;
+        discountProduct.price = +(cart.discount.price * discountProduct.quantity).toFixed(2);
+        discountProduct.oldPrice = +(cart.discount.oldPrice * discountProduct.quantity).toFixed(2);
+        carts.push(discountProduct);
+        var oldProduct = qcloud.utils.extend({}, cart);
+        oldProduct.discountProductQuantity = null;
+        oldProduct.discount = null;
+        oldProduct.quantity = cart.quantity - cart.discountProductQuantity;
+        oldProduct.price = +(oldProduct.quantity * cart.discount.oldPrice).toFixed(2);
+        oldProduct.oldPrice = oldProduct.price;
+        carts.push(oldProduct);
+        return;
+      }
+      carts.push(cart);
+    });
+
+    carts.forEach(a => {
+      productCost += a.price;
       tablewareQuantity += a.packingQuantity * a.quantity;
     });
 
@@ -47,11 +67,12 @@ Page({
     var freight = business.freightMode == 1 ? 0 : business.freight;
 
     this.setData({
-      cartList,
+      cartList: carts,
       tablewareQuantity,
       freight,
       couponQuantity: coupons.length,
-      saleFullReduce: this.data.saleFullReduce
+      saleFullReduce: this.data.saleFullReduce,
+      packagePrice
     });
   },
   onShow: function () {
@@ -66,7 +87,7 @@ Page({
     var coupon = wx.getStorageSync("selectCoupon") || {};
     wx.removeStorageSync("selectCoupon"); // 载入之后删除缓存
 
-    var address = wx.getStorageSync("selectAddress") || {},
+    var address = wx.getStorageSync("selectAddress") || "",
       oldAddress = this.data.address;
     this.setData({
       address,
@@ -95,8 +116,8 @@ Page({
       fullReduce = this.data.saleFullReduce.reduceMoney || 0,
       coupon = this.data.coupon.value || 0;
 
-    var total = qcloud.utils.getNumber(productCost + freight - fullReduce - coupon, 2);
-    var oldPrice = qcloud.utils.getNumber(productCost + freight, 2);
+    var total = qcloud.utils.getNumber(productCost + freight - fullReduce - coupon + this.data.packagePrice, 2);
+    var oldPrice = qcloud.utils.getNumber(productCost + freight + this.data.packagePrice, 2);
     this.setData({
       total,
       freight,
@@ -144,6 +165,7 @@ Page({
       lat: this.data.address.lat,
       lng: this.data.address.lng,
       phone: this.data.address.phone,
+      gender: this.data.address.gender,
       remark: this.data.remark,
       tablewareQuantity: this.data.tablewareQuantity,
       cityCode: business.cityCode,
@@ -155,7 +177,8 @@ Page({
       saleCouponUserMoney: this.data.coupon.value,
       products: [],
       openId: user.openId,
-      distance: +distance.toFixed(0)
+      distance: +distance.toFixed(0),
+      packagePrice: +this.data.packagePrice
     };
     
     this.data.cartList.forEach(a => {
@@ -166,7 +189,12 @@ Page({
         src: a.src,
         description: a.description,
         productId: a.productId,
-        formatId: a.formatId
+        formatId: a.formatId,
+        saleProductDiscountId: a.saleProductDiscountId,
+        discountProductQuantity: a.discountProductQuantity,
+        oldPrice: a.oldPrice,
+        feature: a.product.feature,
+        productIdSet: a.product.productIdSet
       });
     });
     qcloud.request({

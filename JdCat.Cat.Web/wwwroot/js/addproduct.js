@@ -2,9 +2,11 @@
 (function ($) {
 
     // 修改实体对象过滤
-    var imgsrc = null;
-    if (!!pageData.entity) {
-        pageData.entity.attributes.forEach(function(obj) {
+    var imgsrc = null,
+        selectTemplate, // 选择套餐的模版
+        productTypes;   // 套餐可选择的产品类型列表
+    if (pageData.entity) {
+        pageData.entity.attributes.forEach(function (obj) {
             obj.container = {
                 list: [],
                 attrLeft: 0,
@@ -27,6 +29,7 @@
         data: {
             typeList: pageData.types,   // 待选择的分类
             attrList: pageData.attrs,   // 待选择的属性
+            productTypes: null,
             entity: pageData.entity || {// 商品实体
                 id: 0,
                 productTypeId: null,
@@ -37,11 +40,21 @@
                 formats: [
                     { id: 0, code: null, name: "", price: 0, stock: -1, packingPrice: 0, packingQuantity: 1 }
                 ],
-                attributes: []
+                attributes: [],
+                tag1: [],
+                feature: 0
             },
             imgsrc: imgsrc,
             showError: false,           // 是否表单错误
             isDisabled: false
+        },
+        computed: {
+            feature: function () {
+                if (this.entity.feature == 0) return "一般";
+                else if (this.entity.feature == 1) return "招牌";
+                else if (this.entity.feature == 2) return "套餐";
+                return "";
+            }
         },
         methods: {
             addType: function () {
@@ -61,11 +74,15 @@
                 });
             },
             save: function (flag) {
-                var entity = $.extend({}, this._data.entity);
+                var entity = $.extend({}, this._data.entity), self = this;
 
                 if (!entity.productTypeId || !entity.name || !entity.unitName || !entity.minBuyQuantity) {
                     $.alert("请将表单填写完整！", "warning");
                     this._data.showError = true;
+                    return;
+                }
+                if (entity.feature == 2 && !entity.productIdSet) {
+                    $.alert("请选择套餐商品！", "error");
                     return;
                 }
                 // 验证是否填写规格名称
@@ -86,7 +103,7 @@
                             $.alert("请填写属性名称");
                             return;
                         }
-//                        delete entity.attributes[i].container;
+                        //                        delete entity.attributes[i].container;
                     }
                 }
 
@@ -97,32 +114,18 @@
                     entity.img200 = compress(img, 200, 150, 400, 300);
                     entity.img100 = compress(img, 100, 75, 400, 300);
                 }
-                $.loading();
-                this.isDisabled = true;                     // 按钮是否可用
-                var url = entity.id === 0 ? "/Product/Save" : "/Product/Update";
-                //console.log(entity);
-                //return;
-                axios.post(url, entity)
-                    .then(function (response) {
-                        $.loaded();
-                        if (!response.data.success) {
-                            $.alert(response.data.msg);
-                            return;
-                        }
-                        $.alert("保存成功", "success");
-                        setTimeout(() => {
-                            if (flag) {
-                                window.location.reload();
+                if (entity.id === 0) {
+                    save.call(self, entity, flag);
+                } else {
+                    axios.get("/Product/IsCanUpdate/" + entity.id)
+                        .then(function (res) {
+                            if (!res.data.success) {
+                                $.alert("折扣中的商品不允许修改！");
                                 return;
                             }
-                            window.location.href = "/Product";
-                        }, 2000);
-                    })
-                    .catch(function (msg) {
-                        this.isDisabled = false;
-                        $.loaded();
-                        $.alert(msg);
-                    });
+                            save.call(self, entity, flag);
+                        });
+                }
             },
             cancel: function () {
                 window.location.href = "/Product";
@@ -201,10 +204,111 @@
             },
             selectDetail: function (item, name, index) {
                 item["item" + index] = name;
+            },
+            selectProduct: function () {
+                var self = this;
+                axios.get("/Product/SelectTypes")
+                    .then(function (res) {
+                        productTypes = res.data;
+                        axios.get("/Product/SelectProduct").then(function (res) {
+                            selectTemplate = res.data;
+                            self.selectProduct = function () {
+                                $.view({
+                                    name: "selectproduct",
+                                    title: "选择套餐商品",
+                                    footDisplay: "block",
+                                    template: selectTemplate,
+                                    load: function () {
+                                        initSetMeal.call(this);
+                                    },
+                                    submit: function () {
+                                        if (setMealVm.productList.length === 0) {
+                                            appData.entity.productIdSet = null;
+                                            return true;
+                                        }
+                                        var ids = "";
+                                        appData.entity.tag1 = appData.entity.tag1.slice(0, 0);
+                                        setMealVm.productList.forEach(function (obj) {
+                                            ids += obj.id + ",";
+                                            appData.entity.tag1.push({ key: obj.id, value: obj.name });
+                                        });
+                                        ids = ids.slice(0, ids.length - 1);
+                                        appData.entity.productIdSet = ids;
+                                        return true;
+                                    }
+                                });
+                            };
+                            self.selectProduct();
+                        });
+                    })
+                    .catch(function (err) {
+                        $.alert(err);
+                    });
             }
-
         }
     });
+
+    function save(entity, flag) {
+        var self = this;
+        $.loading();
+        this.isDisabled = true;                     // 按钮是否禁用
+        var url = entity.id === 0 ? "/Product/Save" : "/Product/Update";
+        axios.post(url, entity)
+            .then(function (response) {
+                $.loaded();
+                if (!response.data.success) {
+                    $.alert(response.data.msg);
+                    return;
+                }
+                $.alert("保存成功", "success");
+                setTimeout(() => {
+                    if (flag) {
+                        window.location.reload();
+                        return;
+                    }
+                    window.location.href = "/Product";
+                }, 2000);
+            })
+            .catch(function (msg) {
+                self.isDisabled = false;
+                $.loaded();
+                $.alert(msg);
+            });
+    }
+
+    var setMealVm;
+    function initSetMeal() {
+        var typeList = JSON.parse(JSON.stringify(productTypes));
+        typeList.forEach(function (obj) { obj.checked = false; });
+        setMealVm = new Vue({
+            el: `#setMeal`,
+            data: {
+                typeList: typeList,
+                productList: []
+            },
+            methods: {
+                open: function (item) {
+                    var state = item.checked;
+                    this.typeList.forEach(function (type) { type.checked = false; });
+                    item.checked = !state;
+                },
+                choice: function (product) {
+                    var item = this.productList.filter(a => a.id === product.id);
+                    if (item.length > 0) return;
+                    this.productList.push(product);
+                },
+                remove: function (index) {
+                    this.productList.splice(index, 1);
+                }
+            }
+        });
+        // 隐藏时销毁
+        this.on("hidden.bs.modal", function () {
+            if (!setMealVm) return;
+            setMealVm.$destroy();
+            setMealVm = null;
+        });
+    }
 
     $(document.body).on("click", "#typeView .btn-save", function () {
         var $modal = $("#typeView"), $input = $modal.find("input"), val = $.trim($input.val());

@@ -221,10 +221,10 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="device"></param>
         /// <param name="helper"></param>
         /// <returns></returns>
-        public IActionResult AddBind([FromQuery]FeyinDevice device)
+        public async Task<IActionResult> AddBind([FromQuery]FeyinDevice device)
         {
             var result = new JsonData();
-            result.Success = Service.BindPrintDevice(Business, device);
+            result.Success = await Service.BindPrintDevice(Business, device);
             if (!result.Success)
             {
                 result.Msg = "绑定失败，请刷新后重试";

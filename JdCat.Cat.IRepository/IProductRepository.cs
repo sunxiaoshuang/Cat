@@ -10,6 +10,12 @@ namespace JdCat.Cat.IRepository
     public interface IProductRepository : IBaseRepository<Product>
     {
         /// <summary>
+        /// 获取商品类型列表
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        List<ProductType> GetProductTypes(int businessId);
+        /// <summary>
         /// 根据商户获取商品类别列表
         /// </summary>
         /// <param name="business"></param>
@@ -71,11 +77,28 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         List<Product> GetProducts(Business business, int? typeId, int pageIndex, out int count);
         /// <summary>
+        /// 获取所有产品
+        /// </summary>
+        /// <returns></returns>
+        List<Product> GetProducts(Business business);
+        /// <summary>
+        /// 根据商品id获取商品折扣
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        SaleProductDiscount GetDiscount(int id);
+        /// <summary>
         /// 获取商品
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         Product GetProduct(int id);
+        /// <summary>
+        /// 获取套餐商品
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        List<KeyValuePair<int, string>> GetSetMealProducts(params int[] ids);
         /// <summary>
         /// 删除商品
         /// </summary>
@@ -112,5 +135,10 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         void Down(int id);
+        /// <summary>
+        /// 查询出商户非套餐商品
+        /// </summary>
+        /// <returns></returns>
+        List<ProductType> GetProductWithoutSetMeal(int id);
     }
 }

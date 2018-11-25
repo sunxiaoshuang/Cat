@@ -13,6 +13,7 @@ using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Enum;
 using JdCat.Cat.Model.Report;
+using JdCat.Cat.Repository.Service;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -136,7 +137,7 @@ namespace JdCat.Cat.Repository
         {
             return Context.FeyinDevices.Where(a => a.BusinessId == businessId).ToList();
         }
-        public bool BindPrintDevice(Business business, FeyinDevice device)
+        public async Task<bool> BindPrintDevice(Business business, FeyinDevice device)
         {
             device.BusinessId = business.ID;
             if (device.Type == PrinterType.Feyin)
@@ -144,6 +145,15 @@ namespace JdCat.Cat.Repository
                 device.MemberCode = business.FeyinMemberCode;
                 device.ApiKey = business.FeyinApiKey;
             }
+            else if (device.Type == PrinterType.Feie)
+            {
+                var ret = await FeieHelper.GetHelper().AddPrintAsync(device);
+                if(ret.ret != 0)
+                {
+                    return false;
+                }
+            }
+
             Context.FeyinDevices.Add(device);
             return Context.SaveChanges() > 0;
         }
@@ -177,10 +187,10 @@ group by CreateTime");
         public List<Report_Product> GetProductTop10(Business business, DateTime date)
         {
             return ExecuteReader<Report_Product>($@"
-            select top 10 b.ID, b.Name, SUM(a.Quantity) Quantity from dbo.[OrderProduct] a
+            select top 10 b.ID, b.Name, sum(a.Quantity) Quantity from dbo.[OrderProduct] a
 	            inner join dbo.[Product] b on a.ProductId = b.ID
 				inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
-            where b.BusinessId = {business.ID} and CONVERT(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
+            where b.BusinessId = {business.ID} and convert(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
             group by b.ID, b.Name
             order by Quantity desc
             ");
@@ -188,12 +198,26 @@ group by CreateTime");
         public List<Report_ProductPrice> GetProductPriceTop10(Business business, DateTime date)
         {
             return ExecuteReader<Report_ProductPrice>($@"
-            select top 10 b.ID, b.Name, SUM(a.Quantity * a.Price) Amount from dbo.[OrderProduct] a
+            select top 10 b.ID, b.Name, sum(a.Price) Amount from dbo.[OrderProduct] a
 	            inner join dbo.[Product] b on a.ProductId = b.ID
 				inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
-            where b.BusinessId = {business.ID} and CONVERT(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
+            where b.BusinessId = {business.ID} and convert(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
             group by b.ID, b.Name
             order by Amount desc
+            ");
+        }
+
+        public List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end)
+        {
+            return ExecuteReader<Report_SaleStatistics>($@"
+                select CreateTime AS [Date], sum(Price) Total, count(CreateTime) Quantity from (
+	                select Price, convert(VARCHAR(10), CreateTime, 120) CreateTime from dbo.[Order] where 
+	                [BusinessId] = {business.ID} and 
+	                [Status] & {(int)OrderStatus.Valid} > 0 and 
+	                [CreateTime] between '{start:yyyy-MM-dd}' and '{end.AddDays(1):yyyy-MM-dd}' 
+                )t
+                group by t.CreateTime
+                order by CreateTime desc
             ");
         }
 
@@ -476,7 +500,7 @@ group by CreateTime");
         }
         public void RemoveWxListenUser(int id)
         {
-            Context.WxListenUsers.Remove(new WxListenUser { ID = id});
+            Context.WxListenUsers.Remove(new WxListenUser { ID = id });
             Context.SaveChanges();
         }
     }

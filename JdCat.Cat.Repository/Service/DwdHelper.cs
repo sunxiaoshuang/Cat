@@ -112,9 +112,10 @@ namespace JdCat.Cat.Repository.Service
         {
             order.DistributionFlow++;
             var now = UtilHelper.ConvertDateTimeToInt(DateTime.Now);
+            var code = GetOrderCode(order);
             var dwdOrder = new DWD_Order
             {
-                order_original_id = GetOrderCode(order),
+                order_original_id = code,
                 order_create_time = now,
                 order_remark = (order.Remark + "").ToEncodeSpecial(),
                 order_price = (int)order.Price.Value * 100,
@@ -127,7 +128,7 @@ namespace JdCat.Cat.Repository.Service
                 seller_address = business.Address.ToEncodeSpecial(),
                 seller_lat = business.DWDStore.lat,
                 seller_lng = business.DWDStore.lng,
-                consignee_name = order.ReceiverName.ToEncodeSpecial(),
+                consignee_name = order.GetUserCall().ToEncodeSpecial(),
                 consignee_mobile = order.Phone.ToEncodeSpecial(),
                 consignee_address = order.ReceiverAddress.ToEncodeSpecial(),
                 consignee_lat = order.Lat,
@@ -167,7 +168,7 @@ namespace JdCat.Cat.Repository.Service
         /// </summary>
         /// <param name="business"></param>
         /// <returns></returns>
-        public async Task<DWD_Result<JsonData>> CreateShop(DWDStore business)
+        public async Task<DWD_Result<JsonData>> CreateShopAsync(DWDStore business)
         {
             var url = "/api/v3/batchsave-store.json";
             var shops = new List<DWD_Shop> { new DWD_Shop { addr = business.addr, city_code = business.city_code, external_shopid = business.external_shopid, lat = business.lat, lng = business.lng, mobile = business.mobile, shop_title = business.shop_title } };
@@ -182,7 +183,7 @@ namespace JdCat.Cat.Repository.Service
         /// </summary>
         /// <param name="shopId"></param>
         /// <returns></returns>
-        public async Task<DWD_Result<DWD_Balance>> GetBalance(string shopId)
+        public async Task<DWD_Result<DWD_Balance>> GetBalanceAsync(string shopId)
         {
             var url = "/api/v3/account-balance.json";
             var sign = $"account_typestorestore_id{shopId}";
@@ -194,7 +195,7 @@ namespace JdCat.Cat.Repository.Service
         /// 充值
         /// </summary>
         /// <returns></returns>
-        public async Task<DWD_Result<DWD_RechargeBack>> Recharge(DWD_Recharge model)
+        public async Task<DWD_Result<DWD_RechargeBack>> RechargeAsync(DWD_Recharge model)
         {
             var url = "/api/v3/recharge.json";
             var obj = new DWD_Amout
@@ -217,7 +218,7 @@ namespace JdCat.Cat.Repository.Service
         /// <param name="store"></param>
         /// <param name="biz_no"></param>
         /// <returns></returns>
-        public async Task<DWD_Result<DWD_RechargeResult>> RechargeResult(DWDStore store, string biz_no)
+        public async Task<DWD_Result<DWD_RechargeResult>> RechargeResultAsync(DWDStore store, string biz_no)
         {
             var url = "/api/v3/recharge-result.json";
             var sign = $"biz_no{biz_no}store_id{store.external_shopid}";
@@ -233,7 +234,7 @@ namespace JdCat.Cat.Repository.Service
         /// <param name="endDate"></param>
         /// <param name="pageIndex"></param>
         /// <returns></returns>
-        public async Task<DWD_Result<DWD_Detail>> GetDetail(DWDStore store, DateTime startDate, DateTime endDate, int pageIndex)
+        public async Task<DWD_Result<DWD_Detail>> GetDetailAsync(DWDStore store, DateTime startDate, DateTime endDate, int pageIndex)
         {
             var url = "/api/v3/get-bill-detail.json";
             var start = startDate.ToString("yyyy-MM-dd HH:mm:ss");
@@ -249,7 +250,7 @@ namespace JdCat.Cat.Repository.Service
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
-        public async Task<DWD_Result<DWD_OrderDetail>> GetOrderDetail(string code)
+        public async Task<DWD_Result<DWD_OrderDetail>> GetOrderDetailAsync(string code)
         {
             var url = "/api/v3/order-get.json";
             var sign = $"order_original_id{code}";
@@ -262,7 +263,7 @@ namespace JdCat.Cat.Repository.Service
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
-        public async Task<DWD_Result<DWD_Price>> GetOrderPrice(string code)
+        public async Task<DWD_Result<DWD_Price>> GetOrderPriceAsync(string code)
         {
             var url = "/api/v3/order-receivable-price.json";
             var sign = $"order_original_id{code}";

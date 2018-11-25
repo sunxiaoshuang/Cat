@@ -114,7 +114,7 @@ namespace JdCat.Cat.Repository.Service
             dadaOrder.origin_id = order.OrderCode;
             dadaOrder.city_code = order.CityCode;
             dadaOrder.cargo_price = (double)order.Price;
-            dadaOrder.receiver_name = order.ReceiverName;
+            dadaOrder.receiver_name = order.GetUserCall();
             dadaOrder.receiver_address = order.ReceiverAddress;
             dadaOrder.receiver_lat = order.Lat;
             dadaOrder.receiver_lng = order.Lng;

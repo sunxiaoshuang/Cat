@@ -101,65 +101,27 @@
             });
         });
 
-    // 方法
-    var pageHandler = {
-        count: function (types) {
-            if (types.length === 0) {
-                return 0;
-            }
-            var all = 0;
-            types.forEach(function (obj) { all += obj.count; });
-            return all;
-        }
-    }
 
-    //    var list = pageData.types.map(function (obj) {
-    //        obj.selected = false;
-    //        return obj;
-    //    });
     // 数据
     var category = new Vue({
         el: "#category",
         data: {
             list: pageData.types,
-            productCount: "",//pageHandler.count(pageData.types),
+            productCount: "",
             allSelected: true
         },
         methods: {
             typeClick: function (item) {
                 if (item.selected) return;
-                var self = this;
-                productList.pageIndex = 1;
-                $.loading();
-                axios.get("Product/GetProducts?typeId=" + item.id)
-                    .then(function (response) {
-                        $.loaded();
-                        self.list.forEach(function (obj) { obj.selected = false; });
-                        item.selected = true;
-                        self.allSelected = false;
-                        productList.list = response.data.data;
-                        productList.count = response.data.count;
-                    })
-                    .catch(function (error) {
-                        $.loaded();
-                        $.alert(error);
-                    });
+                this.list.forEach(function (obj) { obj.selected = false; });
+                item.selected = true;
+                this.allSelected = false;
+                productList.reset();
             },
             allClick: function () {
-                var self = this;
-                productList.pageIndex = 1;
-                axios.get("Product/GetProducts")
-                    .then(function (response) {
-                        $.loaded();
-                        self.list.forEach(function (obj) { obj.selected = false; });
-                        self.allSelected = true;
-                        productList.list = response.data.data;
-                        productList.count = response.data.count;
-                    })
-                    .catch(function (error) {
-                        $.loaded();
-                        $.alert(error);
-                    });
+                this.list.forEach(function (obj) { obj.selected = false; });
+                this.allSelected = true;
+                productList.reset();
             }
         }
     });
@@ -177,10 +139,17 @@
     var productList = new Vue({
         el: "#productList",
         data: {
-            list: [],
+            list: [],                       // 显示的产品列表
+            allProducts: [],                // 所有产品
+            curProducts: [],                // 当前所属类别产品
             allCheck: false,
             pageIndex: 1,
-            count: 0
+            pageSize: 20,
+            count: 0,
+            searchKey: "",
+            searchProducts: [],
+            onlyUp: false,                  // 只显示上架商品
+            onlyDown: false                 // 只显示下架商品
         },
         computed: {
             pageCount: function () {
@@ -300,20 +269,40 @@
                     return true;
                 });
             },
+            reset: function () {
+                this.pageIndex = 1;
+                var type = category.list.filter(function (obj) { return obj.selected; })[0];
+                var products = productList.allProducts;        // 可能显示的商品
+                if (type) {
+                    products = products.filter(function (obj) { return obj.productTypeId === type.id; });
+                }
+                if (this.onlyUp) {
+                    products = products.filter(function (obj) { return obj.status === 1; });
+                }
+                if (this.onlyDown) {
+                    products = products.filter(function (obj) { return obj.status === 2; });
+                }
+                this.curProducts = products;
+                this.list = products.slice(0, this.pageSize);
+                this.count = products.length;
+            },
             prev: function () {
                 if (productList.pageIndex === 1) return;
                 productList.pageIndex = productList.pageIndex - 1;
-                loadData();
+                //loadData();
+                this.list = this.curProducts.slice((this.pageIndex - 1) * this.pageSize, this.pageIndex * this.pageSize);
             },
             page: function (num) {
                 if (productList.pageIndex === num) return;
                 productList.pageIndex = num;
-                loadData();
+                //loadData();
+                this.list = this.curProducts.slice((this.pageIndex - 1) * this.pageSize, this.pageIndex * this.pageSize);
             },
             next: function () {
                 if (productList.pageIndex === productList.pageCount) return;
                 productList.pageIndex = productList.pageIndex + 1;
-                loadData();
+                //loadData();
+                this.list = this.curProducts.slice((this.pageIndex - 1) * this.pageSize, this.pageIndex * this.pageSize);
             },
             stock: function (num) {
                 return num < 0 ? "无限" : num;
@@ -323,18 +312,55 @@
                 var name = "";
                 attrs.forEach(function (obj) { name += obj.name + "/"; });
                 return name.substr(0, name.length - 1);
+            },
+            showUp: function () {
+                this.onlyUp = !this.onlyUp;
+                if (this.onlyUp) {
+                    this.onlyDown = false;
+                }
+                this.reset();
+            },
+            showDown: function () {
+                this.onlyDown = !this.onlyDown;
+                if (this.onlyDown) {
+                    this.onlyUp = false;
+                }
+                this.reset();
+            },
+            feature: function (feature) {
+                if (feature == 0) return "一般";
+                else if (feature == 1) return "招牌";
+                else if (feature == 2) return "套餐";
+                return "";
+            }
+        },
+        watch: {
+            searchKey: function () {
+                var key = this.searchKey;
+                if (!key) {
+                    this.list = this.curProducts;
+                    this.count = this.curProducts.length;
+                    return;
+                }
+                var list = this.allProducts.filter(function (obj) { return obj.name.indexOf(key) > -1; });
+                this.searchProducts = list.slice(0, 9);
+                this.list = this.searchProducts;
+                this.count = this.searchProducts.length;
             }
         }
     });
     function loadData() {
         $.loading();
-        var types = category.list.filter(function (item) { return item.selected; });
-        var type = types.length === 0 ? "" : types[0].id;
-        axios.get("/Product/GetProducts?pageIndex=" + productList.pageIndex + "&typeId=" + type)
+        //var types = category.list.filter(function (item) { return item.selected; });
+        //var type = types.length === 0 ? "" : types[0].id;
+        //axios.get("/Product/GetProducts?pageIndex=" + productList.pageIndex + "&typeId=" + type)
+        axios.get("/Product/GetProducts")
             .then(function (response) {
                 $.loaded();
-                productList.list = response.data.data;
-                productList.count = response.data.count;
+                productList.allProducts = response.data.data;
+                productList.list = productList.allProducts;
+                productList.curProducts = productList.allProducts;
+                productList.count = productList.allProducts.length;
             })
             .catch(function (error) {
                 $.loaded();

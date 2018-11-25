@@ -183,3 +183,10 @@ page {
   color: #fff;
   padding: 5rpx 20rpx;
 }
+.oldPrice {
+  color: #999;
+  text-decoration: line-through;
+  font-size: 25rpx;
+  font-weight: 400;
+  padding-left: 10rpx;
+}

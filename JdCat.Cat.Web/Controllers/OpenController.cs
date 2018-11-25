@@ -64,7 +64,7 @@ namespace JdCat.Cat.Web.Controllers
                 var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
                 log.Debug("点我达回调：" + JsonConvert.SerializeObject(dwd));
                 // 每次回调时，均重新读取一次订单配送费用，并保存到数据库
-                var priceResult = await helper.GetOrderPrice(orderCode);
+                var priceResult = await helper.GetOrderPriceAsync(orderCode);
                 double cost = 0;
                 if (priceResult.success)
                 {

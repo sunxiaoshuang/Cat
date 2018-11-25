@@ -339,6 +339,10 @@
                         return false;
                     }
                 }
+                if (settingVm.entity.upperLimit <= 0) {
+                    $.alert("每单限购必须大于0");
+                    return false;
+                }
                 axios.post("/Sale/UpdateDiscount", settingVm.entity)
                     .then(function (res) {
                         if (!res.data.success) {

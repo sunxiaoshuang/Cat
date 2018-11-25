@@ -86,7 +86,35 @@ namespace JdCat.Cat.WxApi.Controllers
         public IActionResult GetOrder([FromQuery]string code)
         {
             var order = Service.GetOrderByCode(code);
-            return Json(order, JsSetting);
+            var setMeals = order.Products.Where(a => a.Feature == ProductFeature.SetMeal);
+            if (setMeals.Count() > 0)
+            {
+                Service.QuarySetMealProduct(setMeals);
+            }
+            return Json(order);
+        }
+        /// <summary>
+        /// 客户端获取订单列表
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="businessId"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost("getOrderFromClient/{id}")]
+        public IActionResult GetOrderFromClient(int id, [FromQuery]int businessId, [FromQuery]DateTime? createTime, [FromBody]PagingQuery query)
+        {
+            var result = new JsonData();
+            var orders = Service.GetOrder(new Business { ID = businessId }, null, query, null, null, null, createTime: createTime);
+            var setMeals = orders.SelectMany(a => a.Products).Where(a => a.Feature == ProductFeature.SetMeal);
+            Service.QuarySetMealProduct(setMeals);
+            result.Data = new
+            {
+                list = orders,                          // 订单列表
+                rows = query.RecordCount                // 总记录数
+            };
+
+            result.Success = true;
+            return Json(result, JsSetting);
         }
 
         ///// <summary>
@@ -270,7 +298,7 @@ namespace JdCat.Cat.WxApi.Controllers
                 keyword2 = new { value = order.Price + "元" },
                 keyword3 = new { value = order.PayTime.Value.ToString("yyyy-MM-dd HH:mm:ss") },
                 keyword4 = new { value = order.ReceiverAddress },
-                keyword5 = new { value = order.ReceiverName },
+                keyword5 = new { value = order.GetUserCall() },
                 keyword6 = new { value = order.Phone }
             };
 
@@ -298,11 +326,11 @@ namespace JdCat.Cat.WxApi.Controllers
             var keyword5 = (order.Status == OrderStatus.Distribution || order.Status == OrderStatus.DistributorReceipt) ? "待配送" : "已付款";
             msg.data = new
             {
-                first = new { value = $"流水号：   #{order.Identifier}" },
+                first = new { value = $"流水号：   #{order.Identifier}      ￥{order.Price}" },
                 keyword1 = new { value = productName },
                 keyword2 = new { value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
                 keyword3 = new { value = order.ReceiverAddress },
-                keyword4 = new { value = "   " + order.ReceiverName },
+                keyword4 = new { value = "   " + order.GetUserCall() + "    " + order.Phone },
                 keyword5 = new { value = keyword5, color = "#ff0000" },
                 remark = new { value = order.Remark }
             };
@@ -313,7 +341,7 @@ namespace JdCat.Cat.WxApi.Controllers
                 msg.touser = item.openid;
                 var result = await WxHelper.SendEventMessageAsync(msg);
                 var ret = JsonConvert.DeserializeObject<WxMessageReturn>(result);
-                if(ret.errcode == 40001)
+                if (ret.errcode == 40001)
                 {
                     // 如果发送消息提示token失效，则重新获取token，再发送一次
                     await WxHelper.SetTokenAsync(WxHelper.WeChatAppId, WxHelper.WeChatSecret);

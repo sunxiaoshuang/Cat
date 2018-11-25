@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JdCat.Cat.Model.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
@@ -40,6 +41,19 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string Description { get; set; }
         /// <summary>
+        /// 套餐商品的id集
+        /// </summary>
+        public string ProductIdSet { get; set; }
+        /// <summary>
+        /// 商品特性
+        /// </summary>
+        public ProductFeature Feature { get; set; }
+        /// <summary>
+        /// 备用属性
+        /// </summary>
+        [NotMapped]
+        public object Tag1 { get; set; }
+        /// <summary>
         /// 商品id
         /// </summary>
         public int? ProductId { get; set; }
@@ -54,5 +68,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public int? FormatId { get; set; }
         public virtual ProductFormat Format { get; set; }
+        /// <summary>
+        /// 折扣id
+        /// </summary>
+        public int? SaleProductDiscountId { get; set; }
+        public virtual SaleProductDiscount SaleProductDiscount { get;set;}
+        /// <summary>
+        /// 折扣商品数量
+        /// </summary>
+        public int? DiscountProductQuantity { get; set; }
     }
 }

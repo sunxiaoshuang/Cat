@@ -74,7 +74,6 @@
             }
         },
         created: function () {
-            var self = this;
             this.loadData();
         }
     });

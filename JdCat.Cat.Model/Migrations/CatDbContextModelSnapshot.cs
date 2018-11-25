@@ -144,6 +144,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<string>("ObjectId");
+
                     b.Property<string>("Password");
 
                     b.Property<double>("Range");
@@ -370,6 +372,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<string>("Remark");
+
                     b.Property<int>("Type");
 
                     b.HasKey("ID");
@@ -409,6 +413,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<double?>("Freight");
 
+                    b.Property<int>("Gender");
+
                     b.Property<int>("Identifier");
 
                     b.Property<bool>("IsSendDada");
@@ -426,6 +432,8 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<string>("OrderCode")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValueSql("CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 6) + dbo.fn_right_padding(CAST(floor(rand()*100000) as varchar(5)), 5)");
+
+                    b.Property<double?>("PackagePrice");
 
                     b.Property<DateTime?>("PayTime");
 
@@ -492,6 +500,10 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<double?>("Discount");
 
+                    b.Property<int?>("DiscountProductQuantity");
+
+                    b.Property<int>("Feature");
+
                     b.Property<int?>("FormatId");
 
                     b.Property<string>("Name");
@@ -504,7 +516,11 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int?>("ProductId");
 
+                    b.Property<string>("ProductIdSet");
+
                     b.Property<double?>("Quantity");
+
+                    b.Property<int?>("SaleProductDiscountId");
 
                     b.Property<string>("Src");
 
@@ -515,6 +531,8 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasIndex("OrderId");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("SaleProductDiscountId");
 
                     b.ToTable("OrderProduct","dbo");
                 });
@@ -541,6 +559,8 @@ namespace JdCat.Cat.Model.Migrations
                         .IsRequired();
 
                     b.Property<DateTime?>("NotSaleTime");
+
+                    b.Property<string>("ProductIdSet");
 
                     b.Property<int?>("ProductTypeId");
 
@@ -969,6 +989,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Province");
 
+                    b.Property<int>("PurchaseTimes");
+
                     b.HasKey("ID");
 
                     b.HasIndex("OpenId")
@@ -1101,6 +1123,10 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.Product", "Product")
                         .WithMany("OrderProducts")
                         .HasForeignKey("ProductId");
+
+                    b.HasOne("JdCat.Cat.Model.Data.SaleProductDiscount", "SaleProductDiscount")
+                        .WithMany()
+                        .HasForeignKey("SaleProductDiscountId");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Product", b =>
@@ -1214,7 +1240,7 @@ namespace JdCat.Cat.Model.Migrations
                         .HasForeignKey("FormatId");
 
                     b.HasOne("JdCat.Cat.Model.Data.Product", "Product")
-                        .WithMany("ShoppingCarts")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
 

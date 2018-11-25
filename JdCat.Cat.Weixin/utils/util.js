@@ -66,14 +66,14 @@ function getRad(d) {
  * @param {Object} 坐标点
  * @param {Object} 目标点
  */
-var calcDistance = (function(){
+var calcDistance = (function () {
     var EARTH_RADIUS = 6378137.0; //单位M
     var PI = Math.PI;
-    
+
     function getRad(d) {
         return d * Math.PI / 180.0;
     }
-    return function(pointer1, pointer2){
+    return function (pointer1, pointer2) {
         var radLat1 = getRad(pointer1.lat);
         var radLat2 = getRad(pointer2.lat);
         var a = radLat1 - radLat2;
@@ -90,6 +90,34 @@ var regExp = {
     phone: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/
 };
 
+// 
+var method = {
+    delayExec: function (func, delay, params, times) { // 延迟执行，返回true时退出
+        var flag = false,
+            num = 0,
+            interval;
+        if (!delay) {
+            delay = 200;
+        }
+        if (!times) {
+            times = 100;
+        }
+        interval = setInterval(function () {
+            while (flag || num > times) {
+                clearInterval(interval);
+                return;
+            }
+            try {
+                flag = func(params);
+                num++;
+            } catch (e) {
+                // 如果执行出错，则退出轮询
+                clearInterval(interval);
+            }
+        }, delay);
+    }
+}
+
 module.exports = {
     formatTime,
     showBusy,
@@ -98,5 +126,6 @@ module.exports = {
     showModel,
     regExp,
     angle,
-    calcDistance
+    calcDistance,
+    method
 };

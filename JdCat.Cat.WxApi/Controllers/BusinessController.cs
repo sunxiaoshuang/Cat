@@ -48,19 +48,26 @@ namespace JdCat.Cat.WxApi.Controllers
         }
 
         /// <summary>
-        /// 获取商户营销活动
+        /// 获取商户营销活动与用户优惠券
         /// </summary>
         /// <returns></returns>
         [HttpGet("sale/{id}")]
-        public IActionResult GetSale(int id)
+        public IActionResult GetSale(int id, int userId, [FromServices]IUserRepository userRepository)
         {
             var now = DateTime.Now;
+            // 满减活动
             var fullReduct = Service.GetFullReduce(new Business { ID = id }, false).ToList();
             var valid = fullReduct.Where(a => a.IsActiveValid());
+            // 优惠券
             var coupon = Service.GetCouponValid(new Business { ID = id });
+            // 折扣券
             var discount = Service.GetDiscounts(new Business { ID = id })
                 .Where(a => a.Status == Model.Enum.ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
-            return Json(new { fullReduct = valid, coupon, discount });
+
+            // 用户优惠券
+            var userCoupon = userRepository.GetUserCoupon(userId);
+
+            return Json(new { fullReduct = valid, coupon, discount, userCoupon });
         }
 
         [HttpGet("login")]

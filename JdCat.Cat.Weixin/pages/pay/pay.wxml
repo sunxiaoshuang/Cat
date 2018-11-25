@@ -26,27 +26,23 @@
     <view class="orderInfo">
         <view wx:for="{{cartList}}" wx:for-item="cart" wx:key="id" class="food">
             <view class="foodName">
-                {{cart.name}}
-                <text style="font-size: 80%; color: #aaa;">
-                    {{cart.description ? ("（" + cart.description + "）") : ""}}
-                </text>
+                <text>{{cart.name}}</text>
+                <text style="font-size: 80%; color: #aaa;">{{calc.cartDescription(cart)}}</text>
             </view>
             <view class="foodCount">×{{cart.quantity}}</view>
-            <view class="foodPrice">￥{{calc.precision(cart.price * cart.quantity, 2)}}</view>
+            <view class="foodPrice">
+                <text wx:if="{{cart.price != cart.oldPrice}}" class="oldPrice">￥{{cart.oldPrice}}</text>
+                <text>￥{{cart.price}}</text>
+            </view>
         </view>
+    </view>
+    <view class="deliver">
+        <view>包装费</view>
+        <view>￥ {{packagePrice}}</view>
     </view>
     <view class="deliver">
         <view>配送费</view>
         <view>￥ {{freight}}</view>
-    </view>
-    <view class="deliver">
-        <view>包装盒数量</view>
-        <picker bindchange="bindPickerChange" value="{{index}}" range="{{tablewareQuantitys}}">
-            <view class="quantity">
-                <text class="nowrap" style="width: 100rpx;">{{tablewareQuantity}}人</text>
-                <image src="../../images/icon/right-1.png" class="icon" />
-            </view>
-        </picker>
     </view>
     <view class="deliver" wx:if="{{couponQuantity > 0}}" bindtap="selectCoupon">
         <view style="display: flex; flex-grow: 1;flex-flow: row nowrap;">

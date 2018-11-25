@@ -43,7 +43,56 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
-        
+        /// <summary>
+        /// 销售统计
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult SaleStatistics()
+        {
+            var time = DateTime.Now;
+            var orders = Service.GetOrderTotal(Business, time.AddDays(-6), time.AddDays(1));
+            for (int i = 0; i < 7; i++)
+            {
+                var cur = time.AddDays(-i);
+                var order = orders.FirstOrDefault(a => a.CreateTime == cur.ToString("yyyy-MM-dd"));
+                if (order != null) continue;
+                orders.Add(new Report_Order { CreateTime = cur.ToString("yyyy-MM-dd"), Price = 0, Quantity = 0 });
+            }
+            orders = orders.OrderBy(a => a.CreateTime).ToList();
+            ViewBag.list = JsonConvert.SerializeObject(orders, AppData.JsonSetting);
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult GetSaleStatistics([FromQuery]DateTime? start, [FromQuery]DateTime? end)
+        {
+            if (!start.HasValue || !end.HasValue)
+            {
+                return Json(new string[] { });
+            }
+            return Json(Service.GetSaleStatistics(Business, start.Value, end.Value));
+        }
+
+        [HttpGet]
+        public IActionResult ExportSaleStatistics([FromQuery]DateTime? start, [FromQuery]DateTime? end)
+        {
+            var name = $"销售统计({start.Value:yyyyMMdd}-{end.Value:yyyyMMdd}).xlsx";
+            var list = Service.GetSaleStatistics(Business, start.Value, end.Value);
+            var index = 1;
+            var totalPrice = 0d;
+            var totalQuantity = 0;
+            list.ForEach(a =>
+            {
+                a.Index = index++;
+                totalPrice += a.Total;
+                totalQuantity += a.Quantity;
+            });
+            list.Add(new Report_SaleStatistics { Index = index, Date = "合计", Total = totalPrice, Quantity = totalQuantity });
+
+            return File(list.ToWorksheet(), AppData.XlsxContentType, name);
+        }
+
 
 
     }

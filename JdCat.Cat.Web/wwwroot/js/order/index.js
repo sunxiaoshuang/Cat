@@ -286,6 +286,12 @@
             deliveryType: function (order) {
                 if (+order.status & delivered === 0) return "";
                 return providerName[order.logisticsType];
+            },
+            gender: function (order) {
+                if (order.receiverName.length > 1) return "";
+                else if (order.gender == 1) return "先生";
+                else if (order.gender == 2) return "女士";
+                return "";
             }
         },
         created: function () {

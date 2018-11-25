@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "选择套餐商品";
+    Layout = null;
+}
+
+
+<div class="container-fluid" id="setMeal">
+    <div class="row">
+        <div class="col-xs-6">
+            <ul class="list type">
+                <li v-for="item in typeList" @@click="open(item)">
+                    <i class="fa fa-folder-o" v-bind:class="item.checked ? 'fa-folder-open-o' : 'fa-folder-o'"></i>
+                    <span v-text="item.name"></span>
+                    <i class="fa fa-plus"></i>
+                    <ul class="list product" v-show="item.checked" style="display: none;">
+                        <li v-for="product in item.products">
+                            <a @@click.stop="choice(product)">{{product.name}}</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="col-xs-1 center-container">
+            <i class="fa fa-angle-right" style="font-size: 200%;"></i>
+        </div>
+        <div class="col-xs-5">
+            <ul class="list productList">
+                <li v-for="(product, index) in productList">
+                    <span v-text="product.name"></span>
+                    <a @@click="remove(index)"><i class="fa fa-remove"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+

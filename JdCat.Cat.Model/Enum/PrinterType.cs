@@ -16,6 +16,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 易联云
         /// </summary>
-        Yilianyue = 1
+        Yilianyue = 1,
+        /// <summary>
+        /// 飞鹅
+        /// </summary>
+        Feie = 2
     }
 }

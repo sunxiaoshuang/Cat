@@ -6,6 +6,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Mapping;
+using JdCat.Cat.Model.Report;
 using Microsoft.EntityFrameworkCore;
 
 namespace JdCat.Cat.Model
@@ -58,6 +59,7 @@ namespace JdCat.Cat.Model
         {
             base.OnModelCreating(modelBuilder);
 
+            // 基础配置
             modelBuilder.HasSequence<int>("StoreNumbers", schema: "shared");            // 门店编号序列
             modelBuilder.HasSequence<int>("OrderNumbers", schema: "shared");            // 订单编号序列
             modelBuilder.HasSequence<int>("FormatNumbers", schema: "shared");           // 规格编码序列
@@ -75,7 +77,10 @@ namespace JdCat.Cat.Model
                 .Property(a => a.Code)
                 .HasDefaultValueSql("dbo.fn_right_padding(floor(rand()*10000000), 6) + cast(NEXT VALUE FOR shared.SaleCouponNumbers as varchar(max)) + dbo.fn_right_padding(floor(rand()*100000), 4)");
 
+            // 配置视图
+            //modelBuilder.Query<Report_SaleStatistics>().ToView("View_SaleStatistics");
 
+            // 配置映射
             var typesToRegister = Assembly.GetExecutingAssembly().GetTypes().Where(q => q.GetInterface(typeof(IEntityTypeConfiguration<>).FullName) != null);
             foreach (var type in typesToRegister)
             {

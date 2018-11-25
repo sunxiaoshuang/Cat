@@ -2,6 +2,15 @@
     ViewData["Title"] = "添加商品";
 }
 
+@section Styles {
+    <environment include="Development">
+        <link href="~/css/sale/discount.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/css/sale/discount.min.css" rel="stylesheet" />
+    </environment>
+}
+
 @section Scripts{
     <script>
         var pageData = {
@@ -14,7 +23,7 @@
     <script src="~/js/lib/lrz.all.bundle.min.js" asp-append-version="true"></script>
     <script src="~/js/lib/jquery.photoClip.min.js" asp-append-version="true"></script>
     <environment include="Development">
-        <script src="~/js/addproduct.js" asp-append-version="true"></script>
+        <script src="~/js/addproduct.js"></script>
     </environment>
     <environment exclude="Development">
         <script src="~/js/addproduct.min.js" asp-append-version="true"></script>
@@ -90,6 +99,48 @@
                     </label>
                     <div class="col-xs-6">
                         <input type="text" v-model.trim="entity.description" maxlength="30" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span class="require">商品特性</span>
+                    </label>
+                    <div class="col-xs-6" v-if="!entity.id">
+                        <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                            <label class="label-checkbox">
+                                <input type="radio" name="feature" value="0" v-model="entity.feature">
+                                <span class="custom-checkbox"></span>
+                                普通
+                            </label>
+                        </div>
+                        @*<div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                            <label class="label-checkbox">
+                                <input type="radio" name="feature" value="1" v-model="entity.feature">
+                                <span class="custom-checkbox"></span>
+                                招牌
+                            </label>
+                        </div>*@
+                        <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                            <label class="label-checkbox">
+                                <input type="radio" name="feature" value="2" v-model="entity.feature">
+                                <span class="custom-checkbox"></span>
+                                套餐
+                            </label>
+                        </div>
+                    </div>
+                    <label class="control-label col-xs-1 pull-left" style="text-align:left;" v-else>
+                        {{feature}}
+                    </label>
+                </div>
+                <div class="form-group" v-show="entity.feature == 2">
+                    <label class="control-label col-xs-1">
+                        <span class="require">套餐商品</span>
+                    </label>
+                    <div class="col-xs-6">
+                        <ul class="setMeal">
+                            <li v-for="item in entity.tag1">{{item.value}}</li>
+                        </ul>
+                        <a class="text-primary" @@click="selectProduct()">添加套餐商品</a>
                     </div>
                 </div>
                 <div class="form-group">

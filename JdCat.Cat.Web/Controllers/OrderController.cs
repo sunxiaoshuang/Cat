@@ -329,13 +329,22 @@ namespace JdCat.Cat.Web.Controllers
                 result.Success = ret.ErrCode == null || ret.ErrCode == 0;
                 result.Msg = ret.ErrMsg;
             }
-            else
+            else if(device.Type == PrinterType.Yilianyue)
             {
                 var ret = JsonConvert.DeserializeObject<YlyReturn>(content);
                 result.Success = ret.state == "1";
                 if (!result.Success)
                 {
                     result.Msg = ret.state == "4" ? "打印签名错误" : "打印参数错误";
+                }
+            }
+            else if(device.Type == PrinterType.Feie)
+            {
+                var ret = JsonConvert.DeserializeObject<FeieReturn>(content);
+                result.Success = ret.ret == 0;
+                if (!result.Success)
+                {
+                    result.Msg = ret.msg;
                 }
             }
 

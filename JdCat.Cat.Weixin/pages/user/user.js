@@ -8,9 +8,6 @@ Page({
     isShowPhoneWindow: false
   },
   onLoad: function () {
-    wx.setNavigationBarTitle({
-      title: "个人中心"
-    });
     var user = qcloud.getSession().userinfo;
     this.setData({
       userInfo: user

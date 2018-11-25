@@ -55,29 +55,8 @@ namespace JdCat.Cat.WxApi
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<ISessionDataRepository, SessionDataRepository>();
             // 系统参数
-            var appData = Configuration.GetSection("appData");
-            var config = new AppData
-            {
-                OrderUrl = appData["orderUrl"],
-                ServerAppId = appData["serverAppId"],
-                ServerKey = appData["serverKey"],
-                ServerMchId = appData["serverMchId"],
-                PaySuccessUrl = appData["paySuccessUrl"],
-                HostIpAddress = appData["HostIpAddress"],
-                EventMessageTemplateId = appData["EventMessageTemplateId"],
-                RunMode = appData["runMode"],
-                DadaDomain = appData["dadaDomain"],
-                DadaAppKey = appData["dadaAppKey"],
-                DadaAppSecret = appData["dadaAppSecret"],
-                DadaSourceId = appData["dadaSourceId"],
-                DadaShopNo = appData["dadaShopNo"],
-                DadaCallback = appData["dadaCallback"],
-                DwdDomain = appData["dwdDomain"],
-                DwdAppKey = appData["dwdAppKey"],
-                DwdAppSecret = appData["dwdAppSecret"],
-                DwdShopNo = appData["dwdShopNo"],
-                DwdCallback = appData["dwdCallback"]
-            };
+            var config = new AppData();
+            config.Init(Configuration);
             services.AddSingleton(config);
             // 达达请求
             var dada = DadaHelper.GetHelper();
@@ -89,7 +68,11 @@ namespace JdCat.Cat.WxApi
             services.AddSingleton(dwd);
             // 易联云
             var yly = YlyHelper.GetHelper();
-            yly.Init(appData["YlyPartnerId"], appData["YlyApiKey"]);
+            yly.Init(config.YlyPartnerId, config.YlyApiKey, config.YlyUrl);
+            services.AddSingleton(yly);
+            // 飞鹅
+            var feie = FeieHelper.GetHelper();
+            feie.Init(config.FeieUser, config.FeieKey, config.FeieUrl);
             services.AddSingleton(yly);
         }
         

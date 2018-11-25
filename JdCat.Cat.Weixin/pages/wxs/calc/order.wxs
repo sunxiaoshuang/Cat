@@ -45,8 +45,11 @@ var order = {
 
     totalPrice: function (cartList) {
         var total = 0;
-        cartList.forEach(function (a, index) {
-            total += func.calcCartProductPrice(a, cartList, index);
+        // cartList.forEach(function (a, index) {
+        //     total += func.calcCartProductPrice(a, cartList, index);
+        // });
+        cartList.forEach(function (cart) {
+            total += cart.price;
         });
         total = total.toFixed(2);
         total = parseFloat(total);
@@ -74,14 +77,39 @@ var order = {
         return parseFloat(num.toFixed(precision));
     },
     cartDescription: function (cart) {
-        var discount = cart.product.discount,
-            quantity = cart.quantity,
+        var discount = cart.discount,
             description = cart.description ? ("（" + cart.description + "）") : "";
 
-        if (!discount || discount.upperLimit == -1 || discount.upperLimit >= quantity) {
+        if (!discount) {
             return description;
         }
-        return "（包含" + (quantity - discount.upperLimit) + "份原价商品）";
+        var differ = cart.quantity - cart.discountProductQuantity;
+        if(differ > 0) {
+            description = "（包含" + differ + "份原价商品）\n" + description;
+        }
+        return description;
+        // var sameCarts = cartList.filter(function (item) {
+        //     return item.formatId == cart.formatId && item.discount;
+        // });
+        // // 有同规格，不同属性的购物车商品
+        // if (sameCarts.length == 1) {
+        //     var overQuantity = cart.quantity - discount.upperLimit;
+        //     if (overQuantity <= 0) return description;
+        //     return "（包含" + overQuantity + "份原价商品）\n" + description;
+        // } else {
+        //     var limit = discount.upperLimit;
+        //     sameCarts.some(function (item) {
+        //         if (item.description == description) {
+        //             var overQuantity = item.quantity - limit;
+        //             if(overQuantity > 0)
+        //                 description = "（包含" + overQuantity + "份原价商品）\n" + description;
+        //             return true;
+        //         }
+        //         limit -= item.quantity;
+        //         return false;
+        //     });
+        // }
+        // return description;
     },
     cartProductTotal: function () {
 

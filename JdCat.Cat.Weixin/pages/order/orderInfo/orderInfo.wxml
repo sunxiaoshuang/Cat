@@ -33,8 +33,14 @@
                     <text style="line-height: 2.5;color: #aaa">×{{product.quantity}}</text>
                 </view>
                 <view class="product-price">
-                    <text>￥{{product.quantity * product.price}}</text>
+                    <text>￥{{product.price}}</text>
                 </view>
+            </view>
+            <view class="order-item" wx:if="{{!!order.packagePrice}}">
+                <text class="order-content" style="flex-grow: 1;text-align: right;">
+                    <text>包装费：</text>
+                    <text>￥{{order.packagePrice}}</text>
+                </text>
             </view>
             <view class="order-item">
                 <text class="order-content" style="flex-grow: 1;text-align: right;">

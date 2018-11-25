@@ -1,20 +1,41 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace JdCat.Cat.Common
 {
     public class AppData
     {
-        private static JsonSerializerSettings jsonSetting = new JsonSerializerSettings
+        public const string XlsxContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        public static JsonSerializerSettings JsonSetting
         {
-            DateFormatString = "yyyy-MM-dd HH:mm:ss",
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        };
-        public static JsonSerializerSettings JsonSetting { get => jsonSetting; }
+            get => new JsonSerializerSettings
+            {
+                DateFormatString = "yyyy-MM-dd HH:mm:ss",
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+        }
+
+
+        public void Init(IConfiguration config)
+        {
+            var props = typeof(AppData).GetProperties();
+            var appData = config.GetSection("appData");
+            var items = appData.GetChildren();
+
+            foreach (var prop in props)
+            {
+                var value = appData[prop.Name];
+                if (string.IsNullOrEmpty(value)) continue;
+                prop.SetValue(this, value);
+            }
+            Connection = config.GetConnectionString("CatContext");
+        }
 
         /// <summary>
         /// API请求的地址
@@ -128,5 +149,29 @@ namespace JdCat.Cat.Common
         /// 公众号发送订单消息模版id
         /// </summary>
         public string EventMessageTemplateId { get; set; }
+        /// <summary>
+        /// 易联云开发者id
+        /// </summary>
+        public string YlyPartnerId { get; set; }
+        /// <summary>
+        /// 易联云开发者密钥
+        /// </summary>
+        public string YlyApiKey { get; set; }
+        /// <summary>
+        /// 接口地址
+        /// </summary>
+        public string YlyUrl { get; set; }
+        /// <summary>
+        /// 飞鹅打印机开发者账号
+        /// </summary>
+        public string FeieUser { get; set; }
+        /// <summary>
+        /// 飞鹅打印机开发者密钥
+        /// </summary>
+        public string FeieKey { get; set; }
+        /// <summary>
+        /// 飞鹅接口地址
+        /// </summary>
+        public string FeieUrl { get; set; }
     }
 }

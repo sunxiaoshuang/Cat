@@ -80,7 +80,7 @@ namespace JdCat.Cat.Repository
         {
             return _context.Set<T>().FirstOrDefault(predicate) != null;
         }
-        public List<TModel> ExecuteReader<TModel>(string search) where TModel : new()
+        public DataTable ExecuteReader(string search)
         {
             var conn = Context.Database.GetDbConnection();
             conn.Open();
@@ -91,8 +91,14 @@ namespace JdCat.Cat.Repository
             var dt = new DataTable();
             dt.Load(reader);
             conn.Close();
+            return dt;
+        }
+        public List<TModel> ExecuteReader<TModel>(string search) where TModel : new()
+        {
+            var dt = ExecuteReader(search);
             return dt.GetList<TModel>();
         }
+
         private static readonly ILog _log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(BaseRepository<T>));
         /// <summary>
         /// 日志对象

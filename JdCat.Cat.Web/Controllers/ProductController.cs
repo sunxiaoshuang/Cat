@@ -126,16 +126,49 @@ namespace JdCat.Cat.Web.Controllers
         /// 添加商品
         /// </summary>
         /// <returns></returns>
-        public IActionResult AddProduct(int? id, [FromServices]JsonSerializerSettings settings)
+        public IActionResult AddProduct(int? id)
         {
-            var types = Service.GetTypes(Business);
-            ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name, a.Sort }), settings);
-            ViewBag.attrs = JsonConvert.SerializeObject(Service.GetAttributes().Select(a => new { a.Name, Childs = a.Childs.Select(b => b.Name) }).ToList(), settings);
+            var types = Service.GetProductTypes(Business.ID);
+            ViewBag.types = JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name, a.Sort }), AppData.JsonSetting);
+            ViewBag.attrs = JsonConvert.SerializeObject(Service.GetAttributes().Select(a => new { a.Name, Childs = a.Childs.Select(b => b.Name) }).ToList(), AppData.JsonSetting);
             if (id.HasValue)
             {
-                ViewBag.entity = JsonConvert.SerializeObject(Service.GetProduct(id.Value), settings);
+                var entity = Service.GetProduct(id.Value);
+                if(entity.Feature == ProductFeature.SetMeal)
+                {
+                    // 如果是套餐，则加载套餐商品
+                    entity.Tag1 = Service.GetSetMealProducts(entity.ProductIdSet.Split(',').Select(a => int.Parse(a)).ToArray());
+                }
+                ViewBag.entity = JsonConvert.SerializeObject(entity, AppData.JsonSetting);
             }
             return View();
+        }
+
+        /// <summary>
+        /// 选择商品模版
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult SelectProduct()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 套餐可选择的产品数据
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult SelectTypes()
+        {
+            var types = Service.GetProductWithoutSetMeal(Business.ID)
+                .Select(a => new
+                {
+                    a.ID,
+                    a.Name,
+                    Products = a.Products.Select(b => new { b.ID, b.Name }).ToList()
+                });
+            return Json(types);
         }
 
         /// <summary>
@@ -178,12 +211,23 @@ namespace JdCat.Cat.Web.Controllers
                 UnitName = product.UnitName,
                 Images = product.Images,
                 Formats = product.Formats,
-                Attributes = product.Attributes
+                Attributes = product.Attributes,
+                ProductIdSet = product.ProductIdSet,
+                Feature = product.Feature
             };
             Service.Add(entity);
             result.Success = true;
             result.Msg = "保存成功";
             return Ok(result);
+        }
+        [HttpGet]
+        public IActionResult IsCanUpdate(int id)
+        {
+            var discount = Service.GetDiscount(id);
+            var result = new JsonData {
+                Success = discount == null,
+            };
+            return Json(result);
         }
         /// <summary>
         /// 修改商品
@@ -236,8 +280,8 @@ namespace JdCat.Cat.Web.Controllers
         [HttpGet]
         public IActionResult GetProducts([FromQuery]int? typeId, [FromQuery]int pageIndex = 1)
         {
-            var list = Service.GetProducts(Business, typeId, pageIndex, out int count);
-            return Json(new { data = list, count });
+            var list = Service.GetProducts(Business);
+            return Json(new { data = list });
         }
 
         /// <summary>

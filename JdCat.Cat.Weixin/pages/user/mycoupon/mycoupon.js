@@ -15,9 +15,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    wx.setNavigationBarTitle({
-      title: "我的优惠券"
-    });
     var myCoupon = wx.getStorageSync("myCoupon");
     var notUse = myCoupon.filter(a => a.status == 1);
     var used = myCoupon.filter(a => a.status == 2);
@@ -30,7 +27,6 @@ Page({
       ],
       notUse, used, expire
     });
-    console.log(notUse);
   },
   turnPage: function (e) {
     this.setData({

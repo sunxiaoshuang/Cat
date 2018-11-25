@@ -1,0 +1,132 @@
+﻿@{
+    ViewData["Title"] = "销售统计";
+}
+
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+        <link href="~/css/report/index.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link href="~/css/report/index.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+}
+@section Scripts {
+    <script>
+        var pageData = {
+            list: JSON.parse('@Html.Raw(ViewBag.list)')
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/lib/echarts/echarts.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/report/saleStatistics.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/lib/echarts/echarts.min.js"></script>
+        <script src="~/js/report/saleStatistics.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">营业统计</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="report-header">
+                        <div>
+                            <p class="report-title">今日营业额</p>
+                            <p class="report-content">
+                                <i class="fa fa-rmb"></i>
+                                <span v-text="price"></span>
+                            </p>
+                        </div>
+                        <div>
+                            <p class="report-title">今日订单数</p>
+                            <p class="report-content" v-text="todayQuantity">
+                            </p>
+                        </div>
+                    </div>
+                    <div class="report-chart">
+                        <span class="pull-right text-primary" style="margin-right: 60px; font-size: 1.5em;">近7日营业额</span>
+                        <div class="chart" id="chart">
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-heading margin-top-20">
+                    <h3 class="panel-title">
+                        <span class="title">销售统计</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-1 col-sm-2 text-right">起止日期：</label>
+                            <div class="col-md-8">
+                                <div class="input-group pull-left" style="width: 200px;">
+                                    <input type="text" class="form-control" value="@DateTime.Now.AddMonths(-1).AddDays(1).ToString("yyyy-MM-dd")" id="txtStartDate" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                <span class="pull-left" style="margin-top: 8px;padding: 0 10px;">至</span>
+                                <div class="input-group pull-left" style="width: 200px;">
+                                    <input type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="txtEndDate" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                <button class="btn btn-primary pull-left" style="margin-left: 20px;" @@click="search()">
+                                    <i class="fa fa-search"></i>
+                                    查询
+                                </button>
+                                <button class="btn btn-primary pull-left" style="margin-left: 20px;" @@click="report()">
+                                    <i class="fa fa-search"></i>
+                                    导出Excel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class=" col-md-8 col-xs-12">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th width="100" style="text-align: center !important;">序号</th>
+                                    <th>日期</th>
+                                    <th>日销售额</th>
+                                    <th>订单数量</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, $index) in list">
+                                    <td v-text="$index + 1" align="center"></td>
+                                    <td v-text="item.date"></td>
+                                    <td v-text="currency(item.total)"></td>
+                                    <td v-text="item.quantity"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr v-if="list.length > 0">
+                                    <td align="center">总计</td>
+                                    <td></td>
+                                    <td v-text="currency(total)"></td>
+                                    <td v-text="quantity"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;"></div>
+</div>

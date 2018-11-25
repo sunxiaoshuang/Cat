@@ -25,6 +25,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public double? OldPrice { get; set; }
         /// <summary>
+        /// 包装盒费用
+        /// </summary>
+        public double? PackagePrice { get; set; }
+        /// <summary>
         /// 运费
         /// </summary>
         public double? Freight { get; set; }
@@ -48,6 +52,10 @@ namespace JdCat.Cat.Model.Data
         /// 收货人手机号
         /// </summary>
         public string Phone { get; set; }
+        /// <summary>
+        /// 用户性别
+        /// </summary>
+        public UserGender Gender { get; set; }
         /// <summary>
         /// 小费
         /// </summary>
@@ -146,6 +154,7 @@ namespace JdCat.Cat.Model.Data
         /// 订单商品
         /// </summary>
         public virtual ICollection<OrderProduct> Products { get; set; }
+
         /// <summary>
         /// 达达订单回调结果集
         /// </summary>
@@ -188,5 +197,20 @@ namespace JdCat.Cat.Model.Data
         /// 配送距离
         /// </summary>
         public int? Distance { get; set; }
+
+
+        /// <summary>
+        /// 获取用户称呼
+        /// </summary>
+        public string GetUserCall()
+        {
+            var name = this.ReceiverName;
+            if (name.Length <= 1)
+            {
+                if (this.Gender == UserGender.Male) name += "先生";
+                else if (this.Gender == UserGender.Famale) name += "女士";
+            }
+            return name;
+        }
     }
 }

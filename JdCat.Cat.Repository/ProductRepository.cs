@@ -21,6 +21,10 @@ namespace JdCat.Cat.Repository
         public ProductRepository(CatDbContext context) : base(context)
         {
         }
+        public List<ProductType> GetProductTypes(int businessId)
+        {
+            return Context.ProductTypes.Where(a => a.BusinessId == businessId).ToList();
+        }
         public IEnumerable<ProductType> GetTypes(Business business, ProductStatus? status = null)
         {
             //var types = Context.Products
@@ -161,6 +165,19 @@ namespace JdCat.Cat.Repository
             count = query.Count();
             return query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         }
+        public List<Product> GetProducts(Business business)
+        {
+            var query = Context.Products
+                .Include(a => a.Formats)
+                .Include(a => a.Images)
+                .Include(a => a.Attributes)
+                .Where(a => a.BusinessId == business.ID && a.Status != ProductStatus.Delete);
+            return query.ToList();
+        }
+        public SaleProductDiscount GetDiscount(int id)
+        {
+            return Context.SaleProductDiscount.FirstOrDefault(a => a.ProductId == id && a.Status != ActivityStatus.Delete);
+        }
         public Product GetProduct(int id)
         {
             return Context.Products
@@ -168,6 +185,14 @@ namespace JdCat.Cat.Repository
                 .Include(a => a.Images)
                 .Include(a => a.Attributes)
                 .First(a => a.ID == id);
+        }
+        public List<KeyValuePair<int, string>> GetSetMealProducts(params int[] ids)
+        {
+            var list = Context.Products
+                 .Where(a => ids.Contains(a.ID))
+                 .Select(a => new { a.ID, a.Name })
+                 .ToList();
+            return list.Select(a => new KeyValuePair<int, string>(a.ID, a.Name)).ToList();
         }
         public bool DeleteProduct(params int[] ids)
         {
@@ -203,7 +228,6 @@ namespace JdCat.Cat.Repository
         {
             Context.ProductImages.Remove(image);
         }
-
         public Product Update(Product product)
         {
             var entity = Context.Products
@@ -215,6 +239,7 @@ namespace JdCat.Cat.Repository
             entity.Name = product.Name;
             entity.ProductTypeId = product.ProductTypeId;
             entity.UnitName = product.UnitName;
+            entity.ProductIdSet = product.ProductIdSet;
             if (product.Images != null && product.Images.Count > 0)
             {
                 entity.Images = new List<ProductImage>();
@@ -287,6 +312,24 @@ namespace JdCat.Cat.Repository
             product.ModifyTime = DateTime.Now;
             product.NotSaleTime = DateTime.Now;
             product.Status = ProductStatus.NotSale;
+        }
+        public List<ProductType> GetProductWithoutSetMeal(int id)
+        {
+            var types = GetTypes(id).ToList();
+            types.ForEach(a =>
+            {
+                var delList = new List<Product>();
+                foreach (var item in a.Products)
+                {
+                    if (item.Feature == ProductFeature.SetMeal)
+                    {
+                        delList.Add(item);
+                        continue;
+                    }
+                }
+                delList.ForEach(b => a.Products.Remove(b));
+            });
+            return types;
         }
     }
 }

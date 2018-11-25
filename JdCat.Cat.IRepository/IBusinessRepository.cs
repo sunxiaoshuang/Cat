@@ -68,7 +68,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="business"></param>
         /// <param name="device"></param>
-        bool BindPrintDevice(Business business, FeyinDevice device);
+        Task<bool> BindPrintDevice(Business business, FeyinDevice device);
         /// <summary>
         /// 修改密码
         /// </summary>
@@ -128,6 +128,14 @@ namespace JdCat.Cat.IRepository
         /// <param name="date"></param>
         /// <returns></returns>
         List<Report_ProductPrice> GetProductPriceTop10(Business business, DateTime date);
+        /// <summary>
+        /// 获取指定日期的销售统计数据
+        /// </summary>
+        /// <param name="business"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end);
 
         #endregion
 

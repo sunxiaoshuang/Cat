@@ -66,24 +66,24 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> Print([FromServices]FeYinHelper helper, [FromServices]IOrderRepository service)
         {
             var order = service.Set<Order>().Include(a => a.Products).SingleOrDefault(a => a.ID == 5);
-            var result = await helper.Print("4600416530039455", order);
+            var result = await helper.PrintAsync("4600416530039455", order);
             return Ok(result.ErrMsg ?? "正在打印中，请稍等");
         }
 
         public async Task<IActionResult> UpdateToken([FromServices]FeYinHelper helper)
         {
-            await helper.GetToken();
+            await helper.GetTokenAsync();
             return Ok("成功");
         }
 
         public async Task<IActionResult> BindDevice([FromServices]FeYinHelper helper, [FromQuery]string device_no)
         {
-            var result = await helper.BindDevice(device_no);
+            var result = await helper.BindDeviceAsync(device_no);
             return Ok(result.ErrMsg ?? "设备绑定成功");
         }
         public async Task<IActionResult> UnBindDevice([FromServices]FeYinHelper helper, [FromQuery]string device_no)
         {
-            var result = await helper.UnBindDevice(device_no);
+            var result = await helper.UnBindDeviceAsync(device_no);
             return Ok(result.ErrMsg ?? "设备解绑成功");
         }
 

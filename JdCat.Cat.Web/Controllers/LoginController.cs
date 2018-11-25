@@ -64,7 +64,7 @@ namespace JdCat.Cat.Web.Controllers
             result.Success = true;
             result.Data = business;
             HttpContext.Session.Set(_appData.Session, business);
-            HttpContext.Response.Cookies.Append(_appData.Cookie, business.ID.ToString(),
+            HttpContext.Response.Cookies.Append(_appData.Cookie, business.ObjectId,
                 new CookieOptions
                 {
                     Expires = DateTime.Now.AddDays(3)

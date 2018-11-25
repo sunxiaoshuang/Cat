@@ -35,6 +35,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public ProductFeature Feature { get; set; }
         /// <summary>
+        /// 套餐商品的id集
+        /// </summary>
+        public string ProductIdSet { get; set; }
+        /// <summary>
         /// 商品属性
         /// </summary>
         public virtual ICollection<ProductAttribute> Attributes { get; set; }
@@ -58,6 +62,11 @@ namespace JdCat.Cat.Model.Data
         /// 下架时间
         /// </summary>
         public DateTime? NotSaleTime { get; set; }
+        /// <summary>
+        /// 备用属性
+        /// </summary>
+        [NotMapped]
+        public object Tag1 { get; set; }
         /// <summary>
         /// 商家id
         /// </summary>
@@ -86,10 +95,6 @@ namespace JdCat.Cat.Model.Data
         /// 产品修改时间
         /// </summary>
         public DateTime? ModifyTime { get; set; }
-        /// <summary>
-        /// 购物车集合
-        /// </summary>
-        public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; }
         /// <summary>
         /// 商品折扣活动集合
         /// </summary>

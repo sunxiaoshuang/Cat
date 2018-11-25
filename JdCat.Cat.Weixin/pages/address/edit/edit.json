@@ -1,4 +1,5 @@
 {
   "enablePullDownRefresh": false,
-  "backgroundColor": "#fff"
+  "backgroundColor": "#fff",
+  "navigationBarTitleText": "编辑地址"
 }

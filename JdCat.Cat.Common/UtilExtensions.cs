@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using OfficeOpenXml;
+using OfficeOpenXml.Table;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
@@ -27,7 +30,7 @@ namespace JdCat.Cat.Common
             {
                 var type = typeof(T);
                 PropertyInfo[] properties = null;
-                if(dicProp.ContainsKey(type.FullName))
+                if (dicProp.ContainsKey(type.FullName))
                 {
                     properties = dicProp[type.FullName];
                 }
@@ -110,6 +113,28 @@ namespace JdCat.Cat.Common
         {
             var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
             return Convert.ToInt64(ts.TotalSeconds);
+        }
+
+        /// <summary>
+        /// 将列表转化为Excel表格的二进制数据
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="printerHeaders"></param>
+        /// <param name="styles"></param>
+        /// <returns></returns>
+        public static byte[] ToWorksheet<T>(this IEnumerable<T> list, bool printerHeaders = true)
+        {
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                var range = worksheet.Cells["A1"].LoadFromCollection(list, printerHeaders);
+                for (var col = 1; col < range.Columns + 1; col++)
+                {
+                    worksheet.Column(col).AutoFit();
+                }
+                return package.GetAsByteArray();
+            }
         }
 
     }

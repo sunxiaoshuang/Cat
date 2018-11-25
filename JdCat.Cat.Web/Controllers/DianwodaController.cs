@@ -63,7 +63,7 @@ namespace JdCat.Cat.Web.Controllers
             DWDStore dwd = Business.DWDStore;
             if (dwd != null)
             {
-                var back = await helper.GetBalance(dwd.external_shopid);
+                var back = await helper.GetBalanceAsync(dwd.external_shopid);
                 balance = back.result.balance;
             }
             else
@@ -97,7 +97,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> DetailList([FromQuery]int pageIndex, [FromQuery]DateTime startDate, [FromQuery] DateTime endDate, [FromServices]DwdHelper helper)
         {
-            var back = await helper.GetDetail(Business.DWDStore, startDate, endDate, pageIndex);
+            var back = await helper.GetDetailAsync(Business.DWDStore, startDate, endDate, pageIndex);
             return Json(back);
         }
 
@@ -117,8 +117,8 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> OrderDetail([FromQuery]string orderCode, [FromServices]DwdHelper helper)
         {
-            var back = await helper.GetOrderDetail(orderCode);
-            var price = await helper.GetOrderPrice(orderCode);
+            var back = await helper.GetOrderDetailAsync(orderCode);
+            var price = await helper.GetOrderPriceAsync(orderCode);
             ViewBag.typeName = price.result.price_type == 1 ? "预估费用" : "最终费用";
             ViewBag.price = "￥" + (price.result.receivable_price / 100);
             return View(back.result);
@@ -145,7 +145,7 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> Create([FromBody]DWDStore dwd, [FromServices]DwdHelper helper)
         {
             var result = new JsonData();
-            var back = await helper.CreateShop(dwd);
+            var back = await helper.CreateShopAsync(dwd);
             if (!back.success)
             {
                 result.Msg = back.message;
@@ -185,7 +185,7 @@ namespace JdCat.Cat.Web.Controllers
         {
             var dwd = Service.Get(a => a.BusinessId == Business.ID);
             var recharge = new DWD_Recharge { Amount = amount, DWD_Business = dwd, Mode = DwdRechargeType.Alipay, Code = $"Dwd{DateTime.Now:yyyyMMddHHmmss}{UtilHelper.RandNum()}" };
-            var back = await helper.Recharge(recharge);
+            var back = await helper.RechargeAsync(recharge);
             if (back.success)
             {
                 ViewBag.form = back.result.pay_content;
@@ -208,7 +208,7 @@ namespace JdCat.Cat.Web.Controllers
         {
             var dwd = Service.Get(a => a.BusinessId == Business.ID);
             var recharge = new DWD_Recharge { Amount = amount, DWD_Business = dwd, Mode = DwdRechargeType.Wechat, Code = $"Dwd{DateTime.Now:yyyyMMddHHmmss}{UtilHelper.RandNum()}" };
-            var back = await helper.Recharge(recharge);
+            var back = await helper.RechargeAsync(recharge);
             if (back.success)
             {
                 ViewBag.url = back.result.pay_content;
@@ -248,7 +248,7 @@ namespace JdCat.Cat.Web.Controllers
             {
                 return Json(new { success = false });
             }
-            var back = await helper.RechargeResult(dwd, DwdBizNo);
+            var back = await helper.RechargeResultAsync(dwd, DwdBizNo);
             if(back.success && back.result.rechange_succ)
             {
                 Service.RechargeSuccess(DwdBizNo);

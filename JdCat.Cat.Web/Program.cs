@@ -53,7 +53,7 @@ namespace JdCat.Cat.Web
                 {
                     var context = serviceProvider.GetService<CatDbContext>();
                     new SeedData(context).Seed();
-                    SyncProgram(context);
+                    //SyncProgram(context);
                 }
                 catch (Exception ex)
                 {
@@ -67,17 +67,14 @@ namespace JdCat.Cat.Web
         /// </summary>
         private static void SyncProgram(CatDbContext context)
         {
-            // 同步默认打印机
-            //var businesses = context.Businesses.ToList();
-            //foreach (var business in businesses)
-            //{
-            //    if (string.IsNullOrEmpty(business.DefaultPrinterDevice)) continue;
-            //    var device = context.FeyinDevices.FirstOrDefault(a => a.Code == business.DefaultPrinterDevice);
-            //    business.DefaultPrinterDevice = null;
-            //    if (device == null || device.IsDefault) return;
-            //    device.IsDefault = true;
-            //}
-            //context.SaveChanges();
+            // 为每个商户生成ObjectId
+            var businesses = context.Businesses.ToList();
+            foreach (var item in businesses)
+            {
+                if (!string.IsNullOrEmpty(item.ObjectId)) continue;
+                item.ObjectId = Guid.NewGuid().ToString().ToLower();
+            }
+            context.SaveChanges();
         }
 
         /// <summary>

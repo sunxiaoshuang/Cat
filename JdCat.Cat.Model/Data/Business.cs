@@ -13,6 +13,10 @@ namespace JdCat.Cat.Model.Data
     public class Business : BaseEntity, ICloneable
     {
         /// <summary>
+        /// 对象id
+        /// </summary>
+        public string ObjectId { get; set; }
+        /// <summary>
         /// 商户名称
         /// </summary>
         public string Name { get; set; }

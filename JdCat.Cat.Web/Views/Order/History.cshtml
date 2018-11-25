@@ -155,7 +155,7 @@
                                                     <tr>
                                                         <td>商品名称</td>
                                                         <td>规格描述</td>
-                                                        <td>单价</td>
+                                                        <td>总价</td>
                                                         <td>数量</td>
                                                     </tr>
                                                 </thead>
@@ -186,26 +186,5 @@
             </tfoot>
         </table>
         <cat-pager :page-count="pageObj.pageCount" :page-index="pageObj.pageIndex" page-position="center" @@next="nextPage" @@page="changePage" @@prev="prevPage"></cat-pager>
-        @*<div class="pull-right" v-show="pageObj.pageCount > 1">
-            <div>
-                <ul class="pagination cat-pagination pagination-sm">
-                    <li v-bind:class="{'disabled': pageObj.pageIndex === 1}" v-on:click="prevPage()">
-                        <a>
-                            <i class="fa fa-chevron-left"></i>
-                        </a>
-                    </li>
-                    <li v-for="num in pageObj.pageCount" v-bind:class="{'active': num === pageObj.pageIndex}" v-on:click="changePage(num)">
-                        <a>
-                            <span>{{num}}</span>
-                        </a>
-                    </li>
-                    <li v-bind:class="{'disabled': pageObj.pageIndex === pageObj.pageCount}" v-on:click="nextPage()">
-                        <a>
-                            <i class="fa fa-chevron-right"></i>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>*@
     </div>
 </div>

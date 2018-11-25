@@ -9,6 +9,15 @@
             list: pageObj.printers
         },
         methods: {
+            printerType: function (printer) {
+                if (printer.type == 0) {
+                    return "佳博";
+                } else if (printer.type == 1) {
+                    return "易联云";
+                } else {
+                    return "飞鹅";
+                }
+            },
             modify: function () {
                 this.modifyState = true;
             },
@@ -55,11 +64,16 @@
                                 <input type='text' class='form-control' v-model.trim='apiKey' />
                             </div>
                             <label class='col-md-3 col-xs-12 control-label'>打印机类别：</label>
-                            <div class='col-md-8 col-xs-12'>
+                            <div class='col-md-8 col-xs-12' style='margin-bottom: 10px;'>
                                 <select class='form-control' v-model='type'>
                                     <option value='0'>佳博</option>
                                     <option value='1'>易联云</option>
+                                    <option value='2'>飞鹅</option>
                                 </select>
+                            </div>
+                            <label class='col-md-3 col-xs-12 control-label'>流量卡号（仅限飞鹅）：</label>
+                            <div class='col-md-8 col-xs-12'>
+                                <input type='text' class='form-control' v-model.trim='remark' />
                             </div>
                         </div>`,
                     load: function () {
@@ -83,6 +97,7 @@
                         var name = bindView.name;
                         var type = bindView.type;
                         var apiKey = bindView.apiKey;
+                        var remark = bindView.remark;
                         if (!name) {
                             $.alert("请输入打印机名称");
                             return false;
@@ -95,8 +110,12 @@
                             $.alert("易联云打印机需要填写打印机密钥");
                             return false;
                         }
+                        if (type == 2 && !remark) {
+                            $.alert("飞鹅打印机请在备注栏输入流量卡号码");
+                            return false;
+                        }
                         
-                        axios.get(`/business/addbind?code=${code}&name=${name}&type=${type}&apiKey=${apiKey}`)
+                        axios.get(`/business/addbind?code=${code}&name=${name}&type=${type}&apiKey=${apiKey}&remark=${remark}`)
                             .then(function (res) {
                                 if (res.data.success) {
                                     $.alert(res.data.msg, "success");

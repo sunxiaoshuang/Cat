@@ -61,12 +61,8 @@
                                     <view class="food-numb">
                                         <view class="price">
                                             <view>
-                                                <text>
-                                                    ￥{{!item.discount ? item.price : item.discount.price}}
-                                                </text>
-                                                <text class="oldPrice" wx:if="{{!!item.discount}}">
-                                                    ￥{{item.price}}
-                                                </text>
+                                                <text>￥{{!item.discount ? item.price : item.discount.price}}</text>
+                                                <text class="oldPrice" wx:if="{{!!item.discount}}">￥{{item.price}}</text>
                                             </view>
                                             <view style="display: flex;" wx:if="{{!!item.discount}}">
                                                 <!-- <view class="slide-image" style="transform: scale(.7,.7)">折</view> -->
@@ -184,11 +180,11 @@
     <view class="footer">
         <view class="howMuch" bindtap="showCart">
             <view class="img">
-                <image src="/images/icon/{{cartList.length == 0 ? 'cart-1.png' : 'cart-2.png'}}" style="width: 90rpx;height: 90rpx;"></image>
+                <image src="/images/icon/{{cartList.length == 0 ? 'cart-1.png' : 'cart-2.png'}}" style="width: 105rpx;height: 105rpx;"></image>
                 <view class="cart-quantity" wx:if="{{cartQuantity > 0}}">{{cartQuantity}}</view>
             </view>
             <view class="cost" wx:if="{{cartList.length!=0}}">
-                <text class="cost-price">￥{{calc.cartTotalPrice(cartList)}}</text>
+                <text class="cost-price">￥{{calc.precision(calc.cartTotalPrice(cartList) + packagePrice, 2)}}</text>
                 <text class="cost-peisong">另需配送费￥{{freight}}</text>
             </view>
             <view class="free" wx:if="{{cartList.length==0}}"></view>
@@ -196,7 +192,9 @@
         <view class="pay {{!isBalance ? 'notPay' : 'pay'}}" bindtap="pay" wx:if="{{calc.cartTotalPrice(cartList) >= business.minAmount}}">
             {{submitText}}
         </view>
-        <view class="pay notPay" wx:else>￥{{business.minAmount}} 起送</view>
+        <view class="pay notPay" wx:else>
+            {{isBalance ? ('￥' + (business.minAmount || '') + '起送') : submitText}}
+        </view>
     </view>
 </view>
 <view class="cart-dialog" wx:if="{{showCart}}">
@@ -218,7 +216,8 @@
                     <text style="font-size: 80%; color: #aaa;">{{calc.cartDescription(cart)}}</text>
                 </view>
                 <view class="cart-food-price">
-                    ￥{{calc.precision(cart.price * cart.quantity, 2)}}
+                    <text>￥{{cart.price}}</text>
+                    <text wx:if="{{!!cart.discount}}" class="oldPrice">￥{{cart.oldPrice}}</text>
                 </view>
                 <view class="item-food-numb">
                     <view class="item-remove" bindtap="removeCart" data-index="{{index}}">
@@ -231,6 +230,11 @@
                 </view>
             </view>
             <view wx:if="{{cartList.length == 0}}">未添加任何商品...</view>
+            <view class="cart" wx:else>
+                <view class="cart-food-name">包装费</view>
+                <view class="cart-food-price">￥{{packagePrice}}</view>
+                <view class="item-food-numb"></view>
+            </view>
         </scroll-view>
     </view>
 </view>

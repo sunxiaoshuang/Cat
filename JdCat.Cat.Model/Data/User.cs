@@ -61,6 +61,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public bool IsPhone { get; set; }
         /// <summary>
+        /// 购买次数
+        /// </summary>
+        public int PurchaseTimes { get; set; }
+        /// <summary>
         /// 依赖注册的商户
         /// </summary>
         public int BusinessId { get; set; }

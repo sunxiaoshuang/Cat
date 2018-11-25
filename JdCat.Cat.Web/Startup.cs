@@ -46,6 +46,7 @@ namespace JdCat.Cat.Web
                 options.IdleTimeout = TimeSpan.FromSeconds(600);
                 options.Cookie.HttpOnly = true;
             });
+
             // 配置依赖
             //services.AddDbContext<CatDbContext>(a => a.UseLazyLoadingProxies()
             //.ConfigureWarnings(b => b.Log(CoreEventId.DetachedLazyLoadingWarning))
@@ -60,44 +61,14 @@ namespace JdCat.Cat.Web
             services.AddSingleton(new List<City>());
             services.AddSingleton(new List<DadaCancelReason>());
             // 系统参数
-            var appData = Configuration.GetSection("appData");
-            var config = new AppData
-            {
-                ApiUri = appData["apiUri"],
-                FileUri = appData["fileUri"],
-                Name = appData["name"],
-                Session = appData["session"],
-                Cookie = appData["cookie"],
-                Connection = Configuration.GetConnectionString("CatContext"),
-                OrderUrl = appData["orderUrl"],
-                RunMode = appData["runMode"],
-                DadaDomain = appData["dadaDomain"],
-                DadaAppKey = appData["dadaAppKey"],
-                DadaAppSecret = appData["dadaAppSecret"],
-                DadaSourceId = appData["dadaSourceId"],
-                DadaShopNo = appData["dadaShopNo"],
-                DadaCallback = appData["dadaCallback"],
-                FeyinAppId = appData["feyinAppId"],
-                FeyinMemberCode = appData["feyinMemberCode"],
-                FeyinApiKey = appData["feyinApiKey"],
-                DwdDomain = appData["dwdDomain"],
-                DwdAppKey = appData["dwdAppKey"],
-                DwdAppSecret = appData["dwdAppSecret"],
-                DwdShopNo = appData["dwdShopNo"],
-                DwdCallback = appData["dwdCallback"]
-            };
+            var config = new AppData();
+            config.Init(Configuration);
             services.AddSingleton(config);
             // 序列化参数
-            var setting = new JsonSerializerSettings
-            {
-                DateFormatString = "yyyy-MM-dd HH:mm:ss",
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
-            services.AddSingleton(setting);
+            services.AddSingleton(AppData.JsonSetting);
             // 达达请求
             var dada = DadaHelper.GetHelper();
-            dada.Init(config, setting);
+            dada.Init(config, AppData.JsonSetting);
             services.AddSingleton(dada);
             // 点我达请求
             var dwd = DwdHelper.GetHelper();
@@ -113,7 +84,11 @@ namespace JdCat.Cat.Web
             services.AddSingleton(feyin);
             // 易联云
             var yly = YlyHelper.GetHelper();
-            yly.Init(appData["YlyPartnerId"], appData["YlyApiKey"]);
+            yly.Init(config.YlyPartnerId, config.YlyApiKey, config.YlyUrl);
+            services.AddSingleton(yly);
+            // 飞鹅
+            var feie = FeieHelper.GetHelper();
+            feie.Init(config.FeieUser, config.FeieKey, config.FeieUrl);
             services.AddSingleton(yly);
         }
 

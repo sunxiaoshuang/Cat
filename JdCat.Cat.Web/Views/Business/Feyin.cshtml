@@ -97,7 +97,7 @@
                                     <td class="text-center" v-text="index + 1"></td>
                                     <td width="300"><span v-text="printer.name"></span><span class="badge pull-right" v-show="printer.isDefault">默认</span></td>
                                     <td v-text="printer.code"></td>
-                                    <td v-text="printer.type == 0 ? '佳博' : '易联云'"></td>
+                                    <td v-html="printerType(printer)"></td>
                                     <td>
                                         <a class="jdcat-link" href="javascript:void(0);" @@click="unbind(printer)">解除绑定</a>
                                         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -107,7 +107,7 @@
                             </tbody>
                             <tfoot v-if="list.length == 0">
                                 <tr>
-                                    <td colspan="4">
+                                    <td colspan="5">
                                         暂未绑定任何打印机
                                     </td>
                                 </tr>

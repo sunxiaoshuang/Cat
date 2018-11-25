@@ -39,6 +39,11 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null, DateTime? createTime = null);
         /// <summary>
+        /// 载入套餐商品
+        /// </summary>
+        /// <param name="products"></param>
+        void QuarySetMealProduct(IEnumerable<OrderProduct> products);
+        /// <summary>
         /// 商户接单
         /// </summary>
         /// <param name="orderId"></param>
@@ -135,5 +140,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="order"></param>
         /// <returns></returns>
         Task<JsonData> Invoice(Order order);
+
+        void Print(Business business);
     }
 }

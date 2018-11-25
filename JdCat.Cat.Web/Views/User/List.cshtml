@@ -41,6 +41,7 @@
                                         <th>性别</th>
                                         <th>地域</th>
                                         <th>手机号</th>
+                                        <th width="100">消费次数</th>
                                         <th>注册时间</th>
                                     </tr>
                                 </thead>
@@ -53,6 +54,7 @@
                                         <td v-html="genderFilter(item)"></td>
                                         <td v-html="item.province + ' ' + item.city"></td>
                                         <td v-html="phoneFilter(item)"></td>
+                                        <td v-html="item.purchaseTimes"></td>
                                         <td v-html="item.createTime"></td>
                                     </tr>
                                 </tbody>

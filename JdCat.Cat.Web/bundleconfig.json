@@ -259,6 +259,13 @@
     "inputFiles": [
       "wwwroot/css/business/message.css"
     ]
+  },
+  // 销售统计
+  {
+    "outputFileName": "wwwroot/js/report/saleStatistics.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/saleStatistics.js"
+    ]
   }
 
 ]

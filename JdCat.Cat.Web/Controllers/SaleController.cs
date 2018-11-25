@@ -98,6 +98,10 @@ namespace JdCat.Cat.Web.Controllers
                     {
                         removeList.Add(item);
                     }
+                    //if(item.Attributes.Count > 0)
+                    //{
+                    //    removeList.Add(item);
+                    //}
                 }
                 removeList.ForEach(a => type.Products.Remove(a));
             });

@@ -11,7 +11,7 @@
         pageData.types.forEach(function (obj) { obj.selected = false; });
     </script>
     <environment include="Development">
-        <script src="~/js/product.js" asp-append-version="true"></script>
+        <script src="~/js/product.js"></script>
     </environment>
     <environment exclude="Development">
         <script src="~/js/product.min.js" asp-append-version="true"></script>
@@ -68,19 +68,42 @@
                             </div>
                             <div class="pull-left">
                                 <div class="kui-button m-right-xs">
-                                    <button type="button" class="btn btn-sm kui-button-primary" v-on:click="batchUp()">
+                                    <a class="btn btn-sm kui-button-primary" v-on:click="batchUp()">
                                         批量上架
-                                    </button>
+                                    </a>
                                 </div>
                                 <div class="kui-button m-right-xs">
-                                    <button type="button" class="btn btn-sm kui-button-primary" v-on:click="batchDown()">
+                                    <a class="btn btn-sm kui-button-primary" v-on:click="batchDown()">
                                         批量下架
-                                    </button>
+                                    </a>
                                 </div>
                                 <div class="kui-button m-right-xs">
-                                    <button type="button" class="btn btn-sm kui-button-primary" v-on:click="batchRemove()">
+                                    <a class="btn btn-sm kui-button-primary" v-on:click="batchRemove()">
                                         批量删除
-                                    </button>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="width: 250px;">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" list="searchProduct" v-model="searchKey" placeholder="所有商品搜索" />
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-search"></i>
+                                    </span>
+                                    <datalist id="searchProduct">
+                                        <option v-for="item in searchProducts" :value="item.name" />
+                                    </datalist>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="width: 250px;">
+                                <div class="kui-button m-right-xs">
+                                    <a class="btn btn-sm kui-button-primary" v-bind:class="{'hover': onlyUp}" @@click="showUp()">
+                                        只看上架
+                                    </a>
+                                </div>
+                                <div class="kui-button m-right-xs">
+                                    <a class="btn btn-sm kui-button-primary" v-bind:class="{'hover': onlyDown}" @@click="showDown()">
+                                        只看下架
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -110,7 +133,7 @@
                                         </span>
                                     </p>
                                     <div class="my-order1" style="text-align: center;">
-                                        <div class="kui-button m-right-xs">
+                                        <div class="kui-button m-right-xs" style="width: 100%;">
                                             <button type="button" v-on:click="toggleStatus(product)" style="width: 100px" class="btn btn-sm kui-button-primary" v-text='product.status == 1 ? "下架" : "上架"'></button>
                                         </div>
                                     </div>
@@ -157,12 +180,18 @@
                                             <span v-html="attribute(product.attributes)"></span>
                                         </span>
                                     </p>
+                                    <hr style="margin: 5px 0;" />
+                                    <p style="display:flex; height: 30px">
+                                        <span style="line-height:1.1;">
+                                            <span class="bold">特性：</span>
+                                            <span v-html="feature(product.feature)"></span>
+                                        </span>
+                                    </p>
                                 </div>
                                 <div class="product-operate pull-right">
                                     <div style="text-align: center;">
-                                        <div class="kui-button m-right-xs">
-                                            <button type="button" v-on:click="toggleStatus(product)" style="width: 100px" class="btn btn-sm kui-button-primary" v-text='product.status == 1 ? "下架" : "上架"'>
-                                            </button>
+                                        <div class="kui-button m-right-xs" style="width: 100%">
+                                            <button type="button" v-on:click="toggleStatus(product)" style="width: 100%" class="btn btn-sm kui-button-primary" v-text='product.status == 1 ? "下架" : "上架"'></button>
                                         </div>
                                     </div>
                                     <div style="text-align: center; margin-top: 20px;">
