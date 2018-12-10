@@ -24,6 +24,13 @@ namespace JdCat.Cat.Web.Controllers
 {
     public class OpenController : Controller
     {
+        public ILog Log
+        {
+            get
+            {
+                return LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
+            }
+        }
         public IActionResult Index()
         {
             return View();
@@ -35,7 +42,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="dada"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public IActionResult DadaCallback([FromBody]DadaCallBack dada, [FromServices]IHostingEnvironment environment)
+        public IActionResult DadaCallback([FromBody]DadaCallBack dada)
         {
             var service = HttpContext.RequestServices.GetService<IOrderRepository>();
             try
@@ -44,10 +51,9 @@ namespace JdCat.Cat.Web.Controllers
             }
             catch (Exception e)
             {
-                var filename = Path.Combine(environment.ContentRootPath, "Log", DateTime.Now.ToString("yyyy-MM-dd") + ".txt");
-                System.IO.File.AppendAllText(filename, "\r\n" + Environment.NewLine + e.Message);
+                Log.Error("达达订单更新异常：" + e.Message);
             }
-            return Ok("更新完成");
+            return Ok();
         }
         /// <summary>
         /// 点我达订单回调
@@ -62,13 +68,14 @@ namespace JdCat.Cat.Web.Controllers
             try
             {
                 var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
-                log.Debug("点我达回调：" + JsonConvert.SerializeObject(dwd));
+                //log.Debug("点我达回调：" + JsonConvert.SerializeObject(dwd));
                 // 每次回调时，均重新读取一次订单配送费用，并保存到数据库
                 var priceResult = await helper.GetOrderPriceAsync(orderCode);
                 double cost = 0;
                 if (priceResult.success)
                 {
                     cost = priceResult.result.receivable_price / 100;
+                    log.Debug($"编号：{orderCode}，点我达配送金额为{cost}");
                 }
                 service.UpdateOrderByDwd(dwd, cost);
             }
@@ -80,6 +87,42 @@ namespace JdCat.Cat.Web.Controllers
 
 
             return Json(new { success = true });
+        }
+        /// <summary>
+        /// 一城飞客订单状态回调
+        /// </summary>
+        /// <param name="ycfk"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public IActionResult YcfkCallback([FromServices]IOrderRepository service, [FromServices]AppData appData, [FromServices]YcfkHelper helper)
+        {
+            //var orderId = Request.Form["OrderId"];
+            //var orderState = Request.Form["OrderState"];
+            //var reason = Request.Form["Reason"];
+            //Log.Info(orderId + "|" + orderState + "|" + reason);
+            //var ycfk = new YcfkCallback { OrderId = orderId, OrderState = int.Parse(orderState), Reason = reason };
+            var action = Request.Form["action"];
+            var sign = Request.Form["action"];
+            var ts = Request.Form["action"];
+            var key = Request.Form["action"];
+            var content = Request.Form["content"];
+            if (action.ToString().ToLower() != "sendorderstate") return Json(new { StateCode = 0, StateMsg = "ok" });
+            //if (key != appData.YcfkPartnerKey) return Json(new { StateCode = 1, StateMsg = "key值不存在" });
+            //var signature = helper.CreateSignature(content, ts);
+            //if (sign != signature) return Json(new { StateCode = 2, StateMsg = "签名验证失败" });
+
+            var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(content));
+            var ycfk = JsonConvert.DeserializeObject<YcfkCallback>(json);
+            Log.Info(JsonConvert.SerializeObject(ycfk));
+            try
+            {
+                service.UpdateOrderStatus(ycfk);
+            }
+            catch (Exception e)
+            {
+                Log.Error("一城飞客订单更新异常：" + e.Message);
+            }
+            return Json(new { StateCode = 0, StateMsg = "处理成功" });
         }
         /// <summary>
         /// 微信公众号绑定OpenId页
@@ -162,9 +205,17 @@ namespace JdCat.Cat.Web.Controllers
         /// 易联云打印回调
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> YLYPrint()
+        public IActionResult YLYPrint()
         {
+            return Json(new { data = "OK" });
+        }
 
+        /// <summary>
+        /// 外卖管家打印回调
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult WMGJ()
+        {
             return Json(new { data = "OK" });
         }
 

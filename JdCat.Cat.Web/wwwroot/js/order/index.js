@@ -3,9 +3,9 @@
         statusName = {
             "1": "已付款", "2": "已拒单", "4": "待配送", "8": "待配送", "16": "配送中", "32": "配送异常", "64": "已送达", "128": "用户已确认收货", "256": "未付款", "512": "已评价", "1024": "已关闭", "2048": "配送已取消", "4096": "订单已取消"
         },
-        providerName = { "0": "未知", "1": "自己配送", "2": "达达配送", "3": "美团配送", "4": "蜂鸟配送", "5": "点我达配送" },
+        providerName = { "0": "未知", "1": "自己配送", "2": "达达配送", "3": "美团配送", "4": "蜂鸟配送", "5": "点我达配送", "6": "一城飞客配送" },
         delivered = 8 + 16 + 64 + 128 + 256 + 512 + 1024;// 已发货
-    var vueReason = null;
+    var vueReason = null, $tipModal;
     var app = new Vue({
         el: "#app",
         data: {
@@ -33,13 +33,14 @@
                 { name: "美团配送", selected: false, type: 0, logisticsType: 3, doing: true },
                 { name: "蜂鸟配送", selected: false, type: 0, logisticsType: 4, doing: true },
                 { name: "点我达配送", selected: false, type: 0, logisticsType: 5, doing: false },
+                { name: "一城飞客配送", selected: false, type: 0, logisticsType: 6, doing: false },
                 { name: "自己配送", selected: false, type: 1, logisticsType: 1, doing: false }
             ],
             curOrder: null,             // 当前选择配送的订单
             printerCode: localStorage.getItem("defaultPrinter"),          // 当前选择的打印机编码
             curSendType: null,
             search_code: pageObj.code,
-            search_phone: "",
+            search_phone: ""
         },
         methods: {
             initPageObj: function () {
@@ -257,6 +258,43 @@
                         $.alert(err);
                     });
             },
+            addTip: function (order) {
+                $tipModal = $.view({
+                    template: `
+                        <div class="row form-horizontal">
+                            <div class="form-group">
+                                <label class="control-label col-xs-3">
+                                    <span class="require">小费总金额：</span>
+                                </label>
+                                <div class="col-xs-8">
+                                    <input class="form-control add-tip" type="number" value="1" />
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    title: "添加小费",
+                    footDisplay: true,
+                    submit: function () {
+                        var tip = +$tipModal.find(".add-tip").val();
+                        if (tip > 50) {
+                            $.alert("小费金额不能大于50");
+                            return false;
+                        }
+                        axios.get(`/Order/AddTip/${order.id}?tip=${tip}&code=${order.orderCode}&distributionFlow=${order.distributionFlow}`)
+                            .then(function (res) {
+                                if (res.data.success) {
+                                    $.alert("添加小费成功", "success");
+                                    return;
+                                }
+                                $.alert(res.data.message);
+                            })
+                            .catch(function (err) {
+                                $.alert(err);
+                            });
+                        return true;
+                    }
+                });
+            },
             search: function () {
                 this.initPageObj();
                 this.loadData();
@@ -267,7 +305,6 @@
                         $.view({
                             template: res.data,
                             title: "配送信息"
-
                         });
                     })
                     .catch(function (err) {

@@ -49,5 +49,37 @@ namespace JdCat.Cat.WsService.Controllers
             return Ok("新订单通知成功");
         }
 
+        /// <summary>
+        /// 接收新订单
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult Post([FromBody]PostData data, [FromServices]OrderInfoHandler handler)
+        {
+            handler.Add(data);
+            return Ok("通知成功");
+        }
+
+        /// <summary>
+        /// 根据商户id获取自己的订单
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("GetOrders/{id}")]
+        public IActionResult Get(int id, [FromServices]OrderInfoHandler handler)
+        {
+            var result = new JsonData { Success = true };
+            var list = handler.Get(id);
+            if (list == null || list.Count == 0)
+            {
+                result.Msg = "没有新订单";
+            }
+            else
+            {
+                result.Data = list;
+            }
+            return Json(result);
+        }
+
     }
 }

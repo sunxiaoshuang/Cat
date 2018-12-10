@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.Common.Models;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
@@ -137,7 +138,7 @@ namespace JdCat.Cat.Repository
         {
             return Context.FeyinDevices.Where(a => a.BusinessId == businessId).ToList();
         }
-        public async Task<bool> BindPrintDevice(Business business, FeyinDevice device)
+        public async Task<bool> BindPrintDeviceAsync(Business business, FeyinDevice device)
         {
             device.BusinessId = business.ID;
             if (device.Type == PrinterType.Feyin)
@@ -148,14 +149,47 @@ namespace JdCat.Cat.Repository
             else if (device.Type == PrinterType.Feie)
             {
                 var ret = await FeieHelper.GetHelper().AddPrintAsync(device);
-                if(ret.ret != 0)
+                if (ret.ret != 0)
                 {
                     return false;
                 }
             }
+            else if (device.Type == PrinterType.Waimaiguanjia)
+            {
+                var ret = await WmgjHelper.GetHelper().AddPrintAsync(device);
+                if (ret.data == null || string.IsNullOrEmpty(ret.data.token))
+                {
+                    return false;
+                }
+                device.Remark = ret.data.token;
+            }
 
             Context.FeyinDevices.Add(device);
             return Context.SaveChanges() > 0;
+        }
+
+        public async Task<JsonData> UnbindPrintDeviceAsync(int id)
+        {
+            var result = new JsonData();
+            var device = Context.FeyinDevices.SingleOrDefault(a => a.ID == id);
+            if (device == null)
+            {
+                result.Msg = "设备可以已经被删除，请刷新后重试";
+                return result;
+            }
+            if (device.Type == PrinterType.Waimaiguanjia)
+            {
+                await WmgjHelper.GetHelper().DelPrinterAsync(device);
+            }
+
+            Context.FeyinDevices.Remove(device);
+            result.Success = Context.SaveChanges() > 0;
+            if (!result.Success)
+            {
+                result.Msg = "解除绑定失败，请刷新后重试";
+            }
+            result.Msg = "解除绑定成功";
+            return result;
         }
 
         public bool UpdatePassword(Business business)
@@ -190,7 +224,7 @@ group by CreateTime");
             select top 10 b.ID, b.Name, sum(a.Quantity) Quantity from dbo.[OrderProduct] a
 	            inner join dbo.[Product] b on a.ProductId = b.ID
 				inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
-            where b.BusinessId = {business.ID} and convert(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
+            where b.BusinessId = {business.ID} and convert(varchar(10), c.CreateTime, 120) = '{date:yyyy-MM-dd}'
             group by b.ID, b.Name
             order by Quantity desc
             ");
@@ -201,7 +235,7 @@ group by CreateTime");
             select top 10 b.ID, b.Name, sum(a.Price) Amount from dbo.[OrderProduct] a
 	            inner join dbo.[Product] b on a.ProductId = b.ID
 				inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
-            where b.BusinessId = {business.ID} and convert(varchar(10), a.CreateTime, 120) = '{date:yyyy-MM-dd}'
+            where b.BusinessId = {business.ID} and convert(varchar(10), c.CreateTime, 120) = '{date:yyyy-MM-dd}'
             group by b.ID, b.Name
             order by Amount desc
             ");
@@ -502,6 +536,35 @@ group by CreateTime");
         {
             Context.WxListenUsers.Remove(new WxListenUser { ID = id });
             Context.SaveChanges();
+        }
+        public OpenAuthInfo AddAuthInfo(WxAuthInfo info, Business business)
+        {
+            var entity = Context.OpenAuthInfos.FirstOrDefault(a => a.BusinessId == business.ID);
+            if (entity == null)
+            {
+                // 新授权
+                entity = new OpenAuthInfo
+                {
+                    AppId = info.authorization_info.authorizer_appid,
+                    BusinessId = business.ID,
+                    CreateTime = DateTime.Now,
+                    RefreshToken = info.authorization_info.authorizer_refresh_token
+                };
+                Context.OpenAuthInfos.Add(entity);
+            }
+            else
+            {
+                // 修改之前的授权
+                entity.AppId = info.authorization_info.authorizer_appid;
+                entity.RefreshToken = info.authorization_info.authorizer_refresh_token;
+                entity.ModifyTime = DateTime.Now;
+            }
+            Context.SaveChanges();
+            return entity;
+        }
+        public OpenAuthInfo GetAuthInfo(int businessId)
+        {
+            return Context.OpenAuthInfos.SingleOrDefault(a => a.BusinessId == businessId);
         }
     }
 }

@@ -32,6 +32,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 点我达配送
         /// </summary>
-        Dianwoda = 5
+        Dianwoda = 5,
+        /// <summary>
+        /// 一城飞客
+        /// </summary>
+        Yichengfeike = 6
     }
 }

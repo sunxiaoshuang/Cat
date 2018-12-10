@@ -21,7 +21,6 @@ namespace JdCat.Cat.Common
             };
         }
 
-
         public void Init(IConfiguration config)
         {
             var props = typeof(AppData).GetProperties();
@@ -173,5 +172,45 @@ namespace JdCat.Cat.Common
         /// 飞鹅接口地址
         /// </summary>
         public string FeieUrl { get; set; }
+        /// <summary>
+        /// 外卖管家打印信息接口地址
+        /// </summary>
+        public string WmgjUrl { get; set; }
+        /// <summary>
+        /// 外卖管家应用编号
+        /// </summary>
+        public string WmgjAppKey { get; set; }
+        /// <summary>
+        /// 外卖管家应用id
+        /// </summary>
+        public string WmgjAppId { get; set; }
+        /// <summary>
+        /// 开放平台AppId
+        /// </summary>
+        public string OpenAppId { get; set; }
+        /// <summary>
+        /// 开放平台Secret
+        /// </summary>
+        public string OpenSecret { get; set; }
+        /// <summary>
+        /// 开放平台加解密Key
+        /// </summary>
+        public string OpenEncodingAESKey { get; set; }
+        /// <summary>
+        /// 开放平台校验Token
+        /// </summary>
+        public string OpenToken { get; set; }
+        /// <summary>
+        /// 一城飞客key
+        /// </summary>
+        public string YcfkPartnerKey { get; set; }
+        /// <summary>
+        /// 一城飞客secret
+        /// </summary>
+        public string YcfkSecret { get; set; }
+        /// <summary>
+        /// 一城飞客域名
+        /// </summary>
+        public string YcfkDomain { get; set; }
     }
 }

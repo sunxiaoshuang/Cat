@@ -1,5 +1,6 @@
 ﻿using JdCat.Cat.Common.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,10 @@ namespace JdCat.Cat.Common
     {
         public const string WeChatAppId = "wx37df4bb420888824";                         // 简单猫科技公众号AppId
         public const string WeChatSecret = "8db34ed73016a5f22878295ed409cc52";          // 简单猫科技公众号Secret
+        /// <summary>
+        /// 开放平台授权ticket，暂时存在这里
+        /// </summary>
+        public static string OpenTicket { get; set; }
         /// <summary>
         /// 记录小程序访问Token，如果换成分布式部署，需要存在Redis里面
         /// </summary>
@@ -125,5 +130,204 @@ namespace JdCat.Cat.Common
             }
         }
 
+        #region 第三方开发平台业务方法
+
+        private static WxToken _openToken;
+        /// <summary>
+        /// 获取第三方平台component_access_token
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<string> GetOpenTokenAsync(AppData appData)
+        {
+            if (_openToken != null)
+            {
+                var second = (DateTime.Now - _openToken.GetTime.Value).TotalSeconds;
+                // 如果Token没有过期，则直接返回
+                if (second < _openToken.expires_in - 360)
+                {
+                    return _openToken.access_token;
+                }
+            }
+
+            var url = "https://api.weixin.qq.com/cgi-bin/component/api_component_token";
+            var content = new
+            {
+                component_appid = appData.OpenAppId,
+                component_appsecret = appData.OpenSecret,
+                component_verify_ticket = OpenTicket
+            };
+            using (var client = new HttpClient())
+            using (var body = new StringContent(JsonConvert.SerializeObject(content)))
+            {
+                var res = await client.PostAsync(url, body);
+                var result = await res.Content.ReadAsStringAsync();
+                var jObj = JObject.Parse(result);
+                var jToken = jObj["component_access_token"];
+                if (jToken == null)
+                {
+                    return null;
+                }
+                var token = jObj["component_access_token"].Value<string>();
+                var expires_in = jObj["expires_in"].Value<int>();
+                _openToken = new WxToken { access_token = token, GetTime = DateTime.Now, expires_in = expires_in };
+                return token;
+            }
+        }
+        /// <summary>
+        /// 获取预授权码pre_auth_code
+        /// </summary>
+        /// <param name="component_appid">第三方平台AppId</param>
+        /// <returns></returns>
+        public static async Task<string> GetOpenPreAuthCodeAsync(AppData appData)
+        {
+            var token = await GetOpenTokenAsync(appData);
+            if (string.IsNullOrEmpty(token)) return null;
+            var url = $"https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token={token}";
+            var content = new { component_appid = appData.OpenAppId };
+            using (var client = new HttpClient())
+            using (var body = new StringContent(JsonConvert.SerializeObject(content)))
+            {
+                var res = await client.PostAsync(url, body);
+                var result = await res.Content.ReadAsStringAsync();
+                var jObj = JObject.Parse(result);
+                var jCode = jObj["pre_auth_code"];
+                if (jCode == null)
+                {
+                    return null;
+                }
+                return jObj["pre_auth_code"].Value<string>();
+            }
+        }
+        /// <summary>
+        /// 第三方平台授权访问token
+        /// </summary>
+        private static Dictionary<string, WxToken> _authAccessTokenDic = new Dictionary<string, WxToken>();
+        /// <summary>
+        /// 根据授权码获取接口凭据和授权信息
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public static async Task<WxAuthInfo> GetAuthToken(AppData appData, string code)
+        {
+            var token = await GetOpenTokenAsync(appData);
+            var url = $"https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token={token}";
+            var content = new
+            {
+                component_appid = appData.OpenAppId,
+                authorization_code = code
+            };
+            using (var client = new HttpClient())
+            using (var body = new StringContent(JsonConvert.SerializeObject(content)))
+            {
+                var res = await client.PostAsync(url, body);
+                var result = await res.Content.ReadAsStringAsync();
+                var entity = JsonConvert.DeserializeObject<WxAuthInfo>(result);
+                var wxToken = new WxToken
+                {
+                    access_token = entity.authorization_info.authorizer_access_token,
+                    expires_in = entity.authorization_info.expires_in,
+                    GetTime = DateTime.Now
+                };
+                SetAuthorizerAccessToken(entity.authorization_info.authorizer_appid, wxToken);
+                return entity;
+            }
+        }
+        /// <summary>
+        /// 刷新接口凭据
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<string> RefreshTokenAsync(AppData appData, string appid, string refreshToken)
+        {
+            var token = await GetOpenTokenAsync(appData);
+            var url = $"https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token={token}";
+            var content = new
+            {
+                component_appid = appData.OpenAppId,
+                authorizer_appid = appid,
+                authorizer_refresh_token = refreshToken
+            };
+            var sendData = JsonConvert.SerializeObject(content);
+            var result = await PostAsync(url, sendData);
+            var jObj = JObject.Parse(result);
+            var wxToken = new WxToken
+            {
+                access_token = jObj["authorizer_access_token"].Value<string>(),
+                expires_in = jObj["expires_in"].Value<int>(),
+                GetTime = DateTime.Now
+            };
+            SetAuthorizerAccessToken(appid, wxToken);
+            return wxToken.access_token;
+        }
+        /// <summary>
+        /// 设置接口凭据
+        /// </summary>
+        /// <param name="appId"></param>
+        /// <param name="token"></param>
+        private static void SetAuthorizerAccessToken(string appId, WxToken token)
+        {
+            if (_authAccessTokenDic.ContainsKey(appId))
+            {
+                _authAccessTokenDic[appId] = token;
+            }
+            else
+            {
+                _authAccessTokenDic.Add(appId, token);
+            }
+        }
+        /// <summary>
+        /// 获取接口凭据
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<string> GetAuthorizerAccessTokenAsync(AppData appData, string appId, string refreshToken)
+        {
+            WxToken token;
+            if (_authAccessTokenDic.ContainsKey(appId))
+            {
+                token = _authAccessTokenDic[appId];
+                if (!token.IsExpires())
+                {
+                    return token.access_token;
+                }
+            }
+            return await RefreshTokenAsync(appData, appId, refreshToken);
+        }
+        /// <summary>
+        /// 获取授权方帐号信息
+        /// </summary>
+        /// <param name="component_appid"></param>
+        /// <param name="appId"></param>
+        /// <returns></returns>
+        public static async Task<string> GetAuthorizerInfoAsync(AppData appData, string appId)
+        {
+            var token = await GetOpenTokenAsync(appData);
+            var url = $"https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token={token}";
+            var content = new
+            {
+                component_appid = appData.OpenAppId,
+                authorizer_appid = appId
+            };
+            var body = JsonConvert.SerializeObject(content);
+            var result = await PostAsync(url, body);
+            return result;
+        }
+        /// <summary>
+        /// 发送Post请求
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        private static async Task<string> PostAsync(string url, string content)
+        {
+            using (var client = new HttpClient())
+            using (var body = new StringContent(content))
+            {
+                var res = await client.PostAsync(url, body);
+                var result = await res.Content.ReadAsStringAsync();
+                return result;
+            }
+        }
+
+        #endregion
     }
 }

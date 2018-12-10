@@ -247,6 +247,35 @@ namespace JdCat.Cat.Repository
             Context.SaveChanges();
         }
 
+        public void UpdateOrderStatus(YcfkCallback ycfk)
+        {
+            var orderCode = ycfk.OrderId.Split('_')[0];
+            var order = Context.Orders.SingleOrDefault(a => a.OrderCode == orderCode);
+            if (order == null) return;
+            switch (ycfk.OrderState)
+            {
+                case 1:             // 已处理
+                case 21:            // 等待分配骑手
+                case 22:            // 取餐中
+                    order.Status = OrderStatus.DistributorReceipt;
+                    break;
+                case 23:            // 配送中
+                    order.Status = OrderStatus.Distribution;
+                    break;
+                case 100:           // 同意退款
+                case 101:           // 拒绝退款
+                case 255:           // 已关闭
+
+                    break;
+                case 254:           // 已完成
+                    order.Status = OrderStatus.Achieve;
+                    break;
+                default:
+                    break;
+            }
+            Context.SaveChanges();
+        }
+
         public IEnumerable<FeyinDevice> GetPrinters(Business business)
         {
             return Context.FeyinDevices.Where(a => a.BusinessId == business.ID).ToList();
@@ -309,9 +338,13 @@ namespace JdCat.Cat.Repository
             {
                 return await PrintYilianyun(order, device, business);
             }
-            else
+            else if (device.Type == PrinterType.Feie)
             {
                 return await PrintFeie(order, device, business);
+            }
+            else
+            {
+                return await PrintWaimaiguanjia(order, device, business);
             }
         }
 
@@ -369,6 +402,13 @@ namespace JdCat.Cat.Repository
             return res;
         }
 
+        private async Task<string> PrintWaimaiguanjia(Order order, FeyinDevice device, Business business)
+        {
+            var helper = WmgjHelper.GetHelper();
+            var res = await helper.PrintAsync(order, device, business);
+            return res;
+        }
+
         public Order GetOrderByCode(string code)
         {
             return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == code);
@@ -419,7 +459,7 @@ namespace JdCat.Cat.Repository
                 case DWD_OrderStatus.Assigning:
                     break;
                 case DWD_OrderStatus.Transfer:
-                    order.Status = OrderStatus.Receipted;
+                    //order.Status = OrderStatus.Receipted;
                     break;
                 case DWD_OrderStatus.Taking:
                     order.Status = OrderStatus.DistributorReceipt;
@@ -436,7 +476,7 @@ namespace JdCat.Cat.Repository
                     order.AchieveTime = DateTime.Now;
                     break;
                 case DWD_OrderStatus.Exception:
-                    order.Status = OrderStatus.Receipted;
+                    order.Status = OrderStatus.Payed;
                     order.ErrorReason = callback.abnormal_reason;
                     break;
                 case DWD_OrderStatus.Cancel:
@@ -461,6 +501,7 @@ namespace JdCat.Cat.Repository
             else
             {
                 order.LogisticsType = order.Business.ServiceProvider;
+
                 // 配送订单
                 await Invoice(order);
             }
@@ -481,6 +522,8 @@ namespace JdCat.Cat.Repository
                     return null;
                 case LogisticsType.Self:
                     return SelfHandler(order);
+                case LogisticsType.Yichengfeike:
+                    return await YcfkHandler(order);
                 default:
                     break;
             }
@@ -617,6 +660,65 @@ namespace JdCat.Cat.Repository
         }
 
         /// <summary>
+        /// 一城飞客配送
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        private async Task<JsonData> YcfkHandler(Order order)
+        {
+            var result = new JsonData();
+            var helper = YcfkHelper.GetHelper();
+            Log.Debug(helper);
+            order.DistributionFlow++;       // 每次发送订单前，配送流水均增加1
+            var ycfkOrder = new YcfkOrder
+            {
+                OrderId = order.OrderCode + "_" + order.DistributionFlow,
+                ShopId = order.Business.StoreId,
+                ShopName = order.Business.Name,
+                OrderUserName = order.ReceiverName,
+                OrderUserPhone = order.Phone,
+                OrderUserAddress = order.ReceiverAddress,
+                OrderRemark = order.Remark,
+                BoxFee = Convert.ToDecimal(order.PackagePrice),
+                Freight = Convert.ToDecimal(order.Freight),
+                UserGaodeCoordinate = order.Lng + "|" + order.Lat,
+                DayIndex = order.Identifier
+            };
+
+            ycfkOrder.FoodList = order.Products.Select(a => new YcfkFoodItem
+            {
+                FoodName = a.Name,
+                FoodPrice = Convert.ToDecimal(a.Price),
+                FoodCount = Convert.ToInt32(a.Quantity)
+            }).ToList();
+
+            var json = await helper.Send(ycfkOrder);
+            var jObj = JObject.Parse(json);
+            var code = jObj["StateCode"].Value<int>();
+            if(code > 0)
+            {
+                result.Msg = jObj["StateMsg"].Value<string>();
+                order.ErrorReason = result.Msg;
+                return result;
+            }
+
+            order.Status = OrderStatus.DistributorReceipt;
+            order.DeliveryMode = DeliveryMode.Third;
+            order.DistributionTime = DateTime.Now;
+            order.ErrorReason = "";
+            result.Success = true;
+            result.Msg = "配送成功";
+            result.Data = new
+            {
+                Mode = order.DeliveryMode,
+                Logistics = order.LogisticsType,
+                order.Status,
+                flow = order.DistributionFlow
+            };
+            return result;
+        }
+
+        /// <summary>
         /// 自己配送
         /// </summary>
         /// <param name="order"></param>
@@ -660,6 +762,10 @@ namespace JdCat.Cat.Repository
                 case PrinterType.Feie:
                     var feie = FeieHelper.GetHelper();
                     await feie.PrintAsync(content, device);
+                    break;
+                case PrinterType.Waimaiguanjia:
+                    var wmgj = WmgjHelper.GetHelper();
+                    await wmgj.PrintAsync(content, device);
                     break;
                 default:
                     break;

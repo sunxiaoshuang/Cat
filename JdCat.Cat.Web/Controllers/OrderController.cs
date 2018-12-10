@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using JdCat.Cat.Repository.Model;
 using JdCat.Cat.Repository.Service;
+using Newtonsoft.Json.Linq;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -249,6 +250,23 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         /// <summary>
+        /// 添加小费
+        /// </summary>
+        /// <param name="id">订单id</param>
+        /// <param name="tip">小费</param>
+        /// <param name="code">订单编号</param>
+        /// <param name="distributionFlow">配送流水</param>
+        /// <returns></returns>
+        public async Task<IActionResult> AddTip(int id, double tip, string code, int distributionFlow)
+        {
+            // 目前仅支持点我达增加小费
+            var orderCode = code + "_" + distributionFlow;
+            var helper = HttpContext.RequestServices.GetService<DwdHelper>();
+            var result = await helper.AddTip(orderCode, (int)(tip * 100));
+            return Json(result);
+        }
+
+        /// <summary>
         /// 历史订单
         /// </summary>
         /// <returns></returns>
@@ -347,6 +365,15 @@ namespace JdCat.Cat.Web.Controllers
                     result.Msg = ret.msg;
                 }
             }
+            else if (device.Type == PrinterType.Waimaiguanjia)
+            {
+                var ret = JsonConvert.DeserializeObject<WmgjReturn<object>>(content);
+                result.Success = ret.errno == 0;
+                if (!result.Success)
+                {
+                    result.Msg = ret.msg;
+                }
+            }
 
             if (!result.Success)
             {
@@ -356,7 +383,6 @@ namespace JdCat.Cat.Web.Controllers
             result.Msg = "正在打印小票，请稍等";
             return result;
         }
-
         private async Task<JsonData> CancelDistribution(Order order)
         {
             switch (order.LogisticsType)
@@ -365,6 +391,8 @@ namespace JdCat.Cat.Web.Controllers
                     return await DadaCancel(order);
                 case LogisticsType.Dianwoda:
                     return await DwdCancel(order);
+                case LogisticsType.Yichengfeike:
+                    return await YcfkCancel(order);
                 default:
                     break;
             }
@@ -401,6 +429,27 @@ namespace JdCat.Cat.Web.Controllers
             if (!back.success)
             {
                 result.Msg = back.message;
+                return result;
+            }
+            order.Status = OrderStatus.CallOff;
+            result.Data = OrderStatus.CallOff;
+            result.Success = true;
+            result.Msg = "配送取消成功";
+            Service.Commit();
+            return result;
+        }
+        private async Task<JsonData> YcfkCancel(Order order)
+        {
+            var result = new JsonData();
+            var helper = YcfkHelper.GetHelper();
+            var reason = Request.Query["reason"].First() + "";
+            var json = await helper.Cancel(order.OrderCode + "_" + order.DistributionFlow, reason);
+            var jObj = JObject.Parse(json);
+            var code = jObj["StateCode"].Value<int>();
+            if (code > 0)
+            {
+                result.Msg = jObj["StateMsg"].Value<string>();
+                order.ErrorReason = result.Msg;
                 return result;
             }
             order.Status = OrderStatus.CallOff;

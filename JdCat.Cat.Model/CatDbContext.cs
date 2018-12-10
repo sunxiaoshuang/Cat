@@ -49,6 +49,7 @@ namespace JdCat.Cat.Model
         public DbSet<DWDStore> DWDStores { get; set; }
         public DbSet<DWD_Recharge> DWD_Recharges { get; set; }
         public DbSet<WxListenUser> WxListenUsers { get; set; }
+        public DbSet<OpenAuthInfo> OpenAuthInfos { get; set; }
 
 
         /// <summary>
@@ -87,6 +88,7 @@ namespace JdCat.Cat.Model
                 dynamic configurationInstance = Activator.CreateInstance(type);
                 modelBuilder.ApplyConfiguration(configurationInstance);
             }
+
         }
     }
 }

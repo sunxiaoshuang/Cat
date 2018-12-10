@@ -14,8 +14,10 @@
                     return "佳博";
                 } else if (printer.type == 1) {
                     return "易联云";
-                } else {
+                } else if (printer.type == 2) {
                     return "飞鹅";
+                } else {
+                    return "外卖管家";
                 }
             },
             modify: function () {
@@ -69,6 +71,7 @@
                                     <option value='0'>佳博</option>
                                     <option value='1'>易联云</option>
                                     <option value='2'>飞鹅</option>
+                                    <option value='3'>外卖管家</option>
                                 </select>
                             </div>
                             <label class='col-md-3 col-xs-12 control-label'>流量卡号（仅限飞鹅）：</label>

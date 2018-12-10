@@ -186,25 +186,28 @@
                 status: status,
                 title: msg || "未处理异常",
                 icon: icon
-            }
-            var html = '<div class="alert-status alert-{status}">\
-                            <div>\
-                                <span class="icon">\
-                                    <i class="fa {icon}"></i>\
-                                </span>\
-                                <span title="{title}" class="content">\
-                                    {title}\
-		                        </span>\
-	                        </div >\
-                        </div >';
+            };
+            var html = `<div class="alert-status alert-{status}">
+                            <div>
+                                <span class="icon">
+                                    <i class="fa {icon}"></i>
+                                </span>
+                                <span title="{title}" class="content">
+                                    {title}
+		                        </span>
+	                        </div >
+                        </div >`;
             var $alert = $(html.format(obj));
             var $body = $(document.body);
             $body.append($alert);
-            setTimeout(() => {
+            var time = setTimeout(() => {
                 $alert.css("opacity", 0);
                 setTimeout(() => $alert.remove(), 500);
             }, 5000);
-
+            $alert.on("click", function () {
+                $alert.remove();
+                clearTimeout(time);
+            });
         },
         browser: {
             versions: function () {

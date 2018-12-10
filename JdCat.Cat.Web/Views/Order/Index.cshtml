@@ -53,9 +53,9 @@
                         搜索
                     </button>
                     @*<button class="btn btn-primary">
-                        <i class="fa fa-file-excel-o"></i>
-                        导出统计表格
-                    </button>*@
+                            <i class="fa fa-file-excel-o"></i>
+                            导出统计表格
+                        </button>*@
                 </div>
             </div>
             <div class="form-group">
@@ -126,6 +126,11 @@
                                     <div class="kui-button m-right-xs" v-if="order.status == 4 || order.status == 8 || order.status == 16">
                                         <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="print(order)">
                                             打印小票
+                                        </button>
+                                    </div>
+                                    <div class="kui-button m-right-xs" v-if="order.logisticsType == 5 && (order.status == 4 || order.status == 8)">
+                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="addTip(order)">
+                                            添加小费
                                         </button>
                                     </div>
                                 </td>
@@ -240,7 +245,7 @@
         <cat-pager :page-count="pageObj.pageCount" :page-index="pageObj.pageIndex" page-position="right" @@next="nextPage" @@page="changePage" @@prev="prevPage"></cat-pager>
     </div>
     <div class="modal fade" id="modal-sendType" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
+        <div class="modal-dialog" style="width: 400px;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

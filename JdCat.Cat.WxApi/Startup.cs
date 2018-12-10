@@ -74,6 +74,12 @@ namespace JdCat.Cat.WxApi
             var feie = FeieHelper.GetHelper();
             feie.Init(config.FeieUser, config.FeieKey, config.FeieUrl);
             services.AddSingleton(yly);
+            // 外卖管家
+            var wmgj = WmgjHelper.GetHelper();
+            wmgj.Init(int.Parse(config.WmgjAppId), config.WmgjAppKey, config.WmgjUrl);
+            services.AddSingleton(yly);
+            // 一城飞客
+            services.AddSingleton(YcfkHelper.GetHelper().Init(config));
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

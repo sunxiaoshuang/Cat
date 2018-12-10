@@ -27,7 +27,7 @@ namespace JdCat.Cat.Common.Filter
             //{
             //    stream.WriteLine($"{Environment.NewLine}\r\n【{DateTime.Now:yyyy-MM-dd HH:mm:ss}】服务器异常：{context.Exception}");
             //}
-            log.Error("服务器异常：" + context.Exception.Message);
+            log.Error("服务器异常：" + context.Exception);
 
             var json = new ErrorResponse(context.Exception.Message) { DeveloperMessage = context.Exception };
 

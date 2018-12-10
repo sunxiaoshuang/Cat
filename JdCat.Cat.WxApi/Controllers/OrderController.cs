@@ -222,7 +222,14 @@ namespace JdCat.Cat.WxApi.Controllers
                 var order = Service.PaySuccess(ret);
                 if (order != null)
                 {
-                    await Service.Print(order, business: order.Business);                 // 打印小票
+                    try
+                    {
+                        await Service.Print(order, business: order.Business);                 // 打印小票
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("自动打印失败", e);
+                    }
                     await Service.AutoReceipt(order);                 // 自动接单
                     await Task.Run(async () =>
                      {

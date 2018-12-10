@@ -24,6 +24,10 @@ namespace JdCat.Cat.Web.Controllers
         {
         }
 
+        /// <summary>
+        /// 首页
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             var time = DateTime.Now;
@@ -64,6 +68,12 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 营业统计页
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetSaleStatistics([FromQuery]DateTime? start, [FromQuery]DateTime? end)
         {
@@ -74,6 +84,12 @@ namespace JdCat.Cat.Web.Controllers
             return Json(Service.GetSaleStatistics(Business, start.Value, end.Value));
         }
 
+        /// <summary>
+        /// 导出营业统计
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult ExportSaleStatistics([FromQuery]DateTime? start, [FromQuery]DateTime? end)
         {
@@ -93,6 +109,17 @@ namespace JdCat.Cat.Web.Controllers
             return File(list.ToWorksheet(), AppData.XlsxContentType, name);
         }
 
+        /// <summary>
+        /// 商品分析页
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult ProductAnalysis()
+        {
+            ViewBag.products = JsonConvert.SerializeObject(Service.GetProductTop10(Business, DateTime.Now), AppData.JsonSetting);
+            ViewBag.productPrices = JsonConvert.SerializeObject(Service.GetProductPriceTop10(Business, DateTime.Now), AppData.JsonSetting);
+            return View();
+        }
 
 
     }

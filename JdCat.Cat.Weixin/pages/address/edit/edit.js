@@ -124,50 +124,59 @@ Page({
       return;
     }
     if (!entity.mapInfo) {
-      util.showError("请选择收货地址");
+      util.showError("请选择定位地址");
       return;
     }
     if (!entity.detailInfo) {
-      util.showError("请输入门牌号");
+      util.showError("请输入详细地址");
       return;
     }
-    util.showBusy("loading");
-    if (this.data.isModify) {
-      url = "/user/updateAddress/" + self.data.entity.id;
-    } else {
-      url = "/user/address/" + userId;
-    }
-    qcloud.request({
-      url: url,
-      method: this.data.isModify ? "put" : "post",
-      data: self.data.entity,
-      login: !this.data.isModify,
-      success: function (res) {
-        wx.hideToast();
-        if (res.data.success) {
-          util.showSuccess("保存成功");
-          var addressList = wx.getStorageSync("addressList"),
-            index, address;
-          addressList.forEach((a, b) => {
-            if (a.id == res.data.data.id) {
-              address = a;
-              index = b;
-              return false;
-            }
-          });
-          if (!address) {
-            addressList.push(res.data.data);
-          } else {
-            addressList.splice(index, 1, res.data.data);
-          }
-          wx.setStorageSync("addressList", addressList);
-          wx.setStorageSync("selectAddress", res.data.data);
-          setTimeout(() => wx.navigateBack({
-            delta: 1
-          }), 1500);
+
+    wx.showModal({
+      title: "地址确认",
+      content: `您录入的地址是[${entity.mapInfo + entity.detailInfo}]，确定骑手可以找到吗？`,
+      cancelText: "重新录入",
+      success: function (e) {
+        if (!e.confirm) return;
+        util.showBusy("loading");
+        if (self.data.isModify) {
+          url = "/user/updateAddress/" + self.data.entity.id;
         } else {
-          util.showModel("保存失败", "原因：" + JSON.stringify(res.data));
+          url = "/user/address/" + userId;
         }
+        qcloud.request({
+          url: url,
+          method: self.data.isModify ? "put" : "post",
+          data: self.data.entity,
+          login: !self.data.isModify,
+          success: function (res) {
+            wx.hideToast();
+            if (res.data.success) {
+              util.showSuccess("保存成功");
+              var addressList = wx.getStorageSync("addressList"),
+                index, address;
+              addressList.forEach((a, b) => {
+                if (a.id == res.data.data.id) {
+                  address = a;
+                  index = b;
+                  return false;
+                }
+              });
+              if (!address) {
+                addressList.push(res.data.data);
+              } else {
+                addressList.splice(index, 1, res.data.data);
+              }
+              wx.setStorageSync("addressList", addressList);
+              wx.setStorageSync("selectAddress", res.data.data);
+              setTimeout(() => wx.navigateBack({
+                delta: 1
+              }), 1500);
+            } else {
+              util.showModel("保存失败", "原因：" + JSON.stringify(res.data));
+            }
+          }
+        });
       }
     });
   }

@@ -36,6 +36,7 @@ namespace JdCat.Cat.WsService
             });
             services.AddMvc();
             services.AddSingleton(new WsHandler());
+            services.AddSingleton(OrderInfoHandler.GetHandler());
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, WsHandler wsHandler)

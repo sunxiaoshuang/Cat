@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "授权页面";
+}
+
+@section Styles {
+    <environment include="Development">
+        <link href="~/css/setting/authinfo.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/css/setting/authinfo.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+
+}
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/setting/authinfo.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/setting/authinfo.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe">
+    <div class="container-fluid" style="padding: 0;">
+        <ul class="nav nav-tabs" id="tab">
+            <li><a href="#small" data-toggle="tab">小程序管理</a></li>
+            <li class="active"><a href="#info" data-toggle="tab">基本信息</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade" id="small"></div>
+            <div class="tab-pane fade in active" id="info"></div>
+        </div>
+    </div>
+</div>

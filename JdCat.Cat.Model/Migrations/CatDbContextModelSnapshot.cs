@@ -383,6 +383,31 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("FeyinDevice","dbo");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.OpenAuthInfo", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AppId");
+
+                    b.Property<string>("AuthNote");
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<DateTime?>("ModifyTime");
+
+                    b.Property<string>("RefreshToken");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("OpenAuthInfo","dbo");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.Order", b =>
                 {
                     b.Property<int>("ID")
@@ -1083,6 +1108,14 @@ namespace JdCat.Cat.Model.Migrations
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
                         .WithMany("FeyinDevices")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.OpenAuthInfo", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

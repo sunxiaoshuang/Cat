@@ -266,6 +266,33 @@
     "inputFiles": [
       "wwwroot/js/report/saleStatistics.js"
     ]
+  },
+  // 开放平台授权
+  {
+    "outputFileName": "wwwroot/js/business/openSetting.min.js",
+    "inputFiles": [
+      "wwwroot/js/business/openSetting.js"
+    ]
+  },
+  // 授权信息页面
+  {
+    "outputFileName": "wwwroot/js/setting/authinfo.min.js",
+    "inputFiles": [
+      "wwwroot/js/setting/authinfo.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/setting/authinfo.min.css",
+    "inputFiles": [
+      "wwwroot/css/setting/authinfo.css"
+    ]
+  },
+  // 商品分析
+  {
+    "outputFileName": "wwwroot/js/report/productAnalysis.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/productAnalysis.js"
+    ]
   }
 
 ]

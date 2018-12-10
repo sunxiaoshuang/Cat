@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
 using JdCat.Cat.Common.Filter;
+using JdCat.Cat.Common.Weixin;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
@@ -66,6 +67,7 @@ namespace JdCat.Cat.Web
             services.AddSingleton(config);
             // 序列化参数
             services.AddSingleton(AppData.JsonSetting);
+
             // 达达请求
             var dada = DadaHelper.GetHelper();
             dada.Init(config, AppData.JsonSetting);
@@ -90,6 +92,14 @@ namespace JdCat.Cat.Web
             var feie = FeieHelper.GetHelper();
             feie.Init(config.FeieUser, config.FeieKey, config.FeieUrl);
             services.AddSingleton(yly);
+            // 外卖管家
+            var wmgj = WmgjHelper.GetHelper();
+            wmgj.Init(int.Parse(config.WmgjAppId), config.WmgjAppKey, config.WmgjUrl);
+            services.AddSingleton(yly);
+            // 微信加解密对象
+            services.AddSingleton(new WXBizMsgCrypt(config.OpenToken, config.OpenEncodingAESKey, config.OpenAppId));
+            // 一城飞客
+            services.AddSingleton(YcfkHelper.GetHelper().Init(config));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

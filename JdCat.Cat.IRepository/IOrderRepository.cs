@@ -74,6 +74,11 @@ namespace JdCat.Cat.IRepository
         /// <param name="dada"></param>
         void UpdateOrderStatus(DadaCallBack dada);
         /// <summary>
+        /// 一城飞客回调更新
+        /// </summary>
+        /// <param name="dada"></param>
+        void UpdateOrderStatus(YcfkCallback ycfk);
+        /// <summary>
         /// 达达配送取消后，保存订单状态
         /// </summary>
         /// <param name="order"></param>

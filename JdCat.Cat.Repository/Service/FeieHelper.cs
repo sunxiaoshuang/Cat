@@ -17,7 +17,7 @@ namespace JdCat.Cat.Repository.Service
     {
         private string user;
         private string key;
-        private string url = "http://api.feieyun.cn/Api/Open/";
+        private string url;
 
         private static FeieHelper _helper;
         static FeieHelper()
@@ -195,6 +195,7 @@ namespace JdCat.Cat.Repository.Service
                 return await result.Content.ReadAsStringAsync();
             }
         }
+
         /// <summary>
         /// 打印提示信息
         /// </summary>

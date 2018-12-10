@@ -20,6 +20,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 飞鹅
         /// </summary>
-        Feie = 2
+        Feie = 2,
+        /// <summary>
+        /// 外卖管家
+        /// </summary>
+        Waimaiguanjia = 3
     }
 }

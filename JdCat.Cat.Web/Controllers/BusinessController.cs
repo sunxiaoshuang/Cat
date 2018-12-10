@@ -30,7 +30,6 @@ namespace JdCat.Cat.Web.Controllers
             ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
             return View();
         }
-
         /// <summary>
         /// 小程序信息
         /// </summary>
@@ -40,7 +39,6 @@ namespace JdCat.Cat.Web.Controllers
             ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
             return View();
         }
-
         /// <summary>
         /// 达达配置
         /// </summary>
@@ -52,7 +50,6 @@ namespace JdCat.Cat.Web.Controllers
             ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
             return View();
         }
-
         /// <summary>
         /// 飞印打印机配置
         /// </summary>
@@ -65,7 +62,12 @@ namespace JdCat.Cat.Web.Controllers
             ViewBag.printers = JsonConvert.SerializeObject(printers, AppData.JsonSetting);
             return View();
         }
-
+        /// <summary>
+        /// 保存商户基本信息
+        /// </summary>
+        /// <param name="isChangeLogo"></param>
+        /// <param name="business"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> SaveBase([FromQuery]int isChangeLogo, [FromBody]Business business)
         {
@@ -118,7 +120,11 @@ namespace JdCat.Cat.Web.Controllers
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }
-
+        /// <summary>
+        /// 更改店铺接单状态
+        /// </summary>
+        /// <param name="isAutoReceipt"></param>
+        /// <returns></returns>
         public IActionResult ChangeAutoReceipt([FromQuery]bool isAutoReceipt)
         {
             var result = new JsonData
@@ -137,6 +143,11 @@ namespace JdCat.Cat.Web.Controllers
             }
             return Json(result);
         }
+        /// <summary>
+        /// 更改店铺营业状态
+        /// </summary>
+        /// <param name="isClose"></param>
+        /// <returns></returns>
         public IActionResult ChangeClose([FromQuery]bool isClose)
         {
             var result = new JsonData
@@ -155,7 +166,11 @@ namespace JdCat.Cat.Web.Controllers
             }
             return Json(result);
         }
-
+        /// <summary>
+        /// 保存小程序设置信息
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
         public IActionResult SaveSmall([FromBody]Business business)
         {
             var result = new JsonData
@@ -175,7 +190,11 @@ namespace JdCat.Cat.Web.Controllers
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }
-
+        /// <summary>
+        /// 保存达达设置信息
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
         public IActionResult SaveDada([FromBody]Business business)
         {
             business.ID = Business.ID;
@@ -196,7 +215,11 @@ namespace JdCat.Cat.Web.Controllers
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }
-
+        /// <summary>
+        /// 保存飞印用户信息
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
         public IActionResult SaveFeyin([FromQuery]Business business)
         {
             business.ID = Business.ID;
@@ -214,7 +237,6 @@ namespace JdCat.Cat.Web.Controllers
             result.Msg = "修改成功";
             return Ok(result);
         }
-
         /// <summary>
         /// 绑定打印机
         /// </summary>
@@ -224,7 +246,7 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> AddBind([FromQuery]FeyinDevice device)
         {
             var result = new JsonData();
-            result.Success = await Service.BindPrintDevice(Business, device);
+            result.Success = await Service.BindPrintDeviceAsync(Business, device);
             if (!result.Success)
             {
                 result.Msg = "绑定失败，请刷新后重试";
@@ -234,31 +256,16 @@ namespace JdCat.Cat.Web.Controllers
             return Json(result);
         }
         /// <summary>
-        /// 绑定打印机
+        /// 解绑打印机
         /// </summary>
         /// <param name="device"></param>
         /// <param name="helper"></param>
         /// <returns></returns>
-        public IActionResult UnBind(int id)
+        public async Task<IActionResult> UnBind(int id)
         {
-            var result = new JsonData();
-            var device = Service.Set<FeyinDevice>().SingleOrDefault(a => a.ID == id);
-            if (device == null)
-            {
-                result.Msg = "设备可以已经被删除，请刷新后重试";
-                return Json(result);
-            }
-
-            Service.Set<FeyinDevice>().Remove(device);
-            result.Success = Service.Commit() > 0;
-            if (!result.Success)
-            {
-                result.Msg = "解除绑定失败，请刷新后重试";
-            }
-            result.Msg = "解除绑定成功";
+            var result = await Service.UnbindPrintDeviceAsync(id);
             return Json(result);
         }
-
         /// <summary>
         /// 修改密码页面
         /// </summary>
@@ -268,7 +275,6 @@ namespace JdCat.Cat.Web.Controllers
             ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
             return View();
         }
-
         /// <summary>
         /// 修改密码
         /// </summary>
@@ -295,7 +301,6 @@ namespace JdCat.Cat.Web.Controllers
             result.Msg = "修改成功";
             return Json(result);
         }
-
         /// <summary>
         /// 设置默认打印机
         /// </summary>
@@ -303,7 +308,7 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult SetDefaultPrinter(int id)
         {
             var result = new JsonData();
-            result.Success =  Service.SetDefaultPrinter(Business, id);
+            result.Success = Service.SetDefaultPrinter(Business, id);
 
             if (!result.Success)
             {
@@ -313,7 +318,6 @@ namespace JdCat.Cat.Web.Controllers
             result.Msg = "设置成功";
             return Json(result);
         }
-
         /// <summary>
         /// 消息管理
         /// </summary>
@@ -333,11 +337,68 @@ namespace JdCat.Cat.Web.Controllers
             ViewBag.list = Service.GetWxListenUser(Business.ID);
             return View(Business);
         }
-
+        /// <summary>
+        /// 删除微信通知用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public IActionResult DeleteWxUser(int id)
         {
             Service.RemoveWxListenUser(id);
             return Content("删除成功");
+        }
+
+        public IActionResult OpenSetting()
+        {
+            return View();
+        }
+        public async Task<IActionResult> PreAuthCode([FromServices]AppData appData)
+        {
+            var result = new JsonData();
+            var preCode = await WxHelper.GetOpenPreAuthCodeAsync(appData);
+            if (preCode == null)
+            {
+                result.Msg = "获取预授权码失败，请稍后再试";
+            }
+            else
+            {
+                result.Success = true;
+                result.Data = $"https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={appData.OpenAppId}&pre_auth_code={preCode}&redirect_uri=http://t.e.jiandanmao.cn&auth_type=3";
+            }
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 重定向到授权页
+        /// </summary>
+        /// <param name="appData"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> AuthPage([FromServices]AppData appData)
+        {
+            var preCode = await WxHelper.GetOpenPreAuthCodeAsync(appData);
+            var url = $"https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={appData.OpenAppId}&pre_auth_code={preCode}&redirect_uri=http://t.e.jiandanmao.cn/Business/AuthSuccess&auth_type=3";
+            return Redirect(url);
+        }
+        
+        /// <summary>
+        /// 授权成功后的回调URL
+        /// </summary>
+        /// <param name="auth_code"></param>
+        /// <param name="expires_in"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> AuthSuccess([FromQuery]string auth_code, [FromQuery]int expires_in, [FromServices]AppData appData)
+        {
+            var result = await WxHelper.GetAuthToken(appData, auth_code);
+            return Json(result);
+        }
+
+        public IActionResult SetCode([FromQuery]string code)
+        {
+            if (string.IsNullOrEmpty(WxHelper.OpenTicket))
+            {
+                WxHelper.OpenTicket = code;
+            }
+            return Content("ok");
         }
 
     }

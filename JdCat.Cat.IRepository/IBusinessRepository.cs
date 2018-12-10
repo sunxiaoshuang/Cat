@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.Common.Models;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Report;
 
@@ -68,7 +69,8 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="business"></param>
         /// <param name="device"></param>
-        Task<bool> BindPrintDevice(Business business, FeyinDevice device);
+        Task<bool> BindPrintDeviceAsync(Business business, FeyinDevice device);
+        Task<JsonData> UnbindPrintDeviceAsync(int id);
         /// <summary>
         /// 修改密码
         /// </summary>
@@ -237,6 +239,23 @@ namespace JdCat.Cat.IRepository
         /// <param name="discount"></param>
         /// <returns></returns>
         JsonData UpdateDiscount(SaleProductDiscount discount);
+
+        #endregion
+
+        #region 获取授权信息
+        /// <summary>
+        /// 添加授权信息
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        OpenAuthInfo AddAuthInfo(WxAuthInfo info, Business business);
+        /// <summary>
+        /// 获取授权信息
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        OpenAuthInfo GetAuthInfo(int businessId);
 
         #endregion
 

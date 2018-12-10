@@ -271,6 +271,20 @@ namespace JdCat.Cat.Repository.Service
             return await RequestAsync<DWD_Price>(url, sign, data);
         }
 
+        /// <summary>
+        /// 添加小费
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="tip"></param>
+        /// <returns></returns>
+        public async Task<DWD_Result<object>> AddTip(string code, long tip)
+        {
+            var url = "/api/v3/order-tip.json";
+            var sign = $"order_original_id{code}tip{tip}";
+            var data = $"order_original_id={code}&tip={tip}";
+            return await RequestAsync<object>(url, sign, data);
+        }
+
         #region 私有方法
 
         public string GetOrderCode(Order order)

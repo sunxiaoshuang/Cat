@@ -67,6 +67,7 @@
     <Compile Remove="Migrations\20181123005819_Modify_Product_Products.cs" />
     <Compile Remove="Migrations\20181123072755_Modify_Product_SetMeal.cs" />
     <Compile Remove="Migrations\20181123073626_Modify_Product_SetMeal.cs" />
+    <Compile Remove="Migrations\20181205091829_Modify_OpenAuthInfo_ModifyTime.cs" />
   </ItemGroup>
 
   <ItemGroup>
