@@ -113,7 +113,7 @@ namespace JdCat.Cat.Web.Controllers
 
             var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(content));
             var ycfk = JsonConvert.DeserializeObject<YcfkCallback>(json);
-            Log.Info(JsonConvert.SerializeObject(ycfk));
+            //Log.Info(JsonConvert.SerializeObject(ycfk));
             try
             {
                 service.UpdateOrderStatus(ycfk);
