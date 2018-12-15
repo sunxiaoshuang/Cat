@@ -17,6 +17,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    if(!options)return;
     this.loadData(options.id);
     
     // 当界面是从模版消息进来时，需要显示返回按钮
@@ -95,6 +96,12 @@ Page({
   sure: function(e){
     wx.navigateTo({
       url: "/pages/pay/sure/sure?id=" + this.data.order.id
+    });
+  },
+  refund: function(){
+    wx.setStorageSync("refundOrder", this.data.order);
+    wx.navigateTo({
+      url: "/pages/order/refund/refund"
     });
   },
 

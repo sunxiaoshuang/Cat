@@ -1,0 +1,12 @@
+<view class="container">
+    <view class="selector">
+        <text>退款原因：</text>
+        <picker bindchange="bindPickerChange" value="{{index}}" bindchange="bindPickerChange" range="{{reasons}}">
+            <view class="picker">{{reasons[index]}}</view>
+        </picker>
+    </view>
+    <textarea placeholder="其他原因..." bindinput="bindTextAreaInput"></textarea>
+    <view class="commit">
+        <button type="primary" bindtap="sure">确定</button>
+    </view>
+</view>

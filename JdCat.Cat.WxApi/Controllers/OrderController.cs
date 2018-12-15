@@ -273,6 +273,19 @@ namespace JdCat.Cat.WxApi.Controllers
         }
 
         /// <summary>
+        /// 申请退款
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("applyRefund/{id}")]
+        public async Task<IActionResult> ApplyRefund(int id, [FromQuery]string reason)
+        {
+            var result = Service.ApplyRefund(id, reason);
+            if (!result.Success) return Json(result);
+            await Service.SendMsgOfRefund((Order)result.Data);
+            return Json(result);
+        }
+
+        /// <summary>
         /// 发送模版消息，通知用户付款成功
         /// </summary>
         /// <param name="order"></param>
@@ -322,7 +335,6 @@ namespace JdCat.Cat.WxApi.Controllers
         {
             var rep = HttpContext.RequestServices.GetService<IBusinessRepository>();
             var msg = new WxEventMessage();
-            //msg.miniprogram = new Miniprogram { appid = "wx87eead242d711b2d", path = "pages/order/orderInfo/orderInfo?id=657" };            // 简单猫外卖小程序
             msg.template_id = appData.EventMessageTemplateId;
             var productName = string.Empty;
             foreach (var item in order.Products)

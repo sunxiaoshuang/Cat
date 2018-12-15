@@ -77,7 +77,6 @@
                     <th>订单编号</th>
                     <th>下单时间</th>
                     <th>订单类型</th>
-                    @*<th>支付方式</th>*@
                     <th>状态</th>
                     <th>金额</th>
                     <th>操作</th>
@@ -91,10 +90,9 @@
                                 <td>
                                     <span class="small text-primary" v-text="order.expend ? '收起' : '展开'"></span>
                                 </td>
-                                <td><i class="fa fa-warning text-danger" v-if="order.status == 1"></i><span :class="{'text-danger': order.status == 1}" v-text="order.orderCode"></span></td>
+                                <td><i class="fa fa-warning text-danger" v-if="order.status == 1 || order.refundStatus == 1"></i><span :class="{'text-danger': order.status == 1}" v-text="order.orderCode"></span></td>
                                 <td v-text="order.createTime"></td>
                                 <td v-html="category(order.category)"></td>
-                                @*<td v-html="paymentType(order.paymentType)"></td>*@
                                 <td v-html="status(order.status)"></td>
                                 <td><i class="fa fa-jpy"></i> <span v-text="order.price"></span></td>
                                 <td class="operate">
@@ -133,6 +131,11 @@
                                             添加小费
                                         </button>
                                     </div>
+                                    <div class="kui-button m-right-xs" v-if="(order.status == 4 || order.status == 2048) && order.refundStatus != 2">
+                                        <button type="button" class="btn btn-sm kui-button-primary" @@click.stop="cancelOrder(order)">
+                                            取消订单
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr v-show="order.expend">
@@ -142,7 +145,14 @@
                                     <div class="row" v-if="!!order.errorReason">
                                         <div class="col-md-6">
                                             <div class="alert alert-danger">
-                                                <label class="text-danger" v-text="order.errorReason"></label>
+                                                <label class="text-danger" v-text="'订单错误：' + order.errorReason"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" v-if="order.refundStatus == 1 && order.refundReason">
+                                        <div class="col-md-6">
+                                            <div class="alert alert-danger">
+                                                <label class="text-danger" v-text="'退款理由：' + order.refundReason"></label>
                                             </div>
                                         </div>
                                     </div>

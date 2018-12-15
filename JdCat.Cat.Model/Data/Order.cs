@@ -81,6 +81,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public OrderStatus Status { get; set; } = OrderStatus.NotPay;
         /// <summary>
+        /// 订单退款状态
+        /// </summary>
+        public OrderRefundStatus RefundStatus { get; set; }
+        /// <summary>
         /// 订单类别
         /// </summary>
         public OrderType Type { get; set; } = OrderType.Food;
@@ -136,6 +140,18 @@ namespace JdCat.Cat.Model.Data
         /// 微信调用统一支付接口后返回的id，用来发送模版消息，使用redis后删除掉
         /// </summary>
         public string PrepayId { get; set; }
+        /// <summary>
+        /// 退款单号
+        /// </summary>
+        public string RefundNo { get; set; }
+        /// <summary>
+        /// 取消原因
+        /// </summary>
+        public string CancelReason { get; set; }
+        /// <summary>
+        /// 退款原因
+        /// </summary>
+        public string RefundReason { get; set; }
         /// <summary>
         /// 下单人OpenId
         /// </summary>

@@ -1,5 +1,6 @@
 {
   "pages":[
+    "pages/order/refund/refund",
     "pages/launch/launch",
     "pages/user/user",
     "pages/main/main",

@@ -4,8 +4,9 @@
             "1": "已付款", "2": "已拒单", "4": "待配送", "8": "待配送", "16": "配送中", "32": "配送异常", "64": "已送达", "128": "用户已确认收货", "256": "未付款", "512": "已评价", "1024": "已关闭", "2048": "配送已取消", "4096": "订单已取消"
         },
         providerName = { "0": "未知", "1": "自己配送", "2": "达达配送", "3": "美团配送", "4": "蜂鸟配送", "5": "点我达配送", "6": "一城飞客配送" },
-        delivered = 8 + 16 + 64 + 128 + 256 + 512 + 1024;// 已发货
-    var vueReason = null, $tipModal;
+        delivered = 8 + 16 + 64 + 128 + 512;// 已发货
+
+    var vueReason = null, $tipModal, cancelOrderVue;
     var app = new Vue({
         el: "#app",
         data: {
@@ -289,6 +290,69 @@
                                 $.alert(res.data.message);
                             })
                             .catch(function (err) {
+                                $.alert(err);
+                            });
+                        return true;
+                    }
+                });
+            },
+            cancelOrder: function (order) {
+                $.view({
+                    title: "填写取消原因",
+                    saveText: "确定",
+                    footDisplay: true,
+                    template: `<div class='form-horizontal'id='cancelReason'>
+                                <div class='row'>
+                                    <label class='label-control col-xs-2 nowarp'>取消原因：</label>
+                                    <div class='col-xs-10'>
+                                        <select class='form-control' v-model='selectedValue'>
+                                            <option v-for='item in reasons' :value='item.reason'>{{item.reason}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class='row margin-top-10'>
+                                    <label class='label-control col-xs-2 nowarp'>其他原因：</label>
+                                    <div class='col-xs-10'>
+                                        <textarea class='form-control' v-model='reason'></textarea>
+                                    </div>
+                                </div>
+                            </div>`,
+                    load: function () {
+                        var reasons = JSON.parse(JSON.stringify(pageObj.reasonList));
+                        cancelOrderVue = new Vue({
+                            el: "#cancelReason",
+                            data: {
+                                reason: order.refundReason,
+                                reasons: reasons,
+                                selectedValue: ""
+                            }
+                        });
+                        this.on("hidden.bs.modal", function () {
+                            if (!cancelOrderVue) return;
+                            cancelOrderVue.$destroy();
+                            cancelOrderVue = null;
+                        });
+                    },
+                    submit: function () {
+                        var reason = cancelOrderVue.reason || cancelOrderVue.selectedValue;
+                        if (!reason) {
+                            $.alert("请选择或输入取消原因");
+                            return false;
+                        }
+                        $.loading();
+                        axios.get(`/order/cancelOrder/${order.id}?reason=${reason}`)
+                            .then(function (res) {
+                                $.loaded();
+                                if (res.data.success) {
+                                    $.alert(res.data.msg, "success");
+                                    order.status = res.data.data.status;
+                                    order.refundStatus = res.data.data.refundStatus;
+                                } else {
+                                    $.alert(res.data.msg);
+                                }
+                            })
+                            .catch(function (err) {
+                                $.loaded();
                                 $.alert(err);
                             });
                         return true;

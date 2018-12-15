@@ -4,14 +4,16 @@ using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181213105902_Update_Order_Refund")]
+    partial class Update_Order_Refund
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,67 +190,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("City","dbo");
                 });
 
-            modelBuilder.Entity("JdCat.Cat.Model.Data.DWDStore", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("BusinessId");
-
-                    b.Property<DateTime?>("CreateTime");
-
-                    b.Property<string>("addr");
-
-                    b.Property<string>("city_code");
-
-                    b.Property<string>("city_name");
-
-                    b.Property<string>("external_shopid");
-
-                    b.Property<double>("lat");
-
-                    b.Property<double>("lng");
-
-                    b.Property<string>("mobile");
-
-                    b.Property<string>("shop_title");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("BusinessId")
-                        .IsUnique();
-
-                    b.ToTable("DWDStore","dbo");
-                });
-
-            modelBuilder.Entity("JdCat.Cat.Model.Data.DWD_Recharge", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double>("Amount");
-
-                    b.Property<string>("Code");
-
-                    b.Property<DateTime?>("CreateTime");
-
-                    b.Property<int>("DWD_BusinessId");
-
-                    b.Property<string>("DwdCode");
-
-                    b.Property<bool>("IsFinish");
-
-                    b.Property<int>("Mode");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DWD_BusinessId");
-
-                    b.ToTable("DWD_Recharges");
-                });
-
             modelBuilder.Entity("JdCat.Cat.Model.Data.DadaCallBack", b =>
                 {
                     b.Property<int>("ID")
@@ -350,6 +291,67 @@ namespace JdCat.Cat.Model.Migrations
                         .IsUnique();
 
                     b.ToTable("DadaReturn","dbo");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DWD_Recharge", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double>("Amount");
+
+                    b.Property<string>("Code");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("DWD_BusinessId");
+
+                    b.Property<string>("DwdCode");
+
+                    b.Property<bool>("IsFinish");
+
+                    b.Property<int>("Mode");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DWD_BusinessId");
+
+                    b.ToTable("DWD_Recharges");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DWDStore", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("addr");
+
+                    b.Property<string>("city_code");
+
+                    b.Property<string>("city_name");
+
+                    b.Property<string>("external_shopid");
+
+                    b.Property<double>("lat");
+
+                    b.Property<double>("lng");
+
+                    b.Property<string>("mobile");
+
+                    b.Property<string>("shop_title");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId")
+                        .IsUnique();
+
+                    b.ToTable("DWDStore","dbo");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.FeyinDevice", b =>
@@ -1072,22 +1074,6 @@ namespace JdCat.Cat.Model.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("JdCat.Cat.Model.Data.DWDStore", b =>
-                {
-                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
-                        .WithOne("DWDStore")
-                        .HasForeignKey("JdCat.Cat.Model.Data.DWDStore", "BusinessId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("JdCat.Cat.Model.Data.DWD_Recharge", b =>
-                {
-                    b.HasOne("JdCat.Cat.Model.Data.DWDStore", "DWD_Business")
-                        .WithMany("DWD_Recharges")
-                        .HasForeignKey("DWD_BusinessId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("JdCat.Cat.Model.Data.DadaCallBack", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Order", "Order")
@@ -1109,6 +1095,22 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.Order", "Order")
                         .WithOne("DadaReturn")
                         .HasForeignKey("JdCat.Cat.Model.Data.DadaReturn", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DWD_Recharge", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.DWDStore", "DWD_Business")
+                        .WithMany("DWD_Recharges")
+                        .HasForeignKey("DWD_BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.DWDStore", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithOne("DWDStore")
+                        .HasForeignKey("JdCat.Cat.Model.Data.DWDStore", "BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

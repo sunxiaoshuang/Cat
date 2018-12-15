@@ -58,6 +58,8 @@ namespace JdCat.Cat.WxApi
             var config = new AppData();
             config.Init(Configuration);
             services.AddSingleton(config);
+            InputData.Key = config.ServerKey;
+            AppSetting.SetAppData(config);
             // 达达请求
             var dada = DadaHelper.GetHelper();
             dada.Init(config, AppData.JsonSetting);

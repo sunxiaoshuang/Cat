@@ -65,6 +65,8 @@ namespace JdCat.Cat.Web
             var config = new AppData();
             config.Init(Configuration);
             services.AddSingleton(config);
+            InputData.Key = config.ServerKey;
+            AppSetting.SetAppData(config);
             // 序列化参数
             services.AddSingleton(AppData.JsonSetting);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
@@ -15,7 +16,7 @@ namespace JdCat.Cat.IRepository
 {
     public interface IOrderRepository : IBaseRepository<Order>
     {
-        Order Get(int id);
+        //Order Get(int id);
         /// <summary>
         /// 创建新订单
         /// </summary>
@@ -55,7 +56,13 @@ namespace JdCat.Cat.IRepository
         /// <param name="orderId"></param>
         /// <param name="reason">拒绝原因</param>
         /// <returns></returns>
-        bool Reject(int orderId, string reason);
+        JsonData Reject(int id, string reason, X509Certificate2 cert);
+        /// <summary>
+        /// 取消订单
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        JsonData Cancel(int id, string reason, X509Certificate2 cert);
         /// <summary>
         /// 自己配送订单
         /// </summary>
@@ -145,7 +152,18 @@ namespace JdCat.Cat.IRepository
         /// <param name="order"></param>
         /// <returns></returns>
         Task<JsonData> Invoice(Order order);
+        /// <summary>
+        /// 申请退款
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        JsonData ApplyRefund(int id, string reason);
+        /// <summary>
+        /// 发送退款消息
+        /// </summary>
+        /// <param name="order"></param>
+        Task SendMsgOfRefund(Order order);
 
-        void Print(Business business);
     }
 }

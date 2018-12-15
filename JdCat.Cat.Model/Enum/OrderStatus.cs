@@ -69,6 +69,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 有效订单
         /// </summary>
-        Valid = 1 + 4 + 8 + 16 + 64 + 128 + 512 + 2048
+        Valid = 1 + 4 + 8 + 16 + 64 + 128 + 512 + 2048,
+        /// <summary>
+        /// 可以退款的状态
+        /// </summary>
+        CanRefund = 1 + 4 + 8 + 16
     }
 }

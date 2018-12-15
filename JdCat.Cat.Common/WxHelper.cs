@@ -4,8 +4,11 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -14,6 +17,7 @@ namespace JdCat.Cat.Common
 {
     public static class WxHelper
     {
+        public const string Msg_Refund = "vYBFTq7vxZoDYg0K5K9ojTHaUQw49wu_X9XU5fv9wno"; // 退款通知模版消息id
         public const string WeChatAppId = "wx37df4bb420888824";                         // 简单猫科技公众号AppId
         public const string WeChatSecret = "8db34ed73016a5f22878295ed409cc52";          // 简单猫科技公众号Secret
         /// <summary>

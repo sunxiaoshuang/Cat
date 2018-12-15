@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using JdCat.Cat.Repository.Model;
 using JdCat.Cat.Repository.Service;
 using Newtonsoft.Json.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -85,13 +86,21 @@ namespace JdCat.Cat.Web.Controllers
         /// <summary>
         /// 拒单
         /// </summary>
-        public IActionResult Reject(int id, [FromQuery]string msg)
+        public IActionResult Reject(int id, [FromQuery]string msg, [FromServices]IHostingEnvironment _env)
         {
-            var result = new JsonData
-            {
-                Success = Service.Reject(id, msg)
-            };
-            result.Msg = result.Success ? "拒绝订单成功" : "拒绝订单异常或者订单已经拒绝";
+            var certPath = Path.Combine(_env.ContentRootPath, "0AD850B5-DCF4-4F4C-AEAA-03D142D41684.p12");
+            var result = Service.Reject(id, msg, new X509Certificate2(certPath, AppData.ServerMchId));
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 取消订单
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult CancelOrder(int id, [FromQuery]string reason, [FromServices]IHostingEnvironment _env)
+        {
+            var certPath = Path.Combine(_env.ContentRootPath, "0AD850B5-DCF4-4F4C-AEAA-03D142D41684.p12");
+            var result = Service.Cancel(id, reason, new X509Certificate2(certPath, AppData.ServerMchId));
             return Json(result);
         }
 
@@ -218,7 +227,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="flagId"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        public async Task<IActionResult> Cancel(int id, [FromQuery]int flagId, [FromQuery]string reason, [FromServices]DadaHelper helper)
+        public async Task<IActionResult> Cancel(int id, [FromQuery]int flagId, [FromQuery]string reason)
         {
             JsonData result;
             var order = Service.Get(a => a.ID == id);

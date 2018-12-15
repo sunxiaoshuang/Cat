@@ -45,11 +45,5 @@ namespace JdCat.Cat.Web.Controllers
             var result = new JsonData { Success = service.Add(order) > 0};
             return Ok(result);
         }
-        public IActionResult Print()
-        {
-            var rep = HttpContext.RequestServices.GetService<IOrderRepository>();
-            rep.Print(Business);
-            return Content("ok");
-        }
     }
 }

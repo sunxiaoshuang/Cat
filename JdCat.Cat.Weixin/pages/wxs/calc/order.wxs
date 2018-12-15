@@ -13,6 +13,11 @@ var status = {
     "2048": "配送已取消",
     "4096": "订单已取消"
 };
+var refundStatus = {
+    "0": "",
+    "1": "退款申请中",
+    "2": "已退款"
+};
 var func = {
     calcCartProductPrice: function (cart, list, index) {
         var price = cart.price,
@@ -63,7 +68,13 @@ var order = {
         return quantity;
     },
     orderStatus: function (order) {
-        var name = status[order.status + ""] || "";
+        var name, status = order.status & 28;
+        name = refundStatus[order.refundStatus.toString()];
+        if(!!name && status > 0) {
+            return name;
+        }
+
+        name = status[order.status + ""] || "";
         if (name == "未付款") {
             var reg = getRegExp("\d+", "g");
             var time = Date.parse(getDate()) - parseInt(reg.exec(order.createTime));

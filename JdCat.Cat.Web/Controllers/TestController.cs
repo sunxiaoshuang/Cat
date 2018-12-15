@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
 using JdCat.Cat.Common.Models;
@@ -219,6 +223,71 @@ namespace JdCat.Cat.Web.Controllers
                 var result = await hc.PostAsync(appData.DadaDomain + "/api/cityCode/list", body);
                 return Ok(await result.Content.ReadAsStringAsync());
             }
+        }
+
+        #endregion
+
+        #region 退款
+
+        public IActionResult Refund([FromServices]IHostingEnvironment _env)
+        {
+            var data = new InputData();
+            data.SetValue("appid", "wx37df4bb420888824");
+            data.SetValue("mch_id", "1497755942");
+            data.SetValue("sub_appid", "wxeca5f33003947169");
+            data.SetValue("sub_mch_id", "1509509871");
+            data.SetValue("transaction_id", "4200000194201812134453887993");
+            data.SetValue("out_trade_no", "2018121300012090870");
+            data.SetValue("total_fee", 1);
+            data.SetValue("refund_fee", 1);
+            data.SetValue("out_refund_no", Guid.NewGuid().ToString());
+            data.SetValue("refund_desc", "不想要了");
+            data.SetValue("nonce_str", Guid.NewGuid().ToString().Substring(0, 30));
+            data.SetValue("sign_type", "MD5");
+            data.SetValue("sign", data.MakeSign());
+
+            var xml = data.ToXml();
+            var url = "https://api.mch.weixin.qq.com/secapi/pay/refund";
+
+            string result = "";//返回结果
+
+            HttpWebRequest request = null;
+            HttpWebResponse response = null;
+            Stream reqStream = null;
+
+            ServicePointManager.DefaultConnectionLimit = 200;
+            //设置https验证方式
+            if (url.StartsWith("https", StringComparison.OrdinalIgnoreCase))
+            {
+                ServicePointManager.ServerCertificateValidationCallback =
+                        new RemoteCertificateValidationCallback((a, b, c, d) => true);
+            }
+            request = (HttpWebRequest)WebRequest.Create(url);
+            request.UserAgent = string.Format("WXPaySDK/{3} ({0}) .net/{1} {2}", Environment.OSVersion, Environment.Version, 1509509871, "1.0.2");
+            request.Method = "POST";
+            request.Timeout = 2 * 1000;
+
+            request.ContentType = "text/xml";
+            byte[] buffer = Encoding.UTF8.GetBytes(xml);
+            request.ContentLength = buffer.Length;
+            
+            X509Certificate2 cert = new X509Certificate2(_env.WebRootPath + "\\0AD850B5-DCF4-4F4C-AEAA-03D142D41684.p12", "1497755942");
+            request.ClientCertificates.Add(cert);
+
+            reqStream = request.GetRequestStream();
+            reqStream.Write(buffer, 0, buffer.Length);
+            reqStream.Close();
+
+            response = (HttpWebResponse)request.GetResponse();
+
+            var sr = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+            result = sr.ReadToEnd().Trim();
+            sr.Close();
+
+            var json = new InputData();
+            json.FromXml(result);
+
+            return Json(json);
         }
 
         #endregion

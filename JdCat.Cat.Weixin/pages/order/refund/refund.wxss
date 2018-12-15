@@ -1,0 +1,32 @@
+.container {
+    justify-content: flex-start;
+    padding: 20rpx;
+}
+.container textarea {
+    margin-top: 10rpx;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 20rpx;
+    padding: 10rpx;
+}
+.selector {
+    display: flex;
+    flex-flow: row;
+    width: 100%;
+    justify-content: space-around;
+}
+.selector picker {
+    flex-grow: 1;
+    border: 1px solid #f36c21;
+    color: #f36c21;
+    font-size: 90%;
+    padding: 4rpx 10rpx;
+    border-radius: 20rpx;
+}
+.commit{
+  width: 100%;
+  position: fixed;
+  background-color: #f36c21;
+  z-index: 10000;
+  bottom: 0;
+}

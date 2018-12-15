@@ -17,5 +17,10 @@ namespace JdCat.Cat.Common
             LogRepository = LogManager.CreateRepository("NETCoreRepository");
             XmlConfigurator.Configure(LogRepository, new FileInfo("log4net.config"));
         }
+        public static AppData AppData { get; private set; }
+        public static void SetAppData(AppData data)
+        {
+            AppData = data;
+        }
     }
 }

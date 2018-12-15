@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="www.jiandanmao.cn.pfx">
+    <Content Include="0AD850B5-DCF4-4F4C-AEAA-03D142D41684.p12">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

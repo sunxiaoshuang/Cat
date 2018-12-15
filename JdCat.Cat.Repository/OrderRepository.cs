@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
@@ -27,13 +31,13 @@ namespace JdCat.Cat.Repository
     public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         private static object loop = new object();
-        public new Order Get(int id)
-        {
-            return Context.Orders
-                .Include(a => a.DadaReturn)
-                .Include(a => a.Products)
-                .SingleOrDefault(a => a.ID == id);
-        }
+        //public new Order Get(int id)
+        //{
+        //    return Context.Orders
+        //        .Include(a => a.DadaReturn)
+        //        .Include(a => a.Products)
+        //        .SingleOrDefault(a => a.ID == id);
+        //}
         public OrderRepository(CatDbContext context) : base(context)
         {
 
@@ -151,13 +155,75 @@ namespace JdCat.Cat.Repository
             order.Status = OrderStatus.Receipted;
             return Context.SaveChanges() > 0;
         }
-        public bool Reject(int orderId, string reason)
+        public JsonData Reject(int id, string reason, X509Certificate2 cert)
         {
-            var order = new Order { ID = orderId };
-            Context.Attach(order);
-            order.Status = OrderStatus.Cancel;
-            order.RejectReasion = reason;
-            return Context.SaveChanges() > 0;
+            var result = new JsonData();
+            var order = Context.Orders.Include(a => a.Business).SingleOrDefault(a => a.ID == id);
+            order.CancelReason = order.RejectReasion = reason;
+            if (order == null)
+            {
+                result.Msg = "订单不存在";
+                return result;
+            }
+            try
+            {
+                // 拒单时，首先执行退款操作
+                var refundResult = Refund(order, cert);
+                if (refundResult.GetValue("return_code").ToString() != "SUCCESS")
+                {
+                    result.Msg = refundResult.GetValue("return_msg").ToString();
+                    return result;
+                }
+                // 再更改订单状态
+                order.Status = OrderStatus.Cancel;
+                order.RefundStatus = OrderRefundStatus.Finish;
+                Context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                result.Success = false;
+                result.Msg = e.Message;
+            }
+            result.Success = true;
+            result.Msg = "操作成功";
+            result.Data = order;
+            return result;
+        }
+
+        public JsonData Cancel(int id, string reason, X509Certificate2 cert)
+        {
+            var result = new JsonData();
+            var order = Context.Orders.Include(a => a.Business).SingleOrDefault(a => a.ID == id);
+            order.CancelReason = reason ?? null;
+            if (order == null)
+            {
+                result.Msg = "订单不存在";
+                return result;
+            }
+            try
+            {
+                // 取消订单时，首先执行退款操作
+                var refundResult = Refund(order, cert);
+                if (refundResult.GetValue("return_code").ToString() != "SUCCESS")
+                {
+                    result.Msg = refundResult.GetValue("return_msg").ToString();
+                    return result;
+                }
+                // 再更改订单状态
+                order.Status = OrderStatus.Close;
+                order.RefundStatus = OrderRefundStatus.Finish;
+                Context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                result.Success = false;
+                result.Msg = e.Message;
+                return result;
+            }
+            result.Success = true;
+            result.Msg = "操作成功";
+            result.Data = order;
+            return result;
         }
 
         public bool CancelSuccess(Order order, DadaResult<DadaLiquidatedDamages> back)
@@ -269,6 +335,7 @@ namespace JdCat.Cat.Repository
                     break;
                 case 254:           // 已完成
                     order.Status = OrderStatus.Achieve;
+                    order.AchieveTime = DateTime.Now;
                     break;
                 default:
                     break;
@@ -530,6 +597,41 @@ namespace JdCat.Cat.Repository
             return null;
         }
 
+        public JsonData ApplyRefund(int id, string reason)
+        {
+            var result = new JsonData();
+            var order = Get(id);
+            if ((order.Status & OrderStatus.CanRefund) == 0)
+            {
+                result.Msg = "当前状态不允许退款";
+                return result;
+            }
+            order.RefundStatus = OrderRefundStatus.Apply;
+            order.RefundReason = reason;
+            Context.SaveChanges();
+            result.Success = true;
+            result.Msg = "申请成功";
+            result.Data = order;
+            return result;
+        }
+
+        public async Task SendMsgOfRefund(Order order)
+        {
+            var msg = new WxEventMessage {
+                template_id = WxHelper.Msg_Refund,
+                data = new {
+                    first = new { value = $"退款订单编号-{order.OrderCode}" },
+                    keyword1 = new { value = "￥" + order.Price.Value, color = "#ff0000" },
+                    keyword2 = new { value = order.RefundReason, color = "#ff0000" },
+                    keyword3 = new { value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
+                    keyword4 = new { value = "线上" },
+                    keyword5 = new { value = $"{order.ReceiverName} - {order.Phone}"},
+                    remark = new { value = "请尽快进入简单猫后台，订单管理 -> 实时订单 页处理。" }
+                }
+            };
+            await SendMessageNotify(msg, order.BusinessId.Value);
+        }
+
         public async Task<JsonData> EstimateFreight(int businessId, double lat, double lng, string address)
         {
             var result = new JsonData { Success = true };
@@ -695,7 +797,7 @@ namespace JdCat.Cat.Repository
             var json = await helper.Send(ycfkOrder);
             var jObj = JObject.Parse(json);
             var code = jObj["StateCode"].Value<int>();
-            if(code > 0)
+            if (code > 0)
             {
                 result.Msg = jObj["StateMsg"].Value<string>();
                 order.ErrorReason = result.Msg;
@@ -772,9 +874,91 @@ namespace JdCat.Cat.Repository
             }
         }
 
-        public void Print(Business business)
+        /// <summary>
+        /// 订单退款
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        private InputData Refund(Order order, X509Certificate2 cert)
         {
-            PrintBalanceTipsAsync("的点点滴滴所多所多", business);
+            var url = "https://api.mch.weixin.qq.com/secapi/pay/refund";
+            order.RefundNo = Guid.NewGuid().ToString().ToLower();
+            var data = new InputData();
+            var price = (int)Math.Round(order.Price.Value * 100, 0);        // 订单金额
+            if (order.BusinessId == 1) price = 1;
+
+            data.SetValue("appid", AppSetting.AppData.ServerAppId);
+            data.SetValue("mch_id", AppSetting.AppData.ServerMchId);
+            data.SetValue("sub_appid", order.Business.AppId);
+            data.SetValue("sub_mch_id", order.Business.MchId);
+            data.SetValue("transaction_id", order.WxPayCode);
+            data.SetValue("out_trade_no", order.OrderCode);
+            data.SetValue("total_fee", price);
+            data.SetValue("refund_fee", price);
+            data.SetValue("out_refund_no", order.RefundNo);
+            data.SetValue("refund_desc", order.RefundReason ?? order.CancelReason);
+            data.SetValue("nonce_str", Guid.NewGuid().ToString().Substring(0, 30));
+            data.SetValue("sign_type", "MD5");
+            data.SetValue("sign", data.MakeSign());
+            var xml = data.ToXml();
+
+
+            string result = "";//返回结果
+
+            HttpWebRequest request = null;
+            HttpWebResponse response = null;
+            Stream reqStream = null;
+
+            ServicePointManager.DefaultConnectionLimit = 200;
+            ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback((a, b, c, d) => true);
+
+            request = (HttpWebRequest)WebRequest.Create(url);
+            request.UserAgent = string.Format("JdCat/{3} ({0}) .net/{1} {2}", Environment.OSVersion, Environment.Version, 1509509871, "1.0.0");
+            request.Method = "POST";
+            request.Timeout = 2 * 1000;
+
+            request.ContentType = "text/xml";
+            byte[] buffer = Encoding.UTF8.GetBytes(xml);
+            request.ContentLength = buffer.Length;
+
+            request.ClientCertificates.Add(cert);
+
+            reqStream = request.GetRequestStream();
+            reqStream.Write(buffer, 0, buffer.Length);
+            reqStream.Close();
+
+            response = (HttpWebResponse)request.GetResponse();
+
+            var sr = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+            result = sr.ReadToEnd().Trim();
+            sr.Close();
+            response.Close();
+
+            var ret = new InputData();
+            ret.FromXml(result);
+
+            return ret;
+        }
+
+        /// <summary>
+        /// 给绑定的用户发送通知
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="businessId"></param>
+        private async Task SendMessageNotify(WxEventMessage msg, int businessId)
+        {
+            var users = Context.WxListenUsers.Where(a => a.BusinessId == businessId);
+            if (users == null || users.Count() == 0) return;
+            foreach (var item in users)
+            {
+                msg.touser = item.openid;
+                var result = await WxHelper.SendEventMessageAsync(msg);
+                var ret = JsonConvert.DeserializeObject<WxMessageReturn>(result);
+                if (ret.errcode != 0)
+                {
+                    Log.Info($"模版通知消息失败：[消息_{JsonConvert.SerializeObject(msg)}，结果_{result}]");
+                }
+            }
         }
 
     }
