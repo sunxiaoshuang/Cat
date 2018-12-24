@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = "运费设置";
+}
+
+@section Scripts {
+    <script>
+        var pageData = {
+            freights: JSON.parse('@Html.Raw(ViewBag.Freights)')
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/js/business/freight.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/business/freight.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewData["Title"]</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <button class="btn btn-primary margin-bottom-10" @@click="add()">
+                                <i class="fa fa-plus"></i>
+                                新增配送约定
+                            </button>
+                            <table class="table table-bordered" style="width: 700px;">
+                                <thead>
+                                    <tr>
+                                        <th width="50">序号</th>
+                                        <th>配送距离（<=）</th>
+                                        <th>费用</th>
+                                        <th width="120"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, index) in freights">
+                                        <td v-text="index + 1"></td>
+                                        <td v-text="item.maxDistance + 'km'"></td>
+                                        <td v-text="'￥' + item.amount"></td>
+                                        <td>
+                                            <a class="text-primary" @@click="update(item)"><i class="fa fa-edit"> 修改</i></a>
+                                            <a class="text-primary" @@click="remove(item)"><i class="fa fa-remove"> 删除</i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr v-if="freights.length === 0">
+                                        <td colspan="4">
+                                            尚未设置配送...
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <span class="text-primary">注：超出最大配送范围将按最高配送费收取费用。</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

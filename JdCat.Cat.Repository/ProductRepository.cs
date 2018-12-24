@@ -13,6 +13,8 @@ using System.Net.Http.Headers;
 using JdCat.Cat.Common;
 using System.Linq.Expressions;
 using JdCat.Cat.Model.Enum;
+using System.Dynamic;
+using JdCat.Cat.Common.Models;
 
 namespace JdCat.Cat.Repository
 {
@@ -330,6 +332,144 @@ namespace JdCat.Cat.Repository
                 delList.ForEach(b => a.Products.Remove(b));
             });
             return types;
+        }
+        public List<object> GetStoreTree(int id)
+        {
+            var result = new List<object>();
+            var list = Context.Businesses.Where(a => a.ParentId == id)
+                .Select(a => new { a.ID, a.Name, a.Province, a.City, a.Area }).ToList();
+            var provinceGroup = list.GroupBy(a => a.Province).ToList();
+            foreach (var item in provinceGroup)
+            {
+                dynamic province = new ExpandoObject();
+                result.Add(province);
+                province.name = item.Key;
+                province.level = 1;
+                province.list = new List<object>();
+                var cityGroup = item.ToList().GroupBy(a => a.City).ToList();
+                foreach (var item2 in cityGroup)
+                {
+                    dynamic city = new ExpandoObject();
+                    province.list.Add(city);
+                    city.name = item2.Key;
+                    city.level = 2;
+                    city.list = new List<object>();
+                    var areaGroup = item2.ToList().GroupBy(a => a.Area).ToList();
+                    foreach (var item3 in areaGroup)
+                    {
+                        dynamic area = new ExpandoObject();
+                        city.list.Add(area);
+                        area.name = item3.Key;
+                        area.level = 3;
+                        area.list = item3.ToList().Select(a => new { a.ID, a.Name });
+                    }
+                }
+            }
+            return result;
+        }
+        public List<object> GetProductTree(int id)
+        {
+            var types = Context.ProductTypes
+                .Include(a => a.Products)
+                .Where(a => a.BusinessId == id)
+                .Select(a => new
+                {
+                    a.Name,
+                    a.ID,
+                    List = a.Products.Where(b => b.Status != ProductStatus.Delete).Select(b => new { b.Name, b.ID })
+                }).ToList();
+            return types.Select(a =>
+            {
+                var obj = new object();
+                obj = a;
+                return obj;
+            }).ToList();
+        }
+        public async Task<int> Copy(CopyProduct copyData, string imageUrl)
+        {
+            // 复制的商品不包含：图片、套餐商品、折扣
+            // 保存复制商品
+            var now = DateTime.Now;
+            var products = Context.Products.AsNoTracking()
+                .Include(a => a.Attributes)
+                .Include(a => a.Formats)
+                .Include(a => a.Images)
+                .Where(a => copyData.ProductIds.Contains(a.ID)).ToList();
+            // 需要复制的图片名称
+            var imageNames = new List<string>();
+            products.ForEach(product =>
+            {
+                product.ID = 0;
+                product.BusinessId = 0;
+                product.CreateTime = now;
+                product.ModifyTime = null;
+                product.NotSaleTime = null;
+                product.ProductIdSet = null;
+                product.ProductTypeId = null;
+                product.PublishTime = now;
+                if (product.Attributes != null)
+                {
+                    foreach (var attr in product.Attributes)
+                    {
+                        attr.CreateTime = now;
+                        attr.ID = 0;
+                        attr.ProductId = 0;
+                    }
+                }
+                if (product.Formats != null)
+                {
+                    foreach (var format in product.Formats)
+                    {
+                        format.CreateTime = now;
+                        format.ID = 0;
+                        format.ProductId = 0;
+                    }
+                }
+                if (product.Images != null)
+                {
+                    foreach (var img in product.Images)
+                    {
+                        img.CreateTime = now;
+                        img.ID = 0;
+                        img.ProductId = 0;
+                        imageNames.Add(img.Name + "." + img.ExtensionName);
+                    }
+                }
+            });
+            foreach (var id in copyData.StoreIds)
+            {
+                products.ForEach(a =>
+                {
+                    var product = (Product)a.Clone();
+                    product.BusinessId = id;
+                    Context.Add(product);
+                });
+            }
+            var count = Context.SaveChanges();
+            
+            var postData = new CopyProduct
+            {
+                ChainId = copyData.ChainId,
+                StoreIds = copyData.StoreIds,
+                ImageNames = imageNames.ToArray()
+            };
+            var content = JsonConvert.SerializeObject(postData);
+            try
+            {
+                using (var client = new HttpClient())
+                using (var body = new StringContent(content))
+                {
+                    body.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                    var res = await client.PostAsync(imageUrl, body);
+                    res.EnsureSuccessStatusCode();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.Message);   
+            }
+
+            return count;
         }
     }
 }

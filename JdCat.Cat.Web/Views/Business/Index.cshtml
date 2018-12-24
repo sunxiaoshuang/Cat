@@ -147,6 +147,22 @@
                     </div>
                     <div class="form-group">
                         <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            <span class="require">所在城市</span>
+                        </label>
+                        <div class="col-xs-4 col-md-3">
+                            <select class="businessTime" v-model.trim="entity.province" style="min-width: 100px;">
+                                <option v-for="item in province" :value="item" v-text="item"></option>
+                            </select>
+                            <select class="businessTime" v-model.trim="entity.city" style="min-width: 100px;">
+                                <option v-for="item in city" :value="item" v-text="item"></option>
+                            </select>
+                            <select class="businessTime" v-model.trim="entity.area" style="min-width: 100px;">
+                                <option v-for="item in area" :value="item" v-text="item"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
                             邀请码
                         </label>
                         <div class=" col-xs-4 col-md-3">
@@ -186,26 +202,26 @@
                         </div>
                     </div>
                     @*<div class="form-group">
-                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
-                            <span class="require">配送模式</span>
-                        </label>
-                        <div class=" col-xs-4 col-md-3">
-                            <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
-                                <label class="label-checkbox">
-                                    <input type="radio" name="freightMode" value="0" v-model="entity.freightMode">
-                                    <span class="custom-checkbox"></span>
-                                    固定运费
-                                </label>
-                            </div>
-                            <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
-                                <label class="label-checkbox">
-                                    <input type="radio" name="freightMode" value="1" v-model="entity.freightMode">
-                                    <span class="custom-checkbox"></span>
-                                    阶梯运费
-                                </label>
-                            </div>
-                        </div>
-                    </div>*@
+            <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                <span class="require">配送模式</span>
+            </label>
+            <div class=" col-xs-4 col-md-3">
+                <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                    <label class="label-checkbox">
+                        <input type="radio" name="freightMode" value="0" v-model="entity.freightMode">
+                        <span class="custom-checkbox"></span>
+                        固定运费
+                    </label>
+                </div>
+                <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                    <label class="label-checkbox">
+                        <input type="radio" name="freightMode" value="1" v-model="entity.freightMode">
+                        <span class="custom-checkbox"></span>
+                        阶梯运费
+                    </label>
+                </div>
+            </div>
+        </div>*@
                     <div class="form-group">
                         <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
                             <span class="require">外卖运费</span>

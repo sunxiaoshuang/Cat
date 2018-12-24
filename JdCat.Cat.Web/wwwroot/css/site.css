@@ -1100,6 +1100,7 @@ ul.dropdown-menu.dropdown-messages li a div {
 .text-primary {
     color: #ea7042;
 }
+
 a.text-primary:hover {
     cursor: pointer;
     text-decoration: none;
@@ -1256,6 +1257,7 @@ a.text-primary:hover {
     display: block;
     margin-bottom: 0;
     cursor: pointer;
+    white-space: nowrap;
 }
 
     .label-checkbox input[type="checkbox"] {
@@ -2025,6 +2027,30 @@ ul.select-type {
     }
 }
 
+.input-line {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 15px 10px 15px;
+}
+
+    .input-line label {
+        white-space: nowrap;
+    }
+
+    .input-line input[type=text] {
+        flex-grow: 1;
+    }
+
+.businessTime {
+    padding: 4px;
+    width: 80px;
+    height: 35px;
+    border-radius: 6px;
+    margin-right: 2px;
+}
+
 .btn-primary:focus, .btn-primary.focus {
     border-color: #dc5b2b;
 }
@@ -2052,8 +2078,67 @@ ul.select-type {
     list-style: none;
     border: 1px solid #ccc;
 }
+
     .setMeal > li {
         border: 1px solid #ccc;
         padding: 5px;
         margin-right: 10px;
     }
+
+.color-red {
+    color: red;
+}
+
+.copy-store {
+    padding: 5px;
+    margin: 0;
+    list-style: none;
+}
+
+    .copy-store > li {
+        margin-right: 20px;
+        border: 1px solid #ea7042;
+        border-radius: 5px;
+        padding: 5px;
+        float: left;
+    }
+
+    .copy-store > li {
+        margin-right: 20px;
+        border: 1px solid #ea7042;
+        border-radius: 5px;
+        padding: 5px;
+        float: left;
+    }
+
+        .copy-store > li:hover {
+            background-color: #fde0d6;
+        }
+
+.tree-box {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+    .tree-box .tree-block {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        min-height: 300px;
+    }
+
+.ul-province, .ul-city, .ul-area, .ul-store, .ul-tree, .ul-tree-inner {
+    list-style: none;
+    padding: 0 0 0 20px;
+    margin: 0;
+}
+
+.ul-province, .ul-tree {
+    padding: 0;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

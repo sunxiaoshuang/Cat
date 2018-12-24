@@ -10,7 +10,7 @@ namespace JdCat.Cat.Model.Data
     /// 商品图片表，目前只支持一个商品一张图片
     /// </summary>
     [Table("ProductImage", Schema = "dbo")]
-    public class ProductImage : BaseEntity
+    public class ProductImage : BaseEntity, ICloneable
     {
         /// <summary>
         /// 文件长度
@@ -25,7 +25,7 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string Name { get; set; }
         /// <summary>
-        /// 商品类型
+        /// 图片类型
         /// </summary>
         public ImageType Type { get; set; }
         /// <summary>
@@ -38,5 +38,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         [NotMapped]
         public string Source { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

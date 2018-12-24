@@ -1,6 +1,5 @@
 {
   "pages":[
-    "pages/order/refund/refund",
     "pages/launch/launch",
     "pages/user/user",
     "pages/main/main",
@@ -17,6 +16,7 @@
     "pages/pay/sure/sure",
     "pages/user/mycoupon/mycoupon",
     "pages/user/selectcoupon/selectcoupon",
+    "pages/order/refund/refund",
     "pages/showPage/showPage"
   ],
   "window":{

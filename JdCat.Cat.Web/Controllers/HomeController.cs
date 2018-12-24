@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.IRepository;
 using Newtonsoft.Json;
+using JdCat.Cat.Model.Enum;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -24,6 +25,10 @@ namespace JdCat.Cat.Web.Controllers
 
         public IActionResult Index([FromServices]JsonSerializerSettings setting)
         {
+            if(Business.Category == BusinessCategory.Chain)
+            {
+                return RedirectToAction("Index", "Chain");
+            }
             ViewBag.entity = JsonConvert.SerializeObject(Business, setting);
             ViewBag.orderUrl = AppData.OrderUrl;
             ViewBag.UserName = Business.Name;

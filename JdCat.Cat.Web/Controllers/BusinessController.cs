@@ -82,7 +82,7 @@ namespace JdCat.Cat.Web.Controllers
                 // 上传营业执照
                 business.BusinessLicenseImage = await Service.UploadAsync(AppData.ApiUri + "/Upload/License", Business.ID, business.BusinessLicenseImage);
             }
-            if (business.SpecialImage.Contains("data:image"))
+            if (!string.IsNullOrEmpty(business.SpecialImage) && business.SpecialImage.Contains("data:image"))
             {
                 // 上传特殊资质
                 business.SpecialImage = await Service.UploadAsync(AppData.ApiUri + "/Upload/License", Business.ID, business.SpecialImage);
@@ -93,6 +93,7 @@ namespace JdCat.Cat.Web.Controllers
             if (!result.Success)
             {
                 result.Msg = "保存失败";
+                return Json(result);
             }
             Business.Name = business.Name;
             Business.Email = business.Email;
@@ -117,6 +118,9 @@ namespace JdCat.Cat.Web.Controllers
             Business.BusinessEndTime3 = business.BusinessEndTime3;
             Business.MinAmount = business.MinAmount;
             Business.ServiceProvider = business.ServiceProvider;
+            Business.Province = business.Province;
+            Business.City = business.City;
+            Business.Area = business.Area;
             HttpContext.Session.Set(AppData.Session, Business);
             return Ok(result);
         }
@@ -348,10 +352,42 @@ namespace JdCat.Cat.Web.Controllers
             return Content("删除成功");
         }
 
+        /// <summary>
+        /// 运费设置
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Freight()
+        {
+            ViewBag.Freights = JsonConvert.SerializeObject(Service.GetFreights(Business.ID), AppData.JsonSetting);
+            return View();
+        }
+
+        public IActionResult CreateFreight([FromBody]BusinessFreight freight)
+        {
+            freight.BusinessId = Business.ID;
+            var entity = Service.CreateFreight(freight);
+            var result = new JsonData { Success = true, Data = entity, Msg = "新增成功" };
+            return Json(result);
+        }
+        public IActionResult UpdateFreight([FromBody]BusinessFreight freight)
+        {
+            var entity = Service.UpdateFreight(freight);
+            var result = new JsonData { Success = true, Data = entity, Msg = "修改成功" };
+            return Json(result);
+        }
+        public IActionResult RemoveFreight(int id)
+        {
+            var flag = Service.RemoveFreight(id);
+            var result = new JsonData { Success = flag, Msg = flag ? "删除成功" : "删除失败，记录不存在或已删除，请刷新页面后再试" };
+            return Json(result);
+        }
+
+
         public IActionResult OpenSetting()
         {
             return View();
         }
+
         public async Task<IActionResult> PreAuthCode([FromServices]AppData appData)
         {
             var result = new JsonData();

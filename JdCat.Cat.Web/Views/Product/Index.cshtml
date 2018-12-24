@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "商品管理";
 }
-
 @section Scripts{
     <script>
         var pageData = {
@@ -36,7 +35,6 @@
                         <span>全部商品</span>
                         <span class="all-cnt" v-text="productCount"></span>
                     </div>
-
                     <div class="cate-panel" v-for="item in list" v-bind:class="{ 'selected': item.selected }" v-on:click="typeClick(item)">
                         <div class="cate-title" :data-id="item.id">
                             <div class="cate-name relative">
@@ -55,6 +53,15 @@
                             <span class="inline-middle">添加商品</span>
                         </a>
                     </div>
+                    @if (ViewBag.Business.Category == BusinessCategory.Chain)
+                    {
+                        <div class="kui-button" style="z-index: 1; margin-right: 20px;">
+                            <a class="btn btn-primary" asp-controller="Product" asp-action="CopyProduct">
+                                <i class="fa fa-copy inline-middle" style="font-size: 16px;"></i>
+                                <span class="inline-middle">商品复制</span>
+                            </a>
+                        </div>
+                    }
                 </div>
                 <div class="product-list relative">
                     <div class="tool-bar relative">

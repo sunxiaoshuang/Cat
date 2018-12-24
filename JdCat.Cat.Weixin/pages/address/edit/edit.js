@@ -113,6 +113,7 @@ Page({
   saveAddress: function () {
     var self = this,
       userId = qcloud.getSession().skey,
+      user = qcloud.getSession().userinfo,
       entity = this.data.entity,
       url;
     if (!entity.receiver) {
@@ -134,7 +135,7 @@ Page({
 
     wx.showModal({
       title: "地址确认",
-      content: `您录入的地址是[${entity.mapInfo + entity.detailInfo}]，确定骑手可以找到吗？`,
+      content: `您录入的地址是[${entity.mapInfo} ${entity.detailInfo}]，确定骑手可以找到吗？`,
       cancelText: "重新录入",
       success: function (e) {
         if (!e.confirm) return;
@@ -142,7 +143,8 @@ Page({
         if (self.data.isModify) {
           url = "/user/updateAddress/" + self.data.entity.id;
         } else {
-          url = "/user/address/" + userId;
+          url = "/user/createAddress";
+          self.data.entity.userId = user.id;
         }
         qcloud.request({
           url: url,

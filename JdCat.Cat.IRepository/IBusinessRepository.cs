@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
 using JdCat.Cat.Common.Models;
+using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Report;
 
@@ -24,6 +25,12 @@ namespace JdCat.Cat.IRepository
         /// <param name="code"></param>
         /// <returns></returns>
         Business GetBusinessByStoreId(string code);
+        /// <summary>
+        /// 编码是否存在
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        bool ExistForCode(string code);
         /// <summary>
         /// 保存商户基本信息
         /// </summary>
@@ -105,6 +112,30 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         void RemoveWxListenUser(int id);
+        /// <summary>
+        /// 根据商户id获取商户的配送设置
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        List<BusinessFreight> GetFreights(int businessId);
+        /// <summary>
+        /// 创建配送设置
+        /// </summary>
+        /// <param name="freight"></param>
+        /// <returns></returns>
+        BusinessFreight CreateFreight(BusinessFreight freight);
+        /// <summary>
+        /// 修改配送设置
+        /// </summary>
+        /// <param name="freight"></param>
+        /// <returns></returns>
+        BusinessFreight UpdateFreight(BusinessFreight freight);
+        /// <summary>
+        /// 删除运费设置
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        bool RemoveFreight(int id);
 
         #region 报表类方法
 
@@ -261,6 +292,33 @@ namespace JdCat.Cat.IRepository
 
         #region 客户端请求
         Business Login(string username, string password);
+        #endregion
+
+        #region 连锁
+        /// <summary>
+        /// 根据连锁店id获取旗下所有的门店
+        /// </summary>
+        /// <param name="chainId"></param>
+        /// <returns></returns>
+        List<Business> GetStores(int chainId, PagingQuery query);
+
+        /// <summary>
+        /// 连锁店绑定商户
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <param name="store"></param>
+        /// <returns></returns>
+        Business BindStore(Business chain, Business store);
+
+        /// <summary>
+        /// 连锁店解绑商户
+        /// </summary>
+        /// <param name="chain"></param>
+        /// <param name="store"></param>
+        /// <returns></returns>
+        bool UnBindStore(Business chain, Business store);
+
+
         #endregion
 
 

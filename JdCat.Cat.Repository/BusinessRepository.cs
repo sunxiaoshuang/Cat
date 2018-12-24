@@ -36,6 +36,10 @@ namespace JdCat.Cat.Repository
             var p = code.ToUpper();
             return Context.Businesses.SingleOrDefault(a => a.StoreId == p);
         }
+        public bool ExistForCode(string code)
+        {
+            return Context.Businesses.Count(a => a.Code == code) > 0;
+        }
         public bool SaveBase(Business business)
         {
             //var entity = new Business { ID = business.ID, Lng = -1, Lat = -1, MinAmount = -1, Range = -1 };
@@ -64,6 +68,9 @@ namespace JdCat.Cat.Repository
             entity.BusinessEndTime3 = business.BusinessEndTime3;
             entity.MinAmount = business.MinAmount;
             entity.ServiceProvider = business.ServiceProvider;
+            entity.Province = business.Province;
+            entity.City = business.City;
+            entity.Area = business.Area;
             return Context.SaveChanges() > 0;
         }
         public bool ChangeAutoReceipt(Business business, bool state)
@@ -537,6 +544,31 @@ group by CreateTime");
             Context.WxListenUsers.Remove(new WxListenUser { ID = id });
             Context.SaveChanges();
         }
+        public List<BusinessFreight> GetFreights(int businessId)
+        {
+            return Context.BusinessFreights.Where(a => a.BusinessId == businessId).OrderBy(a => a.MaxDistance).ToList();
+        }
+        public BusinessFreight CreateFreight(BusinessFreight freight)
+        {
+            Context.BusinessFreights.Add(freight);
+            Context.SaveChanges();
+            return freight;
+        }
+        public BusinessFreight UpdateFreight(BusinessFreight freight)
+        {
+            var entity = new BusinessFreight { ID = freight.ID, Amount = -1 };
+            Context.Attach(entity);
+            entity.MaxDistance = freight.MaxDistance;
+            entity.Amount = freight.Amount;
+            entity.ModifyTime = DateTime.Now;
+            Context.SaveChanges();
+            return entity;
+        }
+        public bool RemoveFreight(int id)
+        {
+            Context.BusinessFreights.Remove(new BusinessFreight { ID = id });
+            return Context.SaveChanges() > 0;
+        }
         public OpenAuthInfo AddAuthInfo(WxAuthInfo info, Business business)
         {
             var entity = Context.OpenAuthInfos.FirstOrDefault(a => a.BusinessId == business.ID);
@@ -566,5 +598,29 @@ group by CreateTime");
         {
             return Context.OpenAuthInfos.SingleOrDefault(a => a.BusinessId == businessId);
         }
+
+        public List<Business> GetStores(int chainId, PagingQuery query)
+        {
+            var list = Context.Businesses.Where(a => a.ParentId == chainId);
+            query.RecordCount = list.Count();
+            if (query.RecordCount == 0) return new List<Business>();
+            return list.Skip(query.Skip).Take(query.PageSize).ToList();
+        }
+
+        public Business BindStore(Business chain, Business store)
+        {
+            Context.Attach(store);
+            store.ParentId = chain.ID;
+            Context.SaveChanges();
+            return store;
+        }
+        
+        public bool UnBindStore(Business chain, Business store)
+        {
+            Context.Attach(store);
+            store.ParentId = null;
+            return Context.SaveChanges() > 0;
+        }
+
     }
 }

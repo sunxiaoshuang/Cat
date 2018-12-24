@@ -81,6 +81,7 @@ namespace JdCat.Cat.Web.Controllers
                     Freight = 4,
                     BusinessStartTime = "06:00",
                     BusinessEndTime = "21:00",
+                    Category = BusinessCategory.Store,
                     ObjectId = Guid.NewGuid().ToString().ToLower()
                 };
                 userInfo.FeyinMemberCode = appData.FeyinMemberCode;
@@ -90,6 +91,32 @@ namespace JdCat.Cat.Web.Controllers
                 result.Success = true;
                 return Json(result);
             }
+        }
+
+        public IActionResult R2()
+        {
+            ViewBag.CompanyName = appData.Name;
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Registe2([FromBody]Business business)
+        {
+            var result = new JsonData();
+            var isExist = service.ExistForCode(business.Code);
+            if (isExist)
+            {
+                result.Msg = "登录帐号已存在，请修改后提交";
+                return Json(result);
+            }
+            business.ObjectId = Guid.NewGuid().ToString().ToLower();
+            business.Password = UtilHelper.MD5Encrypt(business.Password);
+            business.Category = BusinessCategory.Chain;
+            business.RegisterDate = DateTime.Now;
+            service.Add(business);
+            result.Msg = "连锁店总后台注册成功";
+            result.Success = true;
+            return Json(result);
         }
 
         public IActionResult Login()

@@ -50,6 +50,7 @@ namespace JdCat.Cat.Model
         public DbSet<DWD_Recharge> DWD_Recharges { get; set; }
         public DbSet<WxListenUser> WxListenUsers { get; set; }
         public DbSet<OpenAuthInfo> OpenAuthInfos { get; set; }
+        public DbSet<BusinessFreight> BusinessFreights { get; set; }
 
 
         /// <summary>

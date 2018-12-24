@@ -155,10 +155,3 @@ th:nth-child(7) {
     .product-detail th:nth-child(4) {
         width: 5em;
     }
-.businessTime {
-    padding: 4px;
-    width: 80px;
-    height: 35px;
-    border-radius: 6px;
-    margin-right: 2px;
-}

@@ -83,6 +83,19 @@
       "wwwroot/js/addproduct.js"
     ]
   },
+  // 复制商品
+  {
+    "outputFileName": "wwwroot/css/product/copy.min.css",
+    "inputFiles": [
+      "wwwroot/css/product/copy.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/product/copy.min.js",
+    "inputFiles": [
+      "wwwroot/js/product/copy.js"
+    ]
+  },
   // 注册
   {
     "outputFileName": "wwwroot/css/registe.min.css",
@@ -292,6 +305,32 @@
     "outputFileName": "wwwroot/js/report/productAnalysis.min.js",
     "inputFiles": [
       "wwwroot/js/report/productAnalysis.js"
+    ]
+  },
+  // 配送设置
+  {
+    "outputFileName": "wwwroot/js/business/freight.min.js",
+    "inputFiles": [
+      "wwwroot/js/business/freight.js"
+    ]
+  },
+  // 连锁商户注册
+  {
+    "outputFileName": "wwwroot/js/r2.min.js",
+    "inputFiles": [
+      "wwwroot/js/r2.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/chain.min.js",
+    "inputFiles": [
+      "wwwroot/js/chain.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/chain/store.min.js",
+    "inputFiles": [
+      "wwwroot/js/chain/store.js"
     ]
   }
 

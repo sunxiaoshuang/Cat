@@ -54,12 +54,12 @@ namespace JdCat.Cat.Web.Controllers
             IEnumerable<Order> list = null;
             if (startDate != null && endDate != null)
             {
-                list = Service.GetOrder(Business, state, query, code, phone, expression: a => a.CreateTime >= startDate && a.CreateTime < endDate.Value.AddDays(1));
+                list = Service.GetOrders(Business, state, query, code, phone, expression: a => a.CreateTime >= startDate && a.CreateTime < endDate.Value.AddDays(1));
             }
             else
             {
                 var nowDate = DateTime.Now.ToString("yyyy-MM-dd");
-                list = Service.GetOrder(Business, state, query, code, phone, expression: a => a.CreateTime.Value.ToString("yyyy-MM-dd") == nowDate);
+                list = Service.GetOrders(Business, state, query, code, phone, expression: a => a.CreateTime.Value.ToString("yyyy-MM-dd") == nowDate);
             }
             result.Data = new
             {
@@ -68,6 +68,45 @@ namespace JdCat.Cat.Web.Controllers
             };
             result.Success = true;
             return Json(result);
+        }
+
+        /// <summary>
+        /// 获取订单记录（仅订单基本内容）
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="code"></param>
+        /// <param name="phone"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IActionResult GetOrders([FromQuery]OrderStatus? status, [FromQuery]string code, [FromQuery]string phone, [FromQuery]DateTime? startDate, [FromQuery]DateTime? endDate, [FromBody]PagingQuery query)
+        {
+            var result = new JsonData();
+            IEnumerable<Order> list = null;
+            var state = status == 0 ? null : (OrderStatus?)status;
+            if (startDate != null && endDate != null)
+            {
+                list = Service.GetOrders(Business, state, query, code, phone, expression: a => a.CreateTime >= startDate && a.CreateTime < endDate.Value.AddDays(1));
+            }
+            else
+            {
+                var nowDate = DateTime.Now.ToString("yyyy-MM-dd");
+                list = Service.GetOrders(Business, state, query, code, phone, expression: a => a.CreateTime.Value.ToString("yyyy-MM-dd") == nowDate);
+            }
+            result.Data = new
+            {
+                list,
+                rows = query.RecordCount
+            };
+            result.Success = true;
+            return Json(result);
+        }
+
+        [HttpGet]
+        public IActionResult GetOrderDetail(int id)
+        {
+            return Json(Service.GetOrderForDetail(id));
         }
 
         /// <summary>

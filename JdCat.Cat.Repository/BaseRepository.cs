@@ -29,6 +29,11 @@ namespace JdCat.Cat.Repository
             if (commit) return Commit();
             return 0;
         }
+        public int Delete<TEntity>(params TEntity[] entities) where TEntity : BaseEntity
+        {
+            Context.RemoveRange(entities);
+            return Context.SaveChanges();
+        }
         public T Get(Expression<Func<T, bool>> predicate)
         {
             return _context.Set<T>().FirstOrDefault(predicate);
@@ -41,17 +46,13 @@ namespace JdCat.Cat.Repository
         {
             return predicate == null ? _context.Set<T>() : _context.Set<T>().Where(predicate);
         }
-        public int Add(T entity, bool commit = true)
+        public TEntity Add<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
-            if (entity.CreateTime == null)
-            {
-                entity.CreateTime = DateTime.Now;
-            }
-            _context.Set<T>().Add(entity);
-            if (commit) return Commit();
-            return 0;
+            Context.Add(entity);
+            Context.SaveChanges();
+            return entity;
         }
-        public int Update(T entity, IEnumerable<string> fieldNames = null, bool commit = true)
+        public int Update<TEntity>(TEntity entity, IEnumerable<string> fieldNames = null, bool commit = true) where TEntity : BaseEntity
         {
             if (fieldNames == null || fieldNames.Count() == 0)
             {
@@ -59,7 +60,7 @@ namespace JdCat.Cat.Repository
             }
             else
             {
-                _context.Set<T>().Attach(entity);
+                _context.Attach(entity);
                 foreach (var field in fieldNames)
                 {
                     _context.Entry(entity).Property(field).IsModified = true;

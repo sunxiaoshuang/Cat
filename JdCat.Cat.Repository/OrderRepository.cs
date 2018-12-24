@@ -148,6 +148,45 @@ namespace JdCat.Cat.Repository
             return queryable.OrderByDescending(a => a.CreateTime).Skip(query.Skip).Take(query.PageSize).ToList();
         }
 
+        public Order GetOrderForDetail(int id)
+        {
+            return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).FirstOrDefault(a => a.ID == id);
+
+        }
+
+        public IEnumerable<Order> GetOrders(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null, DateTime? createTime = null)
+        {
+            var lastTime = DateTime.Now.AddYears(-1);
+            var queryable = Context.Orders.Where(a => a.BusinessId == business.ID && a.CreateTime > lastTime);
+            if (expression != null)
+            {
+                queryable = queryable.Where(expression);
+            }
+            if (!string.IsNullOrEmpty(code))
+            {
+                queryable = queryable.Where(a => a.OrderCode.Contains(code));
+            }
+            if (!string.IsNullOrEmpty(phone))
+            {
+                queryable = queryable.Where(a => a.Phone.Contains(phone));
+            }
+            if (userId != null)
+            {
+                queryable = queryable.Where(a => a.UserId == userId.Value);
+            }
+            if (status.HasValue)
+            {
+                queryable = queryable.Where(a => (a.Status & status) > 0);
+            }
+            if (createTime.HasValue)
+            {
+                var flag = createTime.Value.ToString("yyyy-MM-dd");
+                queryable = queryable.Where(a => a.CreateTime.Value.ToString("yyyy-MM-dd") == flag);
+            }
+            query.RecordCount = queryable.Count();
+            return queryable.OrderByDescending(a => a.CreateTime).Skip(query.Skip).Take(query.PageSize).ToList();
+        }
+
         public bool Receive(int orderId)
         {
             var order = new Order { ID = orderId };
@@ -770,7 +809,6 @@ namespace JdCat.Cat.Repository
         {
             var result = new JsonData();
             var helper = YcfkHelper.GetHelper();
-            Log.Debug(helper);
             order.DistributionFlow++;       // 每次发送订单前，配送流水均增加1
             var ycfkOrder = new YcfkOrder
             {
@@ -790,7 +828,7 @@ namespace JdCat.Cat.Repository
             ycfkOrder.FoodList = order.Products.Select(a => new YcfkFoodItem
             {
                 FoodName = a.Name,
-                FoodPrice = Convert.ToDecimal(a.Price),
+                FoodPrice = Convert.ToDecimal(a.Price / a.Quantity),
                 FoodCount = Convert.ToInt32(a.Quantity)
             }).ToList();
 

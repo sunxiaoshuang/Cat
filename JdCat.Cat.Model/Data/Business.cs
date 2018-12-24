@@ -45,6 +45,18 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string Mobile { get; set; }
         /// <summary>
+        /// 省份
+        /// </summary>
+        public string Province { get; set; }
+        /// <summary>
+        /// 城市
+        /// </summary>
+        public string City { get; set; }
+        /// <summary>
+        /// 区
+        /// </summary>
+        public string Area { get; set; }
+        /// <summary>
         /// 注册时间
         /// </summary>
         public DateTime? RegisterDate { get; set; }
@@ -201,6 +213,18 @@ namespace JdCat.Cat.Model.Data
         /// 小程序二维码字符串
         /// </summary>
         public string AppQrCode { get; set; }
+        /// <summary>
+        /// 商户类别
+        /// </summary>
+        public BusinessCategory Category { get; set; }
+        /// <summary>
+        /// 所属连锁店的id
+        /// </summary>
+        public int? ParentId { get; set; }
+        /// <summary>
+        /// 所属连锁店实例
+        /// </summary>
+        public virtual Business Parent { get; set; }
         /// <summary>
         /// 点我达商户对象
         /// </summary>

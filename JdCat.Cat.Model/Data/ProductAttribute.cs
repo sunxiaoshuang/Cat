@@ -10,7 +10,7 @@ namespace JdCat.Cat.Model.Data
     /// 商品属性表
     /// </summary>
     [Table("ProductAttribute", Schema = "dbo")]
-    public class ProductAttribute : BaseEntity
+    public class ProductAttribute : BaseEntity, ICloneable
     {
         /// <summary>
         /// 属性名称
@@ -57,5 +57,10 @@ namespace JdCat.Cat.Model.Data
         /// 商品对象
         /// </summary>
         public virtual Product Product { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

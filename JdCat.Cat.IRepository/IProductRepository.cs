@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using JdCat.Cat.Common;
+using JdCat.Cat.Common.Models;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Enum;
 
@@ -140,5 +142,25 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <returns></returns>
         List<ProductType> GetProductWithoutSetMeal(int id);
+        /// <summary>
+        /// 获取连锁门店树
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        List<object> GetStoreTree(int id);
+        /// <summary>
+        /// 获取商户商品树
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        List<object> GetProductTree(int id);
+        /// <summary>
+        /// 复制商品
+        /// </summary>
+        /// <param name="storeIds">商户id</param>
+        /// <param name="productIds">商品id</param>
+        /// <param name="imageUrl">上传服务接口地址</param>
+        /// <returns>一共复制多少个商品</returns>
+        Task<int> Copy(CopyProduct copyData, string imageUrl);
     }
 }

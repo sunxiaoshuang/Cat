@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using System.Linq;
 
 namespace JdCat.Cat.Model.Data
 {
@@ -11,7 +12,7 @@ namespace JdCat.Cat.Model.Data
     /// 商品表
     /// </summary>
     [Table("Product", Schema = "dbo")]
-    public class Product : BaseEntity
+    public class Product : BaseEntity, ICloneable
     {
         /// <summary>
         /// 商品名称
@@ -99,5 +100,23 @@ namespace JdCat.Cat.Model.Data
         /// 商品折扣活动集合
         /// </summary>
         public virtual ICollection<SaleProductDiscount> SaleProductDiscount { get; set; }
+
+        public object Clone()
+        {
+            var self = (Product)MemberwiseClone();
+            if(self.Attributes != null)
+            {
+                self.Attributes = self.Attributes.Select(a => (ProductAttribute)a.Clone()).ToList();
+            }
+            if (self.Formats != null)
+            {
+                self.Formats = self.Formats.Select(a => (ProductFormat)a.Clone()).ToList();
+            }
+            if (self.Images != null)
+            {
+                self.Images = self.Images.Select(a => (ProductImage)a.Clone()).ToList();
+            }
+            return self;
+        }
     }
 }

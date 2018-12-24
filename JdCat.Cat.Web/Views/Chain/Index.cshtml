@@ -1,0 +1,151 @@
+﻿@{
+    ViewData["Title"] = "商户连锁总后台";
+}
+@section Styles {
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/lib/metisMenu/metisMenu.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/index.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/lib/metisMenu/metisMenu.min.css" />
+    </environment>
+    <style>
+        body {
+            background: #3E3E3E;
+            overflow: hidden;
+        }
+
+        .text-danger {
+            color: #a94442 !important;
+        }
+    </style>
+}
+@section Scripts {
+    <environment include="Development">
+        <script src="~/lib/metisMenu/metisMenu.js"></script>
+        <script src="~/js/chain.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/metisMenu/metisMenu.min.js"></script>
+        <script src="~/js/chain.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div id="wrapper">
+    <nav class="navbar navbar-default top-navbar" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="~/">
+                <strong><img src="~/images/logo1.png" width="40" /> @ViewData["Title"]</strong>
+            </a>
+
+            <div id="sideNav">
+                <i class="fa fa-bars icon"></i>
+            </div>
+        </div>
+
+        <ul class="nav navbar-top-links navbar-right margin-right-5">
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                    @ViewBag.Business.Name（@ViewBag.Business.Code）
+                </a>
+            </li>
+
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                    <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li class="divider"></li>
+                    <li>
+                        <a asp-action="logout" asp-controller="Login"><i class="fa fa-sign-out fa-fw"></i> 退出</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <nav class="navbar-default navbar-side" role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav" id="main-menu">
+                <li>
+                    <a href="#/Report" class="active-menu"><i class="fa fa-home"></i> 首页</a>
+                </li>
+                <li>
+                    <a href="#/Product"><i class="fa fa-desktop"></i> 商品管理</a>
+                </li>
+
+                <li>
+                    <a href="#"><i class="fa fa-sitemap"></i> 订单管理<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="#/Order">实时接单</a>
+                        </li>
+                        <li>
+                            <a href="#/Order/History">历史订单</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#/User/List"><i class="fa fa-qrcode"></i> 会员管理</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-table"></i> 报表<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="#/Report/SaleStatistics">营业统计</a>
+                        </li>
+                        <li>
+                            <a href="#/Report/ProductAnalysis">商品分析</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#/Sale"><i class="fa fa-edit"></i> 营销</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-table"></i> 设置<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="#/Business"> 帐号设置</a>
+                        </li>
+                        <li>
+                            <a href="#/Business/SmallProgram"> 小程序设置</a>
+                        </li>
+                        <li>
+                            <a href="#/Chain/Store"> 门店管理</a>
+                        </li>
+                        <li>
+                            <a href="#/Business/Pwd"> 修改密码</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div id="page-wrapper">
+        <div id="page-inner">
+            <div class="board" style="height: 100%;">
+                <div class="panel panel-primary" style="height: 100%;">
+                    <iframe id="mainframe"></iframe>
+                </div>
+            </div>
+        </div>
+        <footer style="margin-left: 20px;">
+            <p>
+                版权 &copy; @DateTime.Now.Year 简单猫科技（武汉）有限公司
+            </p>
+        </footer>
+    </div>
+</div>
+
+<audio id="newOrder" src="~/video/1.mp3"></audio>
+<audio id="autoOrder" src="~/video/2.mp3"></audio>
+<audio id="exceptionOrder" src="~/video/3.mp3"></audio>
+

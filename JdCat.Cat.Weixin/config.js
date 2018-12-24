@@ -1,5 +1,5 @@
 
-var host = 'https://api.jiandanmao.cn';
+var host = 'https://t.api.jiandanmao.cn';
 
 var config = {
 
@@ -19,7 +19,7 @@ var config = {
         uploadUrl: `${host}/api/upload`,
 
         // 图片地址
-        imageUrl: `http://f.jiandanmao.cn`
+        imageUrl: `http://t.f.jiandanmao.cn`
     },
     businessId: 1
 };

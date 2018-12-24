@@ -25,14 +25,15 @@ Page({
      * 4. 计算出可使用的优惠券
      * 5. 初始化配送费
      */
-    var cartList = wx.getStorageSync('cartList') || [], carts = [],
+    var cartList = wx.getStorageSync('cartList') || [],
+      carts = [],
       business = qcloud.getSession().business,
       productCost = 0,
       tablewareQuantity = 0,
       packagePrice = +wx.getStorageSync("packagePrice");
-    
+
     cartList.forEach(cart => {
-      if(cart.discount && cart.discountProductQuantity < cart.quantity) {   // 当商品存在折扣，商品数量大于折扣商品数量时
+      if (cart.discount && cart.discountProductQuantity < cart.quantity) { // 当商品存在折扣，商品数量大于折扣商品数量时
         var discountProduct = qcloud.utils.extend({}, cart);
         discountProduct.quantity = cart.discountProductQuantity;
         discountProduct.price = +(cart.discount.price * discountProduct.quantity).toFixed(2);
@@ -64,7 +65,7 @@ Page({
       return false;
     });
 
-    var freight = business.freightMode == 1 ? 0 : business.freight;
+    var freight = wx.getStorageSync("orderFreight");
 
     this.setData({
       cartList: carts,
@@ -94,15 +95,37 @@ Page({
       coupon
     });
 
-    if (business.freightMode == 1 && !!address && !!oldAddress && address.id != oldAddress.id) {
+    if (address && (!oldAddress || address.id != oldAddress.id)) {
       this.changeAddress();
     } else {
       this.calcCost();
     }
   },
-  changeAddress: function () {                    // 改变地址后，重新计算配送费
-    var business = qcloud.getSession().business;
-    this.data.freight = business.freight;
+  changeAddress: function () { // 改变地址后，重新计算配送费
+    var business = qcloud.getSession().business, freights = wx.getStorageSync("freights");
+    if(!freights || freights.length === 0) {
+      this.data.freight = business.freight;
+    } else {
+      var freight = 0;
+      var distance = util.calcDistance({
+        lat: this.data.address.lat,
+        lng: this.data.address.lng
+      }, {
+        lat: business.lat,
+        lng: business.lng
+      });
+      var result = freights.some(function (item) {
+        if (item.maxDistance * 1000 >= distance) {
+          freight = item.amount;
+          return true;
+        }
+        return false;
+      });
+      if (!result) {
+        freight = that.data.freights[that.data.freights.length - 1].amount;
+      }
+      this.data.freight = freight;
+    }
     this.calcCost();
   },
   calcCost: function () {
@@ -180,7 +203,7 @@ Page({
       distance: +distance.toFixed(0),
       packagePrice: +this.data.packagePrice
     };
-    
+
     this.data.cartList.forEach(a => {
       order.products.push({
         name: a.name,

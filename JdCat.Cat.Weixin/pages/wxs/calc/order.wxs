@@ -1,138 +1,138 @@
 var status = {
-    "1": "已付款",
-    "2": "已拒单",
-    "4": "待配送",
-    "8": "待配送",
-    "16": "配送中",
-    "32": "配送异常",
-    "64": "已送达",
-    "128": "用户已确认收货",
-    "256": "未付款",
-    "512": "已评价",
-    "1024": "已关闭",
-    "2048": "配送已取消",
-    "4096": "订单已取消"
+  "1": "已付款",
+  "2": "已拒单",
+  "4": "待配送",
+  "8": "待配送",
+  "16": "配送中",
+  "32": "配送异常",
+  "64": "已送达",
+  "128": "用户已确认收货",
+  "256": "未付款",
+  "512": "已评价",
+  "1024": "已关闭",
+  "2048": "配送已取消",
+  "4096": "订单已取消"
 };
 var refundStatus = {
-    "0": "",
-    "1": "退款申请中",
-    "2": "已退款"
+  "0": "",
+  "1": "退款申请中",
+  "2": "已退款"
 };
 var func = {
-    calcCartProductPrice: function (cart, list, index) {
-        var price = cart.price,
-            quantity = cart.quantity,
-            product = cart.product,
-            discount = product.discount;
-        if (!discount) return price * quantity;
-        if (discount.upperLimit == -1) {
-            return discount.price * quantity;
-        }
-        var sameProduct, num;
-        list.some(function (item, i) {
-            if (item.productId == cart.productId && item.id != cart.id) {
-                sameProduct = item;
-                num = i;
-                return true;
-            }
-        });
-        if (!sameProduct) {
-            if (discount.upperLimit >= quantity) {
-                return discount.price * quantity;
-            }
-            return (quantity - discount.upperLimit) * price + discount.upperLimit * discount.price;
-        }
-        // 有相同的购物车商品
-        // 以后再做
+  calcCartProductPrice: function (cart, list, index) {
+    var price = cart.price,
+      quantity = cart.quantity,
+      product = cart.product,
+      discount = product.discount;
+    if (!discount) return price * quantity;
+    if (discount.upperLimit == -1) {
+      return discount.price * quantity;
     }
+    var sameProduct, num;
+    list.some(function (item, i) {
+      if (item.productId == cart.productId && item.id != cart.id) {
+        sameProduct = item;
+        num = i;
+        return true;
+      }
+    });
+    if (!sameProduct) {
+      if (discount.upperLimit >= quantity) {
+        return discount.price * quantity;
+      }
+      return (quantity - discount.upperLimit) * price + discount.upperLimit * discount.price;
+    }
+    // 有相同的购物车商品
+    // 以后再做
+  }
 };
 var order = {
 
-    totalPrice: function (cartList) {
-        var total = 0;
-        // cartList.forEach(function (a, index) {
-        //     total += func.calcCartProductPrice(a, cartList, index);
-        // });
-        cartList.forEach(function (cart) {
-            total += cart.price;
-        });
-        total = total.toFixed(2);
-        total = parseFloat(total);
-        return total;
-    },
-    productQuantity: function (order) {
-        var quantity = 0;
-        order.products.forEach(function (obj) {
-            quantity += obj.quantity;
-        });
-        return quantity;
-    },
-    orderStatus: function (order) {
-        var name, status = order.status & 28;
-        name = refundStatus[order.refundStatus.toString()];
-        if(!!name && status > 0) {
-            return name;
-        }
-
-        name = status[order.status + ""] || "";
-        if (name == "未付款") {
-            var reg = getRegExp("\d+", "g");
-            var time = Date.parse(getDate()) - parseInt(reg.exec(order.createTime));
-            if (time > 15 * 60 * 1000) { // 如果下单时间已经超过5分钟，则显示订单已取消
-                name = status["4096"];
-            }
-        }
-        return name;
-    },
-    precision: function (num, precision) {
-        return parseFloat(num.toFixed(precision));
-    },
-    cartDescription: function (cart) {
-        var discount = cart.discount,
-            description = cart.description ? ("（" + cart.description + "）") : "";
-
-        if (!discount) {
-            return description;
-        }
-        var differ = cart.quantity - cart.discountProductQuantity;
-        if(differ > 0) {
-            description = "（包含" + differ + "份原价商品）\n" + description;
-        }
-        return description;
-        // var sameCarts = cartList.filter(function (item) {
-        //     return item.formatId == cart.formatId && item.discount;
-        // });
-        // // 有同规格，不同属性的购物车商品
-        // if (sameCarts.length == 1) {
-        //     var overQuantity = cart.quantity - discount.upperLimit;
-        //     if (overQuantity <= 0) return description;
-        //     return "（包含" + overQuantity + "份原价商品）\n" + description;
-        // } else {
-        //     var limit = discount.upperLimit;
-        //     sameCarts.some(function (item) {
-        //         if (item.description == description) {
-        //             var overQuantity = item.quantity - limit;
-        //             if(overQuantity > 0)
-        //                 description = "（包含" + overQuantity + "份原价商品）\n" + description;
-        //             return true;
-        //         }
-        //         limit -= item.quantity;
-        //         return false;
-        //     });
-        // }
-        // return description;
-    },
-    cartProductTotal: function () {
-
+  totalPrice: function (cartList) {
+    var total = 0;
+    // cartList.forEach(function (a, index) {
+    //     total += func.calcCartProductPrice(a, cartList, index);
+    // });
+    cartList.forEach(function (cart) {
+      total += cart.price;
+    });
+    total = total.toFixed(2);
+    total = parseFloat(total);
+    return total;
+  },
+  productQuantity: function (order) {
+    var quantity = 0;
+    order.products.forEach(function (obj) {
+      quantity += obj.quantity;
+    });
+    return quantity;
+  },
+  orderStatus: function (order) {
+    var name, orderStatus = order.status & 29, refund = order.refundStatus || 0;
+    name = refundStatus[refund.toString()];
+    if (!!name && orderStatus > 0) {
+      return name;
     }
+
+    name = status[order.status + ""] || "";
+    if (name == "未付款") {
+      var reg = getRegExp("\d+", "g");
+      var time = Date.parse(getDate()) - parseInt(reg.exec(order.createTime));
+      if (time > 15 * 60 * 1000) { // 如果下单时间已经超过5分钟，则显示订单已取消
+        name = status["4096"];
+      }
+    }
+    return name;
+  },
+  precision: function (num, precision) {
+    return parseFloat(num.toFixed(precision));
+  },
+  cartDescription: function (cart) {
+    var discount = cart.discount,
+      description = cart.description ? ("（" + cart.description + "）") : "";
+
+    if (!discount) {
+      return description;
+    }
+    var differ = cart.quantity - cart.discountProductQuantity;
+    if (differ > 0) {
+      description = "（包含" + differ + "份原价商品）\n" + description;
+    }
+    return description;
+    // var sameCarts = cartList.filter(function (item) {
+    //     return item.formatId == cart.formatId && item.discount;
+    // });
+    // // 有同规格，不同属性的购物车商品
+    // if (sameCarts.length == 1) {
+    //     var overQuantity = cart.quantity - discount.upperLimit;
+    //     if (overQuantity <= 0) return description;
+    //     return "（包含" + overQuantity + "份原价商品）\n" + description;
+    // } else {
+    //     var limit = discount.upperLimit;
+    //     sameCarts.some(function (item) {
+    //         if (item.description == description) {
+    //             var overQuantity = item.quantity - limit;
+    //             if(overQuantity > 0)
+    //                 description = "（包含" + overQuantity + "份原价商品）\n" + description;
+    //             return true;
+    //         }
+    //         limit -= item.quantity;
+    //         return false;
+    //     });
+    // }
+    // return description;
+  },
+  cartProductTotal: function () {
+
+  }
 };
 
 
 module.exports = {
-    cartTotalPrice: order.totalPrice,
-    productQuantity: order.productQuantity,
-    orderStatus: order.orderStatus,
-    precision: order.precision,
-    calcSaleText: order.calcSaleText,
-    cartDescription: order.cartDescription
+  cartTotalPrice: order.totalPrice,
+  productQuantity: order.productQuantity,
+  orderStatus: order.orderStatus,
+  precision: order.precision,
+  calcSaleText: order.calcSaleText,
+  cartDescription: order.cartDescription
 };

@@ -1,11 +1,14 @@
 ﻿; (function ($) {
-
+    var cityJson;
     var data = new Vue({
         el: "#app",
         data: {
             entity: pageObj.business,
             cityList: pageObj.cityList,
             timeList: [],
+            province: [],
+            city: null,
+            area: null,
             showError: false,
             isChangeLogo: false
         },
@@ -22,6 +25,10 @@
                 if (!entity.name || !entity.address || !entity.contact || !entity.mobile || !entity.businessLicense || !entity.businessLicenseImage || !entity.lng || !entity.lat) {
                     $.alert("请将信息填写完整");
                     this.showError = true;
+                    return;
+                }
+                if (!entity.province || !entity.city || !entity.area) {
+                    $.alert("请选择所在城市");
                     return;
                 }
                 // 营业时间
@@ -155,7 +162,8 @@
 
         },
         created: function () {
-            var business = this.entity, start, end;
+            var business = this.entity, start, end, self = this;
+            // 初始化营业时间
             if (!!business.businessStartTime && !!business.businessEndTime) {
                 start = business.businessStartTime.split(":"), end = business.businessEndTime.split(":");
                 this.timeList.push({ startHour: start[0], startMinus: start[1], endHour: end[0], endMinus: end[1] });
@@ -167,6 +175,45 @@
             if (!!business.businessStartTime3 && !!business.businessEndTime3) {
                 start = business.businessStartTime3.split(":"), end = business.businessEndTime3.split(":");
                 this.timeList.push({ startHour: start[0], startMinus: start[1], endHour: end[0], endMinus: end[1] });
+            }
+            // 初始化所属城市
+            axios.get("/data/city.json")
+                .then(function (res) {
+                    cityJson = res.data;
+                    for (var key in cityJson) {
+                        self.province.push(key);
+                    }
+                    if (self.entity.province) {
+                        var citys = cityJson[self.entity.province];
+                        self.city = [];
+                        for (var name in citys) {
+                            self.city.push(name);
+                        }
+                        if (self.entity.city) {
+                            var areas = citys[self.entity.city];
+                            self.area = JSON.parse(JSON.stringify(areas));
+                        }
+                    }
+                })
+                .catch(function (err) { $.alert(err); });
+        },
+        watch: {
+            "entity.province": function (val) {
+                var citys = cityJson[val];
+                this.city = [];
+                for (var key in citys) {
+                    this.city.push(key);
+                }
+                this.area = [];
+                this.entity.city = null;
+                this.entity.area = null;
+            },
+            "entity.city": function (val) {
+                if (!val) return;
+                var citys = cityJson[this.entity.province];
+                var areas = citys[val];
+                this.area = JSON.parse(JSON.stringify(areas));
+                this.entity.area = null;
             }
         }
     });

@@ -1,0 +1,118 @@
+﻿@{
+    ViewBag.Title = "菜单复制";
+}
+
+@section Styles {
+    <environment include="Development">
+        <link href="~/css/product/copy.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/css/product/copy.min.css" rel="stylesheet" />
+    </environment>
+}
+@section Scripts{
+    <script>
+        var pageData = {
+
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/js/product/copy.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/product/copy.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewBag.Title</span>
+                        <a asp-controller="Product" asp-action="Index" class="text-primary my-back1 pull-right">返回</a>
+
+                        <a class="btn btn-primary my-back2" asp-controller="Product" asp-action="Index">
+                            <i class="fa fa-backward inline-middle" style="font-size: 16px; color: #fff;"></i>
+                            <span class="inline-middle" style="color: #fff;">返回</span>
+                        </a>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-10 col-xs-12">
+                            <div class="tree-box">
+                                <div class="tree-block" style="width: 48%">
+                                    <i class="fa fa-check-circle-o"> 请勾选要复制商品的门店：</i>
+                                    <ul class="ul-province">
+                                        <li v-for="province in storeTree">
+                                            <label class="label-checkbox" @@change="checkChange(province)">
+                                                <input type="checkbox" v-model="province.checked">
+                                                <span class="custom-checkbox"></span>
+                                            </label>
+                                            <span class="fa cursor-pointer" v-bind:class="{'fa-minus-square': province.expanded, 'fa-plus-square': !province.expanded}" v-text="province.name" @@click="expand(province)"></span>
+                                            <ul class="ul-city" v-show="province.expanded">
+                                                <li v-for="city in province.list">
+                                                    <label class="label-checkbox" @@change="checkChange(city)">
+                                                        <input type="checkbox" v-model="city.checked">
+                                                        <span class="custom-checkbox"></span>
+                                                    </label>
+                                                    <span class="fa cursor-pointer" v-bind:class="{'fa-minus-square': city.expanded, 'fa-plus-square': !city.expanded}" v-text="city.name" @@click="expand(city)"></span>
+                                                    <ul class="ul-area" v-show="city.expanded">
+                                                        <li v-for="area in city.list">
+                                                            <label class="label-checkbox" @@change="checkChange(area)">
+                                                                <input type="checkbox" v-model="area.checked">
+                                                                <span class="custom-checkbox"></span>
+                                                            </label>
+                                                            <span class="fa cursor-pointer" v-bind:class="{'fa-minus-square': area.expanded, 'fa-plus-square': !area.expanded}" v-text="area.name" @@click="expand(area)"></span>
+                                                            <ul class="ul-store" v-show="area.expanded">
+                                                                <li v-for="store in area.list">
+                                                                    <label class="label-checkbox" @@change="checkChange(store)">
+                                                                        <input type="checkbox" v-model="store.checked">
+                                                                        <span class="custom-checkbox"></span>
+                                                                        <span v-text="store.name"></span>
+                                                                    </label>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="tree-block" style="width: 48%;">
+                                    <i class="fa fa-check-circle-o"> 请勾选要复制的商品：</i>
+                                    <ul class="ul-tree">
+                                        <li v-for="type in typeTree">
+                                            <label class="label-checkbox" @@change="checkChange(type)">
+                                                <input type="checkbox" v-model="type.checked">
+                                                <span class="custom-checkbox"></span>
+                                            </label>
+                                            <span class="fa cursor-pointer" v-bind:class="{'fa-minus-square': type.expanded, 'fa-plus-square': !type.expanded}" v-text="type.name" @@click="expand(type)"></span>
+                                            <ul class="ul-tree-inner" v-show="type.expanded">
+                                                <li v-for="product in type.list">
+                                                    <label class="label-checkbox" @@change="checkChange(product)">
+                                                        <input type="checkbox" v-model="product.checked">
+                                                        <span class="custom-checkbox"></span>
+                                                        <span v-text="product.name"></span>
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="text-center margin-top-10">
+                                <button class="btn btn-primary" style="margin-right: 20px;" @@click="submit()">确定</button>
+                                <a class="text-primary" href="javascript:void(0)" @@click="cancel()">返回</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;"></div>
+</div>

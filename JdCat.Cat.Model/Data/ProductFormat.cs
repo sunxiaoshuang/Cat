@@ -10,7 +10,7 @@ namespace JdCat.Cat.Model.Data
     /// 商品规格表
     /// </summary>
     [Table("ProductFormat", Schema = "dbo")]
-    public class ProductFormat : BaseEntity
+    public class ProductFormat : BaseEntity, ICloneable
     {
         /// <summary>
         /// 规格名称，产品只有一个规格时，不是必填
@@ -65,5 +65,10 @@ namespace JdCat.Cat.Model.Data
         /// 购物车中规格集合
         /// </summary>
         public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

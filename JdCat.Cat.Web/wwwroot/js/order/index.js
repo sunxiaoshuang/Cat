@@ -52,7 +52,7 @@
             },
             loadData: function () {
                 var self = this;
-                axios.post(`/order/getorder?status=${this.curType.type}&code=${this.search_code}&phone=${this.search_phone}`, this.pageObj)
+                axios.post(`/order/getorders?status=${this.curType.type}&code=${this.search_code}&phone=${this.search_phone}`, this.pageObj)
                     .then(function (res) {
                         self.orderList = handerData(res.data.data.list);
                         self.pageObj.recordCount = res.data.data.rows;
@@ -72,6 +72,17 @@
             },
             expend: function (order) {
                 order.expend = !order.expend;
+                if (order.loaded) return;
+                axios.get("/Order/GetOrderDetail/" + order.id)
+                    .then(function (res) {
+                        order.loaded = true;
+                        for (var key in order) {
+                            if (!order[key]) {
+                                order[key] = res.data[key];
+                            }
+                        }
+                    })
+                    .catch(function (err) { $.alert(err); });
             },
             prevPage: function () {
                 if (this.pageObj.pageIndex === 1) return;
@@ -103,7 +114,7 @@
                                 <textarea class='form-control'></textarea>
                             </div>
                             <div class='col-xs-12'>
-                                <h5 class='text-danger'>提示：订单取消后，订单金额将会在一天后退回</h5>
+                                <h5 class='text-danger color-red'>提示：拒绝或取消订单后，订单金额将原路返回消费者</h5>
                             </div>
                         </div>`,
                     submit: function (e, $modal) {
@@ -112,15 +123,21 @@
                             $.alert("请输入拒绝原因");
                             return false;
                         }
+                        $.loading();
                         axios.get("/order/reject/" + order.id + "?msg=" + reason)
                             .then(function (res) {
+                                $.loaded();
                                 if (res.data.success) {
                                     $.alert(res.data.msg, "success");
+                                    order.status = res.data.data.status;
+                                    order.refundStatus = res.data.data.refundStatus;
+
                                 } else {
                                     $.alert(res.data.msg);
                                 }
                             })
                             .catch(function (err) {
+                                $.loaded();
                                 $.alert(err);
                             });
                         return true;
@@ -314,6 +331,11 @@
                                     <label class='label-control col-xs-2 nowarp'>其他原因：</label>
                                     <div class='col-xs-10'>
                                         <textarea class='form-control' v-model='reason'></textarea>
+                                    </div>
+                                </div>
+                                <div class='row margin-top-10'>
+                                    <div class='col-xs-12'>
+                                        <h5 class='text-danger color-red'>提示：拒绝或取消订单后，订单金额将原路返回消费者</h5>
                                     </div>
                                 </div>
                             </div>`,

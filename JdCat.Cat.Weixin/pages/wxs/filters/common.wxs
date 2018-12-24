@@ -1,57 +1,57 @@
 var couponStatus = {
-    "1": "未使用", "2": "已使用", "3": "已过期", "4": "上架", "5": "下架", "6": "已领完", "7": "未开始"
+  "1": "未使用", "2": "已使用", "3": "已过期", "4": "上架", "5": "下架", "6": "已领完", "7": "未开始"
 };
 var logisticsType = {
-    "0": "", "1": "自己配送", "2": "达达配送", "3": "美团配送", "4": "蜂鸟配送", "5": "点我达配送", "6": "一城飞客配送", 
+  "0": "", "1": "自己配送", "2": "达达配送", "3": "美团配送", "4": "蜂鸟配送", "5": "点我达配送", "6": "一城飞客配送",
 };
 var common = {
-    formatDate: function(str){
-        if(!str)return "";
-        var milliseconds = parseInt(getRegExp("\d+", "g").exec(str));
-        var time = getDate(milliseconds);
+  formatDate: function (str) {
+    if (!str) return "";
+    var milliseconds = parseInt(getRegExp("\d+", "g").exec(str));
+    var time = getDate(milliseconds);
 
-        var year = time.getFullYear();
-        var month = (time.getMonth() + 1).toString();
-        month = month.length == 1 ? ("0" + month) : month;
-        var day = time.getDate().toString();
-        day = day.length == 1 ? ("0" + day) : day;
-        var hour = time.getHours().toString();
-        hour = hour.length == 1 ? ("0" + hour) : hour;
-        var minus = time.getMinutes().toString();
-        minus = minus.length == 1 ? ("0" + minus) : minus;
-        var second = time.getSeconds().toString();
-        second = second.length == 1 ? ("0" + second) : second;
+    var year = time.getFullYear();
+    var month = (time.getMonth() + 1).toString();
+    month = month.length == 1 ? ("0" + month) : month;
+    var day = time.getDate().toString();
+    day = day.length == 1 ? ("0" + day) : day;
+    var hour = time.getHours().toString();
+    hour = hour.length == 1 ? ("0" + hour) : hour;
+    var minus = time.getMinutes().toString();
+    minus = minus.length == 1 ? ("0" + minus) : minus;
+    var second = time.getSeconds().toString();
+    second = second.length == 1 ? ("0" + second) : second;
 
-        return year + "-" + month + "-" + day + " " + hour + ":" + minus + ":" + second;
-    },
-    secondFormat: function(time){       // 将秒转化为分秒
-        var minus = Math.floor(time / 60).toString();
-        minus.length == 1 && (minus = "0" + minus);
-        var second = (time % 60).toString();
-        second.length == 1 && (second = "0" + second);
-        return minus + ":" + second;
-    },
-    distributionMode: function(order){
-        return logisticsType[order.logisticsType + ""];
-    },
-    couponStatusName: function(status){
-        return couponStatus[status];
-    },
-    couponLimit: function(coupon){
-        if(coupon.minConsume <= 0){
-            return "无限制使用";
-        } 
-        return "满" + coupon.minConsume + "元可用";
-    },
-    couponValidDate: function(coupon){
-        if(coupon.expireDay === null){
-            return coupon.startDate.substring(0, 10) + "至" + coupon.endDate.substring(0, 10);
-        }
-        if(coupon.expireDay <= 0){
-            return "已过期";
-        }
-        return coupon.expireDay + "天后过期";
+    return year + "-" + month + "-" + day + " " + hour + ":" + minus + ":" + second;
+  },
+  secondFormat: function (time) {       // 将秒转化为分秒
+    var minus = Math.floor(time / 60).toString();
+    minus.length == 1 && (minus = "0" + minus);
+    var second = (time % 60).toString();
+    second.length == 1 && (second = "0" + second);
+    return minus + ":" + second;
+  },
+  distributionMode: function (order) {
+    return logisticsType[order.logisticsType + ""];
+  },
+  couponStatusName: function (status) {
+    return couponStatus[status];
+  },
+  couponLimit: function (coupon) {
+    if (coupon.minConsume <= 0) {
+      return "无限制使用";
     }
+    return "满" + coupon.minConsume + "元可用";
+  },
+  couponValidDate: function (coupon) {
+    if (coupon.expireDay === null) {
+      return coupon.startDate.substring(0, 10) + "至" + coupon.endDate.substring(0, 10);
+    }
+    if (coupon.expireDay <= 0) {
+      return "已过期";
+    }
+    return coupon.expireDay + "天后过期";
+  }
 };
 
 module.exports = common;

@@ -15,7 +15,7 @@ namespace JdCat.Cat.Model.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("Relational:Sequence:shared.FormatNumbers", "'FormatNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
                 .HasAnnotation("Relational:Sequence:shared.OrderNumbers", "'OrderNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
@@ -76,6 +76,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("AppQrCode");
 
+                    b.Property<string>("Area");
+
                     b.Property<string>("BusinessEndTime");
 
                     b.Property<string>("BusinessEndTime2");
@@ -91,6 +93,10 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<string>("BusinessStartTime2");
 
                     b.Property<string>("BusinessStartTime3");
+
+                    b.Property<int>("Category");
+
+                    b.Property<string>("City");
 
                     b.Property<string>("CityCode");
 
@@ -146,7 +152,11 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("ObjectId");
 
+                    b.Property<int?>("ParentId");
+
                     b.Property<string>("Password");
+
+                    b.Property<string>("Province");
 
                     b.Property<double>("Range");
 
@@ -168,7 +178,32 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("ParentId");
+
                     b.ToTable("Business","dbo");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.BusinessFreight", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<double>("Amount");
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<double>("MaxDistance");
+
+                    b.Property<DateTime?>("ModifyTime");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("BusinessFreights");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.City", b =>
@@ -1069,6 +1104,21 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.User", "User")
                         .WithMany("Addresses")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.Business", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.BusinessFreight", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

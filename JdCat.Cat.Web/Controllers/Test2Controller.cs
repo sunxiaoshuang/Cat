@@ -42,7 +42,7 @@ namespace JdCat.Cat.Web.Controllers
             order.CityCode = Business.CityCode;
             order.UserId = service.Set<User>().FirstOrDefault().ID;
             order.BusinessId = Business.ID;
-            var result = new JsonData { Success = service.Add(order) > 0};
+            var result = new JsonData { };
             return Ok(result);
         }
     }

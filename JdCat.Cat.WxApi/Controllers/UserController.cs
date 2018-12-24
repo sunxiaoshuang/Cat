@@ -56,7 +56,7 @@ namespace JdCat.Cat.WxApi.Controllers
             }
             var sessData = sessionService.SetSession(new SessionData { SessionKey = session.Session_Key, UserId = user.ID });
             user.Skey = sessData.ID;
-            
+
             return Ok(new WxRetInfo
             {
                 Data = new WxUserData
@@ -133,6 +133,12 @@ namespace JdCat.Cat.WxApi.Controllers
             result.Msg = "ok";
             result.Data = address;
             return Json(result);
+        }
+        [HttpPost("createAddress")]
+        public IActionResult CreateAddress([FromBody]Address address)
+        {
+            Service.Add(address);
+            return Json(new JsonData { Data = address, Msg = "ok", Success = true });
         }
         /// <summary>
         /// 获取地址列表

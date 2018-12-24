@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.Common.Models;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Enum;
@@ -33,6 +34,7 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult Index()
         {
             var types = Service.GetTypes(Business);
+            ViewBag.Business = Business;
             ViewBag.types = types == null ? null : JsonConvert.SerializeObject(types.Select(a => new { a.ID, a.Name, Count = a.Products?.Count() }), AppData.JsonSetting);
             return View();
         }
@@ -351,6 +353,61 @@ namespace JdCat.Cat.Web.Controllers
         {
             var result = new JsonData { Success = Service.DeleteProduct(ids.ToArray()) };
             result.Msg = result.Success ? "批量删除成功" : "没有找到删除的商品，可以已经被删除了";
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 赋值商品视图
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult CopyProduct()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 获取连锁门店树
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult GetStoreTree()
+        {
+            return Json(Service.GetStoreTree(Business.ID));
+        }
+
+        /// <summary>
+        /// 获取商户商品树
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult GetProductTree()
+        {
+            return Json(Service.GetProductTree(Business.ID));
+        }
+
+        /// <summary>
+        /// 复制商品
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Copy([FromBody]CopyProduct copyData)
+        {
+            var result = new JsonData();
+            copyData.ChainId = Business.ID;
+            if (copyData.StoreIds == null || copyData.StoreIds.Length == 0)
+            {
+                result.Msg = "请选择需要复制商品的商户";
+                return Json(result);
+            }
+            if (copyData.ProductIds == null || copyData.ProductIds.Length == 0)
+            {
+                result.Msg = "请选择需要复制的商品";
+                return Json(result);
+            }
+            var count = await Service.Copy(copyData, AppData.ApiUri + "/Product/Copy");
+            result.Success = true;
+            result.Msg = "复制成功";
+            result.Data = count;
             return Json(result);
         }
 

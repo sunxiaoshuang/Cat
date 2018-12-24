@@ -64,40 +64,35 @@ Page({
       title: business.name
     });
 
-    // 加载商户营销方案：满减、优惠券、折扣券及用户优惠券
     qcloud.request({
-      url: `/business/sale/${config.businessId}?userId=${user.id}`,
+      url: `/business/init/${config.businessId}?userId=${user.id}`,
       method: "GET",
       success: function (res) {
         // 商户满减活动
+        var couponList = res.data.coupon,
+          myCoupon = res.data.userCoupon,
+          unreceived = [];
         that.setData({
           fullReduceList: res.data.fullReduct
         });
-        var couponList = res.data.coupon, // 商户优惠券
-          myCoupon = res.data.userCoupon, // 用户优惠券
-          unreceived = [];
+        that.data.couponList = couponList; // 商户优惠券
+        that.data.myCoupon = myCoupon; // 用户优惠券
+        that.data.unreceived = unreceived; // 未领取的优惠券
+        that.data.discount = res.data.discount; // 商品折扣券
+        that.data.cartList = res.data.carts; // 用户购物车
+        that.data.freights = res.data.freights; // 商户运费配置
+        that.data.initLoaded = true; // 标识数据初始化完成
         wx.setStorageSync("myCoupon", myCoupon); // 将用户优惠券缓存起来
-        that.data.couponList = couponList;
-        that.data.myCoupon = myCoupon;
-        that.data.unreceived = unreceived;
-        that.data.discount = res.data.discount;
-        that.data.saleLoaded = true; // 标识营销数据加载完成
+        wx.setStorageSync("cartList", that.data.cartList); // 将用户购物车写入缓存
+        wx.setStorageSync("freights", that.data.freights); // 将配送费用配置写入缓存
         if (couponList.length > 0) {
           that.couponHandler();
         }
+        that.calcFreightAmount();
       }
     });
 
-    // 加载购物车
-    qcloud.request({
-      url: `/user/carts/${user.id}`,
-      method: "GET",
-      success: function (res) {
-        that.data.cartList = res.data;
-        wx.setStorageSync("cartList", that.data.cartList);      // 将初次读取的购物车写入缓存
-        that.data.cartLoaded = true;
-      }
-    });
+
   },
   // 分享
   onShareAppMessage: function () {
@@ -148,7 +143,7 @@ Page({
             product.formats[0].selected = true; // 设置第一个规格为选中状态
             product.price = product.formats[0].price; // 商品的价格为第一个规格的价格
             if (product.attributes.length > 0) {
-              product.attributes.forEach(function (attr) {  // 格式化属性，默认选中第一个
+              product.attributes.forEach(function (attr) { // 格式化属性，默认选中第一个
                 var i = 1;
                 for (; i < 9;) {
                   if (attr['item' + i]) {
@@ -178,7 +173,7 @@ Page({
     // 加载数据
     util.method.delayExec(function () {
       // 当购物车、商品、营销数据均加载完成后，才执行数据计算
-      if (!self.data.cartLoaded || !self.data.productLoaded || !self.data.saleLoaded) return false;
+      if (!self.data.productLoaded || !self.data.initLoaded) return false;
       self.loadData();
       return true;
     }, 200);
@@ -236,7 +231,6 @@ Page({
       submitText,
       isBalance,
       business,
-      freight: business.freight,
       logo: business.logoSrc,
       productList,
       menu,
@@ -247,7 +241,8 @@ Page({
   },
   // 折扣券处理
   discountHandler: function () {
-    var products, productList = this.data.productList, menus = this.data.menu,
+    var products, productList = this.data.productList,
+      menus = this.data.menu,
       now = new Date(),
       hour = now.getHours().toString(),
       minus = now.getMinutes().toString(),
@@ -278,8 +273,12 @@ Page({
       }
     });
     // 如果折扣商品大于零
-    if(discountProducts.length > 0){
-      var menu = {name: "折扣优惠", id: 0, products: discountProducts};
+    if (discountProducts.length > 0) {
+      var menu = {
+        name: "折扣优惠",
+        id: 0,
+        products: discountProducts
+      };
       menus.unshift(menu);
       discountProducts.reverse().forEach(product => {
         product.menuId = menu.id;
@@ -513,6 +512,7 @@ Page({
     }
     wx.setStorageSync("packagePrice", this.data.packagePrice);
     wx.setStorageSync("cartList", this.data.cartList);
+    wx.setStorageSync("orderFreight", this.data.freight);
     wx.navigateTo({
       url: '/pages/pay/pay'
     });
@@ -818,7 +818,7 @@ Page({
         userId: qcloud.getSession().userinfo.id,
         businessId: config.businessId
       };
-      if(discount) {
+      if (discount) {
         util.showError("折扣商品不参与满减活动");
       }
       this.data.cartList.push(cart);
@@ -973,5 +973,68 @@ Page({
     } else {
       return product.formats.filter(a => a.name == cart.description.split("|")[0])[0];
     }
-  }
+  },
+  calcFreightAmount: (function () {
+    function getFreight(lng, lat) {
+      var business = qcloud.getSession().business,
+        freight = business.freight;
+      var distance = util.calcDistance({
+        lat: lat,
+        lng: lng
+      }, {
+        lat: business.lat,
+        lng: business.lng
+      });
+      var result = this.data.freights.some(function (item) {
+        if (item.maxDistance * 1000 >= distance) {
+          freight = item.amount;
+          return true;
+        }
+        return false;
+      });
+      if (!result) {
+        freight = this.data.freights[this.data.freights.length - 1].amount;
+      }
+      return freight;
+    }
+
+    return function () {
+      var that = this,
+        business = qcloud.getSession().business,
+        address = wx.getStorageSync("selectAddress"); // 用户选择的默认地址
+      // 配送费计算
+      var freight;
+      if (this.data.freights.length > 0) {
+        if (address) {
+          freight = getFreight.call(this, address.lng, address.lat);
+          this.setData({
+            freight: freight
+          });
+        } else {
+          wx.getLocation({
+            type: "wgs84",
+            success: function (res) {
+              var lat = res.latitude,
+                lng = res.longitude;
+              freight = getFreight.call(that, lng, lat);
+            },
+            fail: function (err) {
+              util.showError(err);
+            },
+            complete: function () {
+              that.setData({
+                freight: freight
+              });
+            }
+          });
+        }
+      } else {
+        this.setData({
+          freight: business.freight
+        });
+      }
+    };
+  })()
+
+
 });

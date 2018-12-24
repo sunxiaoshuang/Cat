@@ -33,6 +33,33 @@ namespace JdCat.Cat.WxApi.Controllers
             return Json(Service.Get(a => a.ID == id));
         }
 
+        /// <summary>
+        /// 进入小程序时，初始化各种数据
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("init/{id}")]
+        public IActionResult WxPageInit(int id, int userId, [FromServices]IUserRepository userRepository)
+        {
+            var now = DateTime.Now;
+            // 满减活动
+            var fullReduct = Service.GetFullReduce(new Business { ID = id }, false).ToList();
+            var valid = fullReduct.Where(a => a.IsActiveValid());
+            // 优惠券
+            var coupon = Service.GetCouponValid(new Business { ID = id });
+            // 折扣券
+            var discount = Service.GetDiscounts(new Business { ID = id })
+                .Where(a => a.Status == Model.Enum.ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
+            // 用户优惠券
+            var userCoupon = userRepository.GetUserCoupon(userId);
+            // 商户配送费用设置
+            var freights = Service.GetFreights(id);
+            // 用户购物车
+            var carts = userRepository.GetCarts(userId);
+
+            return Json(new { fullReduct = valid, coupon, discount, userCoupon, freights, carts });
+            
+        }
+
         [HttpGet("fullreduce/{id}")]
         public IActionResult GetFullReduce(int id)
         {
