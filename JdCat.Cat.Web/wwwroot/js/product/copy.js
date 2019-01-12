@@ -5,7 +5,9 @@
         el: "#app",
         data: {
             storeTree: [],
-            typeTree: []
+            typeTree: [],
+            storeAll: false,
+            typeAll: false
         },
         computed: {
             checkedStores: function () {
@@ -34,6 +36,13 @@
             }
         },
         methods: {
+            checkAll: function (tree, check) {
+                var self = this;
+                tree.forEach(function (obj) {
+                    obj.checked = check;
+                    self.checkChange(obj);
+                });
+            },
             expand: function (item) {
                 item.expanded = !item.expanded;
             },
@@ -88,7 +97,7 @@
                 //} else {
                 //    tip = "复制商品操作不可逆，且复制的商品属于无分类，确定向商户【" + storeName + "】复制商品【" + productName + "】吗？";
                 //}
-                tip = "复制商品操作不可逆，且复制的商品属于无分类状态，需要用户登陆商户调整商品分类，确定向选择的商户复制商品吗？";
+                tip = "复制商品操作不可逆，且不会检测商品是否已存在，请您确保复制的商品在选择的门店中不存在，确定复制操作吗？";
                 $.primary(tip, function () {
                     $.loading();
                     var storeIds = appVue.checkedStores.map(function (store) { return store.id; });
@@ -102,6 +111,7 @@
                             }
                             $.alert(`操作成功`, "success");
                             appVue.typeTree.forEach(function (type) {
+                                type.checked = false;
                                 type.list.forEach(function (product) {
                                     product.checked = false;
                                 });

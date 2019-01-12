@@ -1,0 +1,107 @@
+﻿
+@{
+    ViewData["Title"] = "订单管理";
+}
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    </environment>
+
+}
+@section Scripts {
+    <script>
+        var pageObj = {
+            stores: JSON.parse('@Html.Raw(ViewBag.stores)'),
+            date: '@DateTime.Now.ToString("yyyy-MM-dd")'
+        }
+    </script>
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/chain/order.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/chain/order.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid" style="background-color: #fff;">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewData["Title"]</span>
+                    </h3>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group margin-bottom-10">
+            <button class="btn" v-bind:class="{ 'btn-primary': item.selected, 'btn-default': !item.selected}" v-for="item in buttons" v-text="item.name" @@click="changeType(item)"></button>
+        </div>
+        <div class="form-horizontal">
+            <div class="flex-row margin-bottom-10">
+                <label>订单时间：</label>
+                <input class="form-control width-200" id="txtStartDate" v-model="startDate" />
+                <label style="width: 30px; text-align: center;">-</label>
+                <input class="form-control width-200" id="txtEndDate" v-model="endDate" />
+            </div>
+            <div class="flex-row margin-bottom-10">
+                <label>选择时间：</label>
+                <select class="form-control margin-right-20" style="width: 200px;" v-model="selectedItem">
+                    <option v-for="item in stores" :value="item.id">{{item.name}}</option>
+                </select>
+                <button class="btn btn-primary" @@click="getData()">
+                    <i class="fa fa-search"></i>
+                    搜索
+                </button>
+            </div>
+
+        </div>
+        <hr />
+
+        <table class="table table-striped table-bordered table-hover" style="min-width: 1000px;">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th width="80">当日编号</th>
+                    <th>门店名称</th>
+                    <th>订单编号</th>
+                    <th>下单时间</th>
+                    <th>订单状态</th>
+                    <th>订单金额</th>
+                    <th>联系人</th>
+                    <th>联系电话</th>
+                    <th>联系地址</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(order, index) in orderList">
+                    <td v-text="(paging.pageIndex - 1) * paging.pageSize + 1 + index"></td>
+                    <td v-text="order.identifier"></td>
+                    <td v-text="stores.filter(a => a.id === order.businessId)[0].name"></td>
+                    <td v-text="order.orderCode"></td>
+                    <td v-text="order.createTime"></td>
+                    <td v-text="status(order.status)"></td>
+                    <td v-text="'￥' + order.price"></td>
+                    <td v-text="order.receiverName"></td>
+                    <td v-text="order.phone"></td>
+                    <td v-text="order.receiverAddress"></td>
+                </tr>
+
+            </tbody>
+            <tfoot v-if="orderList.length == 0">
+                <tr>
+                    <td colspan="10">
+                        暂无订单数据...
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <cat-pager :page-count="paging.pageCount" :page-index="paging.pageIndex" page-position="right" @@next="nextPage" @@page="changePage" @@prev="prevPage"></cat-pager>
+    </div>
+</div>

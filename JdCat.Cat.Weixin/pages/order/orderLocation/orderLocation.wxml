@@ -1,0 +1,5 @@
+
+<view class="container">
+    <map style="width: 750rpx; height: 1000rpx;" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" />
+</view>
+

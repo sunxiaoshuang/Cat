@@ -20,36 +20,36 @@
             点击此处注册为会员，才能下单噢！
         </button>
     </view>
-    <view class="btn-area" wx:if="{{userInfo.isRegister}}">
-        <navigator url="/pages/user/mycoupon/mycoupon" open-type="navigate" class="navigate">
-            <image src="/images/icon/coupon-2.png"></image>
+    <view class="navigator-container" wx:if="{{userInfo.isRegister}}">
+        <navigator url="/pages/user/mycoupon/mycoupon" open-type="navigate" class="list-item-navigate">
+            <text class='jdcat jdcat-coupon'></text>
             <text>我的优惠券</text>
-            <image src="/images/icon/right-1.png"></image>
+            <text class='jdcat jdcat-right'></text>
         </navigator>
-        <navigator url="/pages/main/license/license" open-type="navigate" class="navigate">
-            <image src="/images/icon/zizhi-2.png"></image>
+        <navigator url="/pages/main/license/license" open-type="navigate" class="list-item-navigate">
+            <text class='jdcat jdcat-zizhizhengshu'></text>
             <text>商家资质</text>
-            <image src="/images/icon/right-1.png"></image>
+            <text class='jdcat jdcat-right'></text>
         </navigator>
-        <navigator url="/pages/address/list/list" open-type="navigate" class="navigate">
-            <image src="/images/icon/address-2.png"></image>
+        <navigator url="/pages/address/list/list" open-type="navigate" class="list-item-navigate">
+            <text class='jdcat jdcat-map'></text>
             <text>地址管理</text>
-            <image src="/images/icon/right-1.png"></image>
+            <text class='jdcat jdcat-right'></text>
         </navigator>
-        <navigator url="/pages/order/order" open-type="switchTab" class="navigate">
-            <image src="/images/icon/user-order-2.png"></image>
+        <navigator url="/pages/order/order" open-type="switchTab" class="list-item-navigate">
+            <text class='jdcat jdcat-order'></text>
             <text>我的订单</text>
-            <image src="/images/icon/right-1.png"></image>
+            <text class='jdcat jdcat-right'></text>
         </navigator>
-        <view class="navigate" bindtap="callPhone">
-            <image src="/images/icon/phone-2.png"></image>
+        <view class="list-item-navigate" bindtap="callPhone">
+            <text class='jdcat jdcat-phone'></text>
             <text>联系商家</text>
-            <image src="/images/icon/right-1.png"></image>
+            <text class='jdcat jdcat-right'></text>
         </view>
-        <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="navigate">
-            <image src="/images/icon/info-2.png"></image>
+        <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="list-item-navigate">
+            <text class='jdcat jdcat-user-circle'></text>
             <text>个人信息</text>
-            <image src="/images/icon/right-1.png"></image>
+            <text class='jdcat jdcat-right'></text>
         </navigator>
     </view>
     <view class="support">

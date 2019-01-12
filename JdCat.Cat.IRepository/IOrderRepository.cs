@@ -147,6 +147,13 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Order GetOrderByCode(string code);
         /// <summary>
+        /// 根据订单编号获取订单id
+        /// </summary>
+        /// <param name="orderCode"></param>
+        /// <returns></returns>
+        int GetOrderIdByCode(string orderCode);
+
+        /// <summary>
         /// 根据商户id获取点我达商户
         /// </summary>
         /// <param name="businessId"></param>
@@ -181,6 +188,10 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="order"></param>
         Task SendMsgOfRefund(Order order);
-
+        /// <summary>
+        /// 获取订单骑手位置
+        /// </summary>
+        /// <param name="id"></param>
+        YcfkLocation GetOrderLocation(int id);
     }
 }

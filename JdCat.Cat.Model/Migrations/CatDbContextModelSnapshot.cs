@@ -1099,6 +1099,25 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("WxListenUser","dbo");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.YcfkLocation", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<double>("Lat");
+
+                    b.Property<double>("Lng");
+
+                    b.Property<int>("OrderId");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("YcfkLocation","dbo");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.Address", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.User", "User")

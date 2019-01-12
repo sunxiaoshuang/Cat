@@ -1,0 +1,19 @@
+﻿DROP FUNCTION IF EXISTS dbo.fn_geo;
+
+CREATE FUNCTION dbo.fn_geo (LatBegin FLOAT8, LngBegin FLOAT8, LatEnd FLOAT8, LngEnd FLOAT8) RETURNS FLOAT8
+COMMENT '计算2坐标点距离'
+BEGIN
+  DECLARE Distance FLOAT8;
+  DECLARE EARTH_RADIUS FLOAT8 DEFAULT 6378137.0;
+  DECLARE RadLatBegin FLOAT8 DEFAULT 0; 
+	DECLARE RadLatEnd FLOAT8 DEFAULT 0; 
+	DECLARE RadLatDiff FLOAT8 DEFAULT 0;
+	DECLARE RadLngDiff FLOAT8 DEFAULT 0;
+  SET RadLatBegin = LatBegin * PI() / 180.0;
+  SET RadLatEnd = LatEnd * PI() / 180.0;
+  SET RadLatDiff = RadLatBegin - RadLatEnd;
+  SET RadLngDiff = LngBegin * PI() / 180.0 - LngEnd * PI() / 180.0;
+  SET Distance = 2 * ASIN(SQRT(POWER(SIN(RadLatDiff/2), 2)+COS(RadLatBegin)*COS(RadLatEnd)*POWER(SIN(RadLngDiff/2), 2)));
+  SET Distance = ROUND(Distance * EARTH_RADIUS, 0);
+  RETURN Distance;
+END

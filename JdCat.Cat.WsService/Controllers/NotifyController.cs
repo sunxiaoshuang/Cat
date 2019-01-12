@@ -4,10 +4,12 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
+using JdCat.Cat.Common.Models;
 using JdCat.Cat.WsService.App_Code;
 using JdCat.Cat.WsService.Models;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace JdCat.Cat.WsService.Controllers
 {
@@ -32,7 +34,7 @@ namespace JdCat.Cat.WsService.Controllers
         public async Task<IActionResult> Get(int id, [FromQuery]string code, [FromQuery]int? state, [FromServices]WsHandler wsHandler)
         {
             // 网页通知
-            await wsHandler.OrderNotifyAsync(id, code, state??99);
+            await wsHandler.OrderNotifyAsync(id, code, state ?? 99);
             // 客户端通知
             //var state = StateObject.DicSocket.FirstOrDefault(a => a.Key == id);
             //if (state.Value != null)
@@ -54,7 +56,7 @@ namespace JdCat.Cat.WsService.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Post([FromBody]PostData data, [FromServices]OrderInfoHandler handler)
+        public IActionResult Post([FromBody]PostNewOrderData data, [FromServices]OrderInfoHandler handler)
         {
             handler.Add(data);
             return Ok("通知成功");
@@ -76,7 +78,7 @@ namespace JdCat.Cat.WsService.Controllers
             }
             else
             {
-                result.Data = list;
+                result.Data = list.Select(a => a.Content).ToList();
             }
             return Json(result);
         }

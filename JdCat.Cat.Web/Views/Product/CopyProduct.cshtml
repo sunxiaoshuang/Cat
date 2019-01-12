@@ -42,9 +42,15 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-10 col-xs-12">
+                            <span class="text-primary margin-bottom-10">注：套餐商品不能复制！</span>
                             <div class="tree-box">
                                 <div class="tree-block" style="width: 48%">
-                                    <i class="fa fa-check-circle-o"> 请勾选要复制商品的门店：</i>
+                                    <i class="fa fa-check-circle-o"> 请勾选要复制商品的门店：</i><br />
+                                    <label class="label-checkbox" @@change="checkAll(storeTree, storeAll)">
+                                        <input type="checkbox" v-model="storeAll">
+                                        <span class="custom-checkbox"></span>
+                                        全选
+                                    </label>
                                     <ul class="ul-province">
                                         <li v-for="province in storeTree">
                                             <label class="label-checkbox" @@change="checkChange(province)">
@@ -83,7 +89,12 @@
                                     </ul>
                                 </div>
                                 <div class="tree-block" style="width: 48%;">
-                                    <i class="fa fa-check-circle-o"> 请勾选要复制的商品：</i>
+                                    <i class="fa fa-check-circle-o"> 请勾选要复制的商品：</i><br />
+                                    <label class="label-checkbox" @@change="checkAll(typeTree, typeAll)">
+                                        <input type="checkbox" v-model="typeAll">
+                                        <span class="custom-checkbox"></span>
+                                        全选
+                                    </label>
                                     <ul class="ul-tree">
                                         <li v-for="type in typeTree">
                                             <label class="label-checkbox" @@change="checkChange(type)">

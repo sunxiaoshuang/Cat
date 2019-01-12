@@ -94,7 +94,21 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult LazyLoad([FromServices]IBusinessRepository service)
         {
             var business = service.Get(1);
-            return Content(business.Orders.First().CreateTime.Value.ToString("yyyy-MM-dd HH:mm:ss"));
+            return null;
+        }
+
+        public IActionResult T1([FromServices]IProductRepository service)
+        {
+            //var type = new ProductType { BusinessId = 1, Name = "测试分类1", Sort = 99 };
+            //var product1 = new Product { BusinessId = 1, ProductType = type, Name = "测试商品1" };
+            //var product2 = new Product { BusinessId = 1, ProductType = type, Name = "测试商品2" };
+            //var product3 = new Product { BusinessId = 1, ProductType = type, Name = "测试商品3" };
+
+            //service.Set<Product>().Add(product1);
+            //service.Set<Product>().Add(product2);
+            //service.Set<Product>().Add(product3);
+            //service.Commit();
+            return Content("ok");
         }
 
         #region 达达

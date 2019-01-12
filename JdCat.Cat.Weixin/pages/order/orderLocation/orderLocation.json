@@ -1,0 +1,6 @@
+{
+    "backgroundColor": "#fff",
+    "navigationBarTitleText": "骑手地图",
+    "enablePullDownRefresh": false,
+    "disableScroll": true
+}

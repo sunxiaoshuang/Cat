@@ -159,7 +159,7 @@ namespace JdCat.Cat.WxApi.Controllers
                 notify_url = appData.PaySuccessUrl,
                 spbill_create_ip = appData.HostIpAddress
             };
-            if (business.ID == 1)
+            if (appData.RunMode == "test")
             {
                 option.total_fee = 1;
             }
@@ -238,6 +238,7 @@ namespace JdCat.Cat.WxApi.Controllers
                              await hc.GetAsync($"{appData.OrderUrl}/api/notify/{order.BusinessId}?code={order.OrderCode}&state={(int)order.Status}");
                          }
                      });
+
                     try
                     {
                         TemplateMessage(order);             // 小程序模版消息
@@ -246,6 +247,22 @@ namespace JdCat.Cat.WxApi.Controllers
                     catch (Exception ex)
                     {
                         Log.Error("发送模版消息出错：" + ex.Message);
+                    }
+                    // 订单提醒：将数据存储在通知服务中，等待客户端来取
+                    try
+                    {
+                        using (var hc = new HttpClient())
+                        {
+                            var body = new PostNewOrderData { BusinessId = order.BusinessId.Value, Content = JsonConvert.SerializeObject(order, AppData.JsonSetting), OrderId = order.ID };
+                            var postData = new StringContent(JsonConvert.SerializeObject(body));
+                            postData.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                            var res = await hc.PostAsync($"{appData.OrderUrl}/api/notify", postData);
+                            res.EnsureSuccessStatusCode();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("新订单消息通知错误：" + e.Message);
                     }
                 }
                 else
@@ -368,6 +385,17 @@ namespace JdCat.Cat.WxApi.Controllers
                     Log.Info(result);
                 }
             }
+        }
+
+        /// <summary>
+        /// 获取订单骑手位置
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("orderLocation/{id}")]
+        public IActionResult GetOrderLocation(int id)
+        {
+            var location = Service.GetOrderLocation(id);
+            return Json(location);
         }
 
     }

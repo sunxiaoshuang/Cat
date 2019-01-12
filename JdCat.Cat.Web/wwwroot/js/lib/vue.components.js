@@ -25,7 +25,7 @@
         `,
         data: function () {
             var classObj = {};
-            if (!!this.pagePosition) {
+            if (this.pagePosition) {
                 classObj["text-" + this.pagePosition] = true;
             } else {
                 classObj["text-center"] = true;

@@ -24,6 +24,7 @@ namespace JdCat.Cat.Web
         {
             var host = BuildWebHost(args);
             AutoMigration(host);
+            InitScript(host);
             InitSeed(host);
             Task.Run(async () => await Reset(host));
             host.Run();
@@ -39,6 +40,28 @@ namespace JdCat.Cat.Web
                 .UseStartup<Startup>()
                 //                .UseKestrel(Host.SetHost)
                 .Build();
+        }
+
+        /// <summary>
+        /// 运行数据库脚本
+        /// </summary>
+        /// <param name="host"></param>
+        private static void InitScript(IWebHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var env = scope.ServiceProvider.GetService<IHostingEnvironment>();
+                var context = scope.ServiceProvider.GetService<CatDbContext>();
+                var scriptPath = Path.Combine(env.ContentRootPath, "Asserts", "Scripts");
+                try
+                {
+
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("初始化数据库脚本错误", ex);
+                }
+            }
         }
 
         /// <summary>

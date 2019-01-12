@@ -1,0 +1,73 @@
+<wxs module="common" src="../../wxs/filters/common.wxs"></wxs>
+<view class="container">
+    <view class="select-city">
+        <view class="cur-city" bindtap="changeCity">
+            <text class="city-name">{{cityName}}</text>
+            <text class="jdcat jdcat-{{arrow}}"></text>
+        </view>
+        <view class="search-name">
+            <text class="jdcat jdcat-search"></text>
+            <input placeholder="{{searchcontent}}" value="{{inputContent}}" bindinput="bindKeyInput" />
+        </view>
+    </view>
+    <view class="store" wx:if="{{viewName === 'store'}}">
+        <view class="store-block">
+            <view class="wx-map" wx:if="{{markers.length > 0}}">
+                <map longitude="{{mapObj.longitude}}" latitude="{{mapObj.latitude}}" markers="{{markers}}" bindmarkertap="clickMaker" />
+            </view>
+            <!-- <view class="title">
+                <text>距离最近餐厅</text>
+            </view> -->
+            <block wx:if="{{nearbyStores.length > 0}}">
+                <view class="store-item" wx:for="{{nearbyStores}}" wx:key="" wx:for-item="store">
+                    <view class="info" bindtap="enterStore" data-store="{{store}}">
+                        <text class="name">{{store.name}}</text>
+                        <text class="address">{{store.address}}</text>
+                    </view>
+                    <view class="distinct" bindtap="goMap" data-store="{{store}}">
+                        <text>{{common.filter.distance(store.distance)}}</text>
+                        <text class="store-map jdcat jdcat-map"></text>
+                    </view>
+                </view>
+            </block>
+            <view class="store-none" wx:else>
+                <text class="jdcat jdcat-map"></text>
+                <text>没有任何门店...</text>
+            </view>
+        </view>
+    </view>
+    <view class="city" wx:else>
+        <view class="city-list" wx:if="{{!hasCitySearch}}">
+            <view class="city-type" wx:if="{{locationCity}}">
+                <text class="type-name">当前定位城市</text>
+                <view class="city-container">
+                    <text>{{locationCity}}</text>
+                </view>
+            </view>
+            <scroll-view class="city-order" scroll-y="{{true}}">
+                <view class="city-type">
+                    <text class="type-name">热门城市</text>
+                    <view class="city-container">
+                        <text wx:for="{{top10}}" wx:key="" bindtap="selectCity" data-name="{{item.name}}">{{item.name}}</text>
+                    </view>
+                </view>
+                <view class="city-type" wx:for="{{type}}" wx:key="" wx:for-item="typeItem" wx:if="{{typeItem.items.length > 0}}">
+                    <text class="type-name">{{typeItem.key}}</text>
+                    <view class="city-container">
+                        <text wx:for="{{typeItem.items}}" wx:key="" wx:for-item="city" bindtap="selectCity" data-name="{{city.name}}">{{city.name}}</text>
+                    </view>
+                </view>
+                <view style="height: 200rpx;">
+                </view>
+            </scroll-view>
+        </view>
+        <view class="city-list" wx:else>
+            <view class="city-type" style="min-height: 400rpx;">
+                <text class="type-name">搜索结果</text>
+                <view class="city-container">
+                    <text wx:for="{{filterCity}}" wx:key="" wx:for-item="city" bindtap="selectCity" data-name="{{city.name}}">{{city.name}}</text>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

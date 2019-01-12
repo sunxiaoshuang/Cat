@@ -119,9 +119,15 @@ Page({
       }
     });
   },
+  location: function(){
+    var order = this.data.order;
+    wx.navigateTo({
+      url: `/pages/order/orderLocation/orderLocation?id=${order.id}&lat=${order.lat}&lng=${order.lng}`
+    });
+  },
   cancel: function () {
-    wx.switchTab({
-      url: '/pages/main/main'
+    wx.reLaunch({
+      url: "/pages/launch/launch"
     });
   }
 })

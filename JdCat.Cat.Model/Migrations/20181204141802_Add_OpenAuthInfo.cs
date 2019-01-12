@@ -33,12 +33,6 @@ namespace JdCat.Cat.Model.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                schema: "dbo",
-                table: "OpenAuthInfo",
-                columns: new[] { "ID", "AppId", "AuthNote", "BusinessId", "CreateTime", "RefreshToken" },
-                values: new object[] { 1, "wxde8166b07f0baea8", null, 2, new DateTime(2018, 12, 4, 22, 18, 2, 374, DateTimeKind.Local), "refreshtoken@@@LdFvnDBdEH-o913Qta_RKX7oJfITF-35HC_nl68ADnc" });
-
             migrationBuilder.CreateIndex(
                 name: "IX_OpenAuthInfo_BusinessId",
                 schema: "dbo",

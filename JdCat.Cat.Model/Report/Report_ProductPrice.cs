@@ -7,6 +7,6 @@ namespace JdCat.Cat.Model.Report
     public class Report_ProductPrice
     {
         public string Name { get; set; }
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
     }
 }

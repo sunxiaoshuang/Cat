@@ -251,8 +251,8 @@ group by CreateTime");
         public List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end)
         {
             return ExecuteReader<Report_SaleStatistics>($@"
-                select CreateTime AS [Date], sum(Price) Total, count(CreateTime) Quantity from (
-	                select Price, convert(VARCHAR(10), CreateTime, 120) CreateTime from dbo.[Order] where 
+                select CreateTime AS [Date], sum(Price) Total, sum(PackagePrice) PackageAmount, sum(Freight) FreightAmount, count(CreateTime) Quantity from (
+	                select Price, PackagePrice, Freight, convert(VARCHAR(10), CreateTime, 120) CreateTime from dbo.[Order] where 
 	                [BusinessId] = {business.ID} and 
 	                [Status] & {(int)OrderStatus.Valid} > 0 and 
 	                [CreateTime] between '{start:yyyy-MM-dd}' and '{end.AddDays(1):yyyy-MM-dd}' 
@@ -611,15 +611,125 @@ group by CreateTime");
         {
             Context.Attach(store);
             store.ParentId = chain.ID;
+            store.AppId = chain.AppId;
+            store.Secret = chain.Secret;
+            store.TemplateNotifyId = chain.TemplateNotifyId;
+            store.AppQrCode = chain.AppQrCode;
             Context.SaveChanges();
             return store;
         }
-        
+
         public bool UnBindStore(Business chain, Business store)
         {
             Context.Attach(store);
             store.ParentId = null;
             return Context.SaveChanges() > 0;
+        }
+
+        public Business GetNearestStore(int chainId, double lat, double lng)
+        {
+            var sql = $@"select top 1 * from (
+                        select *, dbo.fn_geo(Lat, Lng, {lat}, {lng}) as [Distance] from dbo.[Business] a
+                        where ParentId={chainId} and IsClose=0 and [Category]=0
+                        )t order by [Distance] asc";
+            var business = ExecuteReader<Business>(sql);
+            if (business == null || business.Count == 0) return null;
+            return business[0];
+        }
+
+        public List<Business> GetNearbyStore(int chainId, string city, double lat, double lng, string key = null)
+        {
+            if (key != null && key.Contains("'")) throw new ArgumentException("参数中不能包含单引号");
+            var condition = $" where ParentId={chainId} and City='{city}' and [Category]=0";
+            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(key.Trim()))
+            {
+                condition += $" and (charindex('{key}', Name) > 0 or charindex('{key}', [Address]) > 0)";
+            }
+            var sql = $@"select top 5 * from (
+                        select *, dbo.fn_geo(Lat, Lng, {lat}, {lng}) as [Distance] from dbo.[Business] a
+                        {condition}
+                        )t order by [Distance] asc";
+            return ExecuteReader<Business>(sql);
+        }
+
+        public string ResetPwd(int id)
+        {
+            var password = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 6).ToLower();
+            var business = new Business { ID = id };
+            Context.Attach(business);
+            business.Password = UtilHelper.MD5Encrypt(password);
+            business.ObjectId = Guid.NewGuid().ToString().ToLower();
+            Context.SaveChanges();
+            return password;
+        }
+
+        public List<Tuple<int, string>> GetStoresOnlyId(int chainId)
+        {
+            return Context.Businesses.Where(a => a.Category == BusinessCategory.Store && a.ParentId == chainId)
+                .OrderBy(a => a.ID).Select(a => new Tuple<int, string>(a.ID, a.Name)).ToList();
+        }
+
+        public List<Order> GetOrders(int chainId, int businessId, OrderStatus? status, PagingQuery query, DateTime startDate, DateTime endDate)
+        {
+            var condition = string.Empty;
+            if (businessId == 0)
+            {
+                condition = $@"[BusinessId] in (select id from dbo.[Business] where ParentId={chainId} and Category=0)";
+            }
+            else
+            {
+                condition = $@"[BusinessId] = {businessId}";
+            }
+            if (status != null && status > 0)
+            {
+                condition += $" and [Status] & {(int)status.Value} > 0 ";
+            }
+            condition += $" and [CreateTime] >= '{startDate.ToString("yyyy-MM-dd")}' and [CreateTime] < '{endDate.AddDays(1).ToString("yyyy-MM-dd")}'";
+
+            var countSql = $"select count(*) from dbo.[Order] where {condition}";
+            var textSql = $@"select [Identifier], [BusinessId], [OrderCode], [CreateTime], [Status], [Price], [ReceiverName], [Phone], [ReceiverAddress] from dbo.[Order] where {condition} 
+                            order by id offset {(query.PageIndex - 1) * query.PageSize} rows fetch next {query.PageSize} rows only";
+            query.RecordCount = ExecuteScalar<int>(countSql);
+            return ExecuteReader<Order>(textSql);
+        }
+
+        public List<Report_ChainSummary> GetBusinessSummary(int chainId, int businessId, DateTime startDate, DateTime endDate)
+        {
+            var condition = string.Empty;
+            if (businessId > 0)
+            {
+                condition += $@"a.Id={businessId} and ";
+            }
+            condition += $"a.ParentId={chainId} and b.Status & 2781 > 0 and b.CreateTime >= '{startDate:yyyy-MM-dd}' and b.CreateTime < '{endDate.AddDays(1):yyyy-MM-dd}'";
+            var sql = $@"select a.Id, a.Name, COUNT(*) as Quantity, SUM(b.Price) as Amount from dbo.[Business] a 
+		                    left join dbo.[Order] b on a.Id=b.BusinessId
+	                    where {condition}
+	                    group by a.Id, a.Name";
+            return ExecuteReader<Report_ChainSummary>(sql);
+        }
+
+        public List<Report_UserList> GetUserListByChain(int id, PagingQuery query)
+        {
+            var data = from user in Context.Users
+                       join business in Context.Businesses
+                       on user.BusinessId equals business.ID
+                       where user.IsRegister && business.ParentId == id
+                       orderby user.ID descending
+                       select new Report_UserList
+                       {
+                           Face = user.AvatarUrl,
+                           Nickname = user.NickName,
+                           Gender = user.Gender,
+                           Area = user.Province + "" + user.City,
+                           Phone = user.Phone,
+                           Quantity = user.PurchaseTimes,
+                           RegisteTime = user.CreateTime,
+                           StoreName = business.Name
+                       };
+            query.RecordCount = data.Count();
+            return data.Skip(query.PageSize * (query.PageIndex - 1))
+                            .Take(query.PageSize).ToList();
+
         }
 
     }

@@ -53,27 +53,22 @@ namespace JdCat.Cat.Common
                             keyName = keyName.ToUpper();
                         for (int j = 0; j < columnscount; j++)
                         {
-                            if (data.Columns[j].ColumnName == keyName && data.Rows[i][j] != null)
+                            //if (data.Columns[j].ColumnName == keyName && data.Rows[i][j] != null)
+                            //{
+                            //    if (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                            //    {
+                            //        p.SetValue(model, Convert.ChangeType(data.Rows[i][j], p.PropertyType.GetGenericArguments()[0]), null);
+                            //    }
+                            //    else
+                            //    {
+                            //        p.SetValue(model, Convert.ChangeType(data.Rows[i][j], p.PropertyType), null);
+                            //    }
+                            //    break;
+                            //}
+                            if (data.Columns[j].ColumnName == keyName)
                             {
-                                string pval = data.Rows[i][j].ToString();
-                                if (!string.IsNullOrEmpty(pval))
-                                {
-                                    try
-                                    {
-                                        if (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                                        {
-                                            p.SetValue(model, Convert.ChangeType(data.Rows[i][j], p.PropertyType.GetGenericArguments()[0]), null);
-                                        }
-                                        else
-                                        {
-                                            p.SetValue(model, Convert.ChangeType(data.Rows[i][j], p.PropertyType), null);
-                                        }
-                                    }
-                                    catch (Exception x)
-                                    {
-                                        throw x;
-                                    }
-                                }
+                                if (data.Rows[i][j] == DBNull.Value || data.Rows[i][j] == null) break;
+                                p.SetValue(model, data.Rows[i][j], null);
                                 break;
                             }
                         }

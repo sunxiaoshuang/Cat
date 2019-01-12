@@ -50,11 +50,11 @@ namespace JdCat.Cat.WxApi.Controllers
             var discount = Service.GetDiscounts(new Business { ID = id })
                 .Where(a => a.Status == Model.Enum.ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
             // 用户优惠券
-            var userCoupon = userRepository.GetUserCoupon(userId);
+            var userCoupon = userRepository.GetUserCoupon(id, userId);
             // 商户配送费用设置
             var freights = Service.GetFreights(id);
             // 用户购物车
-            var carts = userRepository.GetCarts(userId);
+            var carts = userRepository.GetCarts(id, userId);
 
             return Json(new { fullReduct = valid, coupon, discount, userCoupon, freights, carts });
             
@@ -92,7 +92,7 @@ namespace JdCat.Cat.WxApi.Controllers
                 .Where(a => a.Status == Model.Enum.ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
 
             // 用户优惠券
-            var userCoupon = userRepository.GetUserCoupon(userId);
+            var userCoupon = userRepository.GetUserCoupon(id, userId);
 
             return Json(new { fullReduct = valid, coupon, discount, userCoupon });
         }

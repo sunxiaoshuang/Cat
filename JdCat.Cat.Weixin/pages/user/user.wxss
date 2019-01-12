@@ -93,3 +93,6 @@ view.navigate text {
     width: 550rpx;
     left: 100rpx;
 }
+.list-item-navigate {
+    line-height: 80rpx;
+}

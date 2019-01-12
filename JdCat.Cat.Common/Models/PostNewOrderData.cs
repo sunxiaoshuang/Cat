@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace JdCat.Cat.WsService.App_Code
+namespace JdCat.Cat.Common.Models
 {
-    public class PostData
+    public class PostNewOrderData
     {
         /// <summary>
         /// 订单id

@@ -2,3 +2,19 @@
     margin-top: 140px;
 }
 
+.loading {
+    position: absolute;
+    top: 40rpx;
+    right: 40rpx;
+    border: 1px solid #f36c1b;
+    color: #f36c1b;
+    font-size: 60%;
+    padding: 5rpx;
+}
+
+.openText {
+    color: #555;
+    font-size: 80%;
+    margin-top: 20rpx;
+    text-align: center;
+}

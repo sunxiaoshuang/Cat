@@ -62,7 +62,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="userId">用户id</param>
         /// <returns></returns>
-        IEnumerable<ShoppingCart> GetCarts(int userId);
+        IEnumerable<ShoppingCart> GetCarts(int businessId, int userId);
         /// <summary>
         /// 创建购物车
         /// </summary>
@@ -106,7 +106,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        List<SaleCouponUser> GetUserCoupon(int id);
+        List<SaleCouponUser> GetUserCoupon(int businessId, int id);
         /// <summary>
         /// 领取优惠券
         /// </summary>

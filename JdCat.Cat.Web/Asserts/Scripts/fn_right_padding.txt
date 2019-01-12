@@ -1,0 +1,12 @@
+﻿
+DROP FUNCTION IF EXISTS dbo.fn_right_padding;
+
+CREATE FUNCTION dbo.fn_right_padding (num INT, len INT) RETURNS VARCHAR(20)
+COMMENT '将数字从右开始，截取指定长度的字符串'
+BEGIN
+	DECLARE str VARCHAR(20);
+	IF LENGTH(str) < len THEN
+		SET str = RIGHT(CONCAT('0000000000', num), len);
+	END IF;
+	RETURN str;
+END

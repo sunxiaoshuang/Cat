@@ -7,6 +7,7 @@ using JdCat.Cat.Common;
 using JdCat.Cat.Common.Models;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using JdCat.Cat.Model.Report;
 
 namespace JdCat.Cat.IRepository
@@ -161,6 +162,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="date"></param>
         /// <returns></returns>
         List<Report_ProductPrice> GetProductPriceTop10(Business business, DateTime date);
+
         /// <summary>
         /// 获取指定日期的销售统计数据
         /// </summary>
@@ -234,6 +236,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         JsonData DeleteCoupon(int id);
+
         /// <summary>
         /// 下架优惠券
         /// </summary>
@@ -258,6 +261,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="list"></param>
         /// <returns></returns>
         List<SaleProductDiscount> CreateDiscount(List<SaleProductDiscount> list);
+
         /// <summary>
         /// 删除折扣活动
         /// </summary>
@@ -318,6 +322,63 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         bool UnBindStore(Business chain, Business store);
 
+        /// <summary>
+        /// 获取距离最近的门店
+        /// </summary>
+        /// <param name="chainId">连锁总店id</param>
+        /// <param name="lat">纬度</param>
+        /// <param name="lng">经度</param>
+        /// <returns></returns>
+        Business GetNearestStore(int chainId, double lat, double lng);
+
+        /// <summary>
+        /// 查找距离最近的五个门店
+        /// </summary>
+        /// <param name="chainId"></param>
+        /// <param name="city"></param>
+        /// <param name="lat"></param>
+        /// <param name="lng"></param>
+        /// <returns></returns>
+        List<Business> GetNearbyStore(int chainId, string city, double lat, double lng, string key = null);
+
+        /// <summary>
+        /// 重置密码
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        string ResetPwd(int id);
+
+        /// <summary>
+        /// 获取分店，仅仅id与name
+        /// </summary>
+        /// <param name="chainId"></param>
+        /// <returns></returns>
+        List<Tuple<int, string>> GetStoresOnlyId(int chainId);
+
+        /// <summary>
+        /// 获取订单
+        /// </summary>
+        /// <param name="chainId"></param>
+        /// <param name="status"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        List<Order> GetOrders(int chainId, int businessId, OrderStatus? status, PagingQuery query, DateTime startDate, DateTime endDate);
+
+        /// <summary>
+        /// 获取营业统计
+        /// </summary>
+        /// <param name="chainId"></param>
+        /// <param name="businessId"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        List<Report_ChainSummary> GetBusinessSummary(int chainId, int businessId, DateTime startDate, DateTime endDate);
+
+        /// <summary>
+        /// 根据连锁店id获取注册用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="query"></param>
+        List<Report_UserList> GetUserListByChain(int id, PagingQuery query);
 
         #endregion
 

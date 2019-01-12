@@ -1,3 +1,5 @@
 <view class="container margin-top-140">
+    <text class="loading">正在加载...</text>
     <image src="../../images/log.jpg" style="width: 50px;height: 50px;border-radius: 50%;"></image>
+    <text class="openText">{{openText}}</text>
 </view>

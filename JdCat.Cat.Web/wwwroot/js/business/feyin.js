@@ -86,7 +86,8 @@
                                 code: '',
                                 name: '',
                                 type: "1",
-                                apiKey: ""
+                                apiKey: "",
+                                remark: ""
                             }
                         });
                         this.on("hidden.bs.modal", function () {

@@ -17,16 +17,17 @@ Page({
     }
   },
   bindGetUserInfo: function (e) {
-    var self = this;
+    var self = this, business = qcloud.getSession().business;
     wx.getSetting({ // 如果用户允许授权，则将用户信息写入数据库
       success: function (res) {
         if (!res.authSetting["scope.userInfo"]) return;
         util.showBusy("加载中...");
         var userinfo = e.detail.userInfo;
         userinfo.id = self.data.userInfo.id;
+        userinfo.businessId = business.id;
         userinfo.skey = self.data.userInfo.skey;
         qcloud.request({
-          url: config.service.requestUrl + "/user/info",
+          url: "/user/info",
           data: userinfo,
           method: "put",
           success: function (res) {

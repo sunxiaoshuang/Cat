@@ -376,7 +376,7 @@ namespace JdCat.Cat.Repository
                 {
                     a.Name,
                     a.ID,
-                    List = a.Products.Where(b => b.Status != ProductStatus.Delete).Select(b => new { b.Name, b.ID })
+                    List = a.Products.Where(b => b.Status != ProductStatus.Delete && b.Feature != ProductFeature.SetMeal).Select(b => new { b.Name, b.ID })
                 }).ToList();
             return types.Select(a =>
             {
@@ -387,16 +387,22 @@ namespace JdCat.Cat.Repository
         }
         public async Task<int> Copy(CopyProduct copyData, string imageUrl)
         {
-            // 复制的商品不包含：图片、套餐商品、折扣
-            // 保存复制商品
+            // 注：复制的商品不包含：折扣、套餐
+
+            // 1. 查找需要复制的商品
             var now = DateTime.Now;
             var products = Context.Products.AsNoTracking()
+                .Include(a => a.ProductType)
                 .Include(a => a.Attributes)
                 .Include(a => a.Formats)
                 .Include(a => a.Images)
-                .Where(a => copyData.ProductIds.Contains(a.ID)).ToList();
-            // 需要复制的图片名称
-            var imageNames = new List<string>();
+                .Where(a => copyData.ProductIds.Contains(a.ID))
+                .OrderBy(a => a.ProductType.Sort)
+                .ThenBy(a => a.ID)
+                .ToList();
+            
+            var imageNames = new List<string>();        // 需要复制的图片名称
+            // 2. 将需要复制的商品属性初始化，Tag1用来保存商品类别名称
             products.ForEach(product =>
             {
                 product.ID = 0;
@@ -407,6 +413,11 @@ namespace JdCat.Cat.Repository
                 product.ProductIdSet = null;
                 product.ProductTypeId = null;
                 product.PublishTime = now;
+                if(product.ProductType != null)
+                {
+                    product.Tag1 = product.ProductType.Name;
+                    product.ProductType = null;
+                }
                 if (product.Attributes != null)
                 {
                     foreach (var attr in product.Attributes)
@@ -436,17 +447,45 @@ namespace JdCat.Cat.Repository
                     }
                 }
             });
+            // 3. 读取每个门店的商品类型
+            var types = Context.ProductTypes
+                .Where(a => copyData.StoreIds.Contains(a.BusinessId))
+                .OrderBy(a => a.BusinessId)
+                .ThenBy(a => a.Sort)
+                .ToList();
+            // 4. 复制商品
             foreach (var id in copyData.StoreIds)
             {
+                var curTypes = types.Where(a => a.BusinessId == id).ToList();       // 当前的门店所有商品类别
+                var maxSort = 0;
+                if(curTypes.Count > 0)
+                {
+                    maxSort = curTypes.Max(a => a.Sort);
+                }
                 products.ForEach(a =>
                 {
                     var product = (Product)a.Clone();
                     product.BusinessId = id;
+                    var typeName = product.Tag1 + "";
+                    if (typeName.Length > 0)
+                    {
+                        var type = curTypes.FirstOrDefault(b => b.Name == product.Tag1 + "");
+                        if (type == null)
+                        {
+                            type = new ProductType { BusinessId = id, Description = "总店复制", Name = typeName, Sort = ++maxSort };
+                            product.ProductType = type;
+                            curTypes.Add(type);
+                        }
+                        else
+                        {
+                            product.ProductTypeId = type.ID;
+                        }
+                    }
                     Context.Add(product);
                 });
             }
             var count = Context.SaveChanges();
-            
+
             var postData = new CopyProduct
             {
                 ChainId = copyData.ChainId,
@@ -466,7 +505,7 @@ namespace JdCat.Cat.Repository
             }
             catch (Exception e)
             {
-                Log.Error(e.Message);   
+                Log.Error(e.Message);
             }
 
             return count;

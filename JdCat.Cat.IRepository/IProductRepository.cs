@@ -149,7 +149,7 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         List<object> GetStoreTree(int id);
         /// <summary>
-        /// 获取商户商品树
+        /// 获取商户商品树（不包含套餐商品）
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

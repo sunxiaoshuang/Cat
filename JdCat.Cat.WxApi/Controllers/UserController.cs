@@ -48,6 +48,10 @@ namespace JdCat.Cat.WxApi.Controllers
             var code = Request.Headers["X-WX-Code"];
             var business = Service.Set<Business>().First(a => a.ID == businessId);
             var session = await GetOpenId(code, business);
+            if(string.IsNullOrEmpty(session.OpenId))
+            {
+                throw new Exception("未能得到用户OpenId，请检查小程序AppId与Secret配置");
+            }
             var user = Service.Get(session.OpenId);
             if (user == null)
             {
@@ -197,7 +201,7 @@ namespace JdCat.Cat.WxApi.Controllers
         [HttpGet("carts/{id}")]
         public IActionResult GetCarts(int id)
         {
-            return Json(Service.GetCarts(id));
+            return Json(Service.GetCarts(0, id));
         }
 
         /// <summary>
@@ -250,7 +254,7 @@ namespace JdCat.Cat.WxApi.Controllers
         [HttpGet("userCoupon/{id}")]
         public IActionResult GetUserCoupon(int id)
         {
-            return Json(Service.GetUserCoupon(id));
+            return Json(Service.GetUserCoupon(0, id));
         }
         [HttpPost("receiveCoupons/{id}")]
         public IActionResult ReceiveCoupons(int id, [FromBody]IEnumerable<SaleCouponUser> coupons)
@@ -259,7 +263,6 @@ namespace JdCat.Cat.WxApi.Controllers
             var list = Service.ReceiveCoupons(new User { ID = id }, ids);
             return Json(list);
         }
-
 
         #region 私有方法
 
@@ -276,7 +279,6 @@ namespace JdCat.Cat.WxApi.Controllers
             {
                 var response = await hc.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
-
                 return JsonConvert.DeserializeObject<WxSession>(content);
             }
         }

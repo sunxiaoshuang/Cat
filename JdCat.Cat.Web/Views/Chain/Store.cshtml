@@ -18,7 +18,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <span class="title">今日订单</span>
+                        <span class="title">@ViewBag.Title</span>
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -34,11 +34,12 @@
                                 <th width="100">#</th>
                                 <th>商户编码</th>
                                 <th>门店名称</th>
+                                <th>门店帐号</th>
                                 <th>联系人</th>
                                 <th>联系电话</th>
-                                <th>所属城市</th>
+                                <th>所属城市区域</th>
                                 <th>注册时间</th>
-                                <th width="100">操作</th>
+                                <th width="150">操作</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,18 +47,21 @@
                                 <td v-text="store.index"></td>
                                 <td v-text="store.storeId"></td>
                                 <td v-text="store.name"></td>
+                                <td v-text="store.code"></td>
                                 <td v-text="store.contact"></td>
                                 <td v-text="store.mobile"></td>
                                 <td v-text="(store.province || '') + ' ' + (store.city || '') + ' ' + (store.area || '')"></td>
                                 <td v-text="store.createTime"></td>
                                 <td>
-                                    <a class="text-primary" href="javascript:void(0)" @@click="unbind(store)"><i class="fa fa-unlock-alt"></i> 解绑</a>
+                                    <a class="text-primary" href="javascript:void(0)" @@click="unbind(store)"> 解绑</a>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a class="text-primary" href="javascript:void(0)" @@click="resetPassword(store)"> 重置密码</a>
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot v-if="stores.length === 0">
                             <tr>
-                                <td colspan="7">未绑定任何门店。</td>
+                                <td colspan="9">未绑定任何门店。</td>
                             </tr>
                         </tfoot>
                     </table>

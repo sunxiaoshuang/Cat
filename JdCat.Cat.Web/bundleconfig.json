@@ -332,6 +332,24 @@
     "inputFiles": [
       "wwwroot/js/chain/store.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/chain/order.min.js",
+    "inputFiles": [
+      "wwwroot/js/chain/order.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/chain/manage.min.js",
+    "inputFiles": [
+      "wwwroot/js/chain/manage.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/chain/userlist.min.js",
+    "inputFiles": [
+      "wwwroot/js/chain/userlist.js"
+    ]
   }
 
 ]

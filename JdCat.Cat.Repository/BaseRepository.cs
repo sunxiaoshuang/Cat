@@ -99,6 +99,23 @@ namespace JdCat.Cat.Repository
             var dt = ExecuteReader(search);
             return dt.GetList<TModel>();
         }
+        /// <summary>
+        /// 执行sql，返回单个值
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public TModel ExecuteScalar<TModel>(string sql)
+        {
+            var conn = Context.Database.GetDbConnection();
+            conn.Open();
+            var command = conn.CreateCommand();
+            command.CommandText = sql;
+            command.CommandType = CommandType.Text;
+            var result = command.ExecuteScalar();
+            conn.Close();
+            return (TModel)result;
+
+        }
 
         private static readonly ILog _log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(BaseRepository<T>));
         /// <summary>

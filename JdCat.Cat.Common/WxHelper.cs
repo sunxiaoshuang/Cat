@@ -20,6 +20,8 @@ namespace JdCat.Cat.Common
         public const string Msg_Refund = "vYBFTq7vxZoDYg0K5K9ojTHaUQw49wu_X9XU5fv9wno"; // 退款通知模版消息id
         public const string WeChatAppId = "wx37df4bb420888824";                         // 简单猫科技公众号AppId
         public const string WeChatSecret = "8db34ed73016a5f22878295ed409cc52";          // 简单猫科技公众号Secret
+        public const string MapApiKey = "JEOBZ-2U36O-6EIWM-S2NQD-C4HHO-Y7BC4";          // 腾讯地图开发者key
+        public const string MapApiSecret = "tk0H3bC8foR7ceskfV10KtdwIFV73Dp";           // 腾讯地图WebService接口Secret
         /// <summary>
         /// 开放平台授权ticket，暂时存在这里
         /// </summary>
@@ -328,6 +330,36 @@ namespace JdCat.Cat.Common
             {
                 var res = await client.PostAsync(url, body);
                 var result = await res.Content.ReadAsStringAsync();
+                return result;
+            }
+        }
+
+        #endregion
+
+        #region 地址接口
+        private static string mapApiUrl = "https://apis.map.qq.com";
+        private static Dictionary<string, string> mapApiDic = new Dictionary<string, string>();
+        /// <summary>
+        /// 根据经纬度获取周边地址信息
+        /// </summary>
+        /// <param name="location"></param>
+        /// <returns></returns>
+        public static async Task<string> GetAddressAsync(string location)
+        {
+            if (mapApiDic.ContainsKey(location))
+            {
+                return mapApiDic[location];
+            }
+            var path = "/ws/geocoder/v1";
+            var signContent = $"{path}?key={MapApiKey}&location={location}{MapApiSecret}";
+            var sign = UtilHelper.MD5Encrypt(signContent);
+            var url = $"{mapApiUrl}{path}?key={MapApiKey}&location={location}&sig={sign}";
+            using (var client = new HttpClient())
+            {
+                var res = await client.GetAsync(url);
+                res.EnsureSuccessStatusCode();
+                var result = await res.Content.ReadAsStringAsync();
+                mapApiDic.Add(location, result);
                 return result;
             }
         }

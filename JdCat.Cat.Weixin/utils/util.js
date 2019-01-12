@@ -115,6 +115,13 @@ var method = {
                 clearInterval(interval);
             }
         }, delay);
+    },
+    throttle: function(method, time, context){
+        clearTimeout(method.tId);
+        time = time || 1000;
+        method.tId = setTimeout(function(){
+            method.call(context);
+        }, time);
     }
 }
 

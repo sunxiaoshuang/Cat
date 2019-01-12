@@ -1,5 +1,5 @@
 
-var host = 'https://t.api.jiandanmao.cn';
+var host = 'https://liu.api.jiandanmao.cn';
 
 var config = {
 
@@ -19,9 +19,13 @@ var config = {
         uploadUrl: `${host}/api/upload`,
 
         // 图片地址
-        imageUrl: `http://t.f.jiandanmao.cn`
+        imageUrl: `http://liu.f.jiandanmao.cn`
     },
-    businessId: 1
+    globalData: {
+        openText: "简单猫\r\n让您的生活更简单"
+    },
+    businessId: 2
+    
 };
 
 module.exports = config;

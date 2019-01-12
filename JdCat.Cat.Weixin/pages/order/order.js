@@ -19,11 +19,14 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.loadData(function (list) {
-      this.setData({
-        list: list
-      });
-    });
+    // this.loadData(function (list) {
+    //   this.setData({
+    //     list: list
+    //   });
+    // });
+  },
+  onShow: function(){
+    this.onPullDownRefresh();
   },
 
   /**

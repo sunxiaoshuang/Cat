@@ -53,6 +53,10 @@ namespace JdCat.Cat.Repository
             entity.Province = user.Province;
             entity.Phone = user.Phone;
             entity.IsRegister = true;
+            if(user.BusinessId > 0)
+            {
+                entity.BusinessId = user.BusinessId;
+            }
             Context.SaveChanges();
             return entity;
         }
@@ -97,13 +101,13 @@ namespace JdCat.Cat.Repository
             entity.ModifyTime = DateTime.Now;
             return Context.SaveChanges() > 0;
         }
-        public IEnumerable<ShoppingCart> GetCarts(int userId)
+        public IEnumerable<ShoppingCart> GetCarts(int businessId, int userId)
         {
-            return Context.ShoppingCarts.Where(a => a.UserId == userId).ToList();
-            //return Context.ShoppingCarts.FromSql($@"
-            //        select a.* from dbo.ShoppingCart a
-            //            inner join dbo.Product b on a.ProductId=b.Id and b.Status={(int)ProductStatus.Sale}
-            //            where UserId={userId}").ToList();
+            if (businessId == 0)
+            {
+                return Context.ShoppingCarts.Where(a => a.UserId == userId).ToList();
+            }
+            return Context.ShoppingCarts.Where(a => a.UserId == userId && a.BusinessId == businessId).ToList();
         }
         public ShoppingCart CreateCart(ShoppingCart cart)
         {
@@ -153,10 +157,18 @@ namespace JdCat.Cat.Repository
             ClearCart(order.UserId.Value, order.BusinessId.Value);
             return order;
         }
-        public List<SaleCouponUser> GetUserCoupon(int id)
+        public List<SaleCouponUser> GetUserCoupon(int businessId, int id)
         {
             var now = DateTime.Now;
-            var list = Context.SaleCouponUsers.Where(a => a.UserId == id).ToList();
+            List<SaleCouponUser> list;
+            if (businessId == 0)
+            {
+                list = Context.SaleCouponUsers.Include(a => a.Coupon).Where(a => a.UserId == id).ToList();
+            }
+            else
+            {
+                list = Context.SaleCouponUsers.Include(a => a.Coupon).Where(a => a.UserId == id && a.Coupon.BusinessId == businessId).ToList();
+            }
             // 取得未使用或者半年内领取的优惠券
             var result = list.Where(a => a.CreateTime > now.AddDays(-180) || a.Status == CouponStatus.NotUse).ToList();
             return result;
@@ -213,7 +225,7 @@ namespace JdCat.Cat.Repository
         }
         public IEnumerable<User> GetUsers(Business business)
         {
-            return Context.Users.Where(user => user.BusinessId == business.ID && user.IsRegister);
+            return Context.Users.Where(user => user.BusinessId == business.ID && user.IsRegister).OrderByDescending(a => a.CreateTime);
         }
         //public bool SetPrimaryUser(Business business)
         //{

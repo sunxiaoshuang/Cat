@@ -29,7 +29,7 @@
             business: JSON.parse('@Html.Raw(ViewBag.entity)'.replace(/\n/g, "\\\\n")),
             orderUrl: '@Html.Raw(ViewBag.orderUrl)'
         };
-        pageData.business.description = pageData.business.description.replace(/\\n/g, "\n");
+        pageData.business.description = (pageData.business.description || "").replace(/\\n/g, "\n");
     </script>
     <environment include="Development">
         <script src="~/js/lib/reconnecting-websocket.js"></script>
@@ -123,11 +123,11 @@
                     <a href="#/Report" class="active-menu"><i class="fa fa-home"></i> 首页</a>
                 </li>
                 <li>
-                    <a href="#/Product"><i class="fa fa-desktop"></i> 商品管理</a>
+                    <a href="#/Product"><i class="fa fa-shopping-bag"></i> 商品管理</a>
                 </li>
 
                 <li>
-                    <a href="#"><i class="fa fa-sitemap"></i> 订单管理<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-file-text"></i> 订单管理<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
                             <a href="#/Order">实时接单</a>
@@ -138,10 +138,10 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="#/User/List"><i class="fa fa-qrcode"></i> 会员管理</a>
+                    <a href="#/User/List"><i class="fa fa-users"></i> 会员管理</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-table"></i> 报表<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-file-excel-o"></i> 报表<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
                             <a href="#/Report/SaleStatistics">营业统计</a>
@@ -152,16 +152,16 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="#/Sale"><i class="fa fa-edit"></i> 营销</a>
+                    <a href="#/Sale"><i class="fa fa-gift"></i> 营销</a>
                 </li>
                 <li>
                     <a href="#"><i class="fa fa-globe"></i> 第三方外卖管理</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-globe"></i> 第三方配送管理<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-truck"></i> 第三方配送管理<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
-                            <a href="#/Business/Freight"> 配送距离设置</a>
+                            <a href="#/Business/Freight"> 阶梯式运费设置</a>
                         </li>
                         <li>
                             <a href="#/Business/Dada">达达设置</a>
@@ -175,7 +175,7 @@
                     <a href="#/Setting/AuthInfo"><i class="fa fa-globe"></i> 小程序管理</a>
                 </li>*@
                 <li>
-                    <a href="#"><i class="fa fa-table"></i> 设置<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-cog"></i> 设置<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
                             <a href="#/Business"> 商户信息设置</a>

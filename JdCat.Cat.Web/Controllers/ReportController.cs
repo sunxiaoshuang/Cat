@@ -98,13 +98,17 @@ namespace JdCat.Cat.Web.Controllers
             var index = 1;
             var totalPrice = 0d;
             var totalQuantity = 0;
+            var totalFreightAmount = 0d;
+            var totalPackageAmount = 0d;
             list.ForEach(a =>
             {
                 a.Index = index++;
                 totalPrice += a.Total;
+                totalFreightAmount += a.FreightAmount;
+                totalPackageAmount += a.PackageAmount;
                 totalQuantity += a.Quantity;
             });
-            list.Add(new Report_SaleStatistics { Index = index, Date = "合计", Total = totalPrice, Quantity = totalQuantity });
+            list.Add(new Report_SaleStatistics { Index = index, Date = "合计", Total = totalPrice, FreightAmount = totalFreightAmount, PackageAmount = totalPackageAmount, Quantity = totalQuantity });
 
             return File(list.ToWorksheet(), AppData.XlsxContentType, name);
         }

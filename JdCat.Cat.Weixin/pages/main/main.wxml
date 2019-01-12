@@ -1,6 +1,16 @@
 <wxs module="productFilter" src="../wxs/filters/product.wxs"></wxs>
 <wxs module="common" src="../wxs/filters/common.wxs"></wxs>
 <wxs module="calc" src="../wxs/calc/order.wxs"></wxs>
+<navigator url="/pages/chain/selectstore/selectstore" hover-class="navigator-hover" open-type="navigate" class="location" wx:if="{{hasLocation}}">
+    <view class="location-background"></view>
+    <view class="location-info">
+        <text class="jdcat jdcat-dingwei"></text>
+        <text class="ellipsis">{{locationName}}</text>
+    </view>
+    <view style="text-align: center;" class="location-info">
+        <text class="ellipsis" style="color: #000">点击看看其他门店</text>
+    </view>
+</navigator>
 <view class="head" bindtap="turnPage" data-index="2">
     <view class="logo">
         <image mode="aspectFill" src="{{productFilter.logoImage(logo, businessId)}}" />
@@ -50,51 +60,48 @@
                 </scroll-view>
                 <view class="foodListMain">
                     <scroll-view class="foodList" scroll-y="true" scroll-with-animation="true" scroll-top="{{scrollTop}}" scroll-into-view="{{foodToView}}" bindscroll="scrollFoodList">
-                        <block wx:for="{{productList}}" wx:key="">
-                            <view class="food" id="{{'scroll_' + item.menuId + '_' + item.viewIndex}}">
-                                <image class="img" catchtap="productDetail" mode="aspectFill" lazy-load="{{true}}" data-index="{{index}}" src="{{productFilter.productImage(item, businessId)}}"></image>
-                                <view class="food-block">
-                                    <view class="food-info" catchtap="productDetail" data-index="{{index}}">
-                                        <view class="name">{{item.name}}</view>
-                                        <view class="sales">{{item.description}}</view>
+                        <view class="food" wx:for="{{productList}}" wx:key="" id="{{'scroll_' + item.menuId + '_' + item.viewIndex}}">
+                            <image class="img" catchtap="productDetail" mode="aspectFill" lazy-load="{{true}}" data-index="{{index}}" src="{{productFilter.productImage(item, businessId)}}"></image>
+                            <view class="food-block">
+                                <view class="food-info" catchtap="productDetail" data-index="{{index}}">
+                                    <view class="name">{{item.name}}</view>
+                                    <view class="sales">{{item.description}}</view>
+                                </view>
+                                <view class="food-numb">
+                                    <view class="price">
+                                        <view>
+                                            <text>￥{{!item.discount ? item.price : item.discount.price}}</text>
+                                            <text class="oldPrice" wx:if="{{!!item.discount}}">￥{{item.price}}</text>
+                                        </view>
+                                        <view style="display: flex;" wx:if="{{!!item.discount}}">
+                                            <view style="font-size: 25rpx; font-weight: 400;">
+                                                {{!item.discount ? '' : item.discount.discount}}折 {{productFilter.discountLimit(item.discount.upperLimit)}}
+                                            </view>
+                                        </view>
                                     </view>
-                                    <view class="food-numb">
-                                        <view class="price">
-                                            <view>
-                                                <text>￥{{!item.discount ? item.price : item.discount.price}}</text>
-                                                <text class="oldPrice" wx:if="{{!!item.discount}}">￥{{item.price}}</text>
-                                            </view>
-                                            <view style="display: flex;" wx:if="{{!!item.discount}}">
-                                                <!-- <view class="slide-image" style="transform: scale(.7,.7)">折</view> -->
-                                                <view style="font-size: 25rpx; font-weight: 400;">
-                                                    {{!item.discount ? '' : item.discount.discount}}折 {{productFilter.discountLimit(item.discount.upperLimit)}}
-                                                </view>
-                                            </view>
+                                    <view class="single-format" wx:if="{{item.formats.length == 1 && item.attributes.length == 0}}">
+                                        <view class="item-remove" bindtap="remove" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
+                                            <image src="../../images/icon/minus-5.png" />
                                         </view>
-                                        <view class="single-format" wx:if="{{item.formats.length == 1 && item.attributes.length == 0}}">
-                                            <view class="item-remove" bindtap="remove" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
-                                                <image src="../../images/icon/minus-5.png" />
-                                            </view>
-                                            <view class="item-food-text" wx:if="{{item.quantity > 0}}">
-                                                {{item.quantity}}
-                                            </view>
-                                            <view class="item-add" bindtap="add" data-index="{{index}}">
-                                                <image src="../../images/icon/plus-5.png" />
-                                            </view>
+                                        <view class="item-food-text" wx:if="{{item.quantity > 0}}">
+                                            {{item.quantity}}
                                         </view>
-                                        <view class="multi-format" style="margin-right: 10rpx;" wx:else>
-                                            <view class="selectFormat" bindtap="showFormat" data-index="{{index}}">
-                                                选规格
-                                            </view>
-                                            <view class="formCount" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
-                                                <text>{{item.quantity}}</text>
-                                            </view>
+                                        <view class="item-add" bindtap="add" data-index="{{index}}">
+                                            <image src="../../images/icon/plus-5.png" />
+                                        </view>
+                                    </view>
+                                    <view class="multi-format" style="margin-right: 10rpx;" wx:else>
+                                        <view class="selectFormat" bindtap="showFormat" data-index="{{index}}">
+                                            选规格
+                                        </view>
+                                        <view class="formCount" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
+                                            <text>{{item.quantity}}</text>
                                         </view>
                                     </view>
                                 </view>
                             </view>
-                        </block>
-                        <view style="height: 200rpx;"></view>
+                        </view>
+                        <view style="height: 300rpx;"></view>
                     </scroll-view>
                 </view>
             </view>

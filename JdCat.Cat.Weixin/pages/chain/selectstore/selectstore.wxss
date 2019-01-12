@@ -1,0 +1,161 @@
+page {
+    background-color: #ECECEC;
+}
+.container {
+    height: 100%;
+}
+
+.city,
+.store {
+    width: 100%;
+    flex-grow: 1;
+}
+
+.select-city,
+.city-type {
+    background-color: #fff;
+    margin-bottom: 20rpx;
+}
+
+.select-city {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10rpx 20rpx;
+    width: 100%;
+}
+
+.select-city .cur-city {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 30rpx;
+    font-size: 90%;
+}
+
+.cur-city .jdcat {
+    margin-left: 10rpx;
+}
+
+.cur-city text {
+    white-space: nowrap;
+}
+
+.select-city .search-name {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ECECEC;
+    border-radius: 35rpx;
+    margin: 0 30rpx;
+    padding: 6rpx;
+    font-size: 80%;
+}
+
+.search-name .jdcat {
+    width: 40rpx;
+}
+
+.search-name input {
+    flex-grow: 1;
+}
+
+.store .store-block {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    margin-bottom: 20rpx;
+    min-height: 400rpx;
+}
+
+.store-block .title {
+    font-size: 80%;
+    padding: 20rpx;
+    border-bottom: 1px solid #ececec;
+}
+.store-block .store-item {
+    display: flex;
+    flex-flow: row nowrap;
+    padding: 20rpx;
+    border-bottom: 1px solid #ececec;
+}
+.store-block .store-item .info {
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+    height: 84rpx;
+    padding-left: 5rpx;
+}
+.store-block .store-item .info .address {
+    font-size: 80%;
+    color: #aaa;
+}
+.store-block .store-item .distinct {
+    display: flex;
+    flex-flow: column;
+    width: 120rpx;
+    font-size: 80%;
+    color: #aaa;
+    white-space: nowrap;
+    text-align: right;
+}
+.distinct .store-map {
+    color: #f36c1b;
+    padding: 2rpx;
+    text-align: right;
+    margin-top: 10rpx;
+}
+.store-none {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 300rpx;
+    color: #aaa;
+}
+.store-none .jdcat {
+    font-size: 200%;
+}
+
+
+.city .city-list {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.city-list .city-type {
+    display: flex;
+    flex-direction: column;
+    padding: 20rpx;
+}
+
+.city-list .type-name {
+    color: #aaa;
+    font-size: 80%;
+    margin-bottom: 15rpx;
+}
+
+.city-list .city-container {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 10rpx 0;
+}
+
+.city-container text {
+    border: 1px solid #ECECEC;
+    padding: 10rpx 30rpx;
+    margin-right: 20rpx;
+    margin-bottom: 20rpx;
+    font-size: 80%;
+    white-space: normal nowrap;
+}
+
+.city-order {
+    height: 1200rpx;
+}
+.wx-map, map {
+    width: 100%;
+    height: 400rpx;
+}

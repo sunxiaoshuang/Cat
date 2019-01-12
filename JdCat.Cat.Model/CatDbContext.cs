@@ -51,6 +51,7 @@ namespace JdCat.Cat.Model
         public DbSet<WxListenUser> WxListenUsers { get; set; }
         public DbSet<OpenAuthInfo> OpenAuthInfos { get; set; }
         public DbSet<BusinessFreight> BusinessFreights { get; set; }
+        public DbSet<YcfkLocation> YcfkLocations { get; set; }
 
 
         /// <summary>

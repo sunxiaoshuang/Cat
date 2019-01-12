@@ -1,6 +1,8 @@
 {
   "pages":[
     "pages/launch/launch",
+    "pages/chain/select/select",
+    "pages/chain/selectstore/selectstore",
     "pages/user/user",
     "pages/main/main",
     "pages/main/license/license",
@@ -17,6 +19,7 @@
     "pages/user/mycoupon/mycoupon",
     "pages/user/selectcoupon/selectcoupon",
     "pages/order/refund/refund",
+    "pages/order/orderLocation/orderLocation",
     "pages/showPage/showPage"
   ],
   "window":{
@@ -51,5 +54,10 @@
   "networkTimeout": {
     "request": 10000,
     "downloadFile": 10000
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "您的位置信息将会用于获取最近的门店"
+    }
   }
 }

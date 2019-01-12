@@ -14,6 +14,8 @@
             start: undefined,
             end: undefined,
             total: 0,
+            freightAmount: 0,
+            packageAmount: 0,
             quantity: 0
         },
         methods: {
@@ -35,10 +37,14 @@
                         self.list.forEach(item => {
                             self.total += item.total;
                             self.quantity += item.quantity;
+                            self.freightAmount += item.freightAmount;
+                            self.packageAmount += item.packageAmount;
                             item.total = +item.total.toFixed(2);
                         });
                         self.total = +self.total.toFixed(2);
                         self.quantity = +self.quantity.toFixed(2);
+                        self.freightAmount = +self.freightAmount.toFixed(2);
+                        self.packageAmount = +self.packageAmount.toFixed(2);
                     })
                     .catch(function (msg) {
                         $.alert(msg);
@@ -58,7 +64,7 @@
     (function () {
 
         var time = pageData.list.map(a => a.createTime.substring(5));
-        var priceList = pageData.list.map(a => a.price);
+        var priceList = pageData.list.map(a => +a.price.toFixed(2));
         var option = {
             color: ['#3398DB'],
             tooltip: {
@@ -92,7 +98,7 @@
                     name: '营业额',
                     type: 'bar',
                     barWidth: '60%',
-                    data: priceList,
+                    data: priceList
                 }
             ]
         };

@@ -80,7 +80,10 @@
         <view class="order-body">
             <view class="order-item">
                 <text class="order-title">配送服务：</text>
-                <text class="order-content">{{common.distributionMode(order)}}</text>
+                <view class="order-content order-code">
+                    <text>{{common.distributionMode(order)}}</text>
+                    <button class="primary copy small" plain="true" style="border:1px solid #fdaa8a;" bindtap="location" wx:if="{{order.status === 16 && order.logisticsType == 6}}">查看</button>
+                </view>
             </view>
             <view class="order-item">
                 <text class="order-title">送达时间：</text>

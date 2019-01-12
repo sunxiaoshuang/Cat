@@ -519,6 +519,11 @@ namespace JdCat.Cat.Repository
         {
             return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == code);
         }
+        public int GetOrderIdByCode(string orderCode)
+        {
+            var ids = Context.Orders.Where(a => a.OrderCode == orderCode).Select(a => a.ID).ToList();
+            return ids[0];
+        }
 
         public void QuarySetMealProduct(IEnumerable<OrderProduct> products)
         {
@@ -856,6 +861,11 @@ namespace JdCat.Cat.Repository
                 flow = order.DistributionFlow
             };
             return result;
+        }
+
+        public YcfkLocation GetOrderLocation(int id)
+        {
+            return Context.YcfkLocations.OrderByDescending(a => a.ID).FirstOrDefault(a => a.OrderId == id);
         }
 
         /// <summary>

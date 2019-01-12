@@ -51,6 +51,12 @@ var common = {
       return "已过期";
     }
     return coupon.expireDay + "天后过期";
+  },
+  filter: {
+    distance: function(num){
+      if(num <= 1000) return num + "m";
+      return +(num / 1000).toFixed(1) + "km";
+    }
   }
 };
 

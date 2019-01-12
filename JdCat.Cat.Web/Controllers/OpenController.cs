@@ -102,25 +102,44 @@ namespace JdCat.Cat.Web.Controllers
             //Log.Info(orderId + "|" + orderState + "|" + reason);
             //var ycfk = new YcfkCallback { OrderId = orderId, OrderState = int.Parse(orderState), Reason = reason };
             var action = Request.Form["action"];
-            var sign = Request.Form["action"];
-            var ts = Request.Form["action"];
-            var key = Request.Form["action"];
+            //var sign = Request.Form["action"];
+            //var ts = Request.Form["action"];
+            //var key = Request.Form["action"];
             var content = Request.Form["content"];
-            if (action.ToString().ToLower() != "sendorderstate") return Json(new { StateCode = 0, StateMsg = "ok" });
-            //if (key != appData.YcfkPartnerKey) return Json(new { StateCode = 1, StateMsg = "key值不存在" });
-            //var signature = helper.CreateSignature(content, ts);
-            //if (sign != signature) return Json(new { StateCode = 2, StateMsg = "签名验证失败" });
+            if (action.ToString().ToLower() == "sendorderstate")
+            {
+                //if (key != appData.YcfkPartnerKey) return Json(new { StateCode = 1, StateMsg = "key值不存在" });
+                //var signature = helper.CreateSignature(content, ts);
+                //if (sign != signature) return Json(new { StateCode = 2, StateMsg = "签名验证失败" });
 
-            var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(content));
-            var ycfk = JsonConvert.DeserializeObject<YcfkCallback>(json);
-            //Log.Info(JsonConvert.SerializeObject(ycfk));
-            try
-            {
-                service.UpdateOrderStatus(ycfk);
+                var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(content));
+                var ycfk = JsonConvert.DeserializeObject<YcfkCallback>(json);
+                //Log.Info(JsonConvert.SerializeObject(ycfk));
+                try
+                {
+                    service.UpdateOrderStatus(ycfk);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("一城飞客订单更新异常：" + e.Message);
+                }
             }
-            catch (Exception e)
+            else if(action.ToString().ToLower() == "sendwluserlocation")
             {
-                Log.Error("一城飞客订单更新异常：" + e.Message);
+                var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(content));
+                var data = JObject.Parse(json);
+                if (data == null || string.IsNullOrEmpty(data["OrderId"].ToString()))
+                {
+                    Log.Error("一城飞客骑手位置更新异常，原因：没有得到推送数据，得到的数据为" + json);
+                }
+                else
+                {
+                    var orderCode = data["OrderId"].ToString().Split('_')[0];
+                    var id = service.GetOrderIdByCode(orderCode);
+                    var ycfk = new YcfkLocation { Lat = (double)data["Lat"], Lng = (double)data["Lng"], OrderId = id };
+                    service.Add(ycfk);
+                }
+
             }
             return Json(new { StateCode = 0, StateMsg = "处理成功" });
         }

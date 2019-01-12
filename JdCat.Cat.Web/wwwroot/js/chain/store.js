@@ -73,7 +73,7 @@
                         createVue.showError = true;
                         var entity = createVue.entity;
 
-                        if (!entity.name || !entity.code || !entity.password || !entity.contact || !entity.mobile || !entity.province || !entity.city || !entity.area || !createVue.password) {
+                        if (!entity.name || !entity.code || !entity.password || !entity.contact || !entity.mobile || !entity.province || !entity.city || !entity.area || !entity.address || !createVue.password) {
                             $.alert("请将表单输入完整！");
                             return false;
                         }
@@ -158,6 +158,20 @@
                             }
                             $.alert(res.data.msg, "success");
                             self.stores.remove(store);
+                        })
+                        .catch(function (err) { $.alert(err); });
+                    return true;
+                });
+            },
+            resetPassword: function (store) {
+                $.primary("确定重置密码吗?", function () {
+                    $.loading();
+                    axios.get("/Chain/ResetPwd/" + store.id)
+                        .then(function (res) {
+                            setTimeout(function () {
+                                $.loaded();
+                                $.primary("重置后的密码为：" + res.data);
+                            }, 1000);
                         })
                         .catch(function (err) { $.alert(err); });
                     return true;

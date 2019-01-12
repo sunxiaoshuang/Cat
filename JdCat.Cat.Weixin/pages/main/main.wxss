@@ -21,7 +21,7 @@ page {
   width: 100%;
   height: 170rpx;
   background: #555;
-  padding: 10rpx 20rpx;
+  padding: 10rpx;
 }
 
 .head .logo {
@@ -179,9 +179,11 @@ page {
   align-items: center;
   justify-content: center;
 }
+
 .cart-food-price text {
   line-height: 30rpx;
 }
+
 .cart-food-price .oldPrice {
   line-height: 30rpx;
 }
@@ -470,6 +472,7 @@ page {
   align-items: center;
   justify-content: center;
 }
+
 .detail-title {
   position: relative;
   width: 600rpx;
@@ -754,12 +757,14 @@ page {
   max-width: 420rpx;
 }
 
-.food .price, .food-numb .price {
+.food .price,
+.food-numb .price {
   font-size: 38rpx;
   color: red;
   font-weight: 800;
   white-space: nowrap;
 }
+
 .oldPrice {
   color: #999;
   text-decoration: line-through;
@@ -1217,7 +1222,8 @@ page {
   padding-right: 20rpx;
 }
 
-.productDetail, .coupon {
+.productDetail,
+.coupon {
   position: absolute;
   top: 0;
   left: 0;
@@ -1257,6 +1263,7 @@ page {
   font-size: 140rpx;
   border: 1px solid #000;
 }
+
 .coupon-logo image {
   width: 150rpx;
   height: 150rpx;
@@ -1276,6 +1283,7 @@ page {
   justify-content: center;
   font-size: 40rpx;
 }
+
 .coupon-operate.productBig {
   top: 830rpx;
   left: 335rpx;
@@ -1296,21 +1304,25 @@ page {
   margin-top: 20rpx;
   font-size: 80%;
 }
+
 .restaurant-activity .activity-title {
   font-size: 120%;
   white-space: nowrap;
   margin-bottom: 10rpx;
 }
-.restaurant-activity .activity-content{
+
+.restaurant-activity .activity-content {
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
   margin-top: 10rpx;
 }
+
 .restaurant-activity .activity-name {
   flex-grow: 1;
 }
+
 .product-content {
   position: absolute;
   top: 100rpx;
@@ -1326,30 +1338,75 @@ page {
   align-items: stretch;
   padding: 20rpx;
 }
-.product-content .product-img{
+
+.product-content .product-img {
   width: 610rpx;
 }
-.product-content .product-img image{
+
+.product-content .product-img image {
   width: 610rpx;
 }
-.product-content .product-name{
+
+.product-content .product-name {
   margin-top: 20rpx;
 }
-.product-content .price{
+
+.product-content .price {
   color: red;
 }
-.product-content .product-footer{
+
+.product-content .product-footer {
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
 }
-.product-content .formatter{
+
+.product-content .formatter {
   font-size: 25rpx;
   background-color: #f36c1b;
   border-radius: 10rpx;
   padding: 10rpx 20rpx;
   color: #fff;
 }
+
 .formatter .selectFormat {
   width: auto;
+}
+
+.location {
+  display: block;
+  position: relative;
+  height: 80rpx;
+  background: #555;
+}
+
+.location .location-background {
+  position: absolute;
+  top: 0;
+  left: 25rpx;
+  width: 700rpx;
+  height: 100%;
+  border-radius: 20rpx;
+  opacity: .2;
+  background-color: rgb(170, 138, 78);
+}
+
+.location .location-info {
+  position: relative;
+  width: 700rpx;
+  height: 40rpx;
+  line-height: 40rpx;
+  padding: 0 50rpx;
+  line-height: 40rpx;
+  margin: 0 auto;
+  color: #fff;
+  font-size: 80%;
+}
+
+.location .location-info .ellipsis {
+  margin-left: 20rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  width: 600rpx;
 }

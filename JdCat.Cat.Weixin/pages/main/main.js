@@ -1,5 +1,4 @@
 const qcloud = require("../../vendor/wafer2-client-sdk/index");
-const config = require("../../config");
 const util = require("../../utils/util");
 const weekObj = {
   "1": 1,
@@ -27,7 +26,7 @@ Page({
       id: 3
     }],
     logo: "", // 商户logo
-    businessId: config.businessId, // 商户id
+    businessId: 0, // 商户id
     freight: 0, // 配送费
     menu: [], // 商品类别
     productList: [], // 商品列表
@@ -55,43 +54,18 @@ Page({
     packagePrice: 0 // 餐盒费
   },
   onLoad: function (options) {
-    var that = this,
-      session = qcloud.getSession(),
-      business = session.business,
-      user = qcloud.getSession().userinfo;
-    // 设置标题
-    wx.setNavigationBarTitle({
-      title: business.name
-    });
 
-    qcloud.request({
-      url: `/business/init/${config.businessId}?userId=${user.id}`,
-      method: "GET",
-      success: function (res) {
-        // 商户满减活动
-        var couponList = res.data.coupon,
-          myCoupon = res.data.userCoupon,
-          unreceived = [];
-        that.setData({
-          fullReduceList: res.data.fullReduct
-        });
-        that.data.couponList = couponList; // 商户优惠券
-        that.data.myCoupon = myCoupon; // 用户优惠券
-        that.data.unreceived = unreceived; // 未领取的优惠券
-        that.data.discount = res.data.discount; // 商品折扣券
-        that.data.cartList = res.data.carts; // 用户购物车
-        that.data.freights = res.data.freights; // 商户运费配置
-        that.data.initLoaded = true; // 标识数据初始化完成
-        wx.setStorageSync("myCoupon", myCoupon); // 将用户优惠券缓存起来
-        wx.setStorageSync("cartList", that.data.cartList); // 将用户购物车写入缓存
-        wx.setStorageSync("freights", that.data.freights); // 将配送费用配置写入缓存
-        if (couponList.length > 0) {
-          that.couponHandler();
-        }
-        that.calcFreightAmount();
-      }
+    var location = wx.getStorageSync("curLocation"),
+      hasLocation = false,
+      locationName = "";
+    if (location) {
+      hasLocation = true;
+      locationName = "当前位置：" + location.address;
+    }
+    this.setData({
+      hasLocation,
+      locationName
     });
-
 
   },
   // 分享
@@ -103,11 +77,58 @@ Page({
     };
   },
   onShow: function () {
-    var self = this;
+    var self = this,
+      session = qcloud.getSession(),
+      business = session.business,
+      user = session.userinfo;
+
+    // 重新进入店铺
+    if (session.reload) {
+      session.reload = false;
+      this.data.enterAgain = false;
+      this.data.isClosedCoupon = false;
+      
+      qcloud.setSession(session);
+      self.data.initLoaded = false; // 标识数据初始化完成
+      // 设置标题
+      wx.setNavigationBarTitle({
+        title: business.name
+      });
+
+      qcloud.request({
+        url: `/business/init/${business.id}?userId=${user.id}`,
+        method: "GET",
+        success: function (res) {
+          // 商户满减活动
+          var couponList = res.data.coupon,
+            myCoupon = res.data.userCoupon,
+            unreceived = [];
+          self.setData({
+            fullReduceList: res.data.fullReduct
+          });
+          self.data.couponList = couponList; // 商户优惠券
+          self.data.myCoupon = myCoupon; // 用户优惠券
+          self.data.unreceived = unreceived; // 未领取的优惠券
+          self.data.discount = res.data.discount; // 商品折扣券
+          self.data.cartList = res.data.carts; // 用户购物车
+          self.data.freights = res.data.freights; // 商户运费配置
+          self.data.initLoaded = true; // 标识数据初始化完成
+          wx.setStorageSync("myCoupon", myCoupon); // 将用户优惠券缓存起来
+          wx.setStorageSync("cartList", self.data.cartList); // 将用户购物车写入缓存
+          wx.setStorageSync("freights", self.data.freights); // 将配送费用写入缓存
+          if (couponList.length > 0) {
+            self.couponHandler();
+          }
+          self.calcFreightAmount();
+        }
+      });
+
+    }
+
     // 每次从后台进入小程序，重新载入商户信息和商品信息
     if (this.data.enterAgain) { // 是否是二次进入
       qcloud.request({
-        url: `/user/business/${config.businessId}`,
+        url: `/user/business/${business.id}`,
         method: "GET",
         success: function (res) {
           var session = qcloud.getSession();
@@ -123,12 +144,13 @@ Page({
   },
   // 加载商品与用户购物车
   loadProduct: function () {
-    var self = this;
+    var self = this,
+      business = qcloud.getSession().business;
     this.data.productLoaded = false; // 标识商品是否请求加载完成
 
     // 加载菜单类别及产品
     qcloud.request({
-      url: "/product/menus/" + config.businessId,
+      url: "/product/menus/" + business.id,
       method: "GET",
       success: function (res) {
         var menuArr = [];
@@ -231,6 +253,7 @@ Page({
       submitText,
       isBalance,
       business,
+      businessId: business.id,
       logo: business.logoSrc,
       productList,
       menu,
@@ -777,6 +800,7 @@ Page({
   // 以下均为方法，不代表各类事件
   cartHandler: function (flag) {
     var self = this,
+      business = qcloud.getSession().business,
       product = this.data.productList[this.data.productIndex], // 操作的商品
       cart, // 购物车
       cartIndex = -1, // 当前选择的购物车在列表中的序号
@@ -816,7 +840,7 @@ Page({
         saleProductDiscountId: discount ? discount.id : null,
         description: description,
         userId: qcloud.getSession().userinfo.id,
-        businessId: config.businessId
+        businessId: business.id
       };
       if (discount) {
         util.showError("折扣商品不参与满减活动");

@@ -103,6 +103,8 @@
                                     <th width="100" style="text-align: center !important;">序号</th>
                                     <th>日期</th>
                                     <th>日销售额</th>
+                                    <th>配送费</th>
+                                    <th>包装费</th>
                                     <th>订单数量</th>
                                 </tr>
                             </thead>
@@ -111,6 +113,8 @@
                                     <td v-text="$index + 1" align="center"></td>
                                     <td v-text="item.date"></td>
                                     <td v-text="currency(item.total)"></td>
+                                    <td v-text="currency(item.freightAmount)"></td>
+                                    <td v-text="currency(item.packageAmount)"></td>
                                     <td v-text="item.quantity"></td>
                                 </tr>
                             </tbody>
@@ -119,6 +123,8 @@
                                     <td align="center">总计</td>
                                     <td></td>
                                     <td v-text="currency(total)"></td>
+                                    <td v-text="currency(freightAmount)"></td>
+                                    <td v-text="currency(packageAmount)"></td>
                                     <td v-text="quantity"></td>
                                 </tr>
                             </tfoot>

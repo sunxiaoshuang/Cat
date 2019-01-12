@@ -1,0 +1,6 @@
+{
+    "backgroundColor": "#fff",
+    "navigationBarTitleText": "选择门店",
+    "enablePullDownRefresh": false,
+    "disableScroll": true
+}

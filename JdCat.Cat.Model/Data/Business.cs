@@ -13,7 +13,7 @@ namespace JdCat.Cat.Model.Data
     public class Business : BaseEntity, ICloneable
     {
         /// <summary>
-        /// 对象id
+        /// 对象id，用于商户自动登录
         /// </summary>
         public string ObjectId { get; set; }
         /// <summary>
@@ -161,6 +161,11 @@ namespace JdCat.Cat.Model.Data
         /// 商铺位置纬度
         /// </summary>
         public double Lat { get; set; }
+        /// <summary>
+        /// 距离
+        /// </summary>
+        [NotMapped]
+        public double Distance { get; set; }
         /// <summary>
         /// 经营开始时间1
         /// </summary>

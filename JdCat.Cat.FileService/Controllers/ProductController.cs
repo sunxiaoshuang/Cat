@@ -66,7 +66,7 @@ namespace JdCat.Cat.FileService.Controllers
                     if (!Fs.Directory.Exists(formatDir)) Fs.Directory.CreateDirectory(formatDir);
                     foreach (var filepath in imageDic[format])
                     {
-                        Fs.File.Copy(filepath, $"{formatDir}/{Fs.Path.GetFileName(filepath)}");
+                        Fs.File.Copy(filepath, $"{formatDir}/{Fs.Path.GetFileName(filepath)}", true);
                     }
                 }
             }

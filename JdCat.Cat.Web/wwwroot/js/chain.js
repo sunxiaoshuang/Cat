@@ -48,7 +48,7 @@
 
     var pageObj = {
         $frame: $("#mainframe"),
-        defaultUrl: "/Report",
+        defaultUrl: "/Chain/Store",
         method: {
             hashchange: function () {
                 var url = pageObj.defaultUrl;

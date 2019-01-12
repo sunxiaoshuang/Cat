@@ -120,6 +120,9 @@ span.require {
 .margin-right-20 {
     margin-right: 20px;
 }
+.margin-left-20 {
+    margin-left: 20px;
+}
 
 .margin-right-5 {
     margin-right: 5px;
@@ -2141,4 +2144,18 @@ ul.select-type {
 
 .cursor-pointer {
     cursor: pointer;
+}
+
+.flex-row {
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.width-200 {
+    width: 200px;
+}
+.btn-primary {
+    height: 34px;
 }
