@@ -8,7 +8,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 用户登录Session记录表
     /// </summary>
-    [Table("SessionData", Schema = "dbo")]
+    [Table("SessionData")]
     public class SessionData : BaseEntity
     {
         /// <summary>

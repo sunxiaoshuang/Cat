@@ -2,10 +2,12 @@
 using JdCat.Cat.Model.Enum;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    [Table("DWD_Recharge")]
     public class DWD_Recharge : BaseEntity
     {
         /// <summary>

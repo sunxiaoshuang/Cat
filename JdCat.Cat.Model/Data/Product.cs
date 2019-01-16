@@ -11,7 +11,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 商品表
     /// </summary>
-    [Table("Product", Schema = "dbo")]
+    [Table("Product")]
     public class Product : BaseEntity, ICloneable
     {
         /// <summary>

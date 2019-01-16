@@ -101,6 +101,7 @@ namespace JdCat.Cat.Web.Controllers
             business.Secret = Business.Secret;
             business.TemplateNotifyId = Business.TemplateNotifyId;
             business.AppQrCode = Business.AppQrCode;
+            business.StoreId = Service.GetNextStoreNumber();
             business.FeyinMemberCode = Business.FeyinMemberCode;
             business.FeyinApiKey = Business.FeyinApiKey;
 

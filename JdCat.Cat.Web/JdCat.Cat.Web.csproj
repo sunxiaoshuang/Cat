@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="0AD850B5-DCF4-4F4C-AEAA-03D142D41684.p12">
+    <Content Include="Asserts\0AD850B5-DCF4-4F4C-AEAA-03D142D41684.p12">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -52,6 +52,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -262,6 +263,18 @@
     <Folder Include="Log\Error\" />
     <Folder Include="Temp\" />
     <Folder Include="wwwroot\css\chain\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Asserts\Scripts\cat_sequence.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Asserts\Scripts\fn_geo.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Asserts\Scripts\fn_right_padding.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JSONSchema="" appsettings_1Development_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>

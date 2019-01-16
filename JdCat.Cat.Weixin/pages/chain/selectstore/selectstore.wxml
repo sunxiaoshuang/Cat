@@ -18,7 +18,7 @@
             <!-- <view class="title">
                 <text>距离最近餐厅</text>
             </view> -->
-            <block wx:if="{{nearbyStores.length > 0}}">
+            <scroll-view wx:if="{{nearbyStores.length > 0}}" scroll-y="{{true}}" class="store-nearest">
                 <view class="store-item" wx:for="{{nearbyStores}}" wx:key="" wx:for-item="store">
                     <view class="info" bindtap="enterStore" data-store="{{store}}">
                         <text class="name">{{store.name}}</text>
@@ -29,7 +29,8 @@
                         <text class="store-map jdcat jdcat-map"></text>
                     </view>
                 </view>
-            </block>
+                <view style="height: 100rpx;"></view>
+            </scroll-view>
             <view class="store-none" wx:else>
                 <text class="jdcat jdcat-map"></text>
                 <text>没有任何门店...</text>

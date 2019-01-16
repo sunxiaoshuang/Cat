@@ -173,6 +173,9 @@ Page({
             longitude: obj.lng,
             title: obj.name,
             iconPath: "/images/other/logo.png",
+            callout: {
+              content: obj.name, color: "#fff", display: "ALWAYS", bgColor: "#4caf50", padding: 5, borderRadius: 10, fontSize: 12
+            },
             width: 30,
             height: 30
           });

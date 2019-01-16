@@ -104,7 +104,7 @@ namespace JdCat.Cat.Repository
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public TModel ExecuteScalar<TModel>(string sql)
+        public object ExecuteScalar(string sql)
         {
             var conn = Context.Database.GetDbConnection();
             conn.Open();
@@ -113,7 +113,7 @@ namespace JdCat.Cat.Repository
             command.CommandType = CommandType.Text;
             var result = command.ExecuteScalar();
             conn.Close();
-            return (TModel)result;
+            return result;
 
         }
 

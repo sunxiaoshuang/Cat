@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 满减活动
     /// </summary>
-    [Table("SaleFullReduce", Schema = "dbo")]
+    [Table("SaleFullReduce")]
     public class SaleFullReduce : BaseEntity
     {
         /// <summary>

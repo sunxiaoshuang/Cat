@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 商品规格表
     /// </summary>
-    [Table("ProductFormat", Schema = "dbo")]
+    [Table("ProductFormat")]
     public class ProductFormat : BaseEntity, ICloneable
     {
         /// <summary>

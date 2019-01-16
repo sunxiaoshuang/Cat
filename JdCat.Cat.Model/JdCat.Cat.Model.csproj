@@ -12,68 +12,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20180531101335_Add_SessionData.cs" />
-    <Compile Remove="Migrations\20180607023440_Add_Order.cs" />
-    <Compile Remove="Migrations\20180607031843_Add_Order.cs" />
-    <Compile Remove="Migrations\20180607032120_Add_Order.cs" />
-    <Compile Remove="Migrations\20180607032828_Add_Order.cs" />
-    <Compile Remove="Migrations\20180607033205_Add_Order.cs" />
-    <Compile Remove="Migrations\20180607070805_Add_Order.cs" />
-    <Compile Remove="Migrations\20180607072229_Add_Order.cs" />
-    <Compile Remove="Migrations\20180607085156_Add_Order.cs" />
-    <Compile Remove="Migrations\20180607085507_Add_Order.cs" />
-    <Compile Remove="Migrations\20180607090649_Add_Order.cs" />
-    <Compile Remove="Migrations\20180613012133_Modify_Business_Contact.cs" />
-    <Compile Remove="Migrations\20180623093402_Add_FeyinDevice.cs" />
-    <Compile Remove="Migrations\20180626020528_Modify_Add_.cs" />
-    <Compile Remove="Migrations\20180629140340_Add_ShoppingCart_Business.cs" />
-    <Compile Remove="Migrations\20180629141510_Add_ShoppingCart_Business.cs" />
-    <Compile Remove="Migrations\20180629141638_Add_ShoppingCart_Business.cs" />
-    <Compile Remove="Migrations\20180629141825_Add_ShoppingCart_Business.cs" />
-    <Compile Remove="Migrations\20180629142229_Add_ShoppingCart_BusinessId.cs" />
-    <Compile Remove="Migrations\20180703070601_Modify_Order_Attribute.cs" />
-    <Compile Remove="Migrations\20180703071306_Modify_Order_Attribute2.cs" />
-    <Compile Remove="Migrations\20180719083326_Modify_ProductType_ProductId.cs" />
-    <Compile Remove="Migrations\20180719083547_Modify_ProductType_ProductId.cs" />
-    <Compile Remove="Migrations\20180719083709_Modify_ProductType_ProductId.cs" />
-    <Compile Remove="Migrations\20180719083746_Modify_ProductType_ProductId.cs" />
-    <Compile Remove="Migrations\20180719083831_Modify_ProductType_ProductId.cs" />
-    <Compile Remove="Migrations\20180719084629_Modify_ProductType_ProductId.cs" />
-    <Compile Remove="Migrations\20180719084915_Modify_ProductType_ProductId.cs" />
-    <Compile Remove="Migrations\20180719084949_Modify_ProductType_ProductId.cs" />
-    <Compile Remove="Migrations\20180719085129_Modify_ProductType_ProductId.cs" />
-    <Compile Remove="Migrations\20180719085939_Modify_ProductType_ProductId.cs" />
-    <Compile Remove="Migrations\20180802054832_Modify_Coupon_Status.cs" />
-    <Compile Remove="Migrations\20180810190536_Add_SaleProductDiscount.cs" />
-    <Compile Remove="Migrations\20180910081558_Add_DWD_Business.cs" />
-    <Compile Remove="Migrations\20180914121751_Add_DwdRecharge.cs" />
-    <Compile Remove="Migrations\20180914124058_Add_DwdRecharge.cs" />
-    <Compile Remove="Migrations\20180914124439_Add_DwdRecharge.cs" />
-    <Compile Remove="Migrations\20180914124824_Add_DwdRecharge.cs" />
-    <Compile Remove="Migrations\20180914125121_Add_DwdRecharge.cs" />
-    <Compile Remove="Migrations\20180915075747_Add_DwdRecharge.cs" />
-    <Compile Remove="Migrations\20180915080228_Add_DwdRecharge.cs" />
-    <Compile Remove="Migrations\20180915080523_Add_DwdRecharge.cs" />
-    <Compile Remove="Migrations\20180915081933_Modify_DWDBusiness.cs" />
-    <Compile Remove="Migrations\20180915083532_Modify_DWDBusiness.cs" />
-    <Compile Remove="Migrations\20180915084003_Modify_DWDBusiness.cs" />
-    <Compile Remove="Migrations\20180915084417_Modify_DWDBusiness.cs" />
-    <Compile Remove="Migrations\20180915095943_Modify_DWDBusiness.cs" />
-    <Compile Remove="Migrations\20180915125705_Modify_DWDBusiness.cs" />
-    <Compile Remove="Migrations\20180927145143_Modify_TemplateMessage.cs" />
-    <Compile Remove="Migrations\20181018102333_Modify_LazyLoad.cs" />
-    <Compile Remove="Migrations\20181018102630_Modify_LazyLoad.cs" />
-    <Compile Remove="Migrations\20181030034742_Modify_Order_Sale2.cs" />
-    <Compile Remove="Migrations\20181123005819_Modify_Product_Products.cs" />
-    <Compile Remove="Migrations\20181123072755_Modify_Product_SetMeal.cs" />
-    <Compile Remove="Migrations\20181123073626_Modify_Product_SetMeal.cs" />
-    <Compile Remove="Migrations\20181205091829_Modify_OpenAuthInfo_ModifyTime.cs" />
+    <Compile Remove="Migrations\20190112123259_InitProject.cs" />
+    <Compile Remove="Migrations\20190112130217_InitProject.cs" />
+    <Compile Remove="Migrations\20190112131001_InitProject.cs" />
+    <Compile Remove="Migrations\20190112183830_InitProject.cs" />
+    <Compile Remove="Migrations\20190112184407_InitProject.cs" />
+    <Compile Remove="Migrations\20190112185352_InitProject.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.1.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.2" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Design" Version="1.1.2" />
+    <!--<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.2" />-->
     <!--<DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.2" />-->
   </ItemGroup>
 

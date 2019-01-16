@@ -10,7 +10,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 达达回调时，传递的对象
     /// </summary>
-    [Table("DadaCallBack", Schema = "dbo")]
+    [Table("DadaCallBack")]
     public class DadaCallBack : BaseEntity
     {
         /// <summary>

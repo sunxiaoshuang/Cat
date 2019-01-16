@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 达达取消订单原因
     /// </summary>
-    [Table("DadaCancelReason", Schema = "dbo")]
+    [Table("DadaCancelReason")]
     public class DadaCancelReason : BaseEntity
     {
         /// <summary>

@@ -151,6 +151,10 @@ namespace JdCat.Cat.Repository
         {
             return Context.SettingProductAttributes.Include(a => a.Childs).Where(a => a.Level == 1);
         }
+        public string GetNextProductFormat()
+        {
+            return ExecuteScalar("SELECT CONCAT('F', DATE_FORMAT(NOW(),'%Y'), fn_right_padding(NEXT_VAL('FormatNumbers'), 9))") + "";
+        }
         public List<Product> GetProducts(Business business, int? typeId, int pageIndex, out int count)
         {
             // 默认每页显示20条数据

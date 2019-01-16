@@ -137,6 +137,11 @@ namespace JdCat.Cat.IRepository
         /// <param name="entity"></param>
         /// <returns></returns>
         bool RemoveFreight(int id);
+        /// <summary>
+        /// 获取下一个门店编号
+        /// </summary>
+        /// <returns></returns>
+        string GetNextStoreNumber();
 
         #region 报表类方法
 

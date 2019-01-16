@@ -5,7 +5,7 @@ using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
-    [Table("YcfkLocation", Schema = "dbo")]
+    [Table("YcfkLocation")]
     public class YcfkLocation : BaseEntity
     {
         public int OrderId { get; set; }

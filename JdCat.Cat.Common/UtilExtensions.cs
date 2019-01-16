@@ -4,6 +4,7 @@ using OfficeOpenXml.Table;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -132,6 +133,34 @@ namespace JdCat.Cat.Common
                 }
                 return package.GetAsByteArray();
             }
+        }
+
+        private const double EARTH_RADIUS = 6378137;
+        /// <summary>
+        /// 得到两个坐标之间的距离
+        /// </summary>
+        /// <param name="point1">item1为纬度，item2为经度</param>
+        /// <param name="point2">item1为纬度，item2为经度</param>
+        /// <returns></returns>
+        public static double GetDistance(this Tuple<double, double> point1, Tuple<double, double> point2)
+        {
+            var radLat1 = Rad(point1.Item1);
+            var radLng1 = Rad(point1.Item2);
+            var radLat2 = Rad(point2.Item1);
+            var radLng2 = Rad(point2.Item2);
+            var a = radLat1 - radLat2;
+            var b = radLng1 - radLng2;
+            var result = 2 * Math.Asin(Math.Sqrt(Math.Pow(Math.Sin(a / 2), 2) + Math.Cos(radLat1) * Math.Cos(radLat2) * Math.Pow(Math.Sin(b / 2), 2))) * EARTH_RADIUS;
+            return result;
+        }
+        /// <summary>
+        /// 经纬度转化成弧度
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        private static double Rad(double d)
+        {
+            return d * Math.PI / 180d;
         }
 
 

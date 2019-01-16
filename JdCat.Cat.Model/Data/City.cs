@@ -8,7 +8,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 城市名称与编码对应表
     /// </summary>
-    [Table("City", Schema = "dbo")]
+    [Table("City")]
     public class City : BaseEntity
     {
         public string Name { get; set; }

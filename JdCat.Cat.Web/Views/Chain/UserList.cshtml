@@ -20,7 +20,7 @@
 
 @section Scripts {
     <environment include="Development">
-        <script src="~/js/chain/userlist"></script>
+        <script src="~/js/chain/userlist.js"></script>
     </environment>
     <environment exclude="Development">
         <script src="~/js/chain/userlist.min.js" asp-append-version="true"></script>
@@ -60,7 +60,7 @@
                                         </td>
                                         <td v-html="item.nickname"></td>
                                         <td v-html="genderFilter(item)"></td>
-                                        <td v-html="item.area"></td>
+                                        <td v-html="item.area || ''"></td>
                                         <td v-html="phoneFilter(item)"></td>
                                         <td v-html="item.quantity"></td>
                                         <td v-html="item.storeName"></td>

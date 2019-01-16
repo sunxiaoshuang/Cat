@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 用户领取的优惠券
     /// </summary>
-    [Table("SaleCouponUser", Schema = "dbo")]
+    [Table("SaleCouponUser")]
     public class SaleCouponUser : BaseEntity
     {
         /// <summary>

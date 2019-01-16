@@ -18,7 +18,7 @@ namespace JdCat.Cat.WxApi.Controllers
     public class ProductController : BaseController<IProductRepository, Product>
     {
 
-        public ProductController(IProductRepository service):base(service)
+        public ProductController(IProductRepository service) : base(service)
         {
 
         }
@@ -28,6 +28,13 @@ namespace JdCat.Cat.WxApi.Controllers
         {
             var list = Service.GetTypes(new Business() { ID = id }, Model.Enum.ProductStatus.Sale).ToList();
             list.RemoveAll(a => a.Products.Count == 0);
+            list.ForEach(a =>
+            {
+                foreach (var item in a.Products)
+                {
+                    item.Description = item.Description ?? "";
+                }
+            });
             return Json(list);
         }
 

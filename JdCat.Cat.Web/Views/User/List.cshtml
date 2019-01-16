@@ -52,7 +52,7 @@
                                         </td>
                                         <td v-html="item.nickName"></td>
                                         <td v-html="genderFilter(item)"></td>
-                                        <td v-html="item.province + ' ' + item.city"></td>
+                                        <td v-html="(item.province || '') + ' ' + (item.city || '')"></td>
                                         <td v-html="phoneFilter(item)"></td>
                                         <td v-html="item.purchaseTimes"></td>
                                         <td v-html="item.createTime"></td>

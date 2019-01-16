@@ -8,7 +8,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 城市名称与编码对应表
     /// </summary>
-    [Table("WxListenUser", Schema = "dbo")]
+    [Table("WxListenUser")]
     public class WxListenUser : BaseEntity
     {
         public string openid { get; set; }

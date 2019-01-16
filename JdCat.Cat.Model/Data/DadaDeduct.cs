@@ -10,7 +10,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 达达取消订单时，产生的违约金
     /// </summary>
-    [Table("DadaLiquidatedDamages", Schema = "dbo")]
+    [Table("DadaLiquidatedDamages")]
     public class DadaLiquidatedDamages : BaseEntity
     {
         /// <summary>

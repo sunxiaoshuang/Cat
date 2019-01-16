@@ -8,7 +8,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 产品属性配置表
     /// </summary>
-    [Table("SettingProductAttribute", Schema = "dbo")]
+    [Table("SettingProductAttribute")]
     public class SettingProductAttribute : BaseEntity
     {
         /// <summary>

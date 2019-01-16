@@ -55,7 +55,7 @@ namespace JdCat.Cat.Web.App_Code
                     }
                     else
                     {
-                        context.Database.ExecuteSqlCommand("delete dbo.[City]");
+                        context.Database.ExecuteSqlCommand("delete from `City`");
                         var list = json["result"].Value<JArray>();
                         foreach (var city in list)
                         {
@@ -95,7 +95,7 @@ namespace JdCat.Cat.Web.App_Code
                     }
                     else
                     {
-                        context.Database.ExecuteSqlCommand("delete dbo.[DadaCancelReason]");
+                        context.Database.ExecuteSqlCommand("delete from `DadaCancelReason`");
                         var list = json["result"].Value<JArray>();
                         foreach (var reason in list)
                         {

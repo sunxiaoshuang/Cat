@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 用户表
     /// </summary>
-    [Table("User", Schema = "dbo")]
+    [Table("User")]
     public class User : BaseEntity
     {
         /// <summary>

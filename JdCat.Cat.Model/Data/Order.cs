@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 用户订单表
     /// </summary>
-    [Table("Order", Schema = "dbo")]
+    [Table("Order")]
     public class Order : BaseEntity
     {
         /// <summary>

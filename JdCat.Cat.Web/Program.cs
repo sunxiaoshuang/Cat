@@ -23,8 +23,8 @@ namespace JdCat.Cat.Web
         public static void Main(string[] args)
         {
             var host = BuildWebHost(args);
-            AutoMigration(host);
             InitScript(host);
+            AutoMigration(host);
             InitSeed(host);
             Task.Run(async () => await Reset(host));
             host.Run();
@@ -55,7 +55,13 @@ namespace JdCat.Cat.Web
                 var scriptPath = Path.Combine(env.ContentRootPath, "Asserts", "Scripts");
                 try
                 {
-
+                    var files = Directory.GetFiles(scriptPath, "*.txt");
+                    if (files == null || files.Length == 0) return;
+                    foreach (var file in files)
+                    {
+                        var content = File.ReadAllText(file).Replace("\r\n", " ");
+                        context.Database.ExecuteSqlCommand(sql: content);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -76,28 +82,12 @@ namespace JdCat.Cat.Web
                 {
                     var context = serviceProvider.GetService<CatDbContext>();
                     new SeedData(context).Seed();
-                    //SyncProgram(context);
                 }
                 catch (Exception ex)
                 {
                     throw new Exception("初始化种子错误", ex);
                 }
             }
-        }
-
-        /// <summary>
-        /// 系统更改后的同步方法
-        /// </summary>
-        private static void SyncProgram(CatDbContext context)
-        {
-            // 为每个商户生成ObjectId
-            var businesses = context.Businesses.ToList();
-            foreach (var item in businesses)
-            {
-                if (!string.IsNullOrEmpty(item.ObjectId)) continue;
-                item.ObjectId = Guid.NewGuid().ToString().ToLower();
-            }
-            context.SaveChanges();
         }
 
         /// <summary>

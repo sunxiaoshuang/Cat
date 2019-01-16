@@ -8,7 +8,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 购物车
     /// </summary>
-    [Table("ShoppingCart", Schema = "dbo")]
+    [Table("ShoppingCart")]
     public class ShoppingCart : BaseEntity
     {
         /// <summary>

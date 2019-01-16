@@ -159,7 +159,7 @@ namespace JdCat.Cat.WxApi.Controllers
                 notify_url = appData.PaySuccessUrl,
                 spbill_create_ip = appData.HostIpAddress
             };
-            if (appData.RunMode == "test")
+            if (appData.RunMode == "test" || business.ID == 1)
             {
                 option.total_fee = 1;
             }
@@ -350,6 +350,7 @@ namespace JdCat.Cat.WxApi.Controllers
         /// <param name="order"></param>
         private async Task EventMessage(Order order, AppData appData)
         {
+            if (string.IsNullOrEmpty(appData.EventMessageTemplateId)) return;
             var rep = HttpContext.RequestServices.GetService<IBusinessRepository>();
             var msg = new WxEventMessage();
             msg.template_id = appData.EventMessageTemplateId;

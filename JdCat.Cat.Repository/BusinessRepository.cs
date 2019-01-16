@@ -220,46 +220,102 @@ namespace JdCat.Cat.Repository
 
         public List<Report_Order> GetOrderTotal(Business business, DateTime startTime, DateTime endTime)
         {
-            return ExecuteReader<Report_Order>($@"select CreateTime, SUM(Price) Price, COUNT(*) Quantity from 
-    (select Price, CONVERT(varchar(10), CreateTime, 120) as CreateTime from dbo.[Order] where BusinessId={business.ID} and Status & {(int)OrderStatus.Valid} > 0 and CreateTime between '{startTime:yyyy-MM-dd}' and '{endTime:yyyy-MM-dd}')t1
-group by CreateTime");
+            var id = business.ID;
+
+            var query1 = from order in Context.Orders
+                         where order.BusinessId.Value == id && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= startTime && order.CreateTime < endTime
+                         select new { CreateTime = order.CreateTime.Value.ToString("yyyy-MM-dd"), order.Price };
+
+            var query2 = from order in query1
+                         group order by order.CreateTime into g
+                         select new Report_Order { CreateTime = g.Key, Price = g.Sum(a => a.Price.Value), Quantity = g.Count() };
+
+            return query2.ToList();
+
+
+            //return ExecuteReader<Report_Order>($@"select CreateTime, SUM(Price) Price, COUNT(*) Quantity from 
+            //    (select Price, CONVERT(varchar(10), CreateTime, 120) as CreateTime from dbo.[Order] where BusinessId={business.ID} and Status & {(int)OrderStatus.Valid} > 0 and CreateTime between '{startTime:yyyy-MM-dd}' and '{endTime:yyyy-MM-dd}')t1
+            //group by CreateTime");
         }
 
         public List<Report_Product> GetProductTop10(Business business, DateTime date)
         {
-            return ExecuteReader<Report_Product>($@"
-            select top 10 b.ID, b.Name, sum(a.Quantity) Quantity from dbo.[OrderProduct] a
-	            inner join dbo.[Product] b on a.ProductId = b.ID
-				inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
-            where b.BusinessId = {business.ID} and convert(varchar(10), c.CreateTime, 120) = '{date:yyyy-MM-dd}'
-            group by b.ID, b.Name
-            order by Quantity desc
-            ");
+            var time = date.ToString("yyyy-MM-dd");
+            var query = from obj in Context.OrderProducts
+                        join product in Context.Products on obj.ProductId equals product.ID
+                        join order in Context.Orders on obj.OrderId equals order.ID
+                        where product.BusinessId == business.ID && (order.Status & OrderStatus.Invalid) == 0 && order.CreateTime.Value.ToString("yyyy-MM-dd") == time
+                        group obj by new { obj.ProductId, obj.Name } into g
+                        orderby g.Sum(a => a.Quantity ?? 0)
+                        select new Report_Product { Name = g.Key.Name, Quantity = g.Sum(a => a.Quantity ?? 0) };
+
+            return query.Take(10).ToList();
+
+
+            //        return ExecuteReader<Report_Product>($@"
+            //        select top 10 b.ID, b.Name, sum(a.Quantity) Quantity from dbo.[OrderProduct] a
+            //         inner join dbo.[Product] b on a.ProductId = b.ID
+            //inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
+            //        where b.BusinessId = {business.ID} and convert(varchar(10), c.CreateTime, 120) = '{date:yyyy-MM-dd}'
+            //        group by b.ID, b.Name
+            //        order by Quantity desc
+            //        ");
         }
         public List<Report_ProductPrice> GetProductPriceTop10(Business business, DateTime date)
         {
-            return ExecuteReader<Report_ProductPrice>($@"
-            select top 10 b.ID, b.Name, sum(a.Price) Amount from dbo.[OrderProduct] a
-	            inner join dbo.[Product] b on a.ProductId = b.ID
-				inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
-            where b.BusinessId = {business.ID} and convert(varchar(10), c.CreateTime, 120) = '{date:yyyy-MM-dd}'
-            group by b.ID, b.Name
-            order by Amount desc
-            ");
+            var time = date.ToString("yyyy-MM-dd");
+            var query = from obj in Context.OrderProducts
+                        join product in Context.Products on obj.ProductId equals product.ID
+                        join order in Context.Orders on obj.OrderId equals order.ID
+                        where product.BusinessId == business.ID && (order.Status & OrderStatus.Invalid) == 0 && order.CreateTime.Value.ToString("yyyy-MM-dd") == time
+                        group obj by new { obj.ProductId, obj.Name } into g
+                        orderby g.Sum(a => a.Price ?? 0)
+                        select new Report_ProductPrice { Name = g.Key.Name, Amount = g.Sum(a => a.Price ?? 0) };
+            return query.Take(10).ToList();
+
+            //        return ExecuteReader<Report_ProductPrice>($@"
+            //        select top 10 b.ID, b.Name, sum(a.Price) Amount from dbo.[OrderProduct] a
+            //         inner join dbo.[Product] b on a.ProductId = b.ID
+            //inner join dbo.[Order] c on a.OrderId = c.Id and c.Status & {(int)OrderStatus.Invalid} = 0
+            //        where b.BusinessId = {business.ID} and convert(varchar(10), c.CreateTime, 120) = '{date:yyyy-MM-dd}'
+            //        group by b.ID, b.Name
+            //        order by Amount desc
+            //        ");
         }
 
         public List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end)
         {
-            return ExecuteReader<Report_SaleStatistics>($@"
-                select CreateTime AS [Date], sum(Price) Total, sum(PackagePrice) PackageAmount, sum(Freight) FreightAmount, count(CreateTime) Quantity from (
-	                select Price, PackagePrice, Freight, convert(VARCHAR(10), CreateTime, 120) CreateTime from dbo.[Order] where 
-	                [BusinessId] = {business.ID} and 
-	                [Status] & {(int)OrderStatus.Valid} > 0 and 
-	                [CreateTime] between '{start:yyyy-MM-dd}' and '{end.AddDays(1):yyyy-MM-dd}' 
-                )t
-                group by t.CreateTime
-                order by CreateTime desc
-            ");
+            var startTime = new DateTime(start.Year, start.Month, start.Day); ;
+            var endTime = new DateTime(end.Year, end.Month, end.Day);
+            endTime = endTime.AddDays(1);
+
+            var query1 = from order in Context.Orders
+                         where order.BusinessId == business.ID && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= startTime && order.CreateTime < endTime
+                         select new { order.Price, order.PackagePrice, order.Freight, CreateTime = order.CreateTime.Value.ToString("yyyy-MM-dd") };
+
+            var query2 = from order in query1
+                         group order by order.CreateTime into g
+                         select new Report_SaleStatistics
+                         {
+                             Date = g.Key,
+                             Total = g.Sum(a => a.Price ?? 0),
+                             PackageAmount = g.Sum(a => a.PackagePrice ?? 0),
+                             FreightAmount = g.Sum(a => a.Freight ?? 0),
+                             Quantity = g.Count()
+                         };
+            return query2.OrderByDescending(a => a.Date).ToList();
+
+
+            //return ExecuteReader<Report_SaleStatistics>($@"
+            //    select CreateTime AS [Date], sum(Price) Total, sum(PackagePrice) PackageAmount, sum(Freight) FreightAmount, count(CreateTime) Quantity from (
+            //     select Price, PackagePrice, Freight, convert(VARCHAR(10), CreateTime, 120) CreateTime from dbo.[Order] where 
+            //     [BusinessId] = {business.ID} and 
+            //     [Status] & {(int)OrderStatus.Valid} > 0 and 
+            //     [CreateTime] between '{start:yyyy-MM-dd}' and '{end.AddDays(1):yyyy-MM-dd}' 
+            //    )t
+            //    group by t.CreateTime
+            //    order by CreateTime desc
+            //");
         }
 
         public SaleFullReduce GetFullReduceById(int id)
@@ -569,6 +625,12 @@ group by CreateTime");
             Context.BusinessFreights.Remove(new BusinessFreight { ID = id });
             return Context.SaveChanges() > 0;
         }
+
+        public string GetNextStoreNumber()
+        {
+            return ExecuteScalar("SELECT CONCAT('JD', fn_right_padding(NEXT_VAL('StoreNumbers'), 6))") + "";
+        }
+
         public OpenAuthInfo AddAuthInfo(WxAuthInfo info, Business business)
         {
             var entity = Context.OpenAuthInfos.FirstOrDefault(a => a.BusinessId == business.ID);
@@ -628,11 +690,10 @@ group by CreateTime");
 
         public Business GetNearestStore(int chainId, double lat, double lng)
         {
-            var sql = $@"select top 1 * from (
-                        select *, dbo.fn_geo(Lat, Lng, {lat}, {lng}) as [Distance] from dbo.[Business] a
-                        where ParentId={chainId} and IsClose=0 and [Category]=0
-                        )t order by [Distance] asc";
-            var business = ExecuteReader<Business>(sql);
+            var business = Context.Businesses.FromSql($@"select *, fn_geo(Lat, Lng, {lat}, {lng}) as Distance from Business a
+                        where ParentId={chainId} and IsClose=0 and Category=0
+	                    order by Distance asc 
+	                    limit 1").ToList();
             if (business == null || business.Count == 0) return null;
             return business[0];
         }
@@ -640,16 +701,17 @@ group by CreateTime");
         public List<Business> GetNearbyStore(int chainId, string city, double lat, double lng, string key = null)
         {
             if (key != null && key.Contains("'")) throw new ArgumentException("参数中不能包含单引号");
-            var condition = $" where ParentId={chainId} and City='{city}' and [Category]=0";
+            var condition = $" where ParentId={chainId} and City='{city}' and Category=0";
             if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(key.Trim()))
             {
-                condition += $" and (charindex('{key}', Name) > 0 or charindex('{key}', [Address]) > 0)";
+                condition += $" and (locate('{key}', Name) > 0 or locate('{key}', Address) > 0)";
             }
-            var sql = $@"select top 5 * from (
-                        select *, dbo.fn_geo(Lat, Lng, {lat}, {lng}) as [Distance] from dbo.[Business] a
+            var sql = $@"select *, fn_geo(Lat, Lng, {lat}, {lng}) as Distance from Business a
                         {condition}
-                        )t order by [Distance] asc";
-            return ExecuteReader<Business>(sql);
+                        order by Distance asc
+                        limit 7";
+            return Context.Businesses.FromSql(sql).ToList();
+            //return ExecuteReader<Business>(sql);
         }
 
         public string ResetPwd(int id)
@@ -671,41 +733,82 @@ group by CreateTime");
 
         public List<Order> GetOrders(int chainId, int businessId, OrderStatus? status, PagingQuery query, DateTime startDate, DateTime endDate)
         {
-            var condition = string.Empty;
+            var end = endDate.AddDays(1);
+            IQueryable<Order> sql = Context.Orders;
             if (businessId == 0)
             {
-                condition = $@"[BusinessId] in (select id from dbo.[Business] where ParentId={chainId} and Category=0)";
+                var ids = Context.Businesses.Where(a => a.ParentId == chainId).Select(a => a.ID).ToList();
+                sql = sql.Where(a => ids.Contains(a.BusinessId.Value));
             }
             else
             {
-                condition = $@"[BusinessId] = {businessId}";
+                sql = sql.Where(a => a.BusinessId == businessId);
             }
             if (status != null && status > 0)
             {
-                condition += $" and [Status] & {(int)status.Value} > 0 ";
+                sql = sql.Where(a => (a.Status & status.Value) > 0);
             }
-            condition += $" and [CreateTime] >= '{startDate.ToString("yyyy-MM-dd")}' and [CreateTime] < '{endDate.AddDays(1).ToString("yyyy-MM-dd")}'";
+            sql = sql.Where(a => a.CreateTime >= startDate && a.CreateTime < end);
+            query.RecordCount = sql.Count();
+            return sql.ToList();
 
-            var countSql = $"select count(*) from dbo.[Order] where {condition}";
-            var textSql = $@"select [Identifier], [BusinessId], [OrderCode], [CreateTime], [Status], [Price], [ReceiverName], [Phone], [ReceiverAddress] from dbo.[Order] where {condition} 
-                            order by id offset {(query.PageIndex - 1) * query.PageSize} rows fetch next {query.PageSize} rows only";
-            query.RecordCount = ExecuteScalar<int>(countSql);
-            return ExecuteReader<Order>(textSql);
+            //var condition = string.Empty;
+            //if (businessId == 0)
+            //{
+            //    condition = $@"[BusinessId] in (select id from dbo.[Business] where ParentId={chainId} and Category=0)";
+            //}
+            //else
+            //{
+            //    condition = $@"[BusinessId] = {businessId}";
+            //}
+            //if (status != null && status > 0)
+            //{
+            //    condition += $" and [Status] & {(int)status.Value} > 0 ";
+            //}
+            //condition += $" and [CreateTime] >= '{startDate.ToString("yyyy-MM-dd")}' and [CreateTime] < '{endDate.AddDays(1).ToString("yyyy-MM-dd")}'";
+
+            //var countSql = $"select count(*) from dbo.[Order] where {condition}";
+            //var textSql = $@"select [Identifier], [BusinessId], [OrderCode], [CreateTime], [Status], [Price], [ReceiverName], [Phone], [ReceiverAddress] from dbo.[Order] where {condition} 
+            //                order by id offset {(query.PageIndex - 1) * query.PageSize} rows fetch next {query.PageSize} rows only";
+            //query.RecordCount = ExecuteScalar<int>(countSql);
+            //return ExecuteReader<Order>(textSql);
         }
 
         public List<Report_ChainSummary> GetBusinessSummary(int chainId, int businessId, DateTime startDate, DateTime endDate)
         {
-            var condition = string.Empty;
-            if (businessId > 0)
+            var end = endDate.AddDays(1);
+            var queryOrder = Context.Orders.Where(a => (a.Status & OrderStatus.Valid) > 0 && a.CreateTime >= startDate && a.CreateTime < end);
+            var queryBusiness = Context.Businesses.Where(a => a.ParentId == chainId);
+            if(businessId > 0)
             {
-                condition += $@"a.Id={businessId} and ";
+                queryBusiness = queryBusiness.Where(a => a.ID == businessId);
             }
-            condition += $"a.ParentId={chainId} and b.Status & 2781 > 0 and b.CreateTime >= '{startDate:yyyy-MM-dd}' and b.CreateTime < '{endDate.AddDays(1):yyyy-MM-dd}'";
-            var sql = $@"select a.Id, a.Name, COUNT(*) as Quantity, SUM(b.Price) as Amount from dbo.[Business] a 
-		                    left join dbo.[Order] b on a.Id=b.BusinessId
-	                    where {condition}
-	                    group by a.Id, a.Name";
-            return ExecuteReader<Report_ChainSummary>(sql);
+            var sql = from business in queryBusiness
+                      join order in queryOrder
+                      on business.ID equals order.BusinessId into joinOrder
+                      from order in joinOrder.DefaultIfEmpty()
+                      group order by new { business.ID, business.Name } into g
+                      select new Report_ChainSummary
+                      {
+                          Id = g.Key.ID,
+                          Name = g.Key.Name,
+                          Amount = g.Sum(a => a.Price == null ? 0 : a.Price.Value),
+                          Quantity = g.Count()
+                      };
+            return sql.ToList();
+
+
+            //var condition = string.Empty;
+            //if (businessId > 0)
+            //{
+            //    condition += $@"a.Id={businessId} and ";
+            //}
+            //condition += $"a.ParentId={chainId} and b.Status & 2781 > 0 and b.CreateTime >= '{startDate:yyyy-MM-dd}' and b.CreateTime < '{endDate.AddDays(1):yyyy-MM-dd}'";
+            //var sql = $@"select a.Id, a.Name, COUNT(*) as Quantity, SUM(b.Price) as Amount from dbo.[Business] a 
+		          //          left join dbo.[Order] b on a.Id=b.BusinessId
+	           //         where {condition}
+	           //         group by a.Id, a.Name";
+            //return ExecuteReader<Report_ChainSummary>(sql);
         }
 
         public List<Report_UserList> GetUserListByChain(int id, PagingQuery query)

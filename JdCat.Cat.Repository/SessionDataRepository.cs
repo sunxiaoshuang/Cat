@@ -18,7 +18,7 @@ namespace JdCat.Cat.Repository
 
         public SessionData SetSession(SessionData entity)
         {
-            Context.Database.ExecuteSqlCommand($"delete dbo.SessionData where UserId={entity.UserId}");
+            Context.Database.ExecuteSqlCommand($"delete from `SessionData` where UserId={entity.UserId}");
             Context.SessionDatas.Add(entity);
             Commit();
             return entity;

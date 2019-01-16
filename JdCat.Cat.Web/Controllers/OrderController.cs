@@ -127,7 +127,7 @@ namespace JdCat.Cat.Web.Controllers
         /// </summary>
         public IActionResult Reject(int id, [FromQuery]string msg, [FromServices]IHostingEnvironment _env)
         {
-            var certPath = Path.Combine(_env.ContentRootPath, "0AD850B5-DCF4-4F4C-AEAA-03D142D41684.p12");
+            var certPath = Path.Combine(_env.ContentRootPath, "Asserts", AppData.CertFile);
             var result = Service.Reject(id, msg, new X509Certificate2(certPath, AppData.ServerMchId));
             return Json(result);
         }
@@ -138,7 +138,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public IActionResult CancelOrder(int id, [FromQuery]string reason, [FromServices]IHostingEnvironment _env)
         {
-            var certPath = Path.Combine(_env.ContentRootPath, "0AD850B5-DCF4-4F4C-AEAA-03D142D41684.p12");
+            var certPath = Path.Combine(_env.ContentRootPath, "Asserts", AppData.CertFile);
             var result = Service.Cancel(id, reason, new X509Certificate2(certPath, AppData.ServerMchId));
             return Json(result);
         }

@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 点我达商户表
     /// </summary>
-    [Table("DWDStore", Schema = "dbo")]
+    [Table("DWDStore")]
     public class DWDStore : BaseEntity
     {
         /// <summary>

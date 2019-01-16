@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 商品图片表，目前只支持一个商品一张图片
     /// </summary>
-    [Table("ProductImage", Schema = "dbo")]
+    [Table("ProductImage")]
     public class ProductImage : BaseEntity, ICloneable
     {
         /// <summary>

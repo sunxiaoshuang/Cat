@@ -144,7 +144,7 @@ namespace JdCat.Cat.Repository
         }
         public bool ClearCart(int userId, int businessId)
         {
-            return Context.Database.ExecuteSqlCommand("delete dbo.ShoppingCart where userid={0} and businessid={1}", userId, businessId) > 0;
+            return Context.Database.ExecuteSqlCommand("delete from `ShoppingCart` where userid={0} and businessid={1}", userId, businessId) > 0;
 
         }
         public Order CreateOrder(Order order)
@@ -204,6 +204,7 @@ namespace JdCat.Cat.Repository
                     EndDate = coupon.EndDate,
                     ValidDay = coupon.ValidDay,
                     UserId = user.ID,
+                    Code = ExecuteScalar("SELECT CONCAT(fn_right_padding(floor(rand()*10000000), 6), NEXT_VAL('SaleCouponNumbers'), fn_right_padding(floor(rand()*100000), 4))") + "",
                     CouponId = coupon.ID
                 };
                 if (coupon.Quantity > 0)

@@ -203,6 +203,10 @@ namespace JdCat.Cat.Web.Controllers
             }
 
             // 图片上传成功后，保存商品
+            foreach (var item in product.Formats)
+            {
+                item.Code = Service.GetNextProductFormat();
+            }
             var entity = new Product
             {
                 BusinessId = Business.ID,

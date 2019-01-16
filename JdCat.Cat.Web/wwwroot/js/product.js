@@ -345,7 +345,7 @@
                 var list = this.allProducts.filter(function (obj) { return obj.name.indexOf(key) > -1; });
                 this.searchProducts = list.slice(0, 9);
                 this.list = this.searchProducts;
-                this.count = this.searchProducts.length;
+                this.count = 1;
             }
         }
     });
@@ -358,7 +358,7 @@
             .then(function (response) {
                 $.loaded();
                 productList.allProducts = response.data.data;
-                productList.list = productList.allProducts;
+                productList.list = productList.allProducts.slice(0, 20);
                 productList.curProducts = productList.allProducts;
                 productList.count = productList.allProducts.length;
             })

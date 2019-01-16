@@ -1,0 +1,35 @@
+﻿
+CREATE TABLE IF NOT EXISTS `cat_sequence` (
+    `sequence_name`  VARCHAR(64) NOT NULL COMMENT '序列名称' ,
+    `value`  BIGINT NOT NULL DEFAULT 0 COMMENT '当前值' ,
+    PRIMARY KEY (`sequence_name`)
+);
+
+DROP FUNCTION IF EXISTS NEXT_VAL;
+CREATE FUNCTION NEXT_VAL(sequence_name varchar(64)) RETURNS BIGINT 
+COMMENT '获取序列的下一个值'
+BEGIN
+    DECLARE current_val BIGINT;
+    SET current_val = 0;
+    UPDATE cat_sequence t SET t.value = t.value + 1 WHERE t.sequence_name = sequence_name;
+    SELECT t.value INTO current_val FROM cat_sequence t WHERE t.sequence_name = sequence_name;
+    RETURN current_val;
+END;
+
+
+INSERT INTO `cat_sequence` (`sequence_name`, `value`) 
+SELECT 'StoreNumbers' AS `sequence_name`, 10000 AS `value` FROM dual
+WHERE NOT EXISTS (SELECT * FROM `cat_sequence` WHERE `sequence_name`='StoreNumbers' LIMIT 1);
+
+INSERT INTO `cat_sequence` (`sequence_name`, `value`) 
+SELECT 'OrderNumbers' AS `sequence_name`, 10000 AS `value` FROM dual
+WHERE NOT EXISTS (SELECT * FROM `cat_sequence` WHERE `sequence_name`='OrderNumbers' LIMIT 1);
+
+INSERT INTO `cat_sequence` (`sequence_name`, `value`) 
+SELECT 'FormatNumbers' AS `sequence_name`, 10000 AS `value` FROM dual
+WHERE NOT EXISTS (SELECT * FROM `cat_sequence` WHERE `sequence_name`='FormatNumbers' LIMIT 1);
+
+INSERT INTO `cat_sequence` (`sequence_name`, `value`) 
+SELECT 'SaleCouponNumbers' AS `sequence_name`, 10000 AS `value` FROM dual
+WHERE NOT EXISTS (SELECT * FROM `cat_sequence` WHERE `sequence_name`='SaleCouponNumbers' LIMIT 1);
+

@@ -1,6 +1,7 @@
 ﻿using JdCat.Cat.Model.Enum;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -9,7 +10,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 商户表
     /// </summary>
-    [Table("Business", Schema = "dbo")]
+    [Table("Business")]
     public class Business : BaseEntity, ICloneable
     {
         /// <summary>

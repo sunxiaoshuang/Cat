@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 商品属性表
     /// </summary>
-    [Table("ProductAttribute", Schema = "dbo")]
+    [Table("ProductAttribute")]
     public class ProductAttribute : BaseEntity, ICloneable
     {
         /// <summary>

@@ -53,18 +53,6 @@ namespace JdCat.Cat.Web.Controllers
                 result.Success = false;
                 return Json(result);
             }
-            //else if ("168168168" != invitationCode)
-            //{
-            //    result.Msg = "该邀请码无效";
-            //    result.Success = false;
-            //    return Json(result);
-            //}
-            //else if (service.Exists(a => (a.InvitationCode == invitationCode)))
-            //{
-            //    result.Msg = "该邀请码已被使用";
-            //    result.Success = false;
-            //    return Json(result);
-            //}
             else
             {
                 var userInfo = new Business()
@@ -82,6 +70,7 @@ namespace JdCat.Cat.Web.Controllers
                     BusinessStartTime = "06:00",
                     BusinessEndTime = "21:00",
                     Category = BusinessCategory.Store,
+                    StoreId = service.GetNextStoreNumber(),
                     ObjectId = Guid.NewGuid().ToString().ToLower()
                 };
                 userInfo.FeyinMemberCode = appData.FeyinMemberCode;
@@ -113,6 +102,7 @@ namespace JdCat.Cat.Web.Controllers
             business.Password = UtilHelper.MD5Encrypt(business.Password);
             business.Category = BusinessCategory.Chain;
             business.RegisterDate = DateTime.Now;
+            business.StoreId = service.GetNextStoreNumber();
             service.Add(business);
             result.Msg = "连锁店总后台注册成功";
             result.Success = true;

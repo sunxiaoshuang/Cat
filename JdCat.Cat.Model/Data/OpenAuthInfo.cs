@@ -8,7 +8,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 小程序授权信息
     /// </summary>
-    [Table("OpenAuthInfo", Schema = "dbo")]
+    [Table("OpenAuthInfo")]
     public class OpenAuthInfo : BaseEntity
     {
         /// <summary>

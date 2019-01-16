@@ -63,22 +63,23 @@ namespace JdCat.Cat.Model
             base.OnModelCreating(modelBuilder);
 
             // 基础配置
-            modelBuilder.HasSequence<int>("StoreNumbers", schema: "shared");            // 门店编号序列
-            modelBuilder.HasSequence<int>("OrderNumbers", schema: "shared");            // 订单编号序列
-            modelBuilder.HasSequence<int>("FormatNumbers", schema: "shared");           // 规格编码序列
-            modelBuilder.HasSequence<int>("SaleCouponNumbers", schema: "shared");       // 优惠券编码序列
-            modelBuilder.Entity<Business>()
-                .Property(a => a.StoreId)
-                .HasDefaultValueSql("'JD' + dbo.fn_right_padding(NEXT VALUE FOR shared.StoreNumbers, 6)");
-            modelBuilder.Entity<ProductFormat>()
-                .Property(a => a.Code)
-                .HasDefaultValueSql("'F' + CAST(YEAR(GETDATE()) AS varchar) + dbo.fn_right_padding(NEXT VALUE FOR shared.FormatNumbers, 9)");
-            modelBuilder.Entity<Order>()
-                .Property(a => a.OrderCode)
-                .HasDefaultValueSql("CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 6) + dbo.fn_right_padding(CAST(floor(rand()*100000) as varchar(5)), 5)");
-            modelBuilder.Entity<SaleCouponUser>()
-                .Property(a => a.Code)
-                .HasDefaultValueSql("dbo.fn_right_padding(floor(rand()*10000000), 6) + cast(NEXT VALUE FOR shared.SaleCouponNumbers as varchar(max)) + dbo.fn_right_padding(floor(rand()*100000), 4)");
+            //modelBuilder.HasSequence<int>("StoreNumbers");            // 门店编号序列
+            //modelBuilder.HasSequence<int>("OrderNumbers");            // 订单编号序列
+            //modelBuilder.HasSequence<int>("FormatNumbers");           // 规格编码序列
+            //modelBuilder.HasSequence<int>("SaleCouponNumbers");       // 优惠券编码序列
+
+            //modelBuilder.Entity<Business>()
+            //    .Property(a => a.StoreId)
+            //    .HasDefaultValueSql("'JD' + fn_right_padding(NEXT_VAL('StoreNumbers'), 6)");
+            //modelBuilder.Entity<ProductFormat>()
+            //    .Property(a => a.Code)
+            //    .HasDefaultValueSql("'F' + DATE_FORMAT(NOW(),'%Y') + fn_right_padding(NEXT_VAL('FormatNumbers'), 9)");
+            //modelBuilder.Entity<Order>()
+            //    .Property(a => a.OrderCode)
+            //    .HasDefaultValueSql("DATE_FORMAT(NOW(),'%Y-%m-%d') + fn_right_padding(NEXT_VAL('OrderNumbers'), 6) + fn_right_padding(floor(rand()*100000), 5)");
+            //modelBuilder.Entity<SaleCouponUser>()
+            //    .Property(a => a.Code)
+            //    .HasDefaultValueSql("fn_right_padding(floor(rand()*10000000), 6) + NEXT_VAL('SaleCouponNumbers') + fn_right_padding(floor(rand()*100000), 4)");
 
             // 配置视图
             //modelBuilder.Query<Report_SaleStatistics>().ToView("View_SaleStatistics");

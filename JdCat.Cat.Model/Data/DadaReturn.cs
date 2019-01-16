@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 新增订单后，达达返回的结果类
     /// </summary>
-    [Table("DadaReturn", Schema = "dbo")]
+    [Table("DadaReturn")]
     public class DadaReturn : BaseEntity
     {
         /// <summary>

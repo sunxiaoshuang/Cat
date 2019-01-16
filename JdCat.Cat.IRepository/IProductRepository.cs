@@ -70,6 +70,11 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         IEnumerable<SettingProductAttribute> GetAttributes();
         /// <summary>
+        /// 获取下一个商品规格编码
+        /// </summary>
+        /// <returns></returns>
+        string GetNextProductFormat();
+        /// <summary>
         /// 获取商品列表
         /// </summary>
         /// <param name="business">商户对象</param>

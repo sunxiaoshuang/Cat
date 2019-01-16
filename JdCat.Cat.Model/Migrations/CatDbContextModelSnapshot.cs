@@ -3,7 +3,6 @@ using System;
 using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JdCat.Cat.Model.Migrations
@@ -16,18 +15,12 @@ namespace JdCat.Cat.Model.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("Relational:Sequence:shared.FormatNumbers", "'FormatNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
-                .HasAnnotation("Relational:Sequence:shared.OrderNumbers", "'OrderNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
-                .HasAnnotation("Relational:Sequence:shared.SaleCouponNumbers", "'SaleCouponNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
-                .HasAnnotation("Relational:Sequence:shared.StoreNumbers", "'StoreNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Address", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("AreaName");
 
@@ -61,14 +54,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Address","dbo");
+                    b.ToTable("Address");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Business", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Address");
 
@@ -168,9 +160,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("SpecialImage");
 
-                    b.Property<string>("StoreId")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("'JD' + dbo.fn_right_padding(NEXT VALUE FOR shared.StoreNumbers, 6)");
+                    b.Property<string>("StoreId");
 
                     b.Property<string>("TemplateNotifyId");
 
@@ -180,14 +170,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Business","dbo");
+                    b.ToTable("Business");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.BusinessFreight", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<double>("Amount");
 
@@ -203,14 +192,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("BusinessFreights");
+                    b.ToTable("BusinessFreight");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.City", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Code");
 
@@ -220,14 +208,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("City","dbo");
+                    b.ToTable("City");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.DWDStore", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("BusinessId");
 
@@ -254,14 +241,13 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasIndex("BusinessId")
                         .IsUnique();
 
-                    b.ToTable("DWDStore","dbo");
+                    b.ToTable("DWDStore");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.DWD_Recharge", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<double>("Amount");
 
@@ -281,14 +267,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("DWD_BusinessId");
 
-                    b.ToTable("DWD_Recharges");
+                    b.ToTable("DWD_Recharge");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.DadaCallBack", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -318,14 +303,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("DadaCallBack","dbo");
+                    b.ToTable("DadaCallBack");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.DadaCancelReason", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -335,14 +319,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("DadaCancelReason","dbo");
+                    b.ToTable("DadaCancelReason");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.DadaLiquidatedDamages", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -354,14 +337,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("DadaLiquidatedDamages","dbo");
+                    b.ToTable("DadaLiquidatedDamages");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.DadaReturn", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<double?>("CouponFee");
 
@@ -384,14 +366,13 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasIndex("OrderId")
                         .IsUnique();
 
-                    b.ToTable("DadaReturn","dbo");
+                    b.ToTable("DadaReturn");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.FeyinDevice", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ApiKey");
 
@@ -415,14 +396,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("FeyinDevice","dbo");
+                    b.ToTable("FeyinDevice");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.OpenAuthInfo", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("AppId");
 
@@ -440,14 +420,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("OpenAuthInfo","dbo");
+                    b.ToTable("OpenAuthInfo");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Order", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("AchieveTime");
 
@@ -491,9 +470,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("OpenId");
 
-                    b.Property<string>("OrderCode")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("CONVERT(varchar(10), GETDATE(), 112) + dbo.fn_right_padding(NEXT VALUE FOR shared.OrderNumbers, 6) + dbo.fn_right_padding(CAST(floor(rand()*100000) as varchar(5)), 5)");
+                    b.Property<string>("OrderCode");
 
                     b.Property<double?>("PackagePrice");
 
@@ -546,21 +523,19 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasIndex("BusinessId");
 
                     b.HasIndex("SaleCouponUserId")
-                        .IsUnique()
-                        .HasFilter("[SaleCouponUserId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("SaleFullReduceId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Order","dbo");
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.OrderProduct", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -602,14 +577,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("SaleProductDiscountId");
 
-                    b.ToTable("OrderProduct","dbo");
+                    b.ToTable("OrderProduct");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Product", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("BusinessId");
 
@@ -646,14 +620,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("ProductTypeId");
 
-                    b.ToTable("Product","dbo");
+                    b.ToTable("Product");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.ProductAttribute", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -681,18 +654,15 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductAttribute","dbo");
+                    b.ToTable("ProductAttribute");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.ProductFormat", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Code")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("'F' + CAST(YEAR(GETDATE()) AS varchar) + dbo.fn_right_padding(NEXT VALUE FOR shared.FormatNumbers, 9)");
+                    b.Property<string>("Code");
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -718,14 +688,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductFormat","dbo");
+                    b.ToTable("ProductFormat");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.ProductImage", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -743,14 +712,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImage","dbo");
+                    b.ToTable("ProductImage");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.ProductType", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("BusinessId");
 
@@ -767,14 +735,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("ProductType","dbo");
+                    b.ToTable("ProductType");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.SaleCoupon", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("BusinessId");
 
@@ -808,18 +775,15 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("SaleCoupon","dbo");
+                    b.ToTable("SaleCoupon");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.SaleCouponUser", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Code")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("dbo.fn_right_padding(floor(rand()*10000000), 6) + cast(NEXT VALUE FOR shared.SaleCouponNumbers as varchar(max)) + dbo.fn_right_padding(floor(rand()*100000), 4)");
+                    b.Property<string>("Code");
 
                     b.Property<int>("CouponId");
 
@@ -851,14 +815,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SaleCouponUser","dbo");
+                    b.ToTable("SaleCouponUser");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.SaleFullReduce", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("BusinessId");
 
@@ -884,14 +847,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("SaleFullReduce","dbo");
+                    b.ToTable("SaleFullReduce");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.SaleProductDiscount", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("BusinessId");
 
@@ -937,14 +899,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("SaleProductDiscount","dbo");
+                    b.ToTable("SaleProductDiscount");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.SessionData", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -956,14 +917,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SessionData","dbo");
+                    b.ToTable("SessionData");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.SettingProductAttribute", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -979,14 +939,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("SettingProductAttribute","dbo");
+                    b.ToTable("SettingProductAttribute");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.ShoppingCart", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int?>("BusinessId");
 
@@ -1020,14 +979,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ShoppingCart","dbo");
+                    b.ToTable("ShoppingCart");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.User", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("Age");
 
@@ -1062,17 +1020,15 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("OpenId")
-                        .IsUnique()
-                        .HasFilter("[OpenId] IS NOT NULL");
+                        .IsUnique();
 
-                    b.ToTable("User","dbo");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.WxListenUser", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("BusinessId");
 
@@ -1096,14 +1052,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("WxListenUser","dbo");
+                    b.ToTable("WxListenUser");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.YcfkLocation", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -1115,7 +1070,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("YcfkLocation","dbo");
+                    b.ToTable("YcfkLocation");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Address", b =>

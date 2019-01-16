@@ -75,6 +75,8 @@ namespace JdCat.Cat.Repository
                     max = query.Max(a => a.Identifier);
                 }
                 order.Identifier = max + 1;
+                var orderCode = ExecuteScalar("SELECT CONCAT(DATE_FORMAT(NOW(),'%Y%m%d'), fn_right_padding(NEXT_VAL('OrderNumbers'), 6), fn_right_padding(floor(rand()*100000), 5))") + "";
+                order.OrderCode = orderCode;
                 Context.Orders.Add(order);
                 // 如果使用了优惠券
                 if (order.SaleCouponUserId != null)
@@ -98,7 +100,7 @@ namespace JdCat.Cat.Repository
             result.Data = order;
             result.Success = true;
             // 清空购物车
-            Context.Database.ExecuteSqlCommand("delete dbo.ShoppingCart where userid={0}", order.UserId);
+            Context.Database.ExecuteSqlCommand("delete from `ShoppingCart` where userid={0}", order.UserId);
             return result;
         }
 
@@ -995,6 +997,7 @@ namespace JdCat.Cat.Repository
         /// <param name="businessId"></param>
         private async Task SendMessageNotify(WxEventMessage msg, int businessId)
         {
+            if (string.IsNullOrEmpty(msg.template_id)) return;
             var users = Context.WxListenUsers.Where(a => a.BusinessId == businessId);
             if (users == null || users.Count() == 0) return;
             foreach (var item in users)

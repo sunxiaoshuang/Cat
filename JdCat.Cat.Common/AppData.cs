@@ -145,10 +145,6 @@ namespace JdCat.Cat.Common
         /// </summary>
         public string HostIpAddress { get; set; }
         /// <summary>
-        /// 公众号发送订单消息模版id
-        /// </summary>
-        public string EventMessageTemplateId { get; set; }
-        /// <summary>
         /// 易联云开发者id
         /// </summary>
         public string YlyPartnerId { get; set; }
@@ -212,5 +208,34 @@ namespace JdCat.Cat.Common
         /// 一城飞客域名
         /// </summary>
         public string YcfkDomain { get; set; }
+        /// <summary>
+        /// 公众号发送订单消息模版id
+        /// </summary>
+        public string EventMessageTemplateId { get; set; }
+        /// <summary>
+        /// 服务商退款证书
+        /// </summary>
+        public string CertFile { get; set; }
+        /// <summary>
+        /// 退款通知id
+        /// </summary>
+        public string Msg_Refund { get; set; }
+        /// <summary>
+        /// 新订单通知id
+        /// </summary>
+        public string WeChatAppId { get; set; }
+        /// <summary>
+        /// 公众号Secret
+        /// </summary>
+        public string WeChatSecret { get; set; }
+        /// <summary>
+        /// 腾讯地图开发者key
+        /// </summary>
+        public string MapApiKey { get; set; }
+        /// <summary>
+        /// 腾讯地图WebService接口Secret
+        /// </summary>
+        public string MapApiSecret { get; set; }
+
     }
 }

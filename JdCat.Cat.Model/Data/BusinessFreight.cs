@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace JdCat.Cat.Model.Data
 {
+    [Table("BusinessFreight")]
     public class BusinessFreight : BaseEntity
     {
         /// <summary>

@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 用户地址表
     /// </summary>
-    [Table("Address", Schema = "dbo")]
+    [Table("Address")]
     public class Address : BaseEntity
     {
         /// <summary>

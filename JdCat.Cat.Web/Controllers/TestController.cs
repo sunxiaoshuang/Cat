@@ -243,7 +243,7 @@ namespace JdCat.Cat.Web.Controllers
 
         #region 退款
 
-        public IActionResult Refund([FromServices]IHostingEnvironment _env)
+        public IActionResult Refund([FromServices]IHostingEnvironment _env, [FromServices]AppData appData)
         {
             var data = new InputData();
             data.SetValue("appid", "wx37df4bb420888824");
@@ -285,7 +285,7 @@ namespace JdCat.Cat.Web.Controllers
             byte[] buffer = Encoding.UTF8.GetBytes(xml);
             request.ContentLength = buffer.Length;
             
-            X509Certificate2 cert = new X509Certificate2(_env.WebRootPath + "\\0AD850B5-DCF4-4F4C-AEAA-03D142D41684.p12", "1497755942");
+            X509Certificate2 cert = new X509Certificate2(Path.Combine(_env.WebRootPath, "Asserts", appData.CertFile, "1497755942"));
             request.ClientCertificates.Add(cert);
 
             reqStream = request.GetRequestStream();

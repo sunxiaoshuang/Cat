@@ -17,11 +17,19 @@ namespace JdCat.Cat.Common
 {
     public static class WxHelper
     {
-        public const string Msg_Refund = "vYBFTq7vxZoDYg0K5K9ojTHaUQw49wu_X9XU5fv9wno"; // 退款通知模版消息id
-        public const string WeChatAppId = "wx37df4bb420888824";                         // 简单猫科技公众号AppId
-        public const string WeChatSecret = "8db34ed73016a5f22878295ed409cc52";          // 简单猫科技公众号Secret
-        public const string MapApiKey = "JEOBZ-2U36O-6EIWM-S2NQD-C4HHO-Y7BC4";          // 腾讯地图开发者key
-        public const string MapApiSecret = "tk0H3bC8foR7ceskfV10KtdwIFV73Dp";           // 腾讯地图WebService接口Secret
+        public static string Msg_Refund;                        // 退款通知模版消息id
+        public static string WeChatAppId;                       // 简单猫科技公众号AppId
+        public static string WeChatSecret;                      // 简单猫科技公众号Secret
+        public static string MapApiKey;                         // 腾讯地图开发者key
+        public static string MapApiSecret;                      // 腾讯地图WebService接口Secret
+        public static void Init(AppData config)
+        {
+            Msg_Refund = config.Msg_Refund;
+            WeChatAppId = config.WeChatAppId;
+            WeChatSecret = config.WeChatSecret;
+            MapApiKey = config.MapApiKey;
+            MapApiSecret = config.MapApiSecret;
+        }
         /// <summary>
         /// 开放平台授权ticket，暂时存在这里
         /// </summary>

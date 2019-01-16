@@ -49,6 +49,8 @@ namespace JdCat.Cat.WxApi.Controllers
             {
                 list = new List<Business>();
             }
+            var point = new Tuple<double, double>(position[0], position[1]);
+            list.ForEach(a => a.Distance = new Tuple<double, double>(a.Lat, a.Lng).GetDistance(point));
             return Json(list);
         }
         private static string cityJson;

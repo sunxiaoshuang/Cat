@@ -52,7 +52,8 @@ namespace JdCat.Cat.Web
             //services.AddDbContext<CatDbContext>(a => a.UseLazyLoadingProxies()
             //.ConfigureWarnings(b => b.Log(CoreEventId.DetachedLazyLoadingWarning))
             //.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
-            services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
+            //services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
+            services.AddDbContext<CatDbContext>(a => a.UseMySql(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
 
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
@@ -102,6 +103,8 @@ namespace JdCat.Cat.Web
             services.AddSingleton(new WXBizMsgCrypt(config.OpenToken, config.OpenEncodingAESKey, config.OpenAppId));
             // 一城飞客
             services.AddSingleton(YcfkHelper.GetHelper().Init(config));
+            // 微信
+            WxHelper.Init(config);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

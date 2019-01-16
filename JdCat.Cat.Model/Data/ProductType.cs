@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 商品类别表
     /// </summary>
-    [Table("ProductType", Schema = "dbo")]
+    [Table("ProductType")]
     public class ProductType : BaseEntity
     {
         /// <summary>

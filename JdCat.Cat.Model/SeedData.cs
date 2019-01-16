@@ -102,6 +102,7 @@ namespace JdCat.Cat.Model
                 RegisterDate = DateTime.Now,
                 AppId = "wx7fc7dac038048c37",
                 Secret = "79b39d625b3921c2f4bcefe3c4f7c732",
+                StoreId = "JD-01",
                 ObjectId = "29afc951-5095-4376-9dab-b40f8e3025f2",
                 IsAutoReceipt = true
             });

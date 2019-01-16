@@ -9,7 +9,7 @@ namespace JdCat.Cat.Model.Data
     /// <summary>
     /// 飞印绑定的打印机记录
     /// </summary>
-    [Table("FeyinDevice", Schema = "dbo")]
+    [Table("FeyinDevice")]
     public class FeyinDevice : BaseEntity
     {
         /// <summary>
