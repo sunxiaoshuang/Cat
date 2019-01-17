@@ -544,7 +544,11 @@ namespace JdCat.Cat.Repository
             var productList = Context.Products.AsNoTracking().Where(a => arr.Contains(a.ID));
             foreach (var item in products)
             {
-                if (item.Tag1 == null) continue;
+                if (item.Tag1 == null)
+                {
+                    item.Tag1 = "";
+                    continue;
+                }
                 var productArr = new List<Product>();
                 foreach (var id in (IEnumerable<int>)item.Tag1)
                 {

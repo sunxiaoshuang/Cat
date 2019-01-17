@@ -52,11 +52,7 @@
                             <text>{{item.name}}</text>
                         </view>
                     </view>
-                    <view class="menuList">
-                        <view class="menu">
-                            <text></text>
-                        </view>
-                    </view>
+                    <view style="height: 250rpx;"></view>
                 </scroll-view>
                 <view class="foodListMain">
                     <scroll-view class="foodList" scroll-y="true" scroll-with-animation="true" scroll-top="{{scrollTop}}" scroll-into-view="{{foodToView}}" bindscroll="scrollFoodList">

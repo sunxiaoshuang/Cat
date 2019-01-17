@@ -31,7 +31,7 @@ namespace JdCat.Cat.Repository
         public bool CreateShop(DWDStore store)
         {
             // 首先删除当前的商户
-            Context.Database.ExecuteSqlCommand("delete dbo.DWDStore where BusinessId={0}", store.BusinessId);
+            Context.Database.ExecuteSqlCommand("delete from `DWDStore` where `BusinessId`={0}", store.BusinessId);
             // 然后保存
             Context.DWDStores.Add(store);
             return Context.SaveChanges() > 0;

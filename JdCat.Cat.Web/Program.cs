@@ -38,7 +38,7 @@ namespace JdCat.Cat.Web
             return WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(config)
                 .UseStartup<Startup>()
-                //                .UseKestrel(Host.SetHost)
+                //.UseKestrel(Host.SetHost)
                 .Build();
         }
 

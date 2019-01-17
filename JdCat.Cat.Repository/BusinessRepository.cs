@@ -792,8 +792,8 @@ namespace JdCat.Cat.Repository
                       {
                           Id = g.Key.ID,
                           Name = g.Key.Name,
-                          Amount = g.Sum(a => a.Price == null ? 0 : a.Price.Value),
-                          Quantity = g.Count()
+                          Amount = g.Sum(a => a == null ? 0 : a.Price == null ? 0 : a.Price.Value),
+                          Quantity = g.Count(a => a != null)
                       };
             return sql.ToList();
 

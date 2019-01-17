@@ -39,8 +39,15 @@
                     },
                     methods: {
                         create: function () {
+                            if (this.balance > 10) {
+                                $.alert("账户余额大于10，不可以重新创建。");
+                                return;
+                            }
                             if (this.balance > 0) {
-                                $.alert("账户余额大于0，不可以重新创建。");
+                                $.primary("重新创建商户后，商户余额将会归零，确定创建吗？", function () {
+                                    createStore();
+                                    return true;
+                                });
                                 return;
                             }
                             createStore();

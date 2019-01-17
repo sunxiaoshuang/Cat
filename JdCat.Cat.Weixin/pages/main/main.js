@@ -501,7 +501,7 @@ Page({
       if (elements.length === 0) return;
       var id;
       elements.some(ele => {
-        if (ele.top - 70 >= 0) {
+        if (ele.top - 150 >= 0) {
           id = ele.id.split('_')[1];
           menus.some((a, index) => {
             if (a.id == id) {

@@ -253,6 +253,15 @@ namespace JdCat.Cat.WxApi.Controllers
                     {
                         using (var hc = new HttpClient())
                         {
+                            var setMeals = order.Products.Where(a => a.Feature == ProductFeature.SetMeal);
+                            if (setMeals.Count() > 0)
+                            {
+                                Service.QuarySetMealProduct(setMeals);
+                            }
+                            order.Business = null;
+                            order.User = null;
+                            order.DadaCallBacks = null;
+                            order.DadaReturn = null;
                             var body = new PostNewOrderData { BusinessId = order.BusinessId.Value, Content = JsonConvert.SerializeObject(order, AppData.JsonSetting), OrderId = order.ID };
                             var postData = new StringContent(JsonConvert.SerializeObject(body));
                             postData.Headers.ContentType = new MediaTypeHeaderValue("application/json");
