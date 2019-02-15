@@ -86,7 +86,12 @@ namespace JdCat.Cat.Web.App_Code
                     var status = json["status"].Value<string>();
                     if (status == "fail")
                     {
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Log", "Error", DateTime.Now.ToString("yyyyMMdd") + ".txt");
+                        var dirPath = Path.Combine(Directory.GetCurrentDirectory(), "Log", "Error");
+                        if (!Directory.Exists(dirPath))
+                        {
+                            Directory.CreateDirectory(dirPath);
+                        }
+                        var filePath = Path.Combine(dirPath, DateTime.Now.ToString("yyyyMMdd") + ".txt");
                         using (var stream = File.AppendText(filePath))
                         {
                             stream.WriteLine($"{Environment.NewLine}\r\n【{DateTime.Now:yyyy-MM-dd HH:ss:mm}】达达订单取消原因重置异常：{json["msg"].Value<string>()}");

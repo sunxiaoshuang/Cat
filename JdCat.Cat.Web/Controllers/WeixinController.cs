@@ -39,6 +39,20 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
+        public async Task<IActionResult> GetAppMenu()
+        {
+            var menu = await WxHelper.GetAppMenuAsync();
+            return Json(menu);
+        }
+
+        public async Task<IActionResult> CreateAppMenu()
+        {
+            var result = await WxHelper.CreateAppMenuAsync();
+            return Content(result);
+        }
+
+        #region 开放平台
+
         public IActionResult WxMsgTest()
         {
             var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(WeixinController));
@@ -189,5 +203,6 @@ namespace JdCat.Cat.Web.Controllers
             return Content("ok");
         }
 
+        #endregion
     }
 }

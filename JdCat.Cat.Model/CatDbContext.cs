@@ -52,6 +52,7 @@ namespace JdCat.Cat.Model
         public DbSet<OpenAuthInfo> OpenAuthInfos { get; set; }
         public DbSet<BusinessFreight> BusinessFreights { get; set; }
         public DbSet<YcfkLocation> YcfkLocations { get; set; }
+        public DbSet<ClientPrinter> ClientPrinters { get; set; }
 
 
         /// <summary>

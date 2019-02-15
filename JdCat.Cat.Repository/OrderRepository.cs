@@ -67,14 +67,14 @@ namespace JdCat.Cat.Repository
             }
             lock (loop)
             {
-                var nowStr = now.ToString("yyyy-MM-dd");
-                var query = Context.Orders.Where(a => a.BusinessId == order.BusinessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == nowStr);
-                int max = 0;
-                if (query.Count() > 0)
-                {
-                    max = query.Max(a => a.Identifier);
-                }
-                order.Identifier = max + 1;
+                //var nowStr = now.ToString("yyyy-MM-dd");
+                //var query = Context.Orders.Where(a => a.BusinessId == order.BusinessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == nowStr);
+                //int max = 0;
+                //if (query.Count() > 0)
+                //{
+                //    max = query.Max(a => a.Identifier);
+                //}
+                //order.Identifier = max + 1;
                 var orderCode = ExecuteScalar("SELECT CONCAT(DATE_FORMAT(NOW(),'%Y%m%d'), fn_right_padding(NEXT_VAL('OrderNumbers'), 6), fn_right_padding(floor(rand()*100000), 5))") + "";
                 order.OrderCode = orderCode;
                 Context.Orders.Add(order);
@@ -150,10 +150,22 @@ namespace JdCat.Cat.Repository
             return queryable.OrderByDescending(a => a.CreateTime).Skip(query.Skip).Take(query.PageSize).ToList();
         }
 
+        public IEnumerable<Order> GetOrder(int businessId, DateTime createTime, PagingQuery query)
+        {
+            var lastTime = createTime.ToString("yyyy-MM-dd");
+            var queryable = Context.Orders
+                .Where(a => a.BusinessId == businessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == lastTime && (a.Status & OrderStatus.Valid) > 0)
+                .Select(a => new Order { ID = a.ID, Identifier = a.Identifier, OrderCode = a.OrderCode, CreateTime = a.CreateTime, Status = a.Status, Price = a.Price, ReceiverName = a.ReceiverName, Phone = a.Phone});
+
+            query.RecordCount = queryable.Count();
+            return queryable.OrderByDescending(a => a.PayTime).Skip(query.Skip).Take(query.PageSize).ToList();
+        }
+
         public Order GetOrderForDetail(int id)
         {
-            return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).FirstOrDefault(a => a.ID == id);
-
+            var order = Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).FirstOrDefault(a => a.ID == id);
+            QuarySetMealProduct(order.Products.Where(a => a.ProductIdSet != null));
+            return order;
         }
 
         public IEnumerable<Order> GetOrders(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null, DateTime? createTime = null)
@@ -201,11 +213,6 @@ namespace JdCat.Cat.Repository
             var result = new JsonData();
             var order = Context.Orders.Include(a => a.Business).SingleOrDefault(a => a.ID == id);
             order.CancelReason = order.RejectReasion = reason;
-            if (order == null)
-            {
-                result.Msg = "订单不存在";
-                return result;
-            }
             try
             {
                 // 拒单时，首先执行退款操作
@@ -213,6 +220,11 @@ namespace JdCat.Cat.Repository
                 if (refundResult.GetValue("return_code").ToString() != "SUCCESS")
                 {
                     result.Msg = refundResult.GetValue("return_msg").ToString();
+                    return result;
+                }
+                if (refundResult.GetValue("err_code_des") + "" != "")
+                {
+                    result.Msg = refundResult.GetValue("err_code_des").ToString();
                     return result;
                 }
                 // 再更改订单状态
@@ -248,6 +260,11 @@ namespace JdCat.Cat.Repository
                 if (refundResult.GetValue("return_code").ToString() != "SUCCESS")
                 {
                     result.Msg = refundResult.GetValue("return_msg").ToString();
+                    return result;
+                }
+                if (refundResult.GetValue("err_code_des") + "" != "")
+                {
+                    result.Msg = refundResult.GetValue("err_code_des").ToString();
                     return result;
                 }
                 // 再更改订单状态
@@ -412,6 +429,8 @@ namespace JdCat.Cat.Repository
             .Include(a => a.Products)
             .Include(a => a.SaleFullReduce)
             .Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
+            var identify = GetMaxIdentify(order.BusinessId.Value) + 1;
+
             //var order = Context.Orders.Include(a => a.Products).Include(a => a.Business).SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
             if (order == null) return null;
             if (order.Status == OrderStatus.NotPay)
@@ -420,6 +439,7 @@ namespace JdCat.Cat.Repository
                 order.PayTime = DateTime.Now;
                 order.Status = OrderStatus.Payed;
                 order.User.PurchaseTimes++;
+                order.Identifier = identify;
                 Context.SaveChanges();
                 return order;
             }
@@ -988,6 +1008,8 @@ namespace JdCat.Cat.Repository
             sr.Close();
             response.Close();
 
+            Log.Debug("退款返回值：" + result);
+
             var ret = new InputData();
             ret.FromXml(result);
 
@@ -1014,6 +1036,22 @@ namespace JdCat.Cat.Repository
                     Log.Info($"模版通知消息失败：[消息_{JsonConvert.SerializeObject(msg)}，结果_{result}]");
                 }
             }
+        }
+
+        /// <summary>
+        /// 获取今日最大订单流水
+        /// </summary>
+        /// <returns></returns>
+        private int GetMaxIdentify(int businessId)
+        {
+            var max = 0;
+            var now = DateTime.Now.ToString("yyyy-MM-dd");
+            var query = Context.Orders.Where(a => a.BusinessId == businessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == now);
+            if(query.Count() > 0)
+            {
+                max = query.Max(a => a.Identifier);
+            }
+            return max;
         }
 
     }

@@ -40,6 +40,14 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         IEnumerable<Order> GetOrder(Business business, OrderStatus? status, PagingQuery query, string code, string phone, int? userId = null, Expression<Func<Order, bool>> expression = null, DateTime? createTime = null);
         /// <summary>
+        ///  客户端获取订单，有效订单
+        /// </summary>
+        /// <param name="businessId">商户id</param>
+        /// <param name="createTime">下单日期</param>
+        /// <param name="query">查询参数</param>
+        /// <returns></returns>
+        IEnumerable<Order> GetOrder(int businessId, DateTime createTime, PagingQuery query);
+        /// <summary>
         /// 获取订单
         /// </summary>
         /// <param name="business">商户对象</param>

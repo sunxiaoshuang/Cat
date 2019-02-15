@@ -26,12 +26,14 @@ namespace JdCat.Cat.WxApi.Controllers
         public AppController(IBusinessRepository service) : base(service)
         {
         }
+
         [HttpGet("getLocations/{location}")]
         public async Task<IActionResult> GetLocations(string location)
         {
             var result = await WxHelper.GetAddressAsync(location);
             return Ok(result);
         }
+
         [HttpGet("getNearestStore/{id}")]
         public IActionResult GetNearestStore(int id, [FromQuery]string location)
         {
@@ -40,6 +42,7 @@ namespace JdCat.Cat.WxApi.Controllers
             var result = new JsonData { Success = true, Data = business, Msg = "ok" };
             return Json(result);
         }
+
         [HttpGet("getNearbyStore/{id}")]
         public IActionResult GetNearbyStore(int id, [FromQuery]string city, [FromQuery]string key, [FromQuery]string location)
         {
@@ -53,6 +56,7 @@ namespace JdCat.Cat.WxApi.Controllers
             list.ForEach(a => a.Distance = new Tuple<double, double>(a.Lat, a.Lng).GetDistance(point));
             return Json(list);
         }
+
         private static string cityJson;
         [HttpGet("getCity")]
         public IActionResult GetCity([FromServices]IHostingEnvironment env)

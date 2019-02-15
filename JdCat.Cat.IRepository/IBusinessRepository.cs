@@ -301,6 +301,30 @@ namespace JdCat.Cat.IRepository
 
         #region 客户端请求
         Business Login(string username, string password);
+        /// <summary>
+        /// 获取打印机列表
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        List<ClientPrinter> GetClientPrinters(int id);
+        /// <summary>
+        /// 保存客户端打印机列表设置
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        void SavePrinters(IEnumerable<ClientPrinter> printers);
+        /// <summary>
+        /// 保存客户端打印机设置
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        void SavePrinter(ClientPrinter printer);
+        /// <summary>
+        /// 更新打印机关联的菜品
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ids"></param>
+        void PutPrinterProducts(int id, string ids);
         #endregion
 
         #region 连锁

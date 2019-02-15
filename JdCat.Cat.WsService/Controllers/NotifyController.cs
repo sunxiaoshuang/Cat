@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
@@ -75,6 +76,23 @@ namespace JdCat.Cat.WsService.Controllers
             if (list == null || list.Count == 0)
             {
                 result.Msg = "没有新订单";
+
+                //try
+                //{
+                //    using (var client = new HttpClient())
+                //    {
+                //        var req = client.GetAsync($"http://ws.whliupangzi.cn/api/notify/getorders/{id}");
+                //        req.Wait();
+                //        req.Result.EnsureSuccessStatusCode();
+                //        var res = req.Result.Content.ReadAsStringAsync();
+                //        res.Wait();
+                //        return Content(res.Result);
+                //    }
+                //}
+                //catch (Exception e)
+                //{
+                //    log.Error($"去读刘胖子订单出错：{e}");
+                //}
             }
             else
             {

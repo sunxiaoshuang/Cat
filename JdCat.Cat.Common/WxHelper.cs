@@ -31,6 +31,34 @@ namespace JdCat.Cat.Common
             MapApiSecret = config.MapApiSecret;
         }
         /// <summary>
+        /// 发送请求
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="content"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        private static async Task<string> Request(string url, HttpContent content = null, string method = "post")
+        {
+            method = method.ToLower();
+            HttpResponseMessage result;
+            using (var client = new HttpClient())
+            {
+                switch (method)
+                {
+                    case "get":
+                        result = await client.GetAsync(url);
+                        break;
+                    case "post":
+                        result = await client.PostAsync(url, content);
+                        break;
+                    default:
+                        throw new Exception($"不存在方法{method}");
+                }
+            }
+            result.EnsureSuccessStatusCode();
+            return await result.Content.ReadAsStringAsync();
+        }
+        /// <summary>
         /// 开放平台授权ticket，暂时存在这里
         /// </summary>
         public static string OpenTicket { get; set; }
@@ -39,11 +67,10 @@ namespace JdCat.Cat.Common
         /// </summary>
         private static readonly Dictionary<string, WxToken> TokenDic = new Dictionary<string, WxToken>();
         /// <summary>
-        /// 获取小程序Token
+        /// 获取Token
         /// </summary>
         /// <param name="appId"></param>
         /// <param name="secret"></param>
-        /// <param name="是否重置Token"></param>
         /// <returns></returns>
         public static async Task<string> GetTokenAsync(string appId, string secret)
         {
@@ -142,6 +169,33 @@ namespace JdCat.Cat.Common
                 var content = await result.Content.ReadAsStringAsync();
                 return content;
             }
+        }
+
+        /// <summary>
+        /// 获取公众号自定义菜单
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<string> GetAppMenuAsync()
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            var url = $"https://api.weixin.qq.com/cgi-bin/menu/get?access_token={token}";
+            return await Request(url, method: "get");
+        }
+
+        /// <summary>
+        /// 创建公众号自定义菜单
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<string> CreateAppMenuAsync()
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            var url = $"https://api.weixin.qq.com/cgi-bin/menu/create?access_token={token}";
+            var content = new InputData();
+            content.SetValue("button", new[] {
+                new { name = "小程序", type = "miniprogram", key = "hehe", url="http://e.jiandanmao.cn", appid="wxeca5f33003947169", pagepath = "pages/launch/launch" }
+            });
+            var body = new StringContent(content.ToJson());
+            return await Request(url, body);
         }
 
         #region 第三方开发平台业务方法
@@ -344,7 +398,8 @@ namespace JdCat.Cat.Common
 
         #endregion
 
-        #region 地址接口
+        #region 腾讯地图接口
+
         private static string mapApiUrl = "https://apis.map.qq.com";
         private static Dictionary<string, string> mapApiDic = new Dictionary<string, string>();
         /// <summary>

@@ -52,6 +52,10 @@
                     })
                     .catch(function (err) { $.alert(err); });
             },
+            search: function () {
+                this.initPaging();
+                this.getData();
+            },
             changeType: function (item) {
                 this.buttons.forEach(obj => { obj.selected = false; });
                 item.selected = true;

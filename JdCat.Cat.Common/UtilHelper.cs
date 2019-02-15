@@ -210,6 +210,18 @@ namespace JdCat.Cat.Common
             return (dateTime.Ticks - dt.Ticks) / 10000;
         }
 
+        /// <summary>
+        /// 创建文件夹，如果存在则不创建
+        /// </summary>
+        /// <param name="path"></param>
+        public static void CreateDirectory(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
+
         #region 验证码
 
         private static int letterWidth = 18;//单个字体的宽度范围

@@ -59,5 +59,6 @@
     "scope.userLocation": {
       "desc": "您的位置信息将会用于获取最近的门店"
     }
-  }
+  },
+	"navigateToMiniProgramAppIdList": ["wxbfaec382d63e28a8"]
 }

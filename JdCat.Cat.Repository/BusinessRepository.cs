@@ -516,6 +516,40 @@ namespace JdCat.Cat.Repository
             return Context.Businesses.SingleOrDefault(a => a.Code == username && a.Password == password);
         }
 
+        public List<ClientPrinter> GetClientPrinters(int id)
+        {
+            return Context.ClientPrinters.Where(a => a.BusinessId == id).ToList();
+        }
+
+        public void SavePrinters(IEnumerable<ClientPrinter> printers)
+        {
+            foreach (var item in printers)
+            {
+                Context.Add(item);
+            }
+            Context.SaveChanges();
+        }
+        public void SavePrinter(ClientPrinter printer)
+        {
+            if (printer.ID > 0)
+            {
+                Context.Update(printer);
+            }
+            else
+            {
+                Context.Add(printer);
+            }
+            Context.SaveChanges();
+        }
+        public void PutPrinterProducts(int id, string ids)
+        {
+            var printer = Context.ClientPrinters.FirstOrDefault(a => a.ID == id);
+            if (printer == null) return;
+            if (printer.FoodIds == ids) return;
+            printer.FoodIds = ids;
+            Context.SaveChanges();
+        }
+
 
         /// <summary>
         /// 验证满减活动输入是否正确
@@ -750,6 +784,7 @@ namespace JdCat.Cat.Repository
             }
             sql = sql.Where(a => a.CreateTime >= startDate && a.CreateTime < end);
             query.RecordCount = sql.Count();
+            sql = sql.Skip((query.PageIndex - 1) * query.PageSize).Take(query.PageSize);
             return sql.ToList();
 
             //var condition = string.Empty;
@@ -779,7 +814,7 @@ namespace JdCat.Cat.Repository
             var end = endDate.AddDays(1);
             var queryOrder = Context.Orders.Where(a => (a.Status & OrderStatus.Valid) > 0 && a.CreateTime >= startDate && a.CreateTime < end);
             var queryBusiness = Context.Businesses.Where(a => a.ParentId == chainId);
-            if(businessId > 0)
+            if (businessId > 0)
             {
                 queryBusiness = queryBusiness.Where(a => a.ID == businessId);
             }
@@ -805,9 +840,9 @@ namespace JdCat.Cat.Repository
             //}
             //condition += $"a.ParentId={chainId} and b.Status & 2781 > 0 and b.CreateTime >= '{startDate:yyyy-MM-dd}' and b.CreateTime < '{endDate.AddDays(1):yyyy-MM-dd}'";
             //var sql = $@"select a.Id, a.Name, COUNT(*) as Quantity, SUM(b.Price) as Amount from dbo.[Business] a 
-		          //          left join dbo.[Order] b on a.Id=b.BusinessId
-	           //         where {condition}
-	           //         group by a.Id, a.Name";
+            //          left join dbo.[Order] b on a.Id=b.BusinessId
+            //         where {condition}
+            //         group by a.Id, a.Name";
             //return ExecuteReader<Report_ChainSummary>(sql);
         }
 

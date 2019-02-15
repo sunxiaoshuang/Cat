@@ -31,6 +31,9 @@
                 var query = `startDate=${this.startDate}&endDate=${this.endDate}&businessId=${this.selectedItem}`;
                 axios.get(`/Chain/BusinessSummary?${query}`)
                     .then(function (res) {
+                        res.data.forEach(function (obj) {
+                            obj.amount = +obj.amount.toFixed(2);
+                        });
                         self.report = res.data;
                     })
                     .catch(function (err) { $.alert(err); });

@@ -65,16 +65,16 @@
                 <tr>
                     <th class="text-center" width="80">序号</th>
                     <th>门店名称</th>
-                    <th class="text-center" width="120">日销售额</th>
-                    <th class="text-center" width="100">订单数量</th>
+                    <th width="120">日销售额</th>
+                    <th width="100">订单数量</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(item, index) in report">
                     <td class="text-center" v-text="index + 1"></td>
                     <td v-text="item.name"></td>
-                    <td class="text-center" v-text="'￥' + item.amount"></td>
-                    <td class="text-center" v-text="item.quantity"></td>
+                    <td v-text="'￥' + item.amount"></td>
+                    <td v-text="item.quantity"></td>
                 </tr>
             </tbody>
             <tfoot v-if="report.length == 0">
