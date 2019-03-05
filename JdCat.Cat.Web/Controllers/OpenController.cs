@@ -191,6 +191,7 @@ namespace JdCat.Cat.Web.Controllers
         //}
         /// <summary>
         /// 微信事件通知
+        ///     发送的模版消息完成情况会通过该接口返回
         /// </summary>
         /// <returns></returns>
         public async Task<IActionResult> WechatCallback()
@@ -202,7 +203,7 @@ namespace JdCat.Cat.Web.Controllers
             using (StreamReader sr = new StreamReader(Request.Body))
             {
                 var content = sr.ReadToEnd();
-                log.Info(content);
+                //log.Info(content);
                 try
                 {
                     var result = UtilHelper.ReadXml<WxEvent>(content);

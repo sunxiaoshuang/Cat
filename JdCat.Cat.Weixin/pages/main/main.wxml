@@ -37,11 +37,15 @@
 </view>
 <scroll-view class="mainContainer" disable-scroll="true">
     <view class="header">
-        <block wx:for="{{swiperTitle}}" wx:key="">
-            <view class="title {{index==currentPage?'selected':''}}" data-index="{{index}}" bindtap="turnPage">
+        <view class="tab">
+            <view class="title {{index==currentPage?'selected':''}}" wx:for="{{swiperTitle}}" wx:key="" data-index="{{index}}" bindtap="turnPage">
                 {{item.text}}
             </view>
-        </block>
+        </view>
+        <view class="product-search" bindtap="search">
+            <icon class="jdcat jdcat-search" />
+            <text>搜索</text>
+        </view>
     </view>
     <swiper class="swiper" current="{{currentPage}}" bindchange="turnTitle">
         <swiper-item id="orderPage">

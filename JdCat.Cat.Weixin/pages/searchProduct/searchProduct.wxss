@@ -1,0 +1,117 @@
+
+.header-search {
+    display: flex;
+    flex-flow: row;
+    background: #eee;
+    flex-grow: 1;
+    padding: 15rpx;
+    width: 750rpx;
+}
+
+.search-box {
+    display: flex;
+    flex-flow: row;
+    flex-grow: 1;
+    background: #ddd;
+    border-radius: 20rpx;
+    padding: 4rpx 10rpx;
+    align-items: stretch;
+    margin-left: 20rpx;
+}
+
+.search-box input {
+    flex-grow: 1;
+}
+
+.search-box icon {
+    margin-top: -12rpx;
+    margin-right: 10rpx;
+}
+
+.jdcat-close {
+    color: #666;
+    width: 40rpx;
+}
+
+.search-text {
+    width: 100rpx;
+    text-align: right;
+    font-size: 80%;
+    margin-top: 6rpx;
+    color: #666;
+    margin-right: 20rpx;
+}
+
+.history {
+    padding: 30rpx;
+    width: 750rpx;
+    font-size: 80%;
+}
+.history .title {
+    display: flex;
+    align-items: stretch;
+    color: #777;
+    border-bottom: 1px solid #ddd;
+    margin: 0 30rpx;
+    padding-bottom: 20rpx;
+}
+
+.history .title text {
+    flex-grow: 1;
+}
+
+.history .title icon {
+    width: 50rpx;
+    margin-top: -14rpx;
+}
+
+.history-box {
+    margin: 20rpx 30rpx 0 30rpx;
+}
+
+.history-item {
+    border: 1px solid #ccc;
+    padding: 10rpx 20rpx;
+    margin-right: 30rpx;
+}
+
+.list {
+    width: 750rpx;
+    display: flex;
+    flex-flow: column;
+    padding: 30rpx;
+}
+.product-item {
+    display: flex;
+    flex-flow: row nowrap;
+    padding: 20rpx 0;
+    border-top: 1rpx solid #ddd;
+}
+.product-image {
+    width: 120rpx;
+    height: 120rpx;
+    margin: 0 20rpx;
+}
+.product-info {
+    height: 160rpx;
+    margin-top: -10rpx;
+    flex-grow: 1;
+    display: flex;
+    flex-flow: column;
+}
+.product-name {
+    font-weight: bold;
+    white-space: nowrap;
+}
+.product-remark {
+    flex-grow: 1;
+    font-size: 80%;
+    color: #777;
+    max-width: 540rpx;
+}
+.product-price {
+    font-size: 38rpx;
+    color: red;
+    font-weight: 800;
+    white-space: nowrap;
+}

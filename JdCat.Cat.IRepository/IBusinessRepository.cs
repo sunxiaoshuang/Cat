@@ -325,6 +325,42 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <param name="ids"></param>
         void PutPrinterProducts(int id, string ids);
+        /// <summary>
+        /// 获取餐厅的所有餐桌类别，包含餐桌类型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        List<DeskType> GetDeskTypes(int id);
+        /// <summary>
+        /// 保存餐桌类型
+        /// </summary>
+        /// <param name="type"></param>
+        DeskType SaveDeskType(DeskType type);
+        /// <summary>
+        /// 修改餐桌类型
+        /// </summary>
+        /// <param name="type"></param>
+        DeskType UpdateDeskType(DeskType type);
+        /// <summary>
+        /// 删除餐桌类型
+        /// </summary>
+        /// <param name="type"></param>
+        void DeleteDeskType(int id);
+        /// <summary>
+        /// 保存餐桌
+        /// </summary>
+        /// <param name="desk"></param>
+        Desk SaveDesk(Desk desk);
+        /// <summary>
+        /// 修改餐桌
+        /// </summary>
+        /// <param name="desk"></param>
+        Desk UpdateDesk(Desk desk);
+        /// <summary>
+        /// 删除餐桌
+        /// </summary>
+        /// <param name="type"></param>
+        void DeleteDesk(int id);
         #endregion
 
         #region 连锁
@@ -408,6 +444,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <param name="query"></param>
         List<Report_UserList> GetUserListByChain(int id, PagingQuery query);
+
 
         #endregion
 

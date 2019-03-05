@@ -26,6 +26,36 @@
     </view>
     <view class="order-info">
         <view class="order-header">
+            <text>配送信息</text>
+        </view>
+        <view class="order-body">
+            <view class="order-item">
+                <text class="order-title">配送服务：</text>
+                <view class="order-content order-code">
+                    <text>{{common.distributionMode(order)}}</text>
+                    <button class="primary copy small" plain="true" style="border:1px solid #fdaa8a; width: 180rpx;" bindtap="location" wx:if="{{order.status === 16 && order.logisticsType == 6}}">查看配送状态</button>
+                </view>
+            </view>
+            <view class="order-item">
+                <text class="order-title">送达时间：</text>
+                <text class="order-content">{{common.formatDate(order.achieveTime)}}</text>
+            </view>
+            <view class="order-item">
+                <text class="order-title">配送地址：</text>
+                <text class="order-content">{{order.receiverAddress}}</text>
+            </view>
+            <view class="order-item" wx:if="{{scene == 1014}}">
+                <text class="order-title">收货人：</text>
+                <text class="order-content">{{order.receiverName}}</text>
+            </view>
+            <view class="order-item" wx:if="{{scene == 1014}}">
+                <text class="order-title">联系电话：</text>
+                <text class="order-content">{{order.phone}}</text>
+            </view>
+        </view>
+    </view>
+    <view class="order-info">
+        <view class="order-header">
             <text>订单商品</text>
         </view>
         <view class="order-body">
@@ -70,36 +100,6 @@
                     <text>合计：</text>
                     <text style="color: red;font-size: 130%">￥{{order.price}}</text>
                 </text>
-            </view>
-        </view>
-    </view>
-    <view class="order-info">
-        <view class="order-header">
-            <text>配送信息</text>
-        </view>
-        <view class="order-body">
-            <view class="order-item">
-                <text class="order-title">配送服务：</text>
-                <view class="order-content order-code">
-                    <text>{{common.distributionMode(order)}}</text>
-                    <button class="primary copy small" plain="true" style="border:1px solid #fdaa8a;" bindtap="location" wx:if="{{order.status === 16 && order.logisticsType == 6}}">查看</button>
-                </view>
-            </view>
-            <view class="order-item">
-                <text class="order-title">送达时间：</text>
-                <text class="order-content">{{common.formatDate(order.achieveTime)}}</text>
-            </view>
-            <view class="order-item">
-                <text class="order-title">配送地址：</text>
-                <text class="order-content">{{order.receiverAddress}}</text>
-            </view>
-            <view class="order-item" wx:if="{{scene == 1014}}">
-                <text class="order-title">收货人：</text>
-                <text class="order-content">{{order.receiverName}}</text>
-            </view>
-            <view class="order-item" wx:if="{{scene == 1014}}">
-                <text class="order-title">联系电话：</text>
-                <text class="order-content">{{order.phone}}</text>
             </view>
         </view>
     </view>

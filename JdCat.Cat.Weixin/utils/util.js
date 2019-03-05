@@ -116,7 +116,7 @@ var method = {
             }
         }, delay);
     },
-    throttle: function(method, time, context){
+    throttle: function(method, time, context){      // 函数节流
         clearTimeout(method.tId);
         time = time || 1000;
         method.tId = setTimeout(function(){

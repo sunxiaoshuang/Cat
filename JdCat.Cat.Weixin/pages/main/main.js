@@ -80,8 +80,21 @@ Page({
     var self = this,
       session = qcloud.getSession(),
       business = session.business,
-      user = session.userinfo;
+      user = session.userinfo,
+      currentScene = wx.getStorageSync("currentScene");
 
+    if(currentScene === "search-product") {     // 如果是从搜索页面返回
+      var selectProduct = wx.getStorageSync("selectProduct");
+      var scroll = `scroll_${selectProduct.menuId}_${selectProduct.viewIndex}`;
+
+      wx.removeStorageSync("currentScene");
+      wx.removeStorageSync("selectProduct");
+      this.setData({
+        foodToView: scroll
+      });
+      return;
+    }
+    
     // 重新进入店铺
     if (session.reload) {
       session.reload = false;
@@ -566,6 +579,12 @@ Page({
   attch1: function () {}, // 不要删除，有用
   // 加入购物车
   add: function (e) {
+
+    // wx.navigateToMiniProgram({
+    //   appId: "wxbfaec382d63e28a8"
+    // });
+    // return;
+
     var user = qcloud.getSession().userinfo;
     if (!user.isRegister) {
       wx.showModal({
@@ -794,6 +813,13 @@ Page({
   closeProduct: function () {
     this.setData({
       isShowProductDetail: false
+    });
+  },
+  search: function(e){
+    wx.setStorageSync("cartList", this.data.cartList);
+    wx.setStorageSync("productList", this.data.productList);
+    wx.navigateTo({
+      url: '/pages/searchProduct/searchProduct'
     });
   },
 

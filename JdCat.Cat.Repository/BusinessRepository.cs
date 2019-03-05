@@ -246,7 +246,7 @@ namespace JdCat.Cat.Repository
                         join order in Context.Orders on obj.OrderId equals order.ID
                         where product.BusinessId == business.ID && (order.Status & OrderStatus.Invalid) == 0 && order.CreateTime.Value.ToString("yyyy-MM-dd") == time
                         group obj by new { obj.ProductId, obj.Name } into g
-                        orderby g.Sum(a => a.Quantity ?? 0)
+                        orderby g.Sum(a => a.Quantity ?? 0) descending
                         select new Report_Product { Name = g.Key.Name, Quantity = g.Sum(a => a.Quantity ?? 0) };
 
             return query.Take(10).ToList();
@@ -269,7 +269,7 @@ namespace JdCat.Cat.Repository
                         join order in Context.Orders on obj.OrderId equals order.ID
                         where product.BusinessId == business.ID && (order.Status & OrderStatus.Invalid) == 0 && order.CreateTime.Value.ToString("yyyy-MM-dd") == time
                         group obj by new { obj.ProductId, obj.Name } into g
-                        orderby g.Sum(a => a.Price ?? 0)
+                        orderby g.Sum(a => a.Price ?? 0) descending
                         select new Report_ProductPrice { Name = g.Key.Name, Amount = g.Sum(a => a.Price ?? 0) };
             return query.Take(10).ToList();
 
@@ -547,6 +547,68 @@ namespace JdCat.Cat.Repository
             if (printer == null) return;
             if (printer.FoodIds == ids) return;
             printer.FoodIds = ids;
+            Context.SaveChanges();
+        }
+        public List<DeskType> GetDeskTypes(int id)
+        {
+            var types = Context.DeskTypes
+                .Include(a => a.Desks)
+                .AsNoTracking()
+                .Where(a => a.BusinessId == id && !a.IsDelete)
+                .ToList();
+            foreach (var type in types)
+            {
+                if (type.Desks == null) continue;
+                var deleteList = type.Desks.Where(a => a.IsDelete).ToList();
+                foreach (var desk in deleteList)
+                {
+                    type.Desks.Remove(desk);
+                }
+            }
+            return types;
+        }
+        public DeskType SaveDeskType(DeskType type)
+        {
+            Context.DeskTypes.Add(type);
+            Context.SaveChanges();
+            return type;
+        }
+        public DeskType UpdateDeskType(DeskType type)
+        {
+            var entity = Context.DeskTypes.FirstOrDefault(a => a.ID == type.ID);
+            if (entity == null) return null;
+            entity.Name = type.Name;
+            entity.Sort = type.Sort;
+            Context.SaveChanges();
+            return entity;
+        }
+        public void DeleteDeskType(int id)
+        {
+            var entity = Context.DeskTypes.FirstOrDefault(a => a.ID == id);
+            if (entity == null) return;
+            entity.IsDelete = true;
+            Context.SaveChanges();
+        }
+        public Desk SaveDesk(Desk desk)
+        {
+            Context.Desks.Add(desk);
+            Context.SaveChanges();
+            return desk;
+        }
+        public Desk UpdateDesk(Desk desk)
+        {
+            var entity = Context.Desks.FirstOrDefault(a => a.ID == desk.ID);
+            if (entity == null) return null;
+            entity.Name = desk.Name;
+            entity.Quantity = desk.Quantity;
+            Context.SaveChanges();
+            return entity;
+        }
+        public void DeleteDesk(int id)
+        {
+            var entity = Context.Desks.FirstOrDefault(a => a.ID == id);
+            if (entity == null) return;
+            entity.IsDelete = true;
             Context.SaveChanges();
         }
 

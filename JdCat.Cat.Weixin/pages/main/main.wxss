@@ -599,6 +599,28 @@ page {
 .header {
   display: flex;
   justify-content: space-around;
+  align-items: center;
+}
+
+.header .tab {
+  flex-grow: 1;
+  display: flex;
+}
+.header .product-search {
+  border: 1px solid #ddd;
+  /* width: 120rpx; */
+  height: 50rpx;
+  border-radius: 25rpx;
+  display: flex;
+  padding: 5rpx 20rpx;
+  color: #aaa;
+}
+.header .product-search icon {
+  margin-top: -10rpx;
+}
+.header .product-search text {
+  font-size: 26rpx;
+  margin-top: 4rpx;
 }
 
 .header .title {

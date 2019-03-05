@@ -53,6 +53,8 @@ namespace JdCat.Cat.Model
         public DbSet<BusinessFreight> BusinessFreights { get; set; }
         public DbSet<YcfkLocation> YcfkLocations { get; set; }
         public DbSet<ClientPrinter> ClientPrinters { get; set; }
+        public DbSet<DeskType> DeskTypes { get; set; }
+        public DbSet<Desk> Desks { get; set; }
 
 
         /// <summary>

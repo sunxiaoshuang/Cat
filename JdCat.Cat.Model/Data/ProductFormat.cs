@@ -49,6 +49,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string Position { get; set; }
         /// <summary>
+        /// 是否删除
+        /// </summary>
+        public bool IsDelete { get; set; }
+        /// <summary>
         /// 分类所属商家id
         /// </summary>
         [Required]

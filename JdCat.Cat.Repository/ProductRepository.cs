@@ -43,54 +43,125 @@ namespace JdCat.Cat.Repository
             //});
             //return list;
 
-            var list = Context.ProductTypes
+            //var list = Context.ProductTypes
+            //    .Include(a => a.Products)
+            //    .Include("Products.Attributes")
+            //    .Include("Products.Formats")
+            //    .Include("Products.Images")
+            //    .Where(a => a.BusinessId == business.ID)
+            //    .OrderBy(a => a.Sort).ToList();
+
+            //list.ForEach(a =>
+            //{
+            //    var delList = new List<Product>();
+            //    foreach (var item in a.Products)
+            //    {
+            //        if (item.Status == ProductStatus.Delete)
+            //        {
+            //            delList.Add(item);
+            //            continue;
+            //        }
+            //        if (status != null)
+            //        {
+            //            if (item.Status != status)
+            //            {
+            //                delList.Add(item);
+            //            }
+            //        }
+            //    }
+            //    delList.ForEach(b => a.Products.Remove(b));
+            //});
+
+            //var query = from type in Context.ProductTypes
+            //join product in Context.Products on type.ID equals product.ProductTypeId
+            //join attr in Context.ProductAttributes on product.ID equals attr.ProductId
+            //join format in Context.ProductFormats on product.ID equals format.ProductId
+            //join image in Context.ProductImages on product.ID equals image.ProductId
+            //where type.BusinessId == business.ID && product.Status != ProductStatus.Delete && !format.IsDelete
+            //orderby type.Sort
+            //select type;
+            //var list = query.ToList();
+
+            var query = Context.ProductTypes
                 .Include(a => a.Products)
                 .Include("Products.Attributes")
                 .Include("Products.Formats")
                 .Include("Products.Images")
                 .Where(a => a.BusinessId == business.ID)
-                .OrderBy(a => a.Sort).ToList();
-            list.ForEach(a =>
-            {
-                var delList = new List<Product>();
-                foreach (var item in a.Products)
+                .Select(a => new
                 {
-                    if (item.Status == ProductStatus.Delete)
+                    Type = a,
+                    Products = a.Products
+                    .Where(b => b.Status != ProductStatus.Delete)
+                    .Select(c => new
                     {
-                        delList.Add(item);
-                        continue;
-                    }
-                    if (status != null)
+                        Product = c,
+                        Formats = c.Formats.Where(format => !format.IsDelete),
+                        c.Images,
+                        c.Attributes
+                    })
+                }).OrderBy(a => a.Type.Sort);
+
+            var list = query
+                .ToList()
+                .Select(a =>
+                {
+                    var type = a.Type;
+                    if (type.Products != null)
                     {
-                        if (item.Status != status)
+                        var products = a.Products.Select(b =>
                         {
-                            delList.Add(item);
+                            var product = b.Product;
+                            product.Attributes = b.Attributes;
+                            product.Images = b.Images;
+                            product.Formats = b.Formats.ToList();
+                            return product;
+                        });
+                        if(status != null)
+                        {
+                            products = products.Where(b => b.Status == status);
                         }
+
+                        type.Products = products.ToList();
                     }
-                }
-                delList.ForEach(b => a.Products.Remove(b));
-            });
+                    return type;
+                });
+
             return list;
         }
         public IEnumerable<ProductType> GetTypes(int businessId)
         {
+            //var list = Context.ProductTypes
+            //    .Include(a => a.Products)
+            //    .Where(a => a.BusinessId == businessId)
+            //    .OrderBy(a => a.Sort).ToList();
+            //list.ForEach(a =>
+            //{
+            //    var delList = new List<Product>();
+            //    foreach (var item in a.Products)
+            //    {
+            //        if (item.Status == ProductStatus.Delete)
+            //        {
+            //            delList.Add(item);
+            //            continue;
+            //        }
+            //    }
+            //    delList.ForEach(b => a.Products.Remove(b));
+            //});
+
             var list = Context.ProductTypes
                 .Include(a => a.Products)
                 .Where(a => a.BusinessId == businessId)
-                .OrderBy(a => a.Sort).ToList();
-            list.ForEach(a =>
-            {
-                var delList = new List<Product>();
-                foreach (var item in a.Products)
+                .Select(a => new { Type = a, Products = a.Products.Where(b => b.Status != ProductStatus.Delete) })
+                .OrderBy(a => a.Type.Sort)
+                .ToList()
+                .Select(a =>
                 {
-                    if (item.Status == ProductStatus.Delete)
-                    {
-                        delList.Add(item);
-                        continue;
-                    }
-                }
-                delList.ForEach(b => a.Products.Remove(b));
-            });
+                    var type = a.Type;
+                    type.Products = a.Products.ToList();
+                    return type;
+                });
+
             return list;
         }
         public IEnumerable<ProductType> AddTypes(IEnumerable<ProductType> types)
@@ -173,12 +244,28 @@ namespace JdCat.Cat.Repository
         }
         public List<Product> GetProducts(Business business)
         {
+            //var query = Context.Products
+            //    .Include(a => a.Formats)
+            //    .Include(a => a.Images)
+            //    .Include(a => a.Attributes)
+            //    .Where(a => a.BusinessId == business.ID && a.Status != ProductStatus.Delete);
+            //return query.ToList();
             var query = Context.Products
                 .Include(a => a.Formats)
                 .Include(a => a.Images)
                 .Include(a => a.Attributes)
-                .Where(a => a.BusinessId == business.ID && a.Status != ProductStatus.Delete);
-            return query.ToList();
+                .Where(a => a.BusinessId == business.ID && a.Status != ProductStatus.Delete)
+                .Select(a => new { Product = a, Formats = a.Formats.Where(b => !b.IsDelete), a.Images, a.Attributes });
+
+            return query.ToList()
+                .Select(a =>
+                {
+                    a.Product.Formats = a.Formats?.ToList();
+                    a.Product.Images = a.Images;
+                    a.Product.Attributes = a.Attributes;
+                    return a.Product;
+                })
+                .ToList();
         }
         public SaleProductDiscount GetDiscount(int id)
         {
@@ -186,11 +273,21 @@ namespace JdCat.Cat.Repository
         }
         public Product GetProduct(int id)
         {
-            return Context.Products
+            var query = Context.Products
                 .Include(a => a.Formats)
                 .Include(a => a.Images)
                 .Include(a => a.Attributes)
-                .First(a => a.ID == id);
+                .Where(a => a.ID == id)
+            .Select(a => new { Product = a, Formats = a.Formats.Where(b => !b.IsDelete), a.Images, a.Attributes });
+            return query.ToList()
+                .Select(a =>
+                {
+                    a.Product.Formats = a.Formats?.ToList();
+                    a.Product.Images = a.Images;
+                    a.Product.Attributes = a.Attributes;
+                    return a.Product;
+                })
+                .First();
         }
         public List<KeyValuePair<int, string>> GetSetMealProducts(params int[] ids)
         {
@@ -257,12 +354,14 @@ namespace JdCat.Cat.Repository
             var removeFormats = entity.Formats.Where(a => product.Formats.FirstOrDefault(b => b.ID == a.ID) == null).ToList();
             foreach (var removeFormat in removeFormats)
             {
-                entity.Formats.Remove(removeFormat);
+                //entity.Formats.Remove(removeFormat);
+                removeFormat.IsDelete = true;
             }
             foreach (var format in product.Formats)
             {
                 if (format.ID == 0)
                 {
+                    format.Code = GetNextProductFormat();
                     entity.Formats.Add(format);
                     continue;
                 }
@@ -404,7 +503,7 @@ namespace JdCat.Cat.Repository
                 .OrderBy(a => a.ProductType.Sort)
                 .ThenBy(a => a.ID)
                 .ToList();
-            
+
             var imageNames = new List<string>();        // 需要复制的图片名称
             // 2. 将需要复制的商品属性初始化，Tag1用来保存商品类别名称
             products.ForEach(product =>
@@ -417,7 +516,7 @@ namespace JdCat.Cat.Repository
                 product.ProductIdSet = null;
                 product.ProductTypeId = null;
                 product.PublishTime = now;
-                if(product.ProductType != null)
+                if (product.ProductType != null)
                 {
                     product.Tag1 = product.ProductType.Name;
                     product.ProductType = null;
@@ -462,7 +561,7 @@ namespace JdCat.Cat.Repository
             {
                 var curTypes = types.Where(a => a.BusinessId == id).ToList();       // 当前的门店所有商品类别
                 var maxSort = 0;
-                if(curTypes.Count > 0)
+                if (curTypes.Count > 0)
                 {
                     maxSort = curTypes.Max(a => a.Sort);
                 }

@@ -3,14 +3,16 @@ using System;
 using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190223065459_Add_Desk")]
+    partial class Add_Desk
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -414,8 +416,6 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("DeskTypeId");
 
-                    b.Property<bool>("IsDelete");
-
                     b.Property<string>("Name");
 
                     b.Property<int>("Quantity");
@@ -437,8 +437,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int>("BusinessId");
 
                     b.Property<DateTime?>("CreateTime");
-
-                    b.Property<bool>("IsDelete");
 
                     b.Property<string>("Name");
 
@@ -747,8 +745,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<string>("Code");
 
                     b.Property<DateTime?>("CreateTime");
-
-                    b.Property<bool>("IsDelete");
 
                     b.Property<string>("Name");
 

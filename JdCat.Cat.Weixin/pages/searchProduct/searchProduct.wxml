@@ -1,0 +1,30 @@
+<wxs module="productFilter" src="../wxs/filters/product.wxs"></wxs>
+<view class="container">
+    <view class="header-search">
+        <view class="search-box">
+            <icon class="jdcat jdcat-search" />
+            <input placeholder="请输入商品名称" bindinput="inputkey" value="{{key}}" confirm-type="search" focus />
+            <icon class="jdcat jdcat-close" wx:if="{{key.length > 0}}" bindtap="clear" />
+        </view>
+        <text class="search-text">搜索</text>
+    </view>
+    <view class="history" wx:if="{{products.length ===0}}">
+        <view class="title">
+            <text >历史搜索</text>
+            <icon class="jdcat jdcat-remove" bindtap="remove" />
+        </view>
+        <view class="history-box">
+            <text class="history-item" wx:for="{{historys}}" wx:for-item="history" wx:key="" bindtap="historySearch" data-key="{{history}}">{{history}}</text>
+        </view>
+    </view>
+    <view class="list" wx:else>
+        <view class="product-item" wx:for="{{products}}" wx:key="" bindtap="selectProduct" data-product="{{item}}">
+            <image class="product-image" mode="aspectFill" lazy-load="{{true}}" src="{{productFilter.productImage(item, businessId)}}" />
+            <view class="product-info">
+                <text class="product-name">{{item.name}}</text>
+                <text class="product-remark">{{item.description}}</text>
+                <text class="product-price">￥{{item.formats[0].price}}</text>
+            </view>
+        </view>
+    </view>
+</view>

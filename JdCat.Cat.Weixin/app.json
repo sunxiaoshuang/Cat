@@ -4,6 +4,7 @@
     "pages/chain/select/select",
     "pages/chain/selectstore/selectstore",
     "pages/user/user",
+    "pages/searchProduct/searchProduct",
     "pages/main/main",
     "pages/main/license/license",
     "pages/index/index",
@@ -27,7 +28,7 @@
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#f36c1b",
     "navigationBarTitleText": "简单猫",
-    "navigationBarTextStyle":"#fff",
+    "navigationBarTextStyle":"white",
     "enablePullDownRefresh": true
   },
   "tabBar": {
