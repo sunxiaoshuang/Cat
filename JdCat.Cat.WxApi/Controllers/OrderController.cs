@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using log4net;
 using JdCat.Cat.Model.Enum;
+using JdCat.Cat.WxApi.Models;
 
 namespace JdCat.Cat.WxApi.Controllers
 {
@@ -406,6 +407,18 @@ namespace JdCat.Cat.WxApi.Controllers
         {
             var location = Service.GetOrderLocation(id);
             return Json(location);
+        }
+
+        /// <summary>
+        /// 订单评论
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("comment")]
+        public IActionResult Comment([FromBody]OrderComment comment)
+        {
+            var result = Service.Comment(comment);
+            Service.ReloadCommentScore(comment.BusinessId);
+            return Json(result);
         }
 
 

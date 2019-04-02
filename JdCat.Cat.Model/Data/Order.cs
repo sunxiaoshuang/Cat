@@ -95,7 +95,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 支付方式
         /// </summary>
-        public PaymentType PaymentType { get; set; } = PaymentType.OnLine;
+        public Enum.PaymentType PaymentType { get; set; } = Enum.PaymentType.OnLine;
         /// <summary>
         /// 支付时间
         /// </summary>
@@ -152,6 +152,14 @@ namespace JdCat.Cat.Model.Data
         /// 退款原因
         /// </summary>
         public string RefundReason { get; set; }
+        /// <summary>
+        /// 申请退款时间
+        /// </summary>
+        public DateTime? RefundTime { get; set; }
+        /// <summary>
+        /// 用户的第几次下单
+        /// </summary>
+        public int Times { get; set; }
         /// <summary>
         /// 下单人OpenId
         /// </summary>
@@ -224,7 +232,7 @@ namespace JdCat.Cat.Model.Data
             if (name.Length <= 1)
             {
                 if (this.Gender == UserGender.Male) name += "先生";
-                else if (this.Gender == UserGender.Famale) name += "女士";
+                else if (this.Gender == UserGender.Female) name += "女士";
             }
             return name;
         }

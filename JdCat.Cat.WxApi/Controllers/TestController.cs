@@ -65,7 +65,7 @@ namespace JdCat.Cat.WxApi.Controllers
                 Freight = business.Freight,
                 Lat = 30.499750289775,
                 Lng = 114.429076910019,
-                PaymentType = PaymentType.OnLine,
+                PaymentType = Model.Enum.PaymentType.OnLine,
                 Phone = "17354300837",
                 Price = 53,
                 Products = products,

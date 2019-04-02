@@ -114,5 +114,14 @@ namespace JdCat.Cat.WxApi.Controllers
             return Json(result);
         }
 
+        [HttpGet("getComments/{id}")]
+        public IActionResult GetComments(int id, [FromQuery]PagingQuery paging)
+        {
+            var list = Service.GetComments(id, paging);
+            return Json(new {
+                list, more = list.Count > 0
+            });
+        }
+
     }
 }

@@ -142,6 +142,12 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <returns></returns>
         string GetNextStoreNumber();
+        /// <summary>
+        /// 获取用户评论
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        List<OrderComment> GetComments(int id, PagingQuery paging);
 
         #region 报表类方法
 
@@ -444,7 +450,13 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <param name="query"></param>
         List<Report_UserList> GetUserListByChain(int id, PagingQuery query);
-
+        /// <summary>
+        /// 保存一城飞客设置
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="secret"></param>
+        /// <returns></returns>
+        bool YcfkSave(Business business);
 
         #endregion
 

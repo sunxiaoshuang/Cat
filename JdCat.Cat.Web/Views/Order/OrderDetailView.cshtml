@@ -1,0 +1,136 @@
+﻿@using JdCat.Cat.Common
+@model Order
+
+<div class="form-horizontal" id="createPage">
+    <div class="form-group">
+        <label class="col-offset-xs-1 col-xs-2">
+            订单编号：
+        </label>
+        <span class="col-xs-3">
+            @Model.OrderCode
+        </span>
+        <label class="col-xs-2">
+            当日流水：
+        </label>
+        <span class="col-xs-3">
+            @Model.Identifier
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-offset-xs-1 col-xs-2">
+            支付时间：
+        </label>
+        <span class="col-xs-3">
+            @(Model.PayTime?.ToString("yyyy-MM-dd HH:mm:ss"))
+        </span>
+        <label class="col-xs-2">
+            订单状态：
+        </label>
+        <span class="col-xs-3">
+            @Model.Status.ToDescription()
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-offset-xs-1 col-xs-2">
+            用户下单次数：
+        </label>
+        <span class="col-xs-3">
+            @Model.Times
+        </span>
+        <label class="col-xs-2">
+            配送方式：
+        </label>
+        <span class="col-xs-3">
+            @Model.LogisticsType.ToDescription()
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-offset-xs-1 col-xs-2">
+            收件人：
+        </label>
+        <span class="col-xs-3">
+            @Model.ReceiverName
+        </span>
+        <label class="col-xs-2">
+            收件人电话：
+        </label>
+        <span class="col-xs-3">
+            @Model.Phone
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-offset-xs-1 col-xs-2">
+            配送地址：
+        </label>
+        <span class="col-xs-8">
+            @Model.ReceiverAddress
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-offset-xs-1 col-xs-2">
+            包装费：
+        </label>
+        <span class="col-xs-3">
+            ￥@(Model.PackagePrice ?? 0)
+        </span>
+        <label class="col-xs-2">
+            配送费：
+        </label>
+        <span class="col-xs-3">
+            ￥@(Model.Freight ?? 0)
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-offset-xs-1 col-xs-2">
+            满减金额：
+        </label>
+        <span class="col-xs-3">
+            ￥@(Model.SaleFullReduceMoney ?? 0)
+        </span>
+        <label class="col-xs-2">
+            优惠金额：
+        </label>
+        <span class="col-xs-3">
+            ￥@(Model.SaleCouponUserMoney ?? 0)
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-offset-xs-1 col-xs-2">
+            订单金额：
+        </label>
+        <span class="col-xs-3">
+            ￥@(Model.Price ?? 0)
+        </span>
+        <label class="col-xs-2">
+            优惠金额：
+        </label>
+        <span class="col-xs-3">
+            ￥@(Model.SaleCouponUserMoney ?? 0)
+        </span>
+    </div>
+
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>商品名称</th>
+                    <th>规格描述</th>
+                    <th width="80">总价</th>
+                    <th width="80">数量</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Products)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.Price</td>
+                        <td>@item.Quantity</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

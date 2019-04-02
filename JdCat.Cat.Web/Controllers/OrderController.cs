@@ -110,6 +110,17 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         /// <summary>
+        /// 获取订单详情视图
+        /// </summary>
+        /// <param name="id">订单id</param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult OrderDetailView(int id)
+        {
+            return PartialView(Service.GetOrderOnlyProduct(id));
+        }
+
+        /// <summary>
         /// 接单
         /// </summary>
         public IActionResult Receive(int id)
@@ -491,7 +502,7 @@ namespace JdCat.Cat.Web.Controllers
             var result = new JsonData();
             var helper = YcfkHelper.GetHelper();
             var reason = Request.Query["reason"].First() + "";
-            var json = await helper.Cancel(order.OrderCode + "_" + order.DistributionFlow, reason);
+            var json = await helper.Cancel(order.OrderCode + "_" + order.DistributionFlow, reason, Business.YcfkKey, Business.YcfkSecret);
             var jObj = JObject.Parse(json);
             var code = jObj["StateCode"].Value<int>();
             if (code > 0)

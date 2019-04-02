@@ -234,9 +234,16 @@ namespace JdCat.Cat.WxApi.Controllers
         [HttpGet("updateCart/{id}")]
         public IActionResult UpdateCart(int id, [FromQuery]int quantity)
         {
-            var result = new JsonData();
-            result.Success = Service.UpdateCartQuantity(id, quantity);
-            return Json(result);
+            try
+            {
+                Service.UpdateCartQuantity(id, quantity);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"购物车更新异常：{ex.Message}");
+                return Json(new JsonData { Success = false });
+            }
+            return Json(new JsonData { Success = true });
         }
 
         [HttpDelete("clearCart/{id}")]

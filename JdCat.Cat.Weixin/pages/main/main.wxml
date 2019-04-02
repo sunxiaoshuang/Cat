@@ -64,8 +64,8 @@
                             <image class="img" catchtap="productDetail" mode="aspectFill" lazy-load="{{true}}" data-index="{{index}}" src="{{productFilter.productImage(item, businessId)}}"></image>
                             <view class="food-block">
                                 <view class="food-info" catchtap="productDetail" data-index="{{index}}">
-                                    <view class="name">{{item.name}}</view>
-                                    <view class="sales">{{item.description}}</view>
+                                    <text class="name">{{item.name}}</text>
+                                    <text class="sales">{{item.description}}</text>
                                 </view>
                                 <view class="food-numb">
                                     <view class="price">
@@ -107,28 +107,59 @@
             </view>
         </swiper-item>
         <swiper-item id="commentPage">
-            <view class="commentPage-header">
-                <view class="commentPage-score">
-                    <view class="overall">综合评分</view>
-                    5
-                    <view class="rate">商家综合好评率为100%</view>
-                </view>
-                <view class="commentPage-rating">
-                    <view class="restaurant">
-                        商家评分
-                        <view class="stars">★★★★★ 5</view>
+            <scroll-view style="background: #eee;height: 100%;" scroll-y="true" scroll-with-animation="true" bindscrolltolower="commentTolower">
+                <view class="comment-header">
+                    <view class="header-item" style="border-right: 1rpx solid #eee;">
+                        <view class="score text-primary">
+                            <text >{{comment.score}}</text>
+                        </view>
+                        <view class="score-star">
+                            <text class="star text-gray">★★★★★</text>
+                            <text class="star text-primary" style="width: {{comment.score * 38}}rpx">★★★★★</text>
+                        </view>
+                        <view class="service-name">
+                            <text>商家评分</text>
+                        </view>
                     </view>
-                    <view class="distribute">
-                        配送评分
-                        <view class="stars">★★★★★ 5</view>
+                    <view class="header-item">
+                        <view class="score text-primary">
+                            <text >{{comment.delivery}}</text>
+                        </view>
+                        <view class="score-star">
+                            <text class="star text-gray">★★★★★</text>
+                            <text class="star text-primary" style="width: {{comment.delivery * 38}}rpx">★★★★★</text>
+                        </view>
+                        <view class="service-name">
+                            <text>配送评分</text>
+                        </view>
                     </view>
                 </view>
-            </view>
-            <view class="commentPage-category">
-                <block wx:for="{{categoryList}}" wx:key="">
-                    <view class="category-item">{{item.text}}({{item.numb}})</view>
-                </block>
-            </view>
+                <view class="comment-list">
+                    <view class="comment-item" wx:for="{{comment.comments}}" wx:key="" wx:for-item="comment">
+                        <view class="comment-logo">
+                            <image src="{{comment.face}}" />
+                        </view>
+                        <view class="comment-info">
+                            <view class="comment-info-header">
+                                <text class="comment-username">{{comment.userName}}</text>
+                                <text class="comment-time">{{common.substring(comment.createTime, 0, 10)}}</text>
+                            </view>
+                            <view class="score-star">
+                                <text class="star text-gray" style="left: 0;">★★★★★</text>
+                                <text class="star text-primary" style="left: 0;width: {{common.filter.commentLevelFilter(comment.orderScore) * 38}}rpx">★★★★★</text>
+                            </view>
+                            <view class="comment-content">
+                                <text >{{comment.commentContent}}</text>
+                            </view>
+                            <view class="comment-result">
+                                <text class="jdcat jdcat-sign"></text>
+                                <text >{{comment.commentResult}}</text>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+                <view style="height: 300rpx;"></view>
+            </scroll-view>
         </swiper-item>
         <swiper-item id="restaurantPage">
             <view class="restaurant-activity" wx:if="{{fullReduceList.length > 0}}">
@@ -196,7 +227,7 @@
             </view>
             <view class="free" wx:if="{{cartList.length==0}}"></view>
         </view>
-        <view class="pay {{!isBalance ? 'notPay' : 'pay'}}" bindtap="pay" wx:if="{{calc.cartTotalPrice(cartList) >= business.minAmount}}">
+        <view class="pay {{!isBalance ? 'notPay' : 'pay'}}" bindtap="pay" wx:if="{{calc.precision(calc.cartTotalPrice(cartList) + packagePrice, 2) >= business.minAmount}}">
             {{submitText}}
         </view>
         <view class="pay notPay" wx:else>
@@ -331,6 +362,9 @@
         </view>
         <view class="product-name">
             <text>{{curProduct.name}}</text>
+        </view>
+        <view class="product-description">
+            <text>{{curProduct.description}}</text>
         </view>
         <view class="product-footer">
             <view class="price">

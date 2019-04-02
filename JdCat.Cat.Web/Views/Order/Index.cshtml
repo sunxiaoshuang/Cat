@@ -194,7 +194,7 @@
                                             <p>微信支付流水号： <span v-text="order.wxPayCode"></span></p>
                                         </div>
                                         <div class="col-md-4 col-xs-6">
-
+                                            <p v-if="order.times > 0">用户下单次数： <span v-text="order.times + '次'"></span></p>
                                         </div>
                                         <div class="col-md-4 col-xs-6">
                                             <p>包装费：<i class="fa fa-jpy"></i> <span v-text="order.packagePrice"></span></p>

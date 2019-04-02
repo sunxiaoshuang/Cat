@@ -94,19 +94,10 @@
         }
     });
 
-    var dateOptions = {
-        format: 'yyyy-mm-dd',
-        autoclose: true,
-        maxView: 1,
-        minView: 2,
-        todayBtn: true,
-        todayHighlight: true,
-        language: "zh-CN"
-    };
-    $("#txtStartDate").datetimepicker(dateOptions).on("changeDate", function (e) {
+    $("#txtStartDate").datetimepicker(jdCat.utilData.dateOptions).on("changeDate", function (e) {
         vm.startDate = this.value;
     });
-    $("#txtEndDate").datetimepicker(dateOptions).on("changeDate", function (e) {
+    $("#txtEndDate").datetimepicker(jdCat.utilData.dateOptions).on("changeDate", function (e) {
         vm.endDate = this.value;
     });
 

@@ -31,6 +31,9 @@
             <button class="primary" plain="{{true}}" wx:if="{{calc.orderStatus(order) == '未付款'}}" catchtap="sure" data-index="{{index}}">
                 去付款
             </button>
+            <button class="primary" plain="{{true}}" wx:if="{{calc.orderStatus(order) == '已送达'}}" catchtap="comment" data-index="{{index}}">
+                去评价
+            </button>
         </view>
     </view>
     <view class="footer" wx:if="{{list.length > 5 && isEnd}}">

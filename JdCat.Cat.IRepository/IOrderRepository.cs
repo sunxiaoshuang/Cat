@@ -136,6 +136,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Order GetOrderIncludeProduct(int id);
         /// <summary>
+        /// 获取订单，包含产品集合
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Order GetOrderOnlyProduct(int id);
+        /// <summary>
         /// 订单支付成功
         /// </summary>
         /// <param name="id"></param>
@@ -201,5 +207,32 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="id"></param>
         YcfkLocation GetOrderLocation(int id);
+        /// <summary>
+        /// 订单评论
+        /// </summary>
+        /// <returns></returns>
+        JsonData Comment(OrderComment comment);
+        /// <summary>
+        /// 获取评论
+        /// </summary>
+        /// <param name="deliveryLevel">配送评论级别</param>
+        /// <param name="orderLevel">订单评论级别</param>
+        /// <param name="start">查询开始日期</param>
+        /// <param name="end">查询结束日期</param>
+        /// <param name="paging">查询参数</param>
+        /// <param name="businessIds">需要查询的商户id集合</param>
+        /// <returns></returns>
+        List<OrderComment> GetComments(CommentLevel deliveryLevel, CommentLevel orderLevel, DateTime start, DateTime end, PagingQuery paging, params int[] businessIds);
+        /// <summary>
+        /// 切换评论的显示状态
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <param name="visible"></param>
+        void ChangeCommentVisible(int commentId, bool visible);
+        /// <summary>
+        /// 重新计算商户的评分
+        /// </summary>
+        /// <param name="id"></param>
+        void ReloadCommentScore(int id);
     }
 }

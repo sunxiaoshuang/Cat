@@ -1,4 +1,5 @@
-﻿(function () {
+﻿var jdCat = {};
+(function () {
 
     // escape、unescape
 
@@ -113,6 +114,34 @@
             return t.split("").reverse().join("") + "." + r;   
         });
     }
+
+    jdCat.utilData = {
+        dateOptions: {
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            maxView: 1,
+            minView: 2,
+            todayBtn: true,
+            todayHighlight: true,
+            language: "zh-CN"
+        }
+    };
+
+    jdCat.utilMethods = {
+        now: function (format) {
+            var obj = { date: true, time: false };
+            $.extend(obj, format);
+            var time = new Date();
+            var year = time.getFullYear(), month = time.getMonth() + 1, day = time.getDate(), hour = time.getHours(), minute = time.getMinutes(), second = time.getSeconds();
+            if (obj.date && obj.time) return [year, month, day].map(this.formatNumber).join('-') + ' ' + [hour, minute, second].map(formatNumber).join(':');
+            if (obj.date) return [year, month, day].map(this.formatNumber).join('-');
+            if (obj.time) return [hour, minute, second].map(formatNumber).join(':');
+        },
+        formatNumber: function (num) {
+            num = num.toString();
+            return num[1] ? num : '0' + num;
+        }
+    };
 
 })();
 

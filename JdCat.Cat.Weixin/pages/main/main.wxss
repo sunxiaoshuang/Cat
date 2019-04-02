@@ -755,11 +755,20 @@ page {
   height: 120rpx;
 }
 
+.food-block {
+  display: flex;
+  flex-grow: 1;
+  flex-flow: column;
+  /* align-items: stretch; */
+}
+
 .food-info {
   padding-left: 15rpx;
   line-height: 48rpx;
   flex-grow: 1;
-  min-height: 75rpx;
+  min-height: 95rpx;
+  display: flex;
+  flex-flow: column;
 }
 
 .food .name {
@@ -775,6 +784,9 @@ page {
   font-size: 25rpx;
   color: #ACACAC;
   line-height: 25rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   min-height: 40rpx;
   max-width: 420rpx;
 }
@@ -793,13 +805,6 @@ page {
   font-size: 25rpx;
   font-weight: 400;
   padding-left: 10rpx;
-}
-
-.food-block {
-  display: flex;
-  flex-grow: 1;
-  flex-flow: column;
-  align-items: stretch;
 }
 
 .food-numb {
@@ -1307,7 +1312,7 @@ page {
 }
 
 .coupon-operate.productBig {
-  top: 830rpx;
+  top: 860rpx;
   left: 335rpx;
   height: 60rpx;
   width: 60rpx;
@@ -1351,7 +1356,7 @@ page {
   left: 50rpx;
   box-sizing: border-box;
   width: 650rpx;
-  height: 690rpx;
+  height: 720rpx;
   background-color: #fff;
   border-radius: 10rpx;
   display: flex;
@@ -1373,6 +1378,13 @@ page {
   margin-top: 20rpx;
 }
 
+.product-content .product-description {
+  margin-top: 6rpx;
+  font-size: 26rpx;
+  color: #ACACAC;
+  height: 30rpx;
+}
+
 .product-content .price {
   color: red;
 }
@@ -1381,6 +1393,7 @@ page {
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
+  height: 64rpx;
 }
 
 .product-content .formatter {
@@ -1431,4 +1444,94 @@ page {
   overflow: hidden;
   text-overflow:ellipsis;
   width: 600rpx;
+}
+
+.comment-header {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  background: #fff;
+  margin-top: 20rpx;
+  padding: 20rpx 0;
+}
+.comment-header .header-item {
+  width: 375rpx;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+.comment-header .score {
+  font-size: 60rpx;
+}
+.service-name {
+  color: #777;
+  font-size: 90%;
+}
+.score-star {
+  width: 100%;
+  position: relative;
+  height: 50rpx;
+  display: flex;
+  justify-content: center;
+}
+.star {
+  position: absolute;
+  white-space: nowrap;
+  font-size: 34rpx;
+  left: 87rpx;
+  /* width: 180rpx; */
+  letter-spacing: 4rpx;
+  overflow: hidden;
+  margin: 0 auto;
+  padding-bottom: 10rpx;
+}
+
+.comment-list {
+  margin-top: 20rpx;
+  background: #fff;
+}
+.comment-list .comment-item {
+  border-bottom: 1px solid #eee;
+  display: flex;
+  flex-flow: row;
+}
+.comment-logo {
+  padding: 20rpx;
+}
+.comment-logo image {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+}
+.comment-info {
+  margin-top: 20rpx;
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+}
+.comment-info-header {
+  display: flex;
+  flex-flow: row;
+  flex-grow: 1;
+}
+.comment-username {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.comment-time {
+  width: 200rpx;
+  color: #aaa;
+  font-size: 80%;
+}
+.comment-content {
+  font-size: 90%;
+}
+.comment-result {
+  font-size: 80%;
+  margin: 20rpx 0;
+  color: #999;
+}
+.comment-result .jdcat {
+  margin-right: 20rpx;
 }

@@ -1,0 +1,127 @@
+.container {
+    background: #fff;
+    overflow-x: hidden;
+}
+
+.header {
+    width: 750rpx;
+    height: 100rpx;
+    padding: 50rpx 0;
+    display: flex;
+    flex-flow: row nowrap;
+    border-bottom: 1px solid #ccc;
+}
+
+.header .info {
+    flex-grow: 1;
+    display: flex;
+    flex-flow: column;
+    font-size: 90%;
+    color: #555;
+}
+
+.logo {
+    width: 100rpx;
+    height: 100rpx;
+    border-radius: 50%;
+    margin: 0 20rpx;
+}
+
+.comment {
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20rpx;
+    border-bottom: 1px solid #ccc;
+}
+.comment .title {
+    font-size: 90%;
+}
+.options {
+    display: flex;
+    flex-flow: row wrap;
+    width: 650rpx;
+    padding-bottom: 50rpx;
+}
+.options .option {
+    border: 1px solid #ddd;
+    color: #333;
+    font-size: 70%;
+    margin-right: 20rpx;
+    border-radius: 30rpx;
+    padding: 10rpx;
+    margin-top: 10rpx;
+}
+
+.option.selected, .product .selected {
+    border-color: #f36c1b;
+    color: #f36c1b;
+}
+
+.comment-content {
+    width: 650rpx;
+    margin: 0;
+    border: 1px solid #ddd;
+    padding: 10rpx;
+    height: 150rpx;
+}
+.products {
+    width: 650rpx;
+    display: flex;
+    flex-flow: column;
+    margin-top: 50rpx;
+}
+
+.product {
+    width: 100%;
+    display: flex;
+    margin-bottom: 10rpx;
+}
+.product .ellipsis {
+    flex-grow: 1;
+    font-size: .9em;
+    padding-top: 5rpx;
+}
+.product .operate {
+    width: 200rpx;
+    display: flex;
+    flex-flow: row nowrap;
+    margin-left: 20rpx;
+}
+
+.good, .bad {
+    width: 110rpx;
+    font-size: 80%;
+    border: 1px solid #ddd;
+    border-radius: 30rpx;
+    padding: 5rpx;
+}
+.bad {
+    margin-left: 20rpx;
+}
+.jdcat-zan, .jdcat-cai {
+    margin-right: 10rpx;
+}
+
+
+.jdcat-xing {
+    font-size: 60rpx;
+    margin: 20rpx;
+}
+
+.submit {
+    width: 400rpx;
+    height: 80rpx;
+    border-radius: 60rpx;
+    line-height: 80rpx;
+    margin-bottom: 100rpx;
+}
+
+.orange {
+    color: #f36c1b;
+}
+.gray {
+    color: #ddd;
+}

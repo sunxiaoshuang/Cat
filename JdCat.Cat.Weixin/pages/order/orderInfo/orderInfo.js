@@ -43,8 +43,14 @@ Page({
     var refundResult = wx.getStorageSync("refundResult");
     if (refundResult && this.data.order) {
       this.loadData(this.data.order.id);
+      wx.removeStorageSync("refundResult");
+      return;
     }
-    wx.removeStorageSync("refundResult");
+    var orderComment = wx.getStorageSync("orderComment");
+    if(orderComment.status == 512){
+      this.loadData(this.data.order.id);
+      wx.removeStorageSync("orderComment");
+    }
   },
   loadData: function (id) {
     var order = wx.getStorageSync("orderDetail"),
@@ -128,6 +134,12 @@ Page({
   cancel: function () {
     wx.reLaunch({
       url: "/pages/launch/launch"
+    });
+  },
+  comment: function(){
+    wx.setStorageSync("orderComment", this.data.order);
+    wx.navigateTo({
+      url: "/pages/order/comment/comment"
     });
   }
 })

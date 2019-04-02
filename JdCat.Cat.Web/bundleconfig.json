@@ -350,6 +350,38 @@
     "inputFiles": [
       "wwwroot/js/chain/userlist.js"
     ]
+  },
+  // 评论管理
+  {
+    "outputFileName": "wwwroot/js/comment/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/comment/index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/comment/index.min.css",
+    "inputFiles": [
+      "wwwroot/css/comment/index.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/business/setting.min.js",
+    "inputFiles": [
+      "wwwroot/js/business/setting.js"
+    ]
+  },
+  // 堂食
+  {
+    "outputFileName": "wwwroot/css/store/order.min.css",
+    "inputFiles": [
+      "wwwroot/css/store/order.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/store/order.min.js",
+    "inputFiles": [
+      "wwwroot/js/store/order.js"
+    ]
   }
 
 ]

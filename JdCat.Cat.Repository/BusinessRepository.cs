@@ -727,6 +727,15 @@ namespace JdCat.Cat.Repository
             return ExecuteScalar("SELECT CONCAT('JD', fn_right_padding(NEXT_VAL('StoreNumbers'), 6))") + "";
         }
 
+        public List<OrderComment> GetComments(int id, PagingQuery paging)
+        {
+            var query = Context.OrderComments.Where(a => a.IsShow && a.BusinessId == id)
+                .OrderByDescending(a => a.CreateTime)
+                .Skip(paging.Skip)
+                .Take(paging.PageSize);
+            return query.ToList();
+        }
+
         public OpenAuthInfo AddAuthInfo(WxAuthInfo info, Business business)
         {
             var entity = Context.OpenAuthInfos.FirstOrDefault(a => a.BusinessId == business.ID);
@@ -930,6 +939,15 @@ namespace JdCat.Cat.Repository
             return data.Skip(query.PageSize * (query.PageIndex - 1))
                             .Take(query.PageSize).ToList();
 
+        }
+        public bool YcfkSave(Business business)
+        {
+            var entity = Context.Businesses.FirstOrDefault(a => a.ID == business.ID);
+            if (entity == null) return false;
+            entity.YcfkKey = business.YcfkKey;
+            entity.YcfkSecret = business.YcfkSecret;
+            Context.SaveChanges();
+            return true;
         }
 
     }

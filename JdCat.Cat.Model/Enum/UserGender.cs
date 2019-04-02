@@ -17,6 +17,6 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 女
         /// </summary>
-        Famale = 2
+        Female = 2
     }
 }

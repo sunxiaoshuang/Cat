@@ -60,6 +60,8 @@ namespace JdCat.Cat.Web
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IDwdRepository, DwdRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IStoreRepository, StoreRepository>();
             services.AddSingleton(new List<City>());
             services.AddSingleton(new List<DadaCancelReason>());
             // 系统参数

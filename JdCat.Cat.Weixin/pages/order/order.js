@@ -116,5 +116,14 @@ Page({
     wx.navigateTo({
       url: "/pages/pay/sure/sure?id=" + order.id
     });
+  },
+  comment: function(e){
+    var order = this.data.list[e.currentTarget.dataset.index];
+    wx.setStorageSync("orderComment", order);
+    wx.navigateTo({
+      url: "/pages/order/comment/comment"
+    });
   }
+
+
 })

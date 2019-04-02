@@ -328,7 +328,7 @@
                 this.reset();
             },
             feature: function (feature) {
-                if (feature == 0) return "一般";
+                if (feature == 0) return "单品";
                 else if (feature == 1) return "招牌";
                 else if (feature == 2) return "套餐";
                 return "";

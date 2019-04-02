@@ -6,7 +6,7 @@ const formatTime = date => {
     const minute = date.getMinutes()
     const second = date.getSeconds()
 
-    return [year, month, day].map(formatNumber).join('/') + ' ' + [hour, minute, second].map(formatNumber).join(':')
+    return [year, month, day].map(formatNumber).join('-') + ' ' + [hour, minute, second].map(formatNumber).join(':')
 };
 
 const formatNumber = n => {
@@ -90,6 +90,23 @@ var regExp = {
     phone: /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/
 };
 
+const appData = {
+    deliveryComment: {
+        "1": ['要好评', '未到指定地点', '送错餐', '配送慢', '仪表不整', '货品不完好', '送达不通知', '态度差', '路线不熟', '联系沟通困难', '骚扰威胁', '其他'],
+        "2": ['快速准时', '仪表整洁', '礼貌热情', '风雨无阻', '货品完好', '穿戴工服'],
+        "4": ['快速准时', '仪表整洁', '礼貌热情', '风雨无阻', '货品完好', '穿戴工服'],
+        "8": ['快速准时', '仪表整洁', '礼貌热情', '风雨无阻', '货品完好', '穿戴工服'],
+        "16": ['快速准时', '仪表整洁', '礼貌热情', '风雨无阻', '货品完好', '穿戴工服']
+    },
+    orderComment: {
+        "1": ['口味一般', '难吃', '食材不新鲜', '油腻', '缺少餐具', '不卫生', '量太少', '货品有缺失', '包装简陋', '商家不看备注', '货品错误', '性价比不高'],
+        "2": ['口味一般', '难吃', '食材不新鲜', '油腻', '缺少餐具', '不卫生', '量太少', '货品有缺失', '包装简陋', '商家不看备注', '货品错误', '性价比不高'],
+        "4": ['味道赞', '食材新鲜', '轻食主义', '包装精美', '分量足', '商家服务好', '物美价廉'],
+        "8": ['味道赞', '食材新鲜', '轻食主义', '包装精美', '分量足', '商家服务好', '物美价廉'],
+        "16": ['味道赞', '食材新鲜', '轻食主义', '包装精美', '分量足', '商家服务好', '物美价廉']
+    }
+};
+
 // 
 var method = {
     delayExec: function (func, delay, params, times) { // 延迟执行，返回true时退出
@@ -134,5 +151,6 @@ module.exports = {
     regExp,
     angle,
     calcDistance,
-    method
+    method,
+    appData
 };

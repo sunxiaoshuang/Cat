@@ -1,0 +1,51 @@
+<wxs module="productFilter" src="../../wxs/filters/product.wxs"></wxs>
+<view class="container">
+    <view class="header">
+        <image mode="aspectFill" class="logo" src="{{productFilter.logoImage(business.logoSrc, business.id)}}" />
+        <view class="info">
+            <text class="name">{{business.name}}</text>
+            <text class="info">送达时间：{{achieveTime}}</text>
+        </view>
+    </view>
+    <view class="comment">
+        <view class="title">
+            <text>{{delivery.text || '请为配送打分'}}</text>
+        </view>
+        <view class="level">
+            <icon class="jdcat jdcat-xing {{delivery.level >= item ? 'orange' : 'gray'}}" wx:for="{{level}}" wx:key="" data-index="{{item}}" bindtap="deliveryScore" />
+        </view>
+        <view class="options">
+            <view class="option {{item.check ? 'selected' : ''}}" wx:for="{{delivery.options}}" wx:key="" data-item="{{item}}" bindtap="deliveryCheck">{{item.text}}</view>
+        </view>
+    </view>
+    <view class="comment" style="border-bottom: none;">
+        <view class="title">
+            <text>{{comment.text || '请为商家打分'}}</text>
+        </view>
+        <view class="level">
+            <icon class="jdcat jdcat-xing {{comment.level >= item ? 'orange' : 'gray'}}" wx:for="{{level}}" wx:key="" data-index="{{item}}" bindtap="orderScore" />
+        </view>
+        <view class="options">
+            <view class="option {{item.check ? 'selected' : ''}}" wx:for="{{comment.options}}" wx:key="" data-item="{{item}}" bindtap="orderCheck">{{item.text}}</view>
+        </view>
+        <textarea class="comment-content" placeholder="请可以告诉我们有哪些服务不满意的地方..." focus="{{focus}}" bindinput="input" />
+        <view class="products">
+            <view class="product" wx:for="{{products}}" wx:for-item="product" wx:key="">
+                <text class="ellipsis">{{product.name}}</text>
+                <view class="operate">
+                    <view class="good {{product.zan ? 'selected' : ''}}" bindtap="zan" data-productId="{{product.id}}">
+                        <text class="jdcat jdcat-zan"></text>
+                        <text>赞</text>
+                    </view>
+                    <view class="bad {{product.cai ? 'selected' : ''}}" bindtap="cai" data-productId="{{product.id}}">
+                        <text class="jdcat jdcat-cai"></text>
+                        <text>踩</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+    <button class="btn submit" type="primary" disabled="{{disabled}}" bindtap="submit">
+        提交评论
+    </button>
+</view>

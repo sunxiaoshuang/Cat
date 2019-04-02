@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewData["Title"] = "评价管理";
+}
+
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+        <link href="~/css/comment/index.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link href="~/css/comment/index.min.css" rel="stylesheet" />
+    </environment>
+}
+
+@section Scripts {
+    <script>
+        var pageObj = JSON.parse('@Html.Raw(ViewBag.pageObj)' || "{}");
+    </script>
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/comment/index.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/comment/index.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewData["Title"]</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="flex-row margin-bottom-10">
+                            <label style="margin-top:10px; margin-left: 4em;">总体评价：</label>
+                            <div>
+                                <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20" v-for="item in order">
+                                    <label class="label-checkbox">
+                                        <input type="checkbox" :value="item.value" v-model="item.check">
+                                        <span class="custom-checkbox"></span>
+                                        {{item.name}}
+                                    </label>
+                                </div>
+                            </div>
+                            <label style="margin-top:10px;">配送评价：</label>
+                            <div>
+                                <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20" v-for="item in delivery">
+                                    <label class="label-checkbox">
+                                        <input type="checkbox" :value="item.value" v-model="item.check">
+                                        <span class="custom-checkbox"></span>
+                                        {{item.name}}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-row margin-bottom-10">
+                        </div>
+                        <div class="flex-row margin-bottom-10">
+                            <label>评论日期：</label>
+                            <input class="form-control width-200" id="txtStartDate" :value="startDate" />
+                            <label style="width: 30px; text-align: center;">-</label>
+                            <input class="form-control width-200" id="txtEndDate" :value="endDate" />
+
+                            <label style="width: 100px; text-align: right;" v-if="isChain">门店：</label>
+                            <select class="form-control width-300" v-model="businessId" v-if="isChain">
+                                <option v-for="store in stores" :value="store.item1">{{store.item2}}</option>
+                            </select>
+                            <button class="btn btn-primary margin-left-20" @@click="search()">
+                                <i class="fa fa-search"></i>
+                                搜索
+                            </button>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row" style="min-height: 400px;" v-if="comments && comments.length > 0">
+                        <div class="col-md-10 col-xs-12 comment" v-for="comment in comments">
+                            <p class="face">
+                                <img :src="comment.face" />
+                                <span v-text="comment.userName"></span>
+                                <span v-text="comment.phone"></span>
+                                <span>
+                                    当前状态：<a class="text-primary" v-text="comment.isShow ? '显示' : '隐藏'" @@click="change(comment)"></a>
+                                </span>
+                                <a @@click="catOrder(comment)" class="text-primary">查看订单</a>
+                            </p>
+                            <div class="comment-info">
+                                <div class="comment-score">
+                                    <div class="level">
+                                        <p>
+                                            <span>总体评论：</span>
+                                            <span class="fa fa-star" v-bind:class="{'text-primary': comment.orderScore >= star.value}" v-for="star in stars"></span>
+                                            <span v-text="commentText(comment.orderScore)"></span>
+                                        </p>
+                                        <p>
+                                            <span v-text="comment.commentResult"></span>
+                                        </p>
+                                    </div>
+                                    <div class="level">
+                                        <p>
+                                            <span>配送评论：</span>
+                                            <span class="fa fa-star" v-bind:class="{'text-primary': comment.deliveryScore >= star.value}" v-for="star in stars"></span>
+                                            <span v-text="commentText(comment.deliveryScore)"></span>
+                                        </p>
+                                        <p>
+                                            <span v-text="comment.deliveryResult"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="comment-content">
+                                    <p v-text="comment.commentContent || '该用户未填写评论。'"></p>
+                                </div>
+                                <div class="comment-time">
+                                    <p v-text="'评论时间：' + comment.createTime"></p>
+                                    <p v-text="comment.business.name"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p v-else>暂无任何评论...</p>
+                    <cat-pager :page-count="paging.pageCount" :page-index="paging.pageIndex" page-position="center" @@next="next" @@page="page" @@prev="prev"></cat-pager>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;"></div>
+</div>

@@ -3,6 +3,7 @@ using OfficeOpenXml;
 using OfficeOpenXml.Table;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Net.Http;
@@ -161,6 +162,28 @@ namespace JdCat.Cat.Common
         private static double Rad(double d)
         {
             return d * Math.PI / 180d;
+        }
+
+        /// <summary>
+        /// 转化为枚举描述文本
+        /// </summary>
+        /// <param name="enum"></param>
+        /// <returns></returns>
+        public static string ToDescription(this Enum value, bool nameInstend = true)
+        {
+            Type type = value.GetType();
+            string name = Enum.GetName(type, value);
+            if (name == null)
+            {
+                return null;
+            }
+            FieldInfo field = type.GetField(name);
+            DescriptionAttribute attribute = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) as DescriptionAttribute;
+            if (attribute == null && nameInstend == true)
+            {
+                return name;
+            }
+            return attribute == null ? null : attribute.Description;
         }
 
 

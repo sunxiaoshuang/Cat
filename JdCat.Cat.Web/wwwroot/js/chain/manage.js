@@ -35,6 +35,13 @@
                             obj.amount = +obj.amount.toFixed(2);
                         });
                         self.report = res.data;
+                        if (!self.report) return;
+                        var amount = 0, quantity = 0;
+                        self.report.forEach(function (obj) {
+                            amount += obj.amount;
+                            quantity += obj.quantity;
+                        });
+                        self.report.push({ name: "合计", amount: +amount.toFixed(2), quantity});
                     })
                     .catch(function (err) { $.alert(err); });
             }

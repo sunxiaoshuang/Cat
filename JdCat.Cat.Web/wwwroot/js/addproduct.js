@@ -50,7 +50,7 @@
         },
         computed: {
             feature: function () {
-                if (this.entity.feature == 0) return "一般";
+                if (this.entity.feature == 0) return "单品";
                 else if (this.entity.feature == 1) return "招牌";
                 else if (this.entity.feature == 2) return "套餐";
                 return "";

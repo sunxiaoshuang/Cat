@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewData["Title"] = "堂食订单";
+}
+@section Styles {
+    <environment include="Development">
+        <link href="~/css/store/order.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/css/store/order.min.css" rel="stylesheet" asp-append-version="true" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    </environment>
+
+}
+@section Scripts {
+    <script>
+
+    </script>
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/store/order.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/store/order.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">今日订单</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="flex-row margin-bottom-10">
+                            <label>下单时间：</label>
+                            <input autocomplete="off" class="form-control width-200" id="txtStartDate" v-model="startDate" />
+                            <label style="width: 30px; text-align: center;">-</label>
+                            <input autocomplete="off" class="form-control width-200" id="txtEndDate" v-model="endDate" />
+                            <button class="btn btn-primary margin-left-20" @@click="search()">
+                                <i class="fa fa-search"></i>
+                                搜索
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th width="60">流水号</th>
+                                <th width="205">订单编号</th>
+                                <th width="150">下单时间</th>
+                                <th>餐台</th>
+                                <th>服务员</th>
+                                <th width="80">用餐人数</th>
+                                <th>支付方式</th>
+                                <th width="150">支付时间</th>
+                                <th width="100">订单状态</th>
+                                <th>餐位费</th>
+                                <th>总消费</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in items">
+                                <td v-text="item.identifier"></td>
+                                <td v-text="item.code"></td>
+                                <td v-text="item.createTime"></td>
+                                <td v-text="item.deskName"></td>
+                                <td v-text="item.staffName"></td>
+                                <td v-text="item.peopleNumber"></td>
+                                <td v-text="item.paymentTypeName"></td>
+                                <td v-text="item.payTime"></td>
+                                <td v-html="orderStatus(item.orderStatus)"></td>
+                                <td>
+                                    <span class="fa fa-rmb" v-text="item.mealFee"></span>
+                                </td>
+                                <td>
+                                    <span class="fa fa-rmb" v-text="item.amount"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot v-if="items == null || item.length == 0">
+                            <tr>
+                                <th colspan="11">暂无任何订单数据...</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <cat-pager :page-count="paging.pageCount" :page-index="paging.pageIndex" page-position="center" @@next="next" @@page="page" @@prev="pre"></cat-pager>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

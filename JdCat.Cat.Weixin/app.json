@@ -5,6 +5,7 @@
     "pages/chain/selectstore/selectstore",
     "pages/user/user",
     "pages/searchProduct/searchProduct",
+    "pages/order/comment/comment",
     "pages/main/main",
     "pages/main/license/license",
     "pages/index/index",

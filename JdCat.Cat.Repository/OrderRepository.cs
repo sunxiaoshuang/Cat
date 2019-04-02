@@ -155,7 +155,7 @@ namespace JdCat.Cat.Repository
             var lastTime = createTime.ToString("yyyy-MM-dd");
             var queryable = Context.Orders
                 .Where(a => a.BusinessId == businessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == lastTime && (a.Status & OrderStatus.Valid) > 0)
-                .Select(a => new Order { ID = a.ID, Identifier = a.Identifier, OrderCode = a.OrderCode, CreateTime = a.CreateTime, Status = a.Status, Price = a.Price, ReceiverName = a.ReceiverName, Phone = a.Phone});
+                .Select(a => new Order { ID = a.ID, Identifier = a.Identifier, OrderCode = a.OrderCode, CreateTime = a.CreateTime, Status = a.Status, Price = a.Price, ReceiverName = a.ReceiverName, Phone = a.Phone });
 
             query.RecordCount = queryable.Count();
             return queryable.OrderByDescending(a => a.PayTime).Skip(query.Skip).Take(query.PageSize).ToList();
@@ -420,6 +420,10 @@ namespace JdCat.Cat.Repository
                 .Include(a => a.SaleFullReduce)
                 .Include(a => a.SaleCouponUser).SingleOrDefault(a => a.ID == id);
         }
+        public Order GetOrderOnlyProduct(int id)
+        {
+            return Context.Orders.Include(a => a.Products).SingleOrDefault(a => a.ID == id);
+        }
 
         public Order PaySuccess(WxPaySuccess ret)
         {
@@ -440,6 +444,7 @@ namespace JdCat.Cat.Repository
                 order.Status = OrderStatus.Payed;
                 order.User.PurchaseTimes++;
                 order.Identifier = identify;
+                order.Times = order.User.PurchaseTimes;
                 Context.SaveChanges();
                 return order;
             }
@@ -678,6 +683,7 @@ namespace JdCat.Cat.Repository
             }
             order.RefundStatus = OrderRefundStatus.Apply;
             order.RefundReason = reason;
+            order.RefundTime = DateTime.Now;
             Context.SaveChanges();
             result.Success = true;
             result.Msg = "申请成功";
@@ -687,15 +693,17 @@ namespace JdCat.Cat.Repository
 
         public async Task SendMsgOfRefund(Order order)
         {
-            var msg = new WxEventMessage {
+            var msg = new WxEventMessage
+            {
                 template_id = WxHelper.Msg_Refund,
-                data = new {
+                data = new
+                {
                     first = new { value = $"退款订单编号-{order.OrderCode}" },
                     keyword1 = new { value = "￥" + order.Price.Value, color = "#ff0000" },
                     keyword2 = new { value = order.RefundReason, color = "#ff0000" },
                     keyword3 = new { value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
                     keyword4 = new { value = "线上" },
-                    keyword5 = new { value = $"{order.ReceiverName} - {order.Phone}"},
+                    keyword5 = new { value = $"{order.ReceiverName} - {order.Phone}" },
                     remark = new { value = "请尽快进入简单猫后台，订单管理 -> 实时订单 页处理。" }
                 }
             };
@@ -863,7 +871,7 @@ namespace JdCat.Cat.Repository
                 FoodCount = Convert.ToInt32(a.Quantity)
             }).ToList();
 
-            var json = await helper.Send(ycfkOrder);
+            var json = await helper.Send(ycfkOrder, order.Business.YcfkKey, order.Business.YcfkSecret);
             var jObj = JObject.Parse(json);
             var code = jObj["StateCode"].Value<int>();
             if (code > 0)
@@ -893,6 +901,81 @@ namespace JdCat.Cat.Repository
         {
             return Context.YcfkLocations.OrderByDescending(a => a.ID).FirstOrDefault(a => a.OrderId == id);
         }
+
+        public JsonData Comment(OrderComment comment)
+        {
+            comment.IsShow = true;
+            if (comment.OrderProducts != null && comment.OrderProducts.Count > 0)
+            {
+                var products = Context.OrderProducts.Where(a => a.OrderId == comment.OrderId).ToList();
+                comment.OrderProducts.ForEach(a =>
+                {
+                    var product = products.FirstOrDefault(b => a.ID == b.ID);
+                    if (product == null) return;
+                    product.CommentResult = a.CommentResult;
+                    product.OrderComment = comment;
+                });
+            }
+            Context.OrderComments.Add(comment);
+            var order = new Order { ID = comment.OrderId };
+            Context.Attach(order);
+            order.Status = OrderStatus.Appraised;
+            return new JsonData
+            {
+                Success = Context.SaveChanges() > 0
+            };
+        }
+
+        public List<OrderComment> GetComments(CommentLevel deliveryLevel, CommentLevel orderLevel, DateTime start, DateTime end, PagingQuery paging, params int[] businessIds)
+        {
+            var endDate = end.AddDays(1);
+            var query = Context.OrderComments
+                .Include(a => a.Business)
+                .Where(a => a.CreateTime >= start && a.CreateTime <= endDate && businessIds.Contains(a.BusinessId));
+            if (deliveryLevel != 0)
+            {
+                query = query.Where(a => (a.DeliveryScore & deliveryLevel) > 0);
+            }
+            if (orderLevel != 0)
+            {
+                query = query.Where(a => (a.OrderScore & orderLevel) > 0);
+            }
+            query = query.OrderByDescending(a => a.CreateTime);
+            paging.RecordCount = query.Count();
+            return query.Skip(paging.Skip).Take(paging.PageSize).ToList();
+        }
+        public void ChangeCommentVisible(int commentId, bool visible)
+        {
+            var comment = Context.OrderComments.FirstOrDefault(a => a.ID == commentId);
+            if (comment == null) return;
+            comment.IsShow = visible;
+            Context.SaveChanges();
+            ReloadCommentScore(comment.BusinessId);
+        }
+
+        /// <summary>
+        /// 每次用户评论后，重新设置商家评分、配送评分
+        /// </summary>
+        /// <param name="id"></param>
+        public void ReloadCommentScore(int id)
+        {
+
+            var business = Context.Businesses.FirstOrDefault(a => a.ID == id);
+            if (business == null) return;
+            var query = Context.OrderComments.Where(a => a.BusinessId == id && a.IsShow);
+
+            var orderScoreGroup = query.GroupBy(a => a.OrderScore)
+                .Select(a => new Tuple<CommentLevel, int>(a.Key, a.Count()))
+                .ToList();
+            business.Score = Avg(orderScoreGroup);
+
+            var deliveryScoreGroup = query.GroupBy(a => a.DeliveryScore)
+                .Select(a => new Tuple<CommentLevel, int>(a.Key, a.Count()))
+                .ToList();
+            business.Delivery = Avg(deliveryScoreGroup);
+            Context.SaveChanges();
+        }
+
 
         /// <summary>
         /// 自己配送
@@ -1047,11 +1130,54 @@ namespace JdCat.Cat.Repository
             var max = 0;
             var now = DateTime.Now.ToString("yyyy-MM-dd");
             var query = Context.Orders.Where(a => a.BusinessId == businessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == now);
-            if(query.Count() > 0)
+            if (query.Count() > 0)
             {
                 max = query.Max(a => a.Identifier);
             }
             return max;
+        }
+
+        /// <summary>
+        /// 计算平均得分
+        /// </summary>
+        /// <param name="tuples"></param>
+        /// <returns></returns>
+        private double Avg(IEnumerable<Tuple<CommentLevel, int>> tuples)
+        {
+            if (tuples.Count() == 0) return 5;
+            var allCount = 0;
+            var allScore = 0d;
+            foreach (var item in tuples)
+            {
+                var score = 0;
+                switch (item.Item1)
+                {
+                    case CommentLevel.None:
+                        break;
+                    case CommentLevel.Bad:
+                        score = 1;
+                        break;
+                    case CommentLevel.Commonly:
+                        score = 2;
+                        break;
+                    case CommentLevel.Normal:
+                        score = 3;
+                        break;
+                    case CommentLevel.VerySatisfied:
+                        score = 4;
+                        break;
+                    case CommentLevel.Perfect:
+                        score = 5;
+                        break;
+                    default:
+                        break;
+                }
+                if (score == 0) break;
+                allCount += item.Item2;
+                allScore += item.Item2 * score;
+            }
+            var avg = Math.Round(allScore / allCount, 1);
+            return avg;
         }
 
     }

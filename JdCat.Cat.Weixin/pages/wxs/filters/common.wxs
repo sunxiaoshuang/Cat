@@ -1,8 +1,28 @@
 var couponStatus = {
-  "1": "未使用", "2": "已使用", "3": "已过期", "4": "上架", "5": "下架", "6": "已领完", "7": "未开始"
+  "1": "未使用",
+  "2": "已使用",
+  "3": "已过期",
+  "4": "上架",
+  "5": "下架",
+  "6": "已领完",
+  "7": "未开始"
 };
 var logisticsType = {
-  "0": "", "1": "自己配送", "2": "达达配送", "3": "美团配送", "4": "蜂鸟配送", "5": "点我达配送", "6": "一城飞客配送",
+  "0": "",
+  "1": "自己配送",
+  "2": "达达配送",
+  "3": "美团配送",
+  "4": "蜂鸟配送",
+  "5": "点我达配送",
+  "6": "一城飞客配送",
+};
+var commentLevel = {
+  "0": 5,
+  "1": "1",
+  "2": "2",
+  "4": "3",
+  "8": "4",
+  "16": "5"
 };
 var common = {
   formatDate: function (str) {
@@ -24,7 +44,7 @@ var common = {
 
     return year + "-" + month + "-" + day + " " + hour + ":" + minus + ":" + second;
   },
-  secondFormat: function (time) {       // 将秒转化为分秒
+  secondFormat: function (time) { // 将秒转化为分秒
     var minus = Math.floor(time / 60).toString();
     minus.length == 1 && (minus = "0" + minus);
     var second = (time % 60).toString();
@@ -53,10 +73,16 @@ var common = {
     return coupon.expireDay + "天后过期";
   },
   filter: {
-    distance: function(num){
-      if(num <= 1000) return num.toFixed(0) + "m";
+    distance: function (num) {
+      if (num <= 1000) return num.toFixed(0) + "m";
       return +(num / 1000).toFixed(1) + "km";
+    },
+    commentLevelFilter: function(num){
+      return commentLevel[num + ""];
     }
+  },
+  substring: function (str, start, len) {
+    return str.substring(start, len);
   }
 };
 

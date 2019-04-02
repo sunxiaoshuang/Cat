@@ -49,22 +49,22 @@ namespace JdCat.Cat.Repository.Service
         /// 发送订单
         /// </summary>
         /// <returns></returns>
-        public async Task<string> Send(YcfkOrder order)
+        public async Task<string> Send(YcfkOrder order, string key = null, string secret = null)
         {
             var action = "SendOrderData";
             var content = JsonConvert.SerializeObject(order);
-            return await Request(action, content);
+            return await Request(action, content, key, secret);
         }
 
         /// <summary>
         /// 取消订单
         /// </summary>
         /// <returns></returns>
-        public async Task<string> Cancel(string OrderCode, string Reason)
+        public async Task<string> Cancel(string OrderCode, string Reason, string key = null, string secret = null)
         {
             var action = "CloseOrder";
             var content = JsonConvert.SerializeObject(new { OrderId = OrderCode, Reason });
-            return await Request(action, content);
+            return await Request(action, content, key, secret);
         }
 
         /// <summary>
@@ -73,9 +73,9 @@ namespace JdCat.Cat.Repository.Service
         /// <param name="content"></param>
         /// <param name="ts"></param>
         /// <returns></returns>
-        public string CreateSignature(string content, string ts)
+        public string CreateSignature(string content, string ts, string key = null, string secret = null)
         {
-            var signature = $"{PartnerKey}{content}{Secret}{ts}";
+            var signature = $"{key??PartnerKey}{content}{secret??Secret}{ts}";
             signature = UtilHelper.SHA1(signature).ToLower();
             return signature;
         }
@@ -86,11 +86,11 @@ namespace JdCat.Cat.Repository.Service
         /// <param name="url"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        private async Task<string> Request(string action, string content)
+        private async Task<string> Request(string action, string content, string key = null, string secret = null)
         {
             //content = content.Replace("\"", "'");
             
-            var query = CreateRequestString(content, action);
+            var query = CreateRequestString(content, action, key, secret);
             using (var client = new HttpClient())
             using (var body = new StringContent(query))
             {
@@ -108,12 +108,12 @@ namespace JdCat.Cat.Repository.Service
         /// <param name="content">请求内容</param>
         /// <param name="action">接口</param>
         /// <returns></returns>
-        private string CreateRequestString(string content, string action)
+        private string CreateRequestString(string content, string action, string key = null, string secret = null)
         {
             content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content));
             var ts = DateTime.Now.ToInt();
-            var signature = CreateSignature(content, ts.ToString());
-            var query = $"action={action}&sign={signature}&ts={ts}&key={PartnerKey}&content={content.ToUrlEncoding()}";
+            var signature = CreateSignature(content, ts.ToString(), key, secret);
+            var query = $"action={action}&sign={signature}&ts={ts}&key={key??PartnerKey}&content={content.ToUrlEncoding()}";
             return query;
         }
 

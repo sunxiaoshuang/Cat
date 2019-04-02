@@ -33,6 +33,7 @@ Page({
       packagePrice = +wx.getStorageSync("packagePrice");
 
     cartList.forEach(cart => {
+      if (cart.quantity <= 0) return;
       if (cart.discount && cart.discountProductQuantity < cart.quantity) { // 当商品存在折扣，商品数量大于折扣商品数量时
         var discountProduct = qcloud.utils.extend({}, cart);
         discountProduct.quantity = cart.discountProductQuantity;

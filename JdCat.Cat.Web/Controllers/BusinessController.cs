@@ -362,6 +362,29 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 设置
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Setting()
+        {
+            ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
+            return View();
+        }
+
+        public IActionResult YcfkSave([FromQuery]string key, [FromQuery]string secret)
+        {
+            Business.YcfkKey = key;
+            Business.YcfkSecret = secret;
+            var result = Service.YcfkSave(Business);
+            if (result)
+            {
+                SaveSession();
+                return Json(new JsonData { Success = true });
+            }
+            return Json(new JsonData { Msg = "保存失败，请刷新后重试！" });
+        }
+
         public IActionResult CreateFreight([FromBody]BusinessFreight freight)
         {
             freight.BusinessId = Business.ID;
@@ -415,7 +438,7 @@ namespace JdCat.Cat.Web.Controllers
             var url = $"https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={appData.OpenAppId}&pre_auth_code={preCode}&redirect_uri=http://t.e.jiandanmao.cn/Business/AuthSuccess&auth_type=3";
             return Redirect(url);
         }
-        
+
         /// <summary>
         /// 授权成功后的回调URL
         /// </summary>

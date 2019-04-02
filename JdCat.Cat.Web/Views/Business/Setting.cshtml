@@ -1,0 +1,70 @@
+﻿
+@{
+    ViewData["Title"] = "各种设置";
+}
+
+
+@*@section Styles {
+        <environment include="Development">
+            <link href="~/css/business/index.css" rel="stylesheet" />
+        </environment>
+        <environment exclude="Development">
+            <link href="~/css/business/index.min.css" rel="stylesheet" asp-append-version="true" />
+        </environment>
+
+    }*@
+@section Scripts {
+    <script>
+        var pageObj = {
+            business: JSON.parse('@Html.Raw(ViewBag.business)'.replace(/\n/g, "\\\\n"))
+        };
+        pageObj.business.description = (pageObj.business.description || "").replace(/\\n/g, "\n");
+    </script>
+    <environment include="Development">
+        <script src="~/js/business/setting.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/business/setting.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewBag.Title</span>
+                    </h3>
+                </div>
+                <div class="panel-body form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
+                            一城飞客PartnerKey
+                        </label>
+                        <div class="col-xs-4 col-md-3">
+                            <input type="text" v-model.trim="ycfkKey" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2 col-md-1 col-xs-offset-1">
+                            一城飞客Secret
+                        </label>
+                        <div class="col-xs-4 col-md-3">
+                            <input type="text" v-model.trim="ycfkSecret" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer" style="height: 200px">
+                    <div class="kui-button col-xs-2 col-md-1 col-xs-offset-2">
+                        <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" v-on:click="ycfk_save()">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;"></div>
+</div>

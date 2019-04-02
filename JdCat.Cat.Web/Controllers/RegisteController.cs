@@ -55,7 +55,7 @@ namespace JdCat.Cat.Web.Controllers
             }
             else
             {
-                var userInfo = new Business()
+                var userInfo = new Business
                 {
                     Name = name,
                     Password = UtilHelper.MD5Encrypt(pwd),
@@ -71,7 +71,9 @@ namespace JdCat.Cat.Web.Controllers
                     BusinessEndTime = "21:00",
                     Category = BusinessCategory.Store,
                     StoreId = service.GetNextStoreNumber(),
-                    ObjectId = Guid.NewGuid().ToString().ToLower()
+                    ObjectId = Guid.NewGuid().ToString().ToLower(),
+                    Score = 5,
+                    Delivery = 5
                 };
                 userInfo.FeyinMemberCode = appData.FeyinMemberCode;
                 userInfo.FeyinApiKey = appData.FeyinApiKey;

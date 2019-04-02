@@ -1,6 +1,7 @@
 ﻿using JdCat.Cat.Model.Enum;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
@@ -223,6 +224,22 @@ namespace JdCat.Cat.Model.Data
         /// 商户类别
         /// </summary>
         public BusinessCategory Category { get; set; }
+        /// <summary>
+        /// 商家评分
+        /// </summary>
+        public double Score { get; set; }
+        /// <summary>
+        /// 配送评分
+        /// </summary>
+        public double Delivery { get; set; }
+        /// <summary>
+        /// 一城飞客key
+        /// </summary>
+        public string YcfkKey { get; set; }
+        /// <summary>
+        /// 一城飞客secret
+        /// </summary>
+        public string YcfkSecret { get; set; }
         /// <summary>
         /// 所属连锁店的id
         /// </summary>

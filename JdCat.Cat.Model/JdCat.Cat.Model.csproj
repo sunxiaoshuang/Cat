@@ -18,6 +18,7 @@
     <Compile Remove="Migrations\20190112183830_InitProject.cs" />
     <Compile Remove="Migrations\20190112184407_InitProject.cs" />
     <Compile Remove="Migrations\20190112185352_InitProject.cs" />
+    <Compile Remove="Migrations\20190330163408_Add_Client.cs" />
   </ItemGroup>
 
   <ItemGroup>

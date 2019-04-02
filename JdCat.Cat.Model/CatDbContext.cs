@@ -55,6 +55,12 @@ namespace JdCat.Cat.Model
         public DbSet<ClientPrinter> ClientPrinters { get; set; }
         public DbSet<DeskType> DeskTypes { get; set; }
         public DbSet<Desk> Desks { get; set; }
+        public DbSet<OrderComment> OrderComments { get; set; }
+        public DbSet<ImageWarehouse> ImageWarehouses { get; set; }
+        public DbSet<TangOrder> TangOrders { get; set; }
+        public DbSet<TangOrderProduct> TangOrderProducts { get; set; }
+        public DbSet<Staff> Staffs { get; set; }
+        public DbSet<PaymentType> PaymentTypes { get; set; }
 
 
         /// <summary>

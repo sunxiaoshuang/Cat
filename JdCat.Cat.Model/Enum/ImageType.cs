@@ -17,6 +17,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// LOGO
         /// </summary>
-        Logo = 2
+        Logo = 2,
+        /// <summary>
+        /// 评论
+        /// </summary>
+        Comment = 3
     }
 }

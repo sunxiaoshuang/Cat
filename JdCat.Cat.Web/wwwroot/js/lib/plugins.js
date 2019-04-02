@@ -33,7 +33,7 @@
         // 模态框，加载页面，使用template加载视图模版，可以取到模态框返回值
         view: function () {
             var template = '<div class="modal fade" id="{name}" aria-hidden="true">\
-                <div class="modal-dialog" >\
+                <div class="modal-dialog" style="width: {dialogWidth}px;">\
                     <div class="modal-content">\
                         <div class="modal-header">\
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
@@ -71,7 +71,7 @@
             $.view = function (name, title, url, template) {
                 var obj = {
                     title: title, url: url, template: template,
-                    footDisplay: "none", closeText: "关闭", saveText: "保存"
+                    footDisplay: "none", closeText: "关闭", saveText: "保存", dialogWidth: 600
                 };
                 if (arguments.length === 1) {
                     $.extend(obj, arguments[0]);

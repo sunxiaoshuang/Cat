@@ -104,11 +104,10 @@ namespace JdCat.Cat.Web.Controllers
             business.StoreId = Service.GetNextStoreNumber();
             business.FeyinMemberCode = Business.FeyinMemberCode;
             business.FeyinApiKey = Business.FeyinApiKey;
-
-            business.BusinessEndTime = Business.BusinessEndTime??"09:00";
+            business.BusinessEndTime = Business.BusinessEndTime ?? "09:00";
             business.BusinessEndTime2 = Business.BusinessEndTime2;
             business.BusinessEndTime3 = Business.BusinessEndTime3;
-            business.BusinessStartTime = Business.BusinessStartTime??"06:00";
+            business.BusinessStartTime = Business.BusinessStartTime ?? "06:00";
             business.BusinessStartTime2 = Business.BusinessStartTime2;
             business.BusinessStartTime3 = Business.BusinessStartTime3;
             business.CityCode = Business.CityCode;
@@ -117,6 +116,10 @@ namespace JdCat.Cat.Web.Controllers
             business.Freight = Business.Freight;
             business.MinAmount = Business.MinAmount;
             business.Range = Business.Range;
+            business.Score = 5;
+            business.Delivery = 5;
+            business.YcfkKey = Business.YcfkKey;
+            business.YcfkSecret = Business.YcfkSecret;
 
             Service.Add(business);
             result.Success = true;
@@ -249,8 +252,8 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public IActionResult BusinessSummary(DateTime? startDate, DateTime? endDate, int? businessId)
         {
-            var report = Service.GetBusinessSummary(Business.ID, businessId??0, startDate??DateTime.Now, endDate??DateTime.Now);
-            return Json(report??new List<Model.Report.Report_ChainSummary>());
+            var report = Service.GetBusinessSummary(Business.ID, businessId ?? 0, startDate ?? DateTime.Now, endDate ?? DateTime.Now);
+            return Json(report ?? new List<Model.Report.Report_ChainSummary>());
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
@@ -48,6 +49,16 @@ namespace JdCat.Cat.Web.Controllers
             return Json(result);
         }
         /// <summary>
+        /// 获取商户信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult GetBusiness(int id, [FromServices]IBusinessRepository service)
+        {
+            return Json(new JsonData { Data = service.Get(id) });
+        }
+        /// <summary>
         /// 客户端数据初始化
         /// </summary>
         /// <param name="id"></param>
@@ -56,7 +67,8 @@ namespace JdCat.Cat.Web.Controllers
         {
             var desk = service.GetDeskTypes(id);                // 餐桌信息
             var Types = productRepository.GetTypes(new Business { ID = id });
-            return Json(new {
+            return Json(new
+            {
                 Desk = desk,
                 Types
             });
@@ -275,6 +287,53 @@ namespace JdCat.Cat.Web.Controllers
                 Msg = "删除成功"
             });
         }
+
+        #region 上传数据接口
+        public IActionResult UploadStaff([FromBody]IEnumerable<Staff> list, [FromServices]IClientRepository service)
+        {
+            int count = 0;
+            if (list != null) count = service.UploadData(list);
+            return Json(new JsonData
+            {
+                Success = true,
+                Msg = $"更新员工记录：{count}条。",
+                Data = list?.Select(a => new { a.ID, a.ObjectId })
+            });
+        }
+        public IActionResult UploadPaymentType([FromBody]IEnumerable<PaymentType> list, [FromServices]IClientRepository service)
+        {
+            int count = 0;
+            if (list != null) count = service.UploadData(list);
+            return Json(new JsonData
+            {
+                Success = true,
+                Msg = $"更新支付类型记录：{count}条。",
+                Data = list?.Select(a => new { a.ID, a.ObjectId })
+            });
+        }
+        public IActionResult UploadTangOrder([FromBody]IEnumerable<TangOrder> list, [FromServices]IClientRepository service)
+        {
+            int count = 0;
+            if (list != null) count = service.UploadOrder(list);
+            return Json(new JsonData
+            {
+                Success = true,
+                Msg = $"更新订单记录：{count}条。",
+                Data = list?.Select(a => new { a.ID, a.ObjectId })
+            });
+        }
+        public IActionResult UploadTangOrderProduct([FromBody]IEnumerable<TangOrderProduct> list, [FromServices]IClientRepository service)
+        {
+            int count = 0;
+            if (list != null) count = service.UploadOrderProducts(list);
+            return Json(new JsonData
+            {
+                Success = true,
+                Msg = $"更新订单商品记录：{count}条。",
+                Data = list?.Select(a => new { a.ID, a.ObjectId })
+            });
+        }
+        #endregion
 
     }
 }

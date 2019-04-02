@@ -51,17 +51,20 @@ Page({
     couponList: [], // 商户优惠券列表
     myCoupon: [], // 我的优惠券列表
     isShowProductDetail: false, // 是否显示商品详情
-    packagePrice: 0 // 餐盒费
+    packagePrice: 0, // 餐盒费
+    comment: {}, // 商户评论
+
   },
   onLoad: function (options) {
 
     var location = wx.getStorageSync("curLocation"),
-      hasLocation = false,
+      hasLocation = false, business = qcloud.getSession().business,
       locationName = "";
     if (location) {
       hasLocation = true;
       locationName = "当前位置：" + location.address;
     }
+    this.initComment();
     this.setData({
       hasLocation,
       locationName
@@ -83,7 +86,7 @@ Page({
       user = session.userinfo,
       currentScene = wx.getStorageSync("currentScene");
 
-    if(currentScene === "search-product") {     // 如果是从搜索页面返回
+    if (currentScene === "search-product") { // 如果是从搜索页面返回
       var selectProduct = wx.getStorageSync("selectProduct");
       var scroll = `scroll_${selectProduct.menuId}_${selectProduct.viewIndex}`;
 
@@ -94,19 +97,20 @@ Page({
       });
       return;
     }
-    
+
     // 重新进入店铺
     if (session.reload) {
       session.reload = false;
       this.data.enterAgain = false;
       this.data.isClosedCoupon = false;
-      
+
       qcloud.setSession(session);
       self.data.initLoaded = false; // 标识数据初始化完成
       // 设置标题
       wx.setNavigationBarTitle({
         title: business.name
       });
+      this.initComment();
 
       qcloud.request({
         url: `/business/init/${business.id}?userId=${user.id}`,
@@ -273,6 +277,23 @@ Page({
       cartList: existCart,
       cartQuantity,
       packagePrice
+    });
+  },
+  initComment: function(){
+    var business = qcloud.getSession().business;
+    let comment = {
+      paging: {
+        pageIndex: 0,
+        pageSize: 10
+      },
+      comments: [],
+      loaded: false,
+      score: +(business.score.toFixed(1)),
+      delivery: +(business.delivery.toFixed(1)),
+      more: true
+    };
+    this.setData({
+      comment
     });
   },
   // 折扣券处理
@@ -448,12 +469,36 @@ Page({
   },
   // 滑动跳转选项卡
   turnTitle: function (e) {
-    if (e.detail.source == "touch") {
-      this.setData({
-        currentPage: e.detail.current,
-        isShowFoot: e.detail.current == 0
-      });
-    }
+    this.setData({
+      currentPage: e.detail.current,
+      isShowFoot: e.detail.current == 0
+    });
+    if (e.detail.current != 1) return;
+    if (this.data.comment.loaded) return; // 如果已经加载过评论则退出
+    this.data.comment.paging.pageIndex = 1;
+    this.loadComments();
+  },
+  loadComments: function () {
+    let business = qcloud.getSession().business,
+      comment = this.data.comment,
+      paging = comment.paging,
+      self = this;
+    this.data.comment.loaded = true;
+    qcloud.request({
+      url: `/business/getComments/${business.id}?pageIndex=${paging.pageIndex}&pageSize=${paging.pageSize}`,
+      success: function (res) {
+        res.data.list.forEach(a => comment.comments.push(a));
+        comment.more = res.data.more;
+        self.setData({
+          comment
+        });
+      }
+    });
+  },
+  commentTolower: function(){
+    if(!this.data.comment.more) return;
+    this.data.comment.paging.pageIndex++;
+    this.loadComments();
   },
   // 点击类别跳转到指定的商品
   turnMenu: function (e) {
@@ -742,7 +787,7 @@ Page({
           });
           self.calcCartQuantity();
         } else {
-          util.showError(res.msg);
+          // util.showError(res.msg);
         }
       },
       fail: function () {
@@ -815,7 +860,7 @@ Page({
       isShowProductDetail: false
     });
   },
-  search: function(e){
+  search: function (e) {
     wx.setStorageSync("cartList", this.data.cartList);
     wx.setStorageSync("productList", this.data.productList);
     wx.navigateTo({
@@ -841,6 +886,9 @@ Page({
       product.quantity--;
       packagePrice -= format.packingPrice;
     }
+    this.setData({  // 尽早更新商品数量
+      productList: self.data.productList,
+    });
     // 处理购物车描述
     description = this.calcDescription(product);
     // 处理购物车
@@ -893,7 +941,6 @@ Page({
         }
         self.reloadCartByDiscount();
         self.setData({
-          productList: self.data.productList,
           cartList: self.data.cartList,
           packagePrice
         });

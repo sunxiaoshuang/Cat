@@ -77,5 +77,15 @@ namespace JdCat.Cat.Model.Data
         /// 折扣商品数量
         /// </summary>
         public int? DiscountProductQuantity { get; set; }
+
+        public int? OrderCommentId { get; set; }
+        /// <summary>
+        /// 订单商品关联的评论
+        /// </summary>
+        public virtual OrderComment OrderComment { get; set; }
+        /// <summary>
+        /// 评论结果
+        /// </summary>
+        public CommentResult CommentResult { get; set; }
     }
 }
