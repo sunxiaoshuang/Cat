@@ -57,6 +57,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public CommentLevel OrderScore { get; set; }
         /// <summary>
+        /// 回复时间
+        /// </summary>
+        public DateTime? ReplyTime { get; set; }
+        /// <summary>
+        /// 回复内容
+        /// </summary>
+        public string ReplyContent { get; set; }
+        /// <summary>
         /// 是否显示
         /// </summary>
         public bool IsShow { get; set; }

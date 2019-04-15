@@ -253,6 +253,26 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("ClientPrinter");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.CookProductRelative", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("ProductId");
+
+                    b.Property<int>("StaffId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("StaffId");
+
+                    b.ToTable("CookProductRelative");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.DWDStore", b =>
                 {
                     b.Property<int>("ID")
@@ -422,11 +442,11 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("DeskTypeId");
 
-                    b.Property<bool>("IsDelete");
-
                     b.Property<string>("Name");
 
                     b.Property<int>("Quantity");
+
+                    b.Property<int>("Status");
 
                     b.HasKey("ID");
 
@@ -446,11 +466,11 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<DateTime?>("CreateTime");
 
-                    b.Property<bool>("IsDelete");
-
                     b.Property<string>("Name");
 
                     b.Property<int>("Sort");
+
+                    b.Property<int>("Status");
 
                     b.HasKey("ID");
 
@@ -566,6 +586,10 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("Identifier");
 
+                    b.Property<string>("InvoiceName");
+
+                    b.Property<string>("InvoiceTax");
+
                     b.Property<bool>("IsSendDada");
 
                     b.Property<double>("Lat");
@@ -677,6 +701,10 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Phone");
 
+                    b.Property<string>("ReplyContent");
+
+                    b.Property<DateTime?>("ReplyTime");
+
                     b.Property<int>("UserId");
 
                     b.Property<string>("UserName");
@@ -753,25 +781,19 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("BusinessId");
 
-                    b.Property<string>("Code");
+                    b.Property<int>("Category");
 
                     b.Property<DateTime?>("CreateTime");
 
-                    b.Property<int>("Icon");
-
-                    b.Property<DateTime>("ModifyTime");
-
                     b.Property<string>("Name");
 
-                    b.Property<string>("ObjectId");
+                    b.Property<int>("Sort");
 
                     b.Property<int>("Status");
 
-                    b.Property<DateTime>("SyncTime");
-
-                    b.Property<int>("TypeStatus");
-
                     b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
 
                     b.ToTable("PaymentType");
                 });
@@ -1197,23 +1219,71 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<DateTime?>("CreateTime");
 
+                    b.Property<DateTime?>("EnterTime");
+
                     b.Property<int>("Gender");
 
-                    b.Property<DateTime>("ModifyTime");
+                    b.Property<DateTime?>("ModifyTime");
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("ObjectId");
-
                     b.Property<string>("Password");
+
+                    b.Property<int>("StaffPostId");
 
                     b.Property<int>("Status");
 
-                    b.Property<DateTime>("SyncTime");
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.HasIndex("StaffPostId");
+
+                    b.ToTable("Staff");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.StaffPost", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Authority");
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<DateTime?>("ModifyTime");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Status");
 
                     b.HasKey("ID");
 
-                    b.ToTable("Staff");
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("StaffPost");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SystemMark", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<int>("Category");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("SystemMark");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.TangOrder", b =>
@@ -1257,8 +1327,6 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("PaymentTypeName");
 
-                    b.Property<string>("PaymentTypeObjectId");
-
                     b.Property<int>("PeopleNumber");
 
                     b.Property<string>("Remark");
@@ -1266,8 +1334,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int?>("StaffId");
 
                     b.Property<string>("StaffName");
-
-                    b.Property<string>("StaffObjectId");
 
                     b.Property<int>("Status");
 
@@ -1468,6 +1534,19 @@ namespace JdCat.Cat.Model.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.CookProductRelative", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("JdCat.Cat.Model.Data.Staff", "Staff")
+                        .WithMany("CookProductRelatives")
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.DWDStore", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
@@ -1517,8 +1596,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasOne("JdCat.Cat.Model.Data.DeskType", "DeskType")
                         .WithMany("Desks")
-                        .HasForeignKey("DeskTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DeskTypeId");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.DeskType", b =>
@@ -1607,6 +1685,14 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.SaleProductDiscount", "SaleProductDiscount")
                         .WithMany()
                         .HasForeignKey("SaleProductDiscountId");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.PaymentType", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.Product", b =>
@@ -1727,6 +1813,35 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.User", "User")
                         .WithMany("ShoppingCarts")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.Staff", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("JdCat.Cat.Model.Data.StaffPost", "StaffPost")
+                        .WithMany("Staffs")
+                        .HasForeignKey("StaffPostId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.StaffPost", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SystemMark", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

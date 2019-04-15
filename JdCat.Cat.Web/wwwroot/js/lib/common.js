@@ -97,6 +97,17 @@
         });
         return arr;
     }
+    Array.prototype.replace = function (obj, entity) {
+        var i = 0, len = this.length;
+        for (; i < len;) {
+            if (this[i] === obj) {
+                break;
+            }
+            i++;
+        }
+        this.splice(i, 1, entity);
+        return this;
+    };
 
     // Vue过滤器
     if (Vue) {
@@ -140,6 +151,9 @@
         formatNumber: function (num) {
             num = num.toString();
             return num[1] ? num : '0' + num;
+        },
+        ipValid: function (ip) {
+            return /((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))/.test(ip);
         }
     };
 

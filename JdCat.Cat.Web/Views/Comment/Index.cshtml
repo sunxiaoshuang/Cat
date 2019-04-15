@@ -43,7 +43,7 @@
                 <div class="panel-body">
                     <div class="form-horizontal">
                         <div class="flex-row margin-bottom-10">
-                            <label style="margin-top:10px; margin-left: 4em;">总体评价：</label>
+                            <label style="margin-top:10px;">总体评价：</label>
                             <div>
                                 <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20" v-for="item in order">
                                     <label class="label-checkbox">
@@ -53,7 +53,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <label style="margin-top:10px;">配送评价：</label>
+                            <label style="margin: 10px 0 0 30px;">配送评价：</label>
                             <div>
                                 <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20" v-for="item in delivery">
                                     <label class="label-checkbox">
@@ -66,7 +66,7 @@
                         </div>
                         <div class="flex-row margin-bottom-10">
                         </div>
-                        <div class="flex-row margin-bottom-10">
+                        <div class="flex-row" style="margin: 0 0 10px 0;">
                             <label>评论日期：</label>
                             <input class="form-control width-200" id="txtStartDate" :value="startDate" />
                             <label style="width: 30px; text-align: center;">-</label>
@@ -92,6 +92,12 @@
                                 <span>
                                     当前状态：<a class="text-primary" v-text="comment.isShow ? '显示' : '隐藏'" @@click="change(comment)"></a>
                                 </span>
+                                <span v-if="!comment.replyContent">
+                                    <a class="text-primary" @@click.stop="reply(comment)">回复</a>
+                                </span>
+                                @*<span v-else>
+                                    已回复
+                                </span>*@
                                 <a @@click="catOrder(comment)" class="text-primary">查看订单</a>
                             </p>
                             <div class="comment-info">
@@ -119,6 +125,9 @@
                                 </div>
                                 <div class="comment-content">
                                     <p v-text="comment.commentContent || '该用户未填写评论。'"></p>
+                                </div>
+                                <div class="comment-content" v-if="comment.replyContent">
+                                    <p style="color: red;" v-text="'商家回复：' + comment.replyContent"></p>
                                 </div>
                                 <div class="comment-time">
                                     <p v-text="'评论时间：' + comment.createTime"></p>

@@ -46,6 +46,11 @@
             <text>联系商家</text>
             <text class='jdcat jdcat-right'></text>
         </view>
+        <navigator url="/pages/user/mycomment/mycomment" open-type="navigate" class="list-item-navigate">
+            <text class='jdcat jdcat-comment'></text>
+            <text>我的评价</text>
+            <text class='jdcat jdcat-right'></text>
+        </navigator>
         <navigator url="/pages/userinfo/userinfo" open-type="navigate" class="list-item-navigate">
             <text class='jdcat jdcat-user-circle'></text>
             <text>个人信息</text>

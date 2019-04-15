@@ -146,7 +146,9 @@
                             </view>
                             <view class="score-star">
                                 <text class="star text-gray" style="left: 0;">★★★★★</text>
-                                <text class="star text-primary" style="left: 0;width: {{common.filter.commentLevelFilter(comment.orderScore) * 38}}rpx">★★★★★</text>
+                                <text class="star text-primary" style="left: 0">
+                                    <text wx:for="{{common.filter.commentLevelFilter(comment.orderScore)}}" wx:key="">★</text>
+                                </text>
                             </view>
                             <view class="comment-content">
                                 <text >{{comment.commentContent}}</text>

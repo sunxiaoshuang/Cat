@@ -20,6 +20,7 @@
     "pages/pay/sure/sure",
     "pages/user/mycoupon/mycoupon",
     "pages/user/selectcoupon/selectcoupon",
+    "pages/user/mycomment/mycomment",
     "pages/order/refund/refund",
     "pages/order/orderLocation/orderLocation",
     "pages/showPage/showPage"

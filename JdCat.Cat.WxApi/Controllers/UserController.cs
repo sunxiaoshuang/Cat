@@ -271,6 +271,17 @@ namespace JdCat.Cat.WxApi.Controllers
             return Json(list);
         }
 
+        [HttpGet("comments/{id}")]
+        public async Task<IActionResult> GetUserComments(int id)
+        {
+            var comments = await Service.GetUserComments(id);
+            if(comments == null)
+            {
+                return Json("");
+            }
+            return Json(comments);
+        }
+
         #region 私有方法
 
         /// <summary>

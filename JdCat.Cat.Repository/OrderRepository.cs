@@ -860,6 +860,7 @@ namespace JdCat.Cat.Repository
                 OrderRemark = order.Remark,
                 BoxFee = Convert.ToDecimal(order.PackagePrice),
                 Freight = Convert.ToDecimal(order.Freight),
+                ActivityMoney = Convert.ToDecimal(order.SaleCouponUserMoney ?? 0 + order.SaleFullReduceMoney ?? 0),
                 UserGaodeCoordinate = order.Lng + "|" + order.Lat,
                 DayIndex = order.Identifier
             };

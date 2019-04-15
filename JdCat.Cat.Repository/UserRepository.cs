@@ -53,7 +53,7 @@ namespace JdCat.Cat.Repository
             entity.Province = user.Province;
             entity.Phone = user.Phone;
             entity.IsRegister = true;
-            if(user.BusinessId > 0)
+            if (user.BusinessId > 0)
             {
                 entity.BusinessId = user.BusinessId;
             }
@@ -227,6 +227,17 @@ namespace JdCat.Cat.Repository
         public IEnumerable<User> GetUsers(Business business)
         {
             return Context.Users.Where(user => user.BusinessId == business.ID && user.IsRegister).OrderByDescending(a => a.CreateTime);
+        }
+
+        public async Task<object> GetUserComments(int user)
+        {
+            var start = DateTime.Now.AddYears(-1);
+            var end = DateTime.Now;
+            var query = from comment in Context.OrderComments
+            join business in Context.Businesses on comment.BusinessId equals business.ID
+            where comment.CreateTime > start && comment.CreateTime < end
+            select new { comment.CreateTime, comment.OrderScore, comment.DeliveryScore, comment.OrderId, comment.CommentContent, comment.CommentResult, comment.DeliveryResult, comment.ReplyContent, business.Name };
+            return await query.ToListAsync();
         }
         //public bool SetPrimaryUser(Business business)
         //{

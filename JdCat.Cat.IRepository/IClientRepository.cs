@@ -33,5 +33,10 @@ namespace JdCat.Cat.IRepository
         /// <param name="list"></param>
         /// <returns></returns>
         int UploadOrderProducts(IEnumerable<TangOrderProduct> list);
+        /// <summary>
+        /// 获取客户端需要同步的数据
+        /// </summary>
+        /// <returns></returns>
+        Task<dynamic> GetSynchronousDataAsync(int businessId);
     }
 }

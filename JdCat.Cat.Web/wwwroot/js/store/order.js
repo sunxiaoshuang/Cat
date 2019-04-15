@@ -45,12 +45,28 @@
                 this.paging.pageIndex = index;
                 this.loadData();
             },
+            search: function () {
+                this.loadData();
+            },
             orderStatus: (function () {
                 statusName = { 1: "正在点单", 2: "正在用餐", 4: "已结算", 8: "反结算", 16: "已取消", 32: "已退款" };
                 return function (status) {
                     return statusName[status];
                 };
-            })()
+            })(),
+            catInfo: function (order) {
+                $.loading();
+                axios.get(`/Store/OrderDetail/${order.id}`)
+                    .then(function (res) {
+                        $.loaded();
+                        $.view({
+                            title: "订单详情",
+                            template: res.data,
+                            dialogWidth: 700
+                        });
+                    })
+                    .catch(function (err) { $.loaded(); $.alert(err); });
+            }
         },
         created: function () {
             this.loadData();

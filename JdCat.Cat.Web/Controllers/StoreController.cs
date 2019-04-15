@@ -46,13 +46,31 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="endDate"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetOrders([FromQuery]PagingQuery paging, [FromQuery]DateTime? startDate, [FromQuery]DateTime? endDate)
+        public async Task<IActionResult> GetOrders([FromQuery]PagingQuery paging, [FromQuery]DateTime? startDate, [FromQuery]DateTime? endDate)
         {
-            var list = Service.GetOrders(Business.ID, paging, startDate ?? DateTime.Now, endDate ?? DateTime.Now);
+            var list = await Service.GetOrdersAsync(Business.ID, paging, startDate ?? DateTime.Now, endDate ?? DateTime.Now);
             return Json(new {
                 rows = list,
                 count = paging.RecordCount
             });
+        }
+        /// <summary>
+        /// 获取堂食订单详情
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetOrder(int id)
+        {
+            var order = await Service.GetOrderAsync(id);
+            return Json(order);
+        }
+        /// <summary>
+        /// 订单详情
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> OrderDetail(int id)
+        {
+            return PartialView(await Service.GetOrderAsync(id));
         }
 
     }

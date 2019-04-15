@@ -158,7 +158,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        List<object> GetProductTree(int id);
+        List<object> GetProductTree(int id, bool isSetMeal = false);
         /// <summary>
         /// 复制商品
         /// </summary>

@@ -7,7 +7,18 @@
         { name: "满意", value: 4, check: true },
         { name: "非常满意", value: 8, check: true },
         { name: "无可挑剔", value: 16, check: true }
-    ], end = new Date(), start = new Date(end - 7 * 24 * 60 * 60 * 1000);
+    ], end = new Date(), start = new Date(end - 7 * 24 * 60 * 60 * 1000),
+        template = `
+        <div class="row form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-xs-3">
+                    <span class="require">回复内容：</span>
+                </label>
+                <div class="col-xs-8">
+                    <textarea class="form-control" id="replycontent" style="height: 200px;" />
+                </div>
+            </div>
+        </div>`;
     if (pageObj.stores) {
         pageObj.stores.unshift({ item1: 0, item2: "全部" });
     }
@@ -108,6 +119,30 @@
                     .catch(function (err) {
                         $.alert(err);
                     });
+            },
+            reply: function (comment) {
+                $.view({
+                    title: "回复评论",
+                    footDisplay: "block",
+                    template,
+                    submit: function () {
+                        var content = $.trim($("#replycontent").val());
+                        if (!content) {
+                            $.alert("请输入回复内容");
+                            return;
+                        }
+                        axios.put(`/comment/reply/${comment.id}?content=${content}`)
+                            .then(function (res) {
+                                if (!res.data.success) {
+                                    $.alert("回复失败，请刷新后重试");
+                                    return;
+                                }
+                                $.alert("回复成功", "success");
+                                comment.replyContent = content;
+                            })
+                            .catch(function (err) { $.alert(err); });
+                    }
+                });
             }
         },
         created: function () {

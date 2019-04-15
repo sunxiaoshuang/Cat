@@ -11,26 +11,32 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 正在点单
         /// </summary>
+        [Description("正在点单")]
         Ordering = 1,
         /// <summary>
         /// 用餐中
         /// </summary>
+        [Description("用餐中")]
         Eating = 2,
         /// <summary>
         /// 已结算
         /// </summary>
+        [Description("已结算")]
         Settled = 4,
         /// <summary>
         /// 反结算
         /// </summary>
+        [Description("反结算")]
         UnSettled = 8,
         /// <summary>
         /// 已取消
         /// </summary>
+        [Description("已取消")]
         Cancel = 16,
         /// <summary>
         /// 已退款
         /// </summary>
+        [Description("已退款")]
         Refunded = 32,
 
 

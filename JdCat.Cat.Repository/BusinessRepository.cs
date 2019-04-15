@@ -549,69 +549,73 @@ namespace JdCat.Cat.Repository
             printer.FoodIds = ids;
             Context.SaveChanges();
         }
-        public List<DeskType> GetDeskTypes(int id)
-        {
-            var types = Context.DeskTypes
-                .Include(a => a.Desks)
-                .AsNoTracking()
-                .Where(a => a.BusinessId == id && !a.IsDelete)
-                .ToList();
-            foreach (var type in types)
-            {
-                if (type.Desks == null) continue;
-                var deleteList = type.Desks.Where(a => a.IsDelete).ToList();
-                foreach (var desk in deleteList)
-                {
-                    type.Desks.Remove(desk);
-                }
-            }
-            return types;
-        }
-        public DeskType SaveDeskType(DeskType type)
-        {
-            Context.DeskTypes.Add(type);
-            Context.SaveChanges();
-            return type;
-        }
-        public DeskType UpdateDeskType(DeskType type)
-        {
-            var entity = Context.DeskTypes.FirstOrDefault(a => a.ID == type.ID);
-            if (entity == null) return null;
-            entity.Name = type.Name;
-            entity.Sort = type.Sort;
-            Context.SaveChanges();
-            return entity;
-        }
-        public void DeleteDeskType(int id)
-        {
-            var entity = Context.DeskTypes.FirstOrDefault(a => a.ID == id);
-            if (entity == null) return;
-            entity.IsDelete = true;
-            Context.SaveChanges();
-        }
-        public Desk SaveDesk(Desk desk)
-        {
-            Context.Desks.Add(desk);
-            Context.SaveChanges();
-            return desk;
-        }
-        public Desk UpdateDesk(Desk desk)
-        {
-            var entity = Context.Desks.FirstOrDefault(a => a.ID == desk.ID);
-            if (entity == null) return null;
-            entity.Name = desk.Name;
-            entity.Quantity = desk.Quantity;
-            Context.SaveChanges();
-            return entity;
-        }
-        public void DeleteDesk(int id)
-        {
-            var entity = Context.Desks.FirstOrDefault(a => a.ID == id);
-            if (entity == null) return;
-            entity.IsDelete = true;
-            Context.SaveChanges();
-        }
 
+        #region 餐桌处理
+
+        //public List<DeskType> GetDeskTypes(int id)
+        //{
+        //    var types = Context.DeskTypes
+        //        .Include(a => a.Desks)
+        //        .AsNoTracking()
+        //        .Where(a => a.BusinessId == id && !a.IsDelete)
+        //        .ToList();
+        //    foreach (var type in types)
+        //    {
+        //        if (type.Desks == null) continue;
+        //        var deleteList = type.Desks.Where(a => a.IsDelete).ToList();
+        //        foreach (var desk in deleteList)
+        //        {
+        //            type.Desks.Remove(desk);
+        //        }
+        //    }
+        //    return types;
+        //}
+        //public DeskType SaveDeskType(DeskType type)
+        //{
+        //    Context.DeskTypes.Add(type);
+        //    Context.SaveChanges();
+        //    return type;
+        //}
+        //public DeskType UpdateDeskType(DeskType type)
+        //{
+        //    var entity = Context.DeskTypes.FirstOrDefault(a => a.ID == type.ID);
+        //    if (entity == null) return null;
+        //    entity.Name = type.Name;
+        //    entity.Sort = type.Sort;
+        //    Context.SaveChanges();
+        //    return entity;
+        //}
+        //public void DeleteDeskType(int id)
+        //{
+        //    var entity = Context.DeskTypes.FirstOrDefault(a => a.ID == id);
+        //    if (entity == null) return;
+        //    entity.IsDelete = true;
+        //    Context.SaveChanges();
+        //}
+        //public Desk SaveDesk(Desk desk)
+        //{
+        //    Context.Desks.Add(desk);
+        //    Context.SaveChanges();
+        //    return desk;
+        //}
+        //public Desk UpdateDesk(Desk desk)
+        //{
+        //    var entity = Context.Desks.FirstOrDefault(a => a.ID == desk.ID);
+        //    if (entity == null) return null;
+        //    entity.Name = desk.Name;
+        //    entity.Quantity = desk.Quantity;
+        //    Context.SaveChanges();
+        //    return entity;
+        //}
+        //public void DeleteDesk(int id)
+        //{
+        //    var entity = Context.Desks.FirstOrDefault(a => a.ID == id);
+        //    if (entity == null) return;
+        //    entity.IsDelete = true;
+        //    Context.SaveChanges();
+        //}
+
+        #endregion
 
         /// <summary>
         /// 验证满减活动输入是否正确

@@ -8,6 +8,7 @@ using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using JdCat.Cat.Common;
 using log4net;
+using System.Threading.Tasks;
 
 namespace JdCat.Cat.Repository
 {
@@ -23,16 +24,15 @@ namespace JdCat.Cat.Repository
         {
             return _context.Set<T>().Count();
         }
-        public int Delete(T entity, bool commit = true)
-        {
-            _context.Set<T>().Remove(entity);
-            if (commit) return Commit();
-            return 0;
-        }
         public int Delete<TEntity>(params TEntity[] entities) where TEntity : BaseEntity
         {
             Context.RemoveRange(entities);
             return Context.SaveChanges();
+        }
+        public async Task<int> DeleteAsync<TEntity>(params TEntity[] entities) where TEntity : BaseEntity
+        {
+            Context.RemoveRange(entities);
+            return await Context.SaveChangesAsync();
         }
         public T Get(Expression<Func<T, bool>> predicate)
         {
@@ -42,6 +42,14 @@ namespace JdCat.Cat.Repository
         {
             return Context.Set<T>().SingleOrDefault(a => a.ID == id);
         }
+        public TEntity Get<TEntity>(int id) where TEntity : BaseEntity
+        {
+            return Context.Set<TEntity>().SingleOrDefault(a => a.ID == id);
+        }
+        public async Task<TEntity> GetAsync<TEntity>(int id) where TEntity : BaseEntity
+        {
+            return await Context.Set<TEntity>().SingleOrDefaultAsync(a => a.ID == id);
+        }
         public IQueryable<T> GetAll(Expression<Func<T, bool>> predicate = null)
         {
             return predicate == null ? _context.Set<T>() : _context.Set<T>().Where(predicate);
@@ -50,6 +58,12 @@ namespace JdCat.Cat.Repository
         {
             Context.Add(entity);
             Context.SaveChanges();
+            return entity;
+        }
+        public async Task<TEntity> AddAsync<TEntity>(TEntity entity) where TEntity : BaseEntity
+        {
+            await Context.AddAsync(entity);
+            await Context.SaveChangesAsync();
             return entity;
         }
         public int Update<TEntity>(TEntity entity, IEnumerable<string> fieldNames = null, bool commit = true) where TEntity : BaseEntity
@@ -69,9 +83,30 @@ namespace JdCat.Cat.Repository
             if (commit) return Commit();
             return 0;
         }
+        public async Task<int> UpdateAsync<TEntity>(TEntity entity, IEnumerable<string> fieldNames = null, bool commit = true) where TEntity : BaseEntity
+        {
+            if (fieldNames == null || fieldNames.Count() == 0)
+            {
+                _context.Entry(entity).State = EntityState.Modified;
+            }
+            else
+            {
+                _context.Attach(entity);
+                foreach (var field in fieldNames)
+                {
+                    _context.Entry(entity).Property(field).IsModified = true;
+                }
+            }
+            if (commit) return await CommitAsync();
+            return 0;
+        }
         public int Commit()
         {
             return _context.SaveChanges();
+        }
+        public async Task<int> CommitAsync()
+        {
+            return await _context.SaveChangesAsync();
         }
         public DbSet<TEntity> Set<TEntity>() where TEntity : class
         {

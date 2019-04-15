@@ -61,6 +61,9 @@ namespace JdCat.Cat.Model
         public DbSet<TangOrderProduct> TangOrderProducts { get; set; }
         public DbSet<Staff> Staffs { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
+        public DbSet<StaffPost> StaffPosts { get; set; }
+        public DbSet<SystemMark> SystemMarks { get; set; }
+        public DbSet<CookProductRelative> CookProductRelatives { get; set; }
 
 
         /// <summary>

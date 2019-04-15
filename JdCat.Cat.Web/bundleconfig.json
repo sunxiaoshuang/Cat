@@ -372,15 +372,45 @@
   },
   // 堂食
   {
-    "outputFileName": "wwwroot/css/store/order.min.css",
-    "inputFiles": [
-      "wwwroot/css/store/order.css"
-    ]
-  },
-  {
     "outputFileName": "wwwroot/js/store/order.min.js",
     "inputFiles": [
       "wwwroot/js/store/order.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/tang/staffPost.min.js",
+    "inputFiles": [
+      "wwwroot/js/tang/staffPost.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/tang/staff.min.js",
+    "inputFiles": [
+      "wwwroot/js/tang/staff.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/tang/mark.min.js",
+    "inputFiles": [
+      "wwwroot/js/tang/mark.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/tang/payment.min.js",
+    "inputFiles": [
+      "wwwroot/js/tang/payment.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/tang/desk.min.js",
+    "inputFiles": [
+      "wwwroot/js/tang/desk.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/tang/printer.min.js",
+    "inputFiles": [
+      "wwwroot/js/tang/printer.js"
     ]
   }
 

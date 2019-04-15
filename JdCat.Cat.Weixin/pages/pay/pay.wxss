@@ -190,3 +190,23 @@ page {
   font-weight: 400;
   padding-left: 10rpx;
 }
+.invoice {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  padding: 20rpx;
+  border-bottom: 1rpx solid #ECECEC;
+  align-items: center;
+}
+.invoice view {
+  min-width: 180rpx;
+}
+.invoice .switch {
+  text-align: right;
+}
+.invoice input {
+  border: 1px solid #eee;
+  flex-grow: 1;
+  margin-left: 20rpx;
+  padding: 10rpx;
+}

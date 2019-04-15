@@ -470,7 +470,7 @@ namespace JdCat.Cat.Repository
             }
             return result;
         }
-        public List<object> GetProductTree(int id)
+        public List<object> GetProductTree(int id, bool isSetMeal = false)
         {
             var types = Context.ProductTypes
                 .Include(a => a.Products)
@@ -479,7 +479,7 @@ namespace JdCat.Cat.Repository
                 {
                     a.Name,
                     a.ID,
-                    List = a.Products.Where(b => b.Status != ProductStatus.Delete && b.Feature != ProductFeature.SetMeal).Select(b => new { b.Name, b.ID })
+                    List = a.Products.Where(b => b.Status != ProductStatus.Delete && (isSetMeal || b.Feature != ProductFeature.SetMeal)).Select(b => new { b.Name, b.ID })
                 }).ToList();
             return types.Select(a =>
             {

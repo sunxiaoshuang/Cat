@@ -4,19 +4,14 @@
 }
 @section Styles {
     <environment include="Development">
-        <link href="~/css/store/order.css" rel="stylesheet" />
         <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
     </environment>
     <environment exclude="Development">
-        <link href="~/css/store/order.min.css" rel="stylesheet" asp-append-version="true" />
         <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
     </environment>
 
 }
 @section Scripts {
-    <script>
-
-    </script>
     <environment include="Development">
         <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
         <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
@@ -31,7 +26,7 @@
 <div class="mainframe" id="app">
     <div class="container-fluid">
         <div class="row">
-            <div class="panel panel-default">
+            <div class="panel panel-default" style="margin-bottom: 1px;">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <span class="title">今日订单</span>
@@ -52,24 +47,23 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
             <div class="panel panel-default">
-                <div class="panel-body">
+                <div class="panel-body" style="min-height:400px;">
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th width="60">流水号</th>
-                                <th width="205">订单编号</th>
-                                <th width="150">下单时间</th>
+                                <th width="70">流水号</th>
+                                <th width="220">订单编号</th>
+                                <th width="190">下单时间</th>
                                 <th>餐台</th>
                                 <th>服务员</th>
                                 <th width="80">用餐人数</th>
                                 <th>支付方式</th>
-                                <th width="150">支付时间</th>
+                                <th width="190">支付时间</th>
                                 <th width="100">订单状态</th>
                                 <th>餐位费</th>
                                 <th>总消费</th>
+                                <th width="100"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -89,11 +83,14 @@
                                 <td>
                                     <span class="fa fa-rmb" v-text="item.amount"></span>
                                 </td>
+                                <td>
+                                    <a @@click="catInfo(item)" class="text-primary">查看</a>
+                                </td>
                             </tr>
                         </tbody>
-                        <tfoot v-if="items == null || item.length == 0">
+                        <tfoot v-if="items == null || items.length == 0">
                             <tr>
-                                <th colspan="11">暂无任何订单数据...</th>
+                                <th colspan="12">暂无任何订单数据...</th>
                             </tr>
                         </tfoot>
                     </table>

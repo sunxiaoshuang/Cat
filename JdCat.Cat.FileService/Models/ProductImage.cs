@@ -120,7 +120,7 @@ namespace JdCat.Cat.FileService.Models
             }
             if (waterSign)
             {
-                WaterSign(Path.Combine(dir, filename), "简单猫科技");
+                WaterSign(Path.Combine(dir, filename), "Jiandanmao");
             }
             return filename;
         }
@@ -161,7 +161,7 @@ namespace JdCat.Cat.FileService.Models
             //
             //建立一个bitmap，和我们需要加水印的图片一样大小
             var bmPhoto = new Bitmap(phWidth, phHeight, img.PixelFormat);
-            UtilHelper.Log($"坐标：{img.HorizontalResolution},{img.VerticalResolution}");
+            //UtilHelper.Log($"坐标：{img.HorizontalResolution},{img.VerticalResolution}");
 
             //这里直接将我们需要添加水印的图片的分辨率赋给了bitmap
             //bmPhoto.SetResolution(img.re, img.VerticalResolution);

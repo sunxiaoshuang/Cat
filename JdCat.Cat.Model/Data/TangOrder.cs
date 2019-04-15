@@ -69,10 +69,6 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public virtual PaymentType PaymentType { get; set; }
         /// <summary>
-        /// 支付方式id（本地）
-        /// </summary>
-        public string PaymentTypeObjectId { get; set; }
-        /// <summary>
         /// 支付时间
         /// </summary>
         public DateTime? PayTime { get; set; }
@@ -80,10 +76,6 @@ namespace JdCat.Cat.Model.Data
         /// 退款原因
         /// </summary>
         public string CancelReason { get; set; }
-        /// <summary>
-        /// 所属员工id（本地）
-        /// </summary>
-        public string StaffObjectId { get; set; }
         /// <summary>
         /// 所属员工id（远程）
         /// </summary>

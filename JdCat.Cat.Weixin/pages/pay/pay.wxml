@@ -66,9 +66,23 @@
         <view>实付款</view>
         <view class="price">￥ {{total}}</view>
     </view>
+    <view class="invoice">
+        <view>是否开发票</view>
+        <view class="switch">
+            <switch bindchange="changeInvoice" checked="{{isInvoice}}" />
+        </view>
+    </view>
+    <view class="invoice" wx:if="{{isInvoice}}">
+        <view>公司名称：</view>
+        <input type="text" bindinput="inputField" value="{{invoiceName}}" focus="{{invoiceNameFocus}}" data-fieldName="invoiceName" bindconfirm="completeName"></input>
+    </view>
+    <view class="invoice" wx:if="{{isInvoice}}">
+        <view>纳税识别码：</view>
+        <input type="text" bindinput="inputField" value="{{invoiceTax}}" focus="{{invoiceTaxFocus}}" data-fieldName="invoiceTax"></input>
+    </view>
     <view class="mark">
         <view>买家留言：</view>
-        <input type="text" cursor-spacing="10" bindblur="blurRemark" style="padding-left: 30rpx;" placeholder="口味偏好等要求（请勿填写手机号）"></input>
+        <input type="text" cursor-spacing="10" bindinput="inputField" data-fieldName="remark" style="padding-left: 30rpx;" placeholder="口味偏好等要求（请勿填写手机号）"></input>
     </view>
     <view style="height: 300px;">
         

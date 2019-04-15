@@ -384,9 +384,9 @@ namespace JdCat.Cat.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetProductTree()
+        public IActionResult GetProductTree([FromQuery]int? isSetMeal)
         {
-            return Json(Service.GetProductTree(Business.ID));
+            return Json(Service.GetProductTree(Business.ID, isSetMeal.HasValue));
         }
 
         /// <summary>

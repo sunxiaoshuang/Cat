@@ -70,7 +70,7 @@
             };
             $.view = function (name, title, url, template) {
                 var obj = {
-                    title: title, url: url, template: template,
+                    title: title, url: url, template: template, name,
                     footDisplay: "none", closeText: "关闭", saveText: "保存", dialogWidth: 600
                 };
                 if (arguments.length === 1) {
@@ -234,7 +234,7 @@
         dateOptions: {
             format: 'yyyy-mm-dd',
             autoclose: true,
-            maxView: 1,
+            maxView: 4,
             minView: 2,
             todayBtn: true,
             todayHighlight: true,

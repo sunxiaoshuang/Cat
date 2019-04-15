@@ -14,8 +14,12 @@ namespace JdCat.Cat.Model.Enum
         /// </summary>
         TakeOut = 0,
         /// <summary>
-        /// 堂食
+        /// 快餐
         /// </summary>
-        Here = 1
+        FastFood = 1,
+        /// <summary>
+        /// 中餐
+        /// </summary>
+        ChineseFood = 2
     }
 }

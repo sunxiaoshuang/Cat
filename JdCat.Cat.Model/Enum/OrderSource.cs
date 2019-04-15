@@ -11,10 +11,12 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 收银台
         /// </summary>
+        [Description("收银台")]
         Cashier = 1,
         /// <summary>
         /// 扫码点餐
         /// </summary>
+        [Description("扫码点餐")]
         Scan = 2
     }
 }

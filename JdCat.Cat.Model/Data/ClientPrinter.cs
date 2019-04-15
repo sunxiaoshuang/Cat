@@ -6,7 +6,7 @@ using System.Text;
 namespace JdCat.Cat.Model.Data
 {
     /// <summary>
-    /// 城市名称与编码对应表
+    /// 店内打印机
     /// </summary>
     [Table("ClientPrinter")]
     public class ClientPrinter : BaseEntity

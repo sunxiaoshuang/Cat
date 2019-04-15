@@ -49,6 +49,34 @@ namespace JdCat.Cat.Web.Controllers
             return Json(result);
         }
         /// <summary>
+        /// 员工登录
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="pwd"></param>
+        /// <param name="businessId"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> LoginStaff(int id, [FromQuery]string pwd, [FromServices]IClientRepository service)
+        {
+            var result = new JsonData();
+            var staff = await service.GetAsync<Staff>(id);
+            if(staff == null || staff.Status == Model.Enum.EntityStatus.Deleted)
+            {
+                result.Msg = "用户不存在";
+                return Json(result);
+            }
+            if(UtilHelper.MD5Encrypt(pwd) != staff.Password)
+            {
+                result.Msg = "密码错误";
+                return Json(result);
+            }
+            result.Success = true;
+            result.Msg = "登录成功";
+            staff.StaffPost = await service.GetAsync<StaffPost>(staff.StaffPostId);
+            result.Data = staff;
+            return Json(result);
+        }
+        /// <summary>
         /// 获取商户信息
         /// </summary>
         /// <param name="id"></param>
@@ -58,20 +86,16 @@ namespace JdCat.Cat.Web.Controllers
         {
             return Json(new JsonData { Data = service.Get(id) });
         }
+
         /// <summary>
-        /// 客户端数据初始化
+        /// 客户端数据同步
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult InitClient(int id, [FromServices]IBusinessRepository service, [FromServices]IProductRepository productRepository)
+        [HttpGet]
+        public async Task<IActionResult> Synchronous(int id, [FromServices]IClientRepository service)
         {
-            var desk = service.GetDeskTypes(id);                // 餐桌信息
-            var Types = productRepository.GetTypes(new Business { ID = id });
-            return Json(new
-            {
-                Desk = desk,
-                Types
-            });
+            return Json(await service.GetSynchronousDataAsync(id));
         }
 
         /// <summary>
@@ -105,6 +129,25 @@ namespace JdCat.Cat.Web.Controllers
             var order = service.GetOrderForDetail(id);
             return Json(new JsonData { Success = true, Data = order });
         }
+
+        /// <summary>
+        /// 客户端数据初始化
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        //public IActionResult InitClient(int id, [FromServices]IBusinessRepository service, [FromServices]IProductRepository productRepository)
+        //{
+        //    var desk = service.GetDeskTypes(id);                // 餐桌信息
+        //    var Types = productRepository.GetTypes(new Business { ID = id });
+        //    return Json(new
+        //    {
+        //        Desk = desk,
+        //        Types
+        //    });
+        //}
+
+        #region 打印机处理不再使用这里的代码
+
         /// <summary>
         /// 获取打印机列表
         /// </summary>
@@ -197,120 +240,125 @@ namespace JdCat.Cat.Web.Controllers
             service.PutPrinterProducts(id, ids);
             return Json(new JsonData { Success = true, Msg = "ok" });
         }
-        /// <summary>
-        /// 保存餐桌类型
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="service"></param>
-        /// <returns></returns>
-        public IActionResult SaveDeskType([FromBody]DeskType type, [FromServices]IBusinessRepository service)
-        {
-            service.SaveDeskType(type);
-            return Json(new JsonData
-            {
-                Success = true,
-                Data = type
-            });
-        }
-        /// <summary>
-        /// 修改餐桌类型
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="service"></param>
-        /// <returns></returns>
-        public IActionResult UpdateDeskType([FromBody]DeskType type, [FromServices]IBusinessRepository service)
-        {
-            service.UpdateDeskType(type);
-            return Json(new JsonData
-            {
-                Success = true,
-                Data = type
-            });
-        }
-        /// <summary>
-        /// 删除餐桌类型
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="service"></param>
-        /// <returns></returns>
-        public IActionResult DeleteDeskType(int id, [FromServices]IBusinessRepository service)
-        {
-            service.DeleteDeskType(id);
-            return Json(new JsonData
-            {
-                Success = true,
-                Msg = "删除成功"
-            });
-        }
-        /// <summary>
-        /// 保存餐桌
-        /// </summary>
-        /// <param name="desk"></param>
-        /// <param name="service"></param>
-        /// <returns></returns>
-        public IActionResult SaveDesk([FromBody]Desk desk, [FromServices]IBusinessRepository service)
-        {
-            service.SaveDesk(desk);
-            return Json(new JsonData
-            {
-                Success = true,
-                Data = desk
-            });
-        }
-        /// <summary>
-        /// 修改餐桌
-        /// </summary>
-        /// <param name="desk"></param>
-        /// <param name="service"></param>
-        /// <returns></returns>
-        public IActionResult UpdateDesk([FromBody]Desk desk, [FromServices]IBusinessRepository service)
-        {
-            service.UpdateDesk(desk);
-            return Json(new JsonData
-            {
-                Success = true,
-                Data = desk
-            });
-        }
-        /// <summary>
-        /// 删除餐桌
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="service"></param>
-        /// <returns></returns>
-        public IActionResult DeleteDesk(int id, [FromServices]IBusinessRepository service)
-        {
-            service.DeleteDesk(id);
-            return Json(new JsonData
-            {
-                Success = true,
-                Msg = "删除成功"
-            });
-        }
+        #endregion
 
-        #region 上传数据接口
-        public IActionResult UploadStaff([FromBody]IEnumerable<Staff> list, [FromServices]IClientRepository service)
-        {
-            int count = 0;
-            if (list != null) count = service.UploadData(list);
-            return Json(new JsonData
-            {
-                Success = true,
-                Msg = $"更新员工记录：{count}条。",
-                Data = list?.Select(a => new { a.ID, a.ObjectId })
-            });
-        }
-        public IActionResult UploadPaymentType([FromBody]IEnumerable<PaymentType> list, [FromServices]IClientRepository service)
-        {
-            int count = 0;
-            if (list != null) count = service.UploadData(list);
-            return Json(new JsonData
-            {
-                Success = true,
-                Msg = $"更新支付类型记录：{count}条。",
-                Data = list?.Select(a => new { a.ID, a.ObjectId })
-            });
-        }
+        #region 餐桌的处理不再使用这里的代码
+
+        ///// <summary>
+        ///// 保存餐桌类型
+        ///// </summary>
+        ///// <param name="type"></param>
+        ///// <param name="service"></param>
+        ///// <returns></returns>
+        //public IActionResult SaveDeskType([FromBody]DeskType type, [FromServices]IBusinessRepository service)
+        //{
+        //    service.SaveDeskType(type);
+        //    return Json(new JsonData
+        //    {
+        //        Success = true,
+        //        Data = type
+        //    });
+        //}
+        ///// <summary>
+        ///// 修改餐桌类型
+        ///// </summary>
+        ///// <param name="type"></param>
+        ///// <param name="service"></param>
+        ///// <returns></returns>
+        //public IActionResult UpdateDeskType([FromBody]DeskType type, [FromServices]IBusinessRepository service)
+        //{
+        //    service.UpdateDeskType(type);
+        //    return Json(new JsonData
+        //    {
+        //        Success = true,
+        //        Data = type
+        //    });
+        //}
+        ///// <summary>
+        ///// 删除餐桌类型
+        ///// </summary>
+        ///// <param name="type"></param>
+        ///// <param name="service"></param>
+        ///// <returns></returns>
+        //public IActionResult DeleteDeskType(int id, [FromServices]IBusinessRepository service)
+        //{
+        //    service.DeleteDeskType(id);
+        //    return Json(new JsonData
+        //    {
+        //        Success = true,
+        //        Msg = "删除成功"
+        //    });
+        //}
+        ///// <summary>
+        ///// 保存餐桌
+        ///// </summary>
+        ///// <param name="desk"></param>
+        ///// <param name="service"></param>
+        ///// <returns></returns>
+        //public IActionResult SaveDesk([FromBody]Desk desk, [FromServices]IBusinessRepository service)
+        //{
+        //    service.SaveDesk(desk);
+        //    return Json(new JsonData
+        //    {
+        //        Success = true,
+        //        Data = desk
+        //    });
+        //}
+        ///// <summary>
+        ///// 修改餐桌
+        ///// </summary>
+        ///// <param name="desk"></param>
+        ///// <param name="service"></param>
+        ///// <returns></returns>
+        //public IActionResult UpdateDesk([FromBody]Desk desk, [FromServices]IBusinessRepository service)
+        //{
+        //    service.UpdateDesk(desk);
+        //    return Json(new JsonData
+        //    {
+        //        Success = true,
+        //        Data = desk
+        //    });
+        //}
+        ///// <summary>
+        ///// 删除餐桌
+        ///// </summary>
+        ///// <param name="type"></param>
+        ///// <param name="service"></param>
+        ///// <returns></returns>
+        //public IActionResult DeleteDesk(int id, [FromServices]IBusinessRepository service)
+        //{
+        //    service.DeleteDesk(id);
+        //    return Json(new JsonData
+        //    {
+        //        Success = true,
+        //        Msg = "删除成功"
+        //    });
+        //}
+        #endregion
+
+        #region 上传数据接口，客户端仅上传订单数据
+        //public IActionResult UploadStaff([FromBody]IEnumerable<Staff> list, [FromServices]IClientRepository service)
+        //{
+        //    int count = 0;
+        //    if (list != null) count = service.UploadData(list);
+        //    return Json(new JsonData
+        //    {
+        //        Success = true,
+        //        Msg = $"更新员工记录：{count}条。",
+        //        Data = list?.Select(a => new { a.ID, a.ObjectId })
+        //    });
+        //}
+        //public IActionResult UploadPaymentType([FromBody]IEnumerable<PaymentType> list, [FromServices]IClientRepository service)
+        //{
+        //    int count = 0;
+        //    if (list != null) count = service.UploadData(list);
+        //    return Json(new JsonData
+        //    {
+        //        Success = true,
+        //        Msg = $"更新支付类型记录：{count}条。",
+        //        Data = list?.Select(a => new { a.ID, a.ObjectId })
+        //    });
+        //}
         public IActionResult UploadTangOrder([FromBody]IEnumerable<TangOrder> list, [FromServices]IClientRepository service)
         {
             int count = 0;

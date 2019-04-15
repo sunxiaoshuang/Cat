@@ -15,7 +15,10 @@ Page({
     couponQuantity: 0,
     coupon: {},
     saleFullReduce: {},
-    packagePrice: 0
+    packagePrice: 0,
+    isInvoice: false,
+    invoiceName: "",
+    invoiceTax: ""
   },
   onLoad: function () {
     /** 页面加载时操作：
@@ -27,7 +30,6 @@ Page({
      */
     var cartList = wx.getStorageSync('cartList') || [],
       carts = [],
-      business = qcloud.getSession().business,
       productCost = 0,
       tablewareQuantity = 0,
       packagePrice = +wx.getStorageSync("packagePrice");
@@ -66,7 +68,10 @@ Page({
       return false;
     });
 
-    var freight = wx.getStorageSync("orderFreight");
+    var freight = wx.getStorageSync("orderFreight"),
+      invoiceName = wx.getStorageSync("invoiceName"),
+      invoiceTax = wx.getStorageSync("invoiceTax");
+
 
     this.setData({
       cartList: carts,
@@ -74,7 +79,10 @@ Page({
       freight,
       couponQuantity: coupons.length,
       saleFullReduce: this.data.saleFullReduce,
-      packagePrice
+      packagePrice,
+      invoiceName,
+      invoiceTax,
+      isInvoice: !!invoiceName
     });
   },
   onShow: function () {
@@ -103,8 +111,9 @@ Page({
     }
   },
   changeAddress: function () { // 改变地址后，重新计算配送费
-    var business = qcloud.getSession().business, freights = wx.getStorageSync("freights");
-    if(!freights || freights.length === 0) {
+    var business = qcloud.getSession().business,
+      freights = wx.getStorageSync("freights");
+    if (!freights || freights.length === 0) {
       this.data.freight = business.freight;
     } else {
       var freight = 0;
@@ -158,9 +167,6 @@ Page({
       url: `/pages/user/selectcoupon/selectcoupon?total=${this.data.productCost}&id=${this.data.coupon.id}`
     });
   },
-  blurRemark: function (e) {
-    this.data.remark = e.detail.value;
-  },
   bindPickerChange: function (e) {
     this.setData({
       tablewareQuantity: this.data.tablewareQuantitys[e.detail.value]
@@ -180,6 +186,16 @@ Page({
       util.showError("地址超出商家配送范围");
       return;
     }
+    var remark = this.data.remark || "";
+    if (this.data.isInvoice) {
+      if (!this.data.invoiceName || !this.data.invoiceTax) {
+        util.showError("请填写公司名称、纳税识别码");
+        return;
+      }
+      wx.setStorageSync("invoiceName", this.data.invoiceName);
+      wx.setStorageSync("invoiceTax", this.data.invoiceTax);
+      remark += `(开票公司：${this.data.invoiceName}，识别码：${this.data.invoiceTax})`;
+    }
     var order = {
       price: this.data.total,
       oldPrice: this.data.oldPrice,
@@ -190,7 +206,7 @@ Page({
       lng: this.data.address.lng,
       phone: this.data.address.phone,
       gender: this.data.address.gender,
-      remark: this.data.remark,
+      remark: remark,
       tablewareQuantity: this.data.tablewareQuantity,
       cityCode: business.cityCode,
       userId: user.id,
@@ -202,7 +218,9 @@ Page({
       products: [],
       openId: user.openId,
       distance: +distance.toFixed(0),
-      packagePrice: +this.data.packagePrice
+      packagePrice: +this.data.packagePrice,
+      invoiceName: this.data.invoiceName,
+      invoiceTax: this.data.invoiceTax,
     };
 
     this.data.cartList.forEach(a => {
@@ -252,6 +270,23 @@ Page({
       }
     });
     wx.setStorageSync("myCoupon", myCoupon);
+  },
+  changeInvoice: function () {
+    var result = !this.data.isInvoice;
+    this.setData({
+      isInvoice: result,
+      invoiceNameFocus: result
+    });
+
+  },
+  inputField: function (e) {
+    var field = e.currentTarget.dataset.fieldname;
+    this.data[field] = e.detail.value;
+  },
+  completeName: function () {
+    this.setData({
+      invoiceTaxFocus: true
+    });
   }
 
 });

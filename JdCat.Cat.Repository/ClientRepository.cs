@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Http;
@@ -47,11 +48,11 @@ namespace JdCat.Cat.Repository
     
         public int UploadOrder(IEnumerable<TangOrder> list)
         {
-            var paymentTypeIds = list.Select(a => a.PaymentTypeObjectId).Distinct();
-            var paymentTypes = Context.PaymentTypes.Where(a => paymentTypeIds.Contains(a.ObjectId)).ToList();
+            var paymentIds = list.Select(a => a.PaymentTypeId).Distinct();
+            var paymentTypes = Context.PaymentTypes.Where(a => paymentIds.Contains(a.ID)).ToList();
             foreach (var item in list)
             {
-                item.PaymentTypeId = paymentTypes.FirstOrDefault(a => a.ObjectId == item.PaymentTypeObjectId).ID;
+                item.PaymentTypeId = paymentTypes.FirstOrDefault(a => a.ID == item.PaymentTypeId).ID;
                 if (item.StaffId == 0) item.StaffId = null;
             }
             return UploadData(list);
@@ -66,6 +67,30 @@ namespace JdCat.Cat.Repository
                 products.ForEach(a => a.OrderId = order.ID);
             });
             return UploadData(list);
+        }
+
+        public async Task<dynamic> GetSynchronousDataAsync(int businessId)
+        {
+            dynamic data = new ExpandoObject();
+            /*
+             * 1. 同步岗位信息
+             * 2. 同步员工信息
+             * 3. 同步支付类型
+             * 4. 同步餐台信息
+             * 5. 同步系统备注
+             * 6. 同步打印机
+             * 7. 同步菜单
+             */
+            data.Staffs = await Context.Staffs.Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).ToListAsync();
+            data.StaffPosts = await Context.StaffPosts.Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).ToListAsync();
+            data.Payments = await Context.PaymentTypes.Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).OrderBy(a => a.Sort).ToListAsync();
+            data.DeskTypes = await Context.DeskTypes.Where(a => a.BusinessId == businessId && a.Status != EntityStatus.Deleted).OrderBy(a => a.Sort).ToListAsync();
+            data.Desks = await Context.Desks.Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).ToListAsync();
+            data.Marks = await Context.SystemMarks.Where(a => a.BusinessId == businessId).ToListAsync();
+            data.Printers = await Context.ClientPrinters.Where(a => a.BusinessId == businessId).ToListAsync();
+            data.ProductTypes = await Context.ProductTypes.Where(a => a.BusinessId == businessId).OrderBy(a => a.Sort).ToListAsync();
+            data.Products = await Context.Products.Include(a => a.Formats).Include(a => a.Attributes).Include(a => a.Images).Where(a => a.BusinessId == businessId).ToListAsync();
+            return data;
         }
 
     }

@@ -120,6 +120,12 @@ namespace JdCat.Cat.IRepository
         /// <param name="business"></param>
         /// <returns></returns>
         IEnumerable<User> GetUsers(Business business);
+        /// <summary>
+        /// 获取用户评论（一年之内的）
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task<object> GetUserComments(int user);
 
     }
 }

@@ -67,5 +67,16 @@ namespace JdCat.Cat.Web.Controllers
             return Ok();
         }
 
+        [HttpPut]
+        public async Task<IActionResult> Reply(int id, [FromQuery]string content)
+        {
+            var comment = new OrderComment { ID = id, ReplyContent = content, ReplyTime = DateTime.Now };
+            var result = new JsonData
+            {
+                Success = await Service.UpdateAsync(comment, new List<string> { nameof(comment.ReplyContent), nameof(comment.ReplyTime) }) > 0
+            };
+            return Json(result);
+        }
+
     }
 }

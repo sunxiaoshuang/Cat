@@ -144,6 +144,7 @@ span.require {
 .margin-right-20 {
     margin-right: 20px;
 }
+
 .margin-left-20 {
     margin-left: 20px;
 }
@@ -1083,6 +1084,10 @@ ul.dropdown-menu.dropdown-messages li a div {
     padding: 0;
     margin: 0;
     overflow: hidden;
+}
+
+.padding-right-20 {
+    padding-right: 20px;
 }
 
 .margin-top-100 {
@@ -2180,9 +2185,74 @@ ul.select-type {
 .width-200 {
     width: 200px;
 }
+
 .width-300 {
     width: 300px;
 }
+
 .btn-primary {
     height: 34px;
+}
+
+.list-mark {
+    position: relative;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list-mark-item {
+    margin: 10px;
+    padding: 5px 10px;
+    border: 1px solid #ea7042;
+    border-radius: 10px;
+    float: left;
+}
+
+.open > .dropdown-toggle.btn-primary {
+    background-color: #ea7042;
+    border-color: #ea7042;
+}
+
+.desk-container {
+    border: 1px solid #e5e5e5;
+    margin-left: 20px;
+    min-height: 400px;
+}
+
+.desk {
+    float: left;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-around;
+    border: 1px solid #ea7042;
+    color: #ea7042;
+    border-radius: 5px;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.desk-name {
+    font-size: 2em;
+    height: 1.5em;
+    line-height: 1.5em;
+    font-weight: bold;
+}
+
+.desk-quantity {
+    width: 100%;
+    text-align: center;
+}
+
+.desk-operate {
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+    align-items: flex-end;
+    border-top: 1px solid #ea7042;
+    width: 100%;
+    text-align: center;
+    padding-top: 5px;
 }

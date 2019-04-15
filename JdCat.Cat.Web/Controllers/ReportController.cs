@@ -125,6 +125,37 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 厨师统计
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Cook()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 获取厨师统计数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetCookData([FromQuery]DateTime start, [FromQuery] DateTime end, [FromServices]IStoreRepository service)
+        {
+            var result = await service.GetCooksReportAsync(Business.ID, start, end.AddDays(1));
+            return Json(result ?? new List<Report_Cook>());
+        }
+        /// <summary>
+        /// 获取单个厨师的产出
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetSingleCookData(int id, [FromQuery]DateTime start, [FromQuery]DateTime end, [FromServices]IStoreRepository service)
+        {
+            var result = await service.GetSingleCookReportAsync(id, start, end.AddDays(1));
+            return Json(result ?? new List<Report_Cook>());
+        }
+
 
     }
 }

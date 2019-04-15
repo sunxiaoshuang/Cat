@@ -22,13 +22,28 @@ namespace JdCat.Cat.IRepository
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
         /// <returns></returns>
-        List<TangOrder> GetOrders(int businessId, PagingQuery paging, DateTime startDate, DateTime endDate);
+        Task<List<TangOrder>> GetOrdersAsync(int businessId, PagingQuery paging, DateTime startDate, DateTime endDate);
         /// <summary>
         /// 获取订单
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        TangOrder GetOrder(int id);
-
+        Task<TangOrder> GetOrderAsync(int id);
+        /// <summary>
+        /// 获取商户厨师报表
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<List<Report_Cook>> GetCooksReportAsync(int businessId, DateTime start, DateTime end);
+        /// <summary>
+        /// 获取单个厨师报表
+        /// </summary>
+        /// <param name="cookId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<List<Report_Cook>> GetSingleCookReportAsync(int cookId, DateTime start, DateTime end);
     }
 }

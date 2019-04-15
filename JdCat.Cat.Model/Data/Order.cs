@@ -165,6 +165,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string OpenId { get; set; }
         /// <summary>
+        /// 发票排头
+        /// </summary>
+        public string InvoiceName { get; set; }
+        /// <summary>
+        /// 发票税号
+        /// </summary>
+        public string InvoiceTax { get; set; }
+        /// <summary>
         /// 用户id
         /// </summary>
         public int? UserId { get; set; }
