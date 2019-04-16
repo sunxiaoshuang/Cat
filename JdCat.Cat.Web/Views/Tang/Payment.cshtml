@@ -1,0 +1,64 @@
+﻿
+@{
+    ViewData["Title"] = "支付方式";
+}
+
+@section Scripts {
+    <script>
+
+    </script>
+    <environment include="Development">
+        <script src="~/js/tang/payment.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/tang/payment.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8" style="padding-left: 0">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="title">@ViewData["Title"]</span>
+                            <a @@click="add()" class="text-primary pull-right">
+                                <span class="fa fa-plus"> 新增支付方式</span>
+                            </a>
+                        </h3>
+                    </div>
+                    <div class="panel-body" style="min-height: 400px;">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="90" class="text-center">支付排序</th>
+                                    <th class="text-center">支付名称</th>
+                                    <th width="200" class="text-center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in items">
+                                    <td v-text="item.sort" class="text-center"></td>
+                                    <td v-text="item.name" class="text-center"></td>
+                                    <td class="text-center">
+                                        <a @@click="modify(item)" class="text-primary margin-right-20">
+                                            <span class="fa fa-edit"> 设置排序码</span>
+                                        </a>
+                                        <a @@click="remove(item)" class="text-primary" v-show="item.category === 8">
+                                            <span class="fa fa-remove"> 删除</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot v-if="!items || items.length == 0">
+                                <tr>
+                                    <th colspan="3">未添加任何支付方式...</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

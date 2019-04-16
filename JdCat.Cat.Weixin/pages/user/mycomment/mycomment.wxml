@@ -1,0 +1,48 @@
+<wxs module="common" src="../../wxs/filters/common.wxs"></wxs>
+<view class="container">
+    <view class="comment" wx:for="{{comments}}" wx:key="" bindtap="cat" data-comment="{{item}}">
+        <view class="store">
+            <text>门店：{{item.name}}</text>
+            <text class="jdcat jdcat-right pull-right" style="color: #bbb; font-size: 1.2em"></text>
+        </view>
+        <view class="score">
+            <view class="score-item">
+                <view class="score-star">
+                    <text class="star text-gray">★★★★★</text>
+                    <text class="star text-primary">
+                        <text wx:for="{{common.filter.commentLevelFilter(item.orderScore)}}" wx:key="">★</text>
+                    </text>
+                </view>
+                <view class="score-name">
+                    <text>总体评分</text>
+                </view>
+            </view>
+            <view class="score-item">
+                <view class="score-star">
+                    <text class="star text-gray">★★★★★</text>
+                    <text class="star text-primary">
+                        <text wx:for="{{common.filter.commentLevelFilter(item.deliveryScore)}}" wx:key="">★</text>
+                    </text>
+                </view>
+                <view class="score-name">
+                    <text>配送评分</text>
+                </view>
+            </view>
+        </view>
+        <view class="comment-result" wx:if="{{item.commentResult}}">
+            <text class="jdcat jdcat-sign"></text>
+            <text>{{item.commentResult}}</text>
+        </view>
+        <view class="comment-result" wx:if="{{item.deliveryResult}}">
+            <text class="jdcat jdcat-delivery"></text>
+            <text>{{item.deliveryResult}}</text>
+        </view>
+        <view class="comment-content">
+            <text >评价内容：{{item.commentContent}}</text>
+            <text class="comment-time">{{item.createTime}}</text>
+        </view>
+        <view class="comment-reply" wx:if="{{item.replyContent}}">
+            <view >商家回复：{{item.replyContent}}</view>
+        </view>
+    </view>
+</view>

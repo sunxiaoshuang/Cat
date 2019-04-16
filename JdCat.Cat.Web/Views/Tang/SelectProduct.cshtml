@@ -1,0 +1,33 @@
+﻿<div class="container-fluid" id="bindPrinter">
+    <div class="row">
+        <div class="col-xs-12">
+            <p class="text-primary">注：套餐商品不单独绑定打印机，请勾选对应的套餐单品。</p>
+        </div>
+        <div class="col-xs-6">
+            
+            <ul class="list type">
+                <li v-for="item in typeList" @@click="open(item)">
+                    <i class="fa fa-folder-o" v-bind:class="item.checked ? 'fa-folder-open-o' : 'fa-folder-o'"></i>
+                    <span v-text="item.name"></span>
+                    <ul class="list product" v-show="item.checked" style="display: none;">
+                        <li v-for="product in item.list">
+                            <a @@click.stop="choice(product)" v-bind:class="{'selected': product.checked}">{{product.name}}</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="col-xs-1 center-container">
+            <i class="fa fa-angle-right" style="font-size: 200%;"></i>
+        </div>
+        <div class="col-xs-5">
+            <ul class="list productList">
+                <li v-for="(product, index) in productList">
+                    <span v-text="(index + 1) + '. ' + product.name"></span>
+                    <a @@click="remove(product)"><i class="fa fa-remove"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+

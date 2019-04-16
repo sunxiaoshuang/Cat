@@ -1,0 +1,80 @@
+﻿
+@{
+    ViewData["Title"] = "堂食管理";
+}
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    </environment>
+
+}
+@section Scripts {
+    <script>
+
+    </script>
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/tang/staffPost.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/tang/staffPost.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8" style="padding-left: 0">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="title">岗位管理</span>
+                            <a @@click="addPost()" class="text-primary pull-right">
+                                <span class="fa fa-plus"> 新增岗位</span>
+                            </a>
+                        </h3>
+                    </div>
+                    <div class="panel-body" style="min-height: 400px;">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="60" class="text-center">序号</th>
+                                    <th class="text-center">岗位名称</th>
+                                    <th class="text-center">岗位权限</th>
+                                    <th width="170" class="text-center">创建时间</th>
+                                    <th width="200" class="text-center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in post.items">
+                                    <td v-text="index + 1" class="text-center"></td>
+                                    <td v-text="item.name" class="text-center"></td>
+                                    <td v-html="postAuthFormat(item.authority)" class="text-center"></td>
+                                    <td v-text="item.createTime" class="text-center"></td>
+                                    <td class="text-center">
+                                        <a @@click="modifyPost(item)" class="text-primary margin-right-20">
+                                            <span class="fa fa-edit"> 修改</span>
+                                        </a>
+                                        <a @@click="removePost(item)" class="text-primary">
+                                            <span class="fa fa-remove"> 删除</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot v-if="!post.items || post.items.length == 0">
+                                <tr>
+                                    <th colspan="5">未添加任何岗位...</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

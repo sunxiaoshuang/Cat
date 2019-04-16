@@ -1,0 +1,86 @@
+﻿
+@{
+    ViewData["Title"] = "标签管理";
+}
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/tang/mark.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/tang/mark.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6" style="padding-left: 0">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="title">口味（堂食）</span>
+                            <a @@click="add(1, flavor)" class="text-primary pull-right">
+                                <span class="fa fa-plus"> 新增</span>
+                            </a>
+                        </h3>
+                    </div>
+                    <div class="panel-body" style="min-height: 200px;">
+                        <ul class="list-mark">
+                            <li class="list-mark-item" v-for="item in flavor">
+                                <span v-text="item.name"></span>
+                                <a @@click="remove(item, flavor)" class="text-primary">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="padding-right: 0">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="title">整单备注（堂食）</span>
+                            <a @@click="add(2, orderMark)" class="text-primary pull-right">
+                                <span class="fa fa-plus"> 新增</span>
+                            </a>
+                        </h3>
+                    </div>
+                    <div class="panel-body" style="min-height: 200px;">
+                        <ul class="list-mark">
+                            <li class="list-mark-item" v-for="item in orderMark">
+                                <span v-text="item.name"></span>
+                                <a @@click="remove(item, orderMark)" class="text-primary">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6" style="padding-left: 0">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="title">退菜原因（堂食）</span>
+                            <a @@click="add(3, refundFoodReason)" class="text-primary pull-right">
+                                <span class="fa fa-plus"> 新增</span>
+                            </a>
+                        </h3>
+                    </div>
+                    <div class="panel-body" style="min-height: 200px;">
+                        <ul class="list-mark">
+                            <li class="list-mark-item" v-for="item in refundFoodReason">
+                                <span v-text="item.name"></span>
+                                <a @@click="remove(item, refundFoodReason)" class="text-primary">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

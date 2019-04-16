@@ -1,0 +1,82 @@
+﻿<div class="row form-horizontal" id="edit-staff">
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            <span class="require">所属岗位：</span>
+        </label>
+        <div class="col-xs-8">
+            <select class="form-control" v-model="staffPostId">
+                <option v-for="post in posts" :value="post.id">{{post.name}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            <span class="require">员工姓名：</span>
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control" v-model.trim="name" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            <span class="require">登录帐号：</span>
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control" v-bind:disabled="!isAdd" v-model.trim="alise" />
+        </div>
+    </div>
+    <div class="form-group" v-show="isAdd">
+        <label class="control-label col-xs-3">
+            <span class="require">登录密码：</span>
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control" type="password" v-model.trim="password" />
+        </div>
+    </div>
+    <div class="form-group" v-show="isAdd">
+        <label class="control-label col-xs-3">
+            <span class="require">重复密码：</span>
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control" type="password" v-model.trim="password1" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            <span class="require">性别：</span>
+        </label>
+        <div class="col-xs-9">
+            <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20" v-for="item in genderList">
+                <label class="label-checkbox">
+                    <input type="radio" name="userGender" v-model="gender" :value="item.value">
+                    <span class="custom-checkbox"></span>
+                    {{item.name}}
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            生日：
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control birthday" :value="birthday" autocomplete="off" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            入职日期：
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control enterTime" :value="enterTime" autocomplete="off" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-3">
+            身份证：
+        </label>
+        <div class="col-xs-8">
+            <input class="form-control" v-model="cardId" />
+        </div>
+    </div>
+</div>

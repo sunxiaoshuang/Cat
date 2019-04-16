@@ -1,0 +1,96 @@
+﻿
+@{
+    ViewData["Title"] = "打印机管理";
+}
+@section Styles {
+    <environment include="Development">
+        <link href="~/css/sale/discount.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/css/sale/discount.min.css" rel="stylesheet" />
+    </environment>
+}
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/tang/printer.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/tang/printer.min.js" asp-append-version="true"></script>
+    </environment>
+    <style>
+        td, th {
+            text-align: center;
+        }
+        ul.product a.selected {
+            color: #ff6a00;
+            border: 1px solid #ff6a00;
+            border-radius: 5px;
+            padding: 3px;
+        }
+    </style>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="padding-left: 0">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="title">店内打印机管理</span>
+                            <a @@click="add()" class="text-primary pull-right">
+                                <span class="fa fa-plus"> 新增打印机</span>
+                            </a>
+                        </h3>
+                    </div>
+                    <div class="panel-body" style="min-height: 400px;">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="60">序号</th>
+                                    <th style="min-width: 120px;">打印机名称</th>
+                                    <th width="170">IP地址</th>
+                                    <th width="80">端口号</th>
+                                    <th width="120">打印机类型</th>
+                                    <th width="110">打印数量</th>
+                                    <th width="120">打印模式</th>
+                                    <th width="120">打印机规格</th>
+                                    <th width="120">打印机状态</th>
+                                    <th style="text-align:left;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in items">
+                                    <td v-text="index + 1"></td>
+                                    <td v-text="item.name"></td>
+                                    <td v-text="item.ip"></td>
+                                    <td v-text="item.port"></td>
+                                    <td v-text="item.type === 1 ? '前台' : '后厨'"></td>
+                                    <td v-text="item.quantity"></td>
+                                    <td v-html="modeFormat(item.mode)"></td>
+                                    <td v-text="item.format + 'mm'"></td>
+                                    <td v-text="item.state === 1 ? '正常' : '停用'"></td>
+                                    <td style="text-align:left;">
+                                        <a @@click="modify(item)" class="text-primary margin-right-20">
+                                            <span class="fa fa-edit"> 修改</span>
+                                        </a>
+                                        <a @@click="remove(item)" class="text-primary margin-right-20">
+                                            <span class="fa fa-remove"> 删除</span>
+                                        </a>
+                                        <a @@click="select(item)" class="text-primary">
+                                            <span class="fa fa-chain"> 关联菜品</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot v-if="!items || items.length === 0">
+                                <tr>
+                                    <th colspan="10">未添加任何打印机...</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

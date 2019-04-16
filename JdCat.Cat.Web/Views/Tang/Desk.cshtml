@@ -1,0 +1,123 @@
+﻿
+@{
+    ViewData["Title"] = "餐台管理";
+}
+@section Styles {
+    <style>
+        .product-type {
+            border: 1px solid #e5e5e5;
+        }
+
+        .category-title {
+            border-right: none;
+        }
+
+        .cate-tree {
+            border: none;
+        }
+        .dropdown-menu li{
+            padding: 10px 0;
+        }
+    </style>
+}
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/tang/desk.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/tang/desk.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewData["Title"]</span>
+                    </h3>
+                </div>
+                <div class="panel-body" style="min-height: 400px;">
+
+                    <div class="pull-left product-type">
+                        <div class="category-title clearfix">
+                            <span>餐台区域</span>
+                            <div class="kui-button pull-right" style="margin:0;">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                        操作
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a @@click="addType()" class="text-primary">
+                                                <i class="fa fa-plus text-primary"> 新增区域</i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a @@click="modifyType()" class="text-primary">
+                                                <i class="fa fa-plus text-primary"> 修改区域</i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a @@click="removeType()" class="text-primary">
+                                                <i class="fa fa-plus text-primary"> 删除区域</i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cate-tree" style="min-height: 456px;">
+                            <div class="all-line" v-bind:class="{ 'selected': allType }" v-on:click="allClick()">
+                                <span>全部餐台</span>
+                                <span class="all-cnt" v-text="count"></span>
+                            </div>
+                            <div class="cate-panel" v-for="item in types" v-bind:class="{ 'selected': item.selected }" v-on:click="typeClick(item)">
+                                <div class="cate-title">
+                                    <div class="cate-name relative">
+                                        <span v-text="item.name"></span>
+                                        <span class="cate-cnt" v-text="item.count"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pull-left product-main">
+                        <div class="desk-container">
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" style="border-bottom: 1px solid #e5e5e5;">
+                                    <h3 class="panel-title">
+                                        <span class="title" v-text="!selectedType ? '全部餐台' : selectedType.name"></span>
+                                        <a @@click="addDesk()" class="text-primary pull-right">
+                                            <span class="fa fa-plus"> 新增餐台</span>
+                                        </a>
+                                    </h3>
+                                </div>
+                                <div class="panel-body" v-if="desks && desks.length > 0">
+                                    <div class="desk" v-for="desk in desks">
+                                        <p class="desk-name" v-text="desk.name"></p>
+                                        <p class="desk-quantity" v-text="desk.quantity + '人桌'">12人桌</p>
+                                        <p class="desk-operate">
+                                            <a @@click="editDesk(desk)" class="text-primary">
+                                                <i class="fa fa-edit"> 修改</i>
+                                            </a>
+                                            <a @@click="removeDesk(desk)" class="text-primary">
+                                                <i class="fa fa-remove margin-left-20"> 删除</i>
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div v-else class="panel-footer" style="background: #fff;">
+                                    <p>该区域下没有任何餐台...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

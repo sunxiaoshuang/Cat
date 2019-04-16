@@ -1,0 +1,6 @@
+{
+  "usingComponents": {},
+  "backgroundColor": "#fff",
+  "enablePullDownRefresh": false,
+  "navigationBarTitleText": "我的评价"
+}
