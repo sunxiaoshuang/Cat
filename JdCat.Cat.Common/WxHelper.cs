@@ -186,16 +186,25 @@ namespace JdCat.Cat.Common
         /// 创建公众号自定义菜单
         /// </summary>
         /// <returns></returns>
-        public static async Task<string> CreateAppMenuAsync()
+        public static async Task<string> CreateAppMenuAsync(object menus)
         {
             var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
             var url = $"https://api.weixin.qq.com/cgi-bin/menu/create?access_token={token}";
             var content = new InputData();
-            content.SetValue("button", new[] {
-                new { name = "小程序", type = "miniprogram", key = "hehe", url="http://e.jiandanmao.cn", appid="wxeca5f33003947169", pagepath = "pages/launch/launch" }
-            });
+            content.SetValue("button", menus);
             var body = new StringContent(content.ToJson());
             return await Request(url, body);
+        }
+
+        /// <summary>
+        /// 删除自定义菜单
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<string> DeleteAppMenuAsync()
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            var url = $"https://api.weixin.qq.com/cgi-bin/menu/delete?access_token={token}";
+            return await Request(url, method: "get");
         }
 
         #region 第三方开发平台业务方法

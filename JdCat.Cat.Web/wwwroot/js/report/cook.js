@@ -7,6 +7,7 @@
         data: {
             items: [],
             products: null,
+            type: 0,
             start: now,
             end: now
         },
@@ -20,7 +21,7 @@
                 this.items.forEach(function (obj) { obj.selected = false; });
                 item.selected = true;
                 $.loading();
-                axios.get(`/report/getSingleCookData/${item.id}?start=${this.start}&end=${this.end}`)
+                axios.get(`/report/getSingleCookData/${item.id}?start=${this.start}&end=${this.end}&type=${this.type}`)
                     .then(function (res) {
                         $.loaded();
                         self.products = res.data;
@@ -30,13 +31,17 @@
             },
             loadData: function () {
                 var self = this;
-                axios.get(`/report/getCookData?start=${this.start}&end=${this.end}`)
+                axios.get(`/report/getCookData?start=${this.start}&end=${this.end}&type=${this.type}`)
                     .then(function (res) {
                         self.items = res.data.map(function (obj) {
+                            obj.amount = parseFloat(obj.amount.toFixed(2));
                             return $.extend(obj, { selected: false });
                         });
                     })
                     .catch(function (err) { $.alert(err); });
+            },
+            exportData: function () {
+                location = `/report/exportCookData?start=${this.start}&end=${this.end}&type=${this.type}`;
             }
         },
         created: function () {
@@ -58,7 +63,7 @@
             },
             legend: {
                 orient: 'vertical',
-                x: 'left',
+                x: 'left'
             },
             toolbox: {
                 show: true,
@@ -87,13 +92,12 @@
                     name: '访问来源',
                     type: 'pie',
                     radius: '55%',
-                    center: ['50%', '60%'],
+                    center: ['50%', '60%']
                 }
             ]
         };
         var myChart = echarts.init(document.getElementById('chart'));
         return function () {
-            if (!app.products || app.products.length === 0) return;
             var products = JSON.parse(JSON.stringify(app.products));
             var items = products.slice(0, 10);
             var top10 = items.map(function (obj) {

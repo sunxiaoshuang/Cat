@@ -29,6 +29,18 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public double Amount { get; set; }
         /// <summary>
+        /// 优惠金额
+        /// </summary>
+        public double PreferentialAmount { get; set; }
+        /// <summary>
+        /// 收到的金额
+        /// </summary>
+        public double ReceivedAmount { get; set; }
+        /// <summary>
+        /// 找赎
+        /// </summary>
+        public double GiveAmount { get; set; }
+        /// <summary>
         /// 用餐人数
         /// </summary>
         public int PeopleNumber { get; set; }
@@ -44,6 +56,10 @@ namespace JdCat.Cat.Model.Data
         /// 订单备注
         /// </summary>
         public string Remark { get; set; }
+        /// <summary>
+        /// 支付备注
+        /// </summary>
+        public string PaymentRemark { get; set; }
         /// <summary>
         /// 订单状态
         /// </summary>

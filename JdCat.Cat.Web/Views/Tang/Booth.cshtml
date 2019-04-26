@@ -1,0 +1,92 @@
+﻿
+@{
+    ViewData["Title"] = "档口管理";
+}
+@section Styles {
+    <style>
+        th, td {
+            text-align: center;
+        }
+
+        ul.product a.selected {
+            color: #ff6a00;
+            border: 1px solid #ff6a00;
+            border-radius: 5px;
+            padding: 3px;
+        }
+    </style>
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+        <link href="~/css/sale/discount.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link href="~/css/sale/discount.min.css" rel="stylesheet" />
+    </environment>
+
+}
+@section Scripts {
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/tang/booth.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/tang/booth.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6" style="padding-left: 0">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="title">@ViewData["Title"]</span>
+                            <a @@click="add()" class="text-primary pull-right">
+                                <span class="fa fa-plus"> 新增档口</span>
+                            </a>
+                        </h3>
+                    </div>
+                    <div class="panel-body" style="min-height: 400px;">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="60">序号</th>
+                                    <th>档口名称</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in items">
+                                    <td v-text="index + 1"></td>
+                                    <td v-text="item.name"></td>
+                                    <td v-text="item.createTime"></td>
+                                    <td>
+                                        <a @@click="modify(item)" class="text-primary margin-right-20">
+                                            <span class="fa fa-edit"> 修改</span>
+                                        </a>
+                                        <a @@click="remove(item)" class="text-primary margin-right-20">
+                                            <span class="fa fa-remove"> 删除</span>
+                                        </a>
+                                        <a @@click="bindProduct(item)" class="text-primary">
+                                            <span class="fa fa-chain"> 绑定商品</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot v-if="!items || items.length === 0">
+                                <tr>
+                                    <th colspan="4">未添加任何档口...</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

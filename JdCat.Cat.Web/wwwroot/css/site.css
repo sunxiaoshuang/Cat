@@ -2231,7 +2231,7 @@ ul.select-type {
     color: #ea7042;
     border-radius: 5px;
     align-items: center;
-    margin-right: 20px;
+    margin: 10px 20px 0 0;
 }
 
 .desk-name {
@@ -2256,3 +2256,42 @@ ul.select-type {
     text-align: center;
     padding-top: 5px;
 }
+
+ul.tree {
+    max-height: 500px;
+    min-height: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    overflow: auto;
+}
+
+    ul.tree > li {
+        padding: 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+        ul.tree > li:hover {
+            color: #ea7042;
+            cursor: pointer;
+        }
+
+ul.leaf {
+    list-style-type: none;
+}
+
+ul.tree a.selected, ul.leaf a.selected {
+    color: #ff6a00;
+    border: 1px solid #ff6a00;
+    padding: 3px;
+}
+
+    ul.tree a, ul.leaf a {
+        color: inherit;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        padding: 3px;
+        text-decoration: none;
+    }

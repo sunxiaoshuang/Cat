@@ -60,7 +60,9 @@ namespace JdCat.Cat.Web
                     foreach (var file in files)
                     {
                         var content = File.ReadAllText(file).Replace("\r\n", " ");
+#pragma warning disable EF1000 // Possible SQL injection vulnerability.
                         context.Database.ExecuteSqlCommand(sql: content);
+#pragma warning restore EF1000 // Possible SQL injection vulnerability.
                     }
                 }
                 catch (Exception ex)

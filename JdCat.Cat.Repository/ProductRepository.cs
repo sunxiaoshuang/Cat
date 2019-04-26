@@ -117,7 +117,7 @@ namespace JdCat.Cat.Repository
                             product.Formats = b.Formats.ToList();
                             return product;
                         });
-                        if(status != null)
+                        if (status != null)
                         {
                             products = products.Where(b => b.Status == status);
                         }
@@ -342,7 +342,20 @@ namespace JdCat.Cat.Repository
             entity.Name = product.Name;
             entity.ProductTypeId = product.ProductTypeId;
             entity.UnitName = product.UnitName;
-            entity.ProductIdSet = product.ProductIdSet;
+            if (entity.ProductIdSet != product.ProductIdSet)
+            {
+                entity.ProductIdSet = product.ProductIdSet;
+                var relatives = Context.ProductRelatives.Where(a => a.SetMealId == entity.ID).ToList();
+                Context.RemoveRange(relatives);
+                if (!string.IsNullOrEmpty(product.ProductIdSet))
+                {
+                    product.ProductIdSet.Split(',').ToList().ForEach(a =>
+                    {
+                        var item = new ProductRelative { SetMealId = product.ID, ProductId = Convert.ToInt32(a) };
+                        Context.Add(item);
+                    });
+                }
+            }
             if (product.Images != null && product.Images.Count > 0)
             {
                 entity.Images = new List<ProductImage>();

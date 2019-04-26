@@ -1489,6 +1489,7 @@ page {
 .comment-list {
   margin-top: 20rpx;
   background: #fff;
+  padding-bottom: 60rpx;
 }
 .comment-list .comment-item {
   border-bottom: 1px solid #eee;
@@ -1526,6 +1527,14 @@ page {
 }
 .comment-content {
   font-size: 90%;
+}
+.comment-reply {
+  border: 1px solid #f36c1b;
+  color: #f36c1b;
+  padding: 10rpx;
+  margin: 20rpx;
+  border-radius: 10rpx;
+  font-size: 80%;
 }
 .comment-result {
   font-size: 80%;

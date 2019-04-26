@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace JdCat.Cat.Model
 {
@@ -21,6 +23,8 @@ namespace JdCat.Cat.Model
             InitBusiness();
             InitSettingProductAttribute();
             //InitOrder();
+            //InitPaymentType();
+            //InitProductSetMeal();
         }
 
         private void InitSettingProductAttribute()
@@ -105,6 +109,54 @@ namespace JdCat.Cat.Model
                 StoreId = "JD-01",
                 ObjectId = "29afc951-5095-4376-9dab-b40f8e3025f2",
                 IsAutoReceipt = true
+            });
+            _context.SaveChanges();
+        }
+
+        /// <summary>
+        /// 将之前没有初始化默认支付方式的商户重新设置
+        /// </summary>
+        private void InitPaymentType()
+        {
+            var businesses = _context.Businesses.Where(a => a.Category == BusinessCategory.Store).Select(a => a.ID).ToList();
+            //var payments = _context.PaymentTypes.Where(a => businesses.Contains(a.BusinessId)).GroupBy(a => a.BusinessId).ToList();
+            foreach (var id in businesses)
+            {
+                var payments = _context.PaymentTypes.Where(a => a.BusinessId == id).ToList();
+                if (!payments.Any(a => a.Category == PaymentCategory.Money))
+                {
+                    _context.Add(new Data.PaymentType { BusinessId = id, Category = PaymentCategory.Money, CreateTime = DateTime.Now, Name = "现金", Sort = 1, Status = EntityStatus.Normal });
+                }
+                if (!payments.Any(a => a.Category == PaymentCategory.Alipay))
+                {
+                    _context.Add(new Data.PaymentType { BusinessId = id, Category = PaymentCategory.Alipay, CreateTime = DateTime.Now, Name = "支付宝", Sort = 2, Status = EntityStatus.Normal });
+                }
+                if (!payments.Any(a => a.Category == PaymentCategory.Wexin))
+                {
+                    _context.Add(new Data.PaymentType { BusinessId = id, Category = PaymentCategory.Wexin, CreateTime = DateTime.Now, Name = "微信", Sort = 3, Status = EntityStatus.Normal });
+                }
+            }
+            _context.SaveChanges();
+        }
+
+        /// <summary>
+        /// 将之前没有设置套餐关联的产品重新设置
+        /// </summary>
+        private void InitProductSetMeal()
+        {
+            var products = _context.Products.Where(a => a.Feature == ProductFeature.SetMeal).Select(a => new { a.ID, a.ProductIdSet }).ToList();
+            if (products.Count == 0) return;
+            var ids = products.Select(a => a.ID).ToList();
+            var relatives = _context.ProductRelatives.Where(a => ids.Contains(a.SetMealId)).ToList();
+            products.ForEach(product =>
+            {
+                if (string.IsNullOrEmpty(product.ProductIdSet)) return;
+                if (relatives.Any(a => a.SetMealId == product.ID)) return;
+                product.ProductIdSet.Split(',').ToList().ForEach(a =>
+                {
+                    var item = new ProductRelative { SetMealId = product.ID, ProductId = Convert.ToInt32(a) };
+                    _context.Add(item);
+                });
             });
             _context.SaveChanges();
         }

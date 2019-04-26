@@ -54,6 +54,10 @@ namespace JdCat.Cat.Repository
         {
             return predicate == null ? _context.Set<T>() : _context.Set<T>().Where(predicate);
         }
+        public async Task<List<TEntity>> GetAllAsync<TEntity>() where TEntity : BaseEntity
+        {
+            return await Context.Set<TEntity>().ToListAsync();
+        }
         public TEntity Add<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
             Context.Add(entity);

@@ -62,7 +62,8 @@
                                 <th width="190">支付时间</th>
                                 <th width="100">订单状态</th>
                                 <th>餐位费</th>
-                                <th>总消费</th>
+                                <th>订单金额</th>
+                                <th>优惠金额</th>
                                 <th width="100"></th>
                             </tr>
                         </thead>
@@ -84,13 +85,16 @@
                                     <span class="fa fa-rmb" v-text="item.amount"></span>
                                 </td>
                                 <td>
+                                    <span class="fa fa-rmb" v-text="item.preferentialAmount"></span>
+                                </td>
+                                <td>
                                     <a @@click="catInfo(item)" class="text-primary">查看</a>
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot v-if="items == null || items.length == 0">
                             <tr>
-                                <th colspan="12">暂无任何订单数据...</th>
+                                <th colspan="13">暂无任何订单数据...</th>
                             </tr>
                         </tfoot>
                     </table>

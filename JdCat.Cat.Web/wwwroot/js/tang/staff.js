@@ -224,7 +224,7 @@
     var bindProducts = function (obj) {
         var template, types;
         $.loading();
-        axios.all([axios.get(`/product/getProductTree?isSetMeal=1`), axios.get(`/tang/selectProductForCook`)])
+        axios.all([axios.get(`/product/getProductTree?isSetMeal=1`), axios.get(`/tang/checkProducts`)])
             .then(function (res) {
                 template = res[1].data;
                 types = res[0].data.map(function (type) { type.checked = false; return type; });
@@ -254,7 +254,7 @@
                                 dialogWidth: 800,
                                 load: function () {
                                     vueObj = new Vue({
-                                        el: "#bindCook",
+                                        el: "#bindProduct",
                                         data: {
                                             typeList,
                                             productList
@@ -274,10 +274,11 @@
                                             }
                                         }
                                     });
+                                    // 隐藏时销毁
+                                    destroyVue.call(this, vueObj);
                                 },
                                 submit: function () {
                                     var relative = vueObj.productList.map(function (obj) { return { staffId: cook.id, productId: obj.id }; });
-                                    var foodIds = JSON.stringify(vueObj.productList.map(function (obj) { return obj.id; }));
                                     axios.post(`/tang/bindProductsForCook/${cook.id}`, relative)
                                         .then(function (res) {
                                             $.alert(res.data.msg, "success");

@@ -222,6 +222,13 @@ namespace JdCat.Cat.Web.Controllers
                 Feature = product.Feature
             };
             Service.Add(entity);
+            if(entity.Feature == ProductFeature.SetMeal && !string.IsNullOrEmpty(product.ProductIdSet))
+            {
+                product.ProductIdSet.Split(',').ToList().ForEach(a => {
+                    var item = new ProductRelative { SetMealId = entity.ID, ProductId = Convert.ToInt32(a) };
+                    Service.Add(item);
+                });
+            }
             result.Success = true;
             result.Msg = "保存成功";
             return Ok(result);

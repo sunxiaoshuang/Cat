@@ -235,7 +235,7 @@ namespace JdCat.Cat.Repository
             var end = DateTime.Now;
             var query = from comment in Context.OrderComments
             join business in Context.Businesses on comment.BusinessId equals business.ID
-            where comment.CreateTime > start && comment.CreateTime < end
+            where comment.CreateTime > start && comment.CreateTime < end && comment.UserId == user
             select new { comment.CreateTime, comment.OrderScore, comment.DeliveryScore, comment.OrderId, comment.CommentContent, comment.CommentResult, comment.DeliveryResult, comment.ReplyContent, business.Name };
             return await query.ToListAsync();
         }

@@ -7,7 +7,7 @@ using System.Text;
 namespace JdCat.Cat.Model.Data
 {
     /// <summary>
-    /// 餐桌
+    /// 厨师商品关系
     /// </summary>
     [Table("CookProductRelative")]
     public class CookProductRelative : BaseEntity

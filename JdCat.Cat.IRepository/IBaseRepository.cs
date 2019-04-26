@@ -13,6 +13,12 @@ namespace JdCat.Cat.IRepository
     public interface IBaseRepository<T> where T : class, new()
     {
         IQueryable<T> GetAll(Expression<Func<T, bool>> predicate = null);
+        /// <summary>
+        /// 获取类型所有对象
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        Task<List<TEntity>> GetAllAsync<TEntity>() where TEntity : BaseEntity;
         T Get(Expression<Func<T, bool>> predicate);
         T Get(int id);
         TEntity Get<TEntity>(int id) where TEntity : BaseEntity;

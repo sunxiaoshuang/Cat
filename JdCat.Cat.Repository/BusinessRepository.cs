@@ -27,6 +27,15 @@ namespace JdCat.Cat.Repository
 
         }
 
+        public Business Register(Business business)
+        {
+            Context.Add(business);
+            Context.SaveChanges();
+            Context.Add(new Cat.Model.Data.PaymentType { BusinessId = business.ID, Category = PaymentCategory.Money, CreateTime = DateTime.Now, Name = "现金", Sort = 1, Status = EntityStatus.Normal });
+            Context.Add(new Cat.Model.Data.PaymentType { BusinessId = business.ID, Category = PaymentCategory.Alipay, CreateTime = DateTime.Now, Name = "支付宝", Sort = 2, Status = EntityStatus.Normal });
+            Context.Add(new Cat.Model.Data.PaymentType { BusinessId = business.ID, Category = PaymentCategory.Wexin, CreateTime = DateTime.Now, Name = "微信", Sort = 3, Status = EntityStatus.Normal });
+            return business;
+        }
         public Business GetBusiness(Expression<Func<Business, bool>> expression)
         {
             return Context.Businesses.AsNoTracking().SingleOrDefault(expression);

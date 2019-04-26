@@ -39,17 +39,37 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
+
+
         public async Task<IActionResult> GetAppMenu()
         {
             var menu = await WxHelper.GetAppMenuAsync();
             return Json(menu);
         }
 
-        public async Task<IActionResult> CreateAppMenu()
+        public async Task<IActionResult> CreateAppMenu([FromBody]List<WxMenu> menus)
         {
-            var result = await WxHelper.CreateAppMenuAsync();
+            await WxHelper.DeleteAppMenuAsync();
+            if (menus == null || menus.Count == 0) return Ok();
+            var list = new List<object>();
+            menus.ForEach(menu =>
+            {
+                if (menu.type == WxMenuCategory.none)
+                {
+                    var subList = new List<object>();
+                    if (menu.sub_button != null && menu.sub_button.Count > 0)
+                    {
+                        menu.sub_button.ForEach(a => subList.Add(new { type = a.type.ToString(), a.name, a.key, a.url, a.appid, a.pagepath, a.media_id }));
+                    };
+                    list.Add(new { menu.name, sub_button = subList });
+                    return;
+                }
+                list.Add(new { type = menu.type.ToString(), menu.name, menu.key, menu.url, menu.appid, menu.pagepath, menu.media_id });
+            });
+            var result = await WxHelper.CreateAppMenuAsync(list);
             return Content(result);
         }
+
 
         #region 开放平台
 

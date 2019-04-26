@@ -182,15 +182,7 @@ namespace JdCat.Cat.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProductIdsByCook(int id)
         {
-            return Json(await Service.GetProductIdsByCook(id));
-        }
-        /// <summary>
-        /// 绑定打印商品页面
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult SelectProductForCook()
-        {
-            return PartialView();
+            return Json(await Service.GetProductIdsByCookAsync(id));
         }
         /// <summary>
         /// 厨师绑定菜品
@@ -201,7 +193,7 @@ namespace JdCat.Cat.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> BindProductsForCook(int id, [FromBody]IEnumerable<CookProductRelative> relatives)
         {
-            await Service.BindProductsForCook(id, relatives);
+            await Service.BindProductsForCookAsync(id, relatives);
             return Json(new JsonData { Success = true, Msg = "绑定成功" });
         }
 
@@ -521,6 +513,93 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         #endregion
+
+        #region 档口管理
+        /// <summary>
+        /// 商户档口
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Booth()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 获取商户档口列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetBooths()
+        {
+            var list = await Service.GetAllAsync<StoreBooth>();
+            return Json(list);
+        }
+        /// <summary>
+        /// 新增档口
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> AddBooth([FromBody]StoreBooth booth)
+        {
+            var result = new JsonData { Success = true };
+            booth.BusinessId = Business.ID;
+            result.Data = await Service.AddAsync(booth);
+            return Json(result);
+        }
+        /// <summary>
+        /// 更新档口
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> UpdateBooth([FromBody]StoreBooth booth)
+        {
+            var result = new JsonData
+            {
+                Success = await Service.UpdateAsync(booth, new List<string> { nameof(booth.Name) }) > 0
+            };
+            return Json(result);
+        }
+        /// <summary>
+        /// 删除档口
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> DeleteBooth(int id)
+        {
+            var result = new JsonData { Success = await Service.DeleteAsync(new StoreBooth { ID = id }) > 0 };
+            return Json(result);
+        }
+        /// <summary>
+        /// 获取档口绑定的商品id列表
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetProductIdsByBooth(int id)
+        {
+            return Json(await Service.GetProductIdsByBoothAsync(id));
+        }
+        /// <summary>
+        /// 档口绑定菜品
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="relatives"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> BindProductForBooth(int id, [FromBody]List<BoothProductRelative> relatives)
+        {
+            var result = new JsonData
+            {
+                Data = await Service.BindProductsForBoothAsync(id, relatives),
+                Success = true
+            };
+            return Json(result);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 勾选商品
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult CheckProducts()
+        {
+            return PartialView();
+        }
 
     }
 }

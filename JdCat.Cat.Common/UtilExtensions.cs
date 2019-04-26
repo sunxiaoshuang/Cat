@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using OfficeOpenXml.Table;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -132,6 +134,31 @@ namespace JdCat.Cat.Common
                 {
                     worksheet.Column(col).AutoFit();
                 }
+                return package.GetAsByteArray();
+            }
+        }
+        public static byte[] ToWorksheet<T>(this IEnumerable<T> list, string title, bool printerHeaders = true, IEnumerable<string> headers = null, string auther = null)
+        {
+            var rowLen = list.Count() + 2;
+            if (printerHeaders) rowLen++;
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                var range = worksheet.Cells["A3"].LoadFromCollection(list, printerHeaders);
+                var columnsLen = range.Columns;
+                worksheet.Cells[3, 1, rowLen, columnsLen].AutoFitColumns();
+                var dataBorder = worksheet.Cells[1, 1, rowLen, columnsLen].Style.Border;
+                dataBorder.Bottom.Style = dataBorder.Top.Style = dataBorder.Left.Style = dataBorder.Right.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 1, 1, columnsLen].Merge = true;
+                worksheet.Cells[2, 1, 2, columnsLen].Merge = true;
+                worksheet.Cells[1, 1, 2, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells[1, 1].Style.Font.Size = 16;
+                worksheet.Cells[1, 1, 1, columnsLen].AutoFitColumns();
+                worksheet.Cells[1, 1].Value = title;
+                worksheet.Cells[2, 1].Value = $"导出时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                worksheet.Cells[3, 1, 3, columnsLen].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[3, 1, 3, columnsLen].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                if (!string.IsNullOrEmpty(auther)) worksheet.Cells[2, 1].Value += $"，制作人：${auther}";
                 return package.GetAsByteArray();
             }
         }

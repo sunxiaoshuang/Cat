@@ -57,6 +57,26 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("Address");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.BoothProductRelative", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("ProductId");
+
+                    b.Property<int>("StoreBoothId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("StoreBoothId");
+
+                    b.ToTable("BoothProductRelative");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.Business", b =>
                 {
                     b.Property<int>("ID")
@@ -935,6 +955,22 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("ProductImage");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ProductRelative", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("ProductId");
+
+                    b.Property<int>("SetMealId");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("ProductRelative");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.ProductType", b =>
                 {
                     b.Property<int>("ID")
@@ -1266,6 +1302,24 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("StaffPost");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.StoreBooth", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("StoreBooth");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.SystemMark", b =>
                 {
                     b.Property<int>("ID")
@@ -1305,6 +1359,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("DeskName");
 
+                    b.Property<double>("GiveAmount");
+
                     b.Property<int>("Identifier");
 
                     b.Property<double>("MealFee");
@@ -1323,11 +1379,17 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<DateTime?>("PayTime");
 
+                    b.Property<string>("PaymentRemark");
+
                     b.Property<int>("PaymentTypeId");
 
                     b.Property<string>("PaymentTypeName");
 
                     b.Property<int>("PeopleNumber");
+
+                    b.Property<double>("PreferentialAmount");
+
+                    b.Property<double>("ReceivedAmount");
 
                     b.Property<string>("Remark");
 
@@ -1508,6 +1570,19 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.User", "User")
                         .WithMany("Addresses")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.BoothProductRelative", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("JdCat.Cat.Model.Data.StoreBooth", "StoreBooth")
+                        .WithMany("BoothProductRelatives")
+                        .HasForeignKey("StoreBoothId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -1830,6 +1905,14 @@ namespace JdCat.Cat.Model.Migrations
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.StaffPost", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.StoreBooth", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
                         .WithMany()

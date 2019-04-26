@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -15,6 +16,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -125,6 +128,7 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
+        #region 厨师
         /// <summary>
         /// 厨师统计
         /// </summary>
@@ -137,10 +141,10 @@ namespace JdCat.Cat.Web.Controllers
         /// 获取厨师统计数据
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> GetCookData([FromQuery]DateTime start, [FromQuery] DateTime end, [FromServices]IStoreRepository service)
+        public async Task<IActionResult> GetCookData([FromQuery]DateTime start, [FromQuery] DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
         {
-            var result = await service.GetCooksReportAsync(Business.ID, start, end.AddDays(1));
-            return Json(result ?? new List<Report_Cook>());
+            var result = type == 0 ? await service.GetCooksReportForTakeoutAsync(Business.ID, start, end.AddDays(1)) : await service.GetCooksReportAsync(Business.ID, start, end.AddDays(1));
+            return Json(result ?? new List<Report_ProductSale>());
         }
         /// <summary>
         /// 获取单个厨师的产出
@@ -150,11 +154,259 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="end"></param>
         /// <param name="service"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetSingleCookData(int id, [FromQuery]DateTime start, [FromQuery]DateTime end, [FromServices]IStoreRepository service)
+        public async Task<IActionResult> GetSingleCookData(int id, [FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
         {
-            var result = await service.GetSingleCookReportAsync(id, start, end.AddDays(1));
-            return Json(result ?? new List<Report_Cook>());
+            var result = type == 0 ? await service.GetSingleCookReportForTakeoutAsync(id, start, end.AddDays(1)) : await service.GetSingleCookReportAsync(id, start, end.AddDays(1));
+            return Json(result ?? new List<Report_ProductSale>());
         }
+        /// <summary>
+        /// 导出厨师统计数据
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> ExportCookData([FromQuery]DateTime start, [FromQuery] DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = type == 0 ?
+                await service.GetCooksReportForTakeoutAsync(Business.ID, start, end.AddDays(1))
+                : await service.GetCooksReportAsync(Business.ID, start, end.AddDays(1));
+            var num = 1;
+            result.ForEach(a => a.Id = num++);
+            var title = $"厨师{(type == 0 ? "[外卖]" : "")}产出统计（{start:yyyy年MM月dd日}-{end:yyyy年MM月dd日}）";
+            var xls = result.ToWorksheet(title);
+            return File(xls, AppData.XlsxContentType, title + ".xlsx");
+        }
+        #endregion
+
+        #region 档口
+        public IActionResult Booth()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 获取档口统计数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetBoothData([FromQuery]DateTime start, [FromQuery] DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = type == 0 ? await service.GetBoothsReportForTakeoutAsync(Business.ID, start, end.AddDays(1)) : await service.GetBoothsReportAsync(Business.ID, start, end.AddDays(1));
+            return Json(result ?? new List<Report_ProductSale>());
+        }
+        /// <summary>
+        /// 获取单个档口的产出
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetSingleBoothData(int id, [FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = type == 0 ? await service.GetSingleBoothReportForTakeoutAsync(id, start, end.AddDays(1)) : await service.GetSingleBoothReportAsync(id, start, end.AddDays(1));
+            return Json(result ?? new List<Report_ProductSale>());
+        }
+        /// <summary>
+        /// 导出档口统计数据
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> ExportBoothData([FromQuery]DateTime start, [FromQuery] DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = type == 0 ?
+                await service.GetBoothsReportForTakeoutAsync(Business.ID, start, end.AddDays(1))
+                : await service.GetBoothsReportAsync(Business.ID, start, end.AddDays(1));
+            var num = 1;
+            result.ForEach(a => a.Id = num++);
+            var title = $"档口{(type == 0 ? "[外卖]" : "")}产出统计（{start:yyyy年MM月dd日}-{end:yyyy年MM月dd日}）";
+            var xls = result.ToWorksheet(title);
+            return File(xls, AppData.XlsxContentType, title + ".xlsx");
+        }
+        #endregion
+
+        #region 订单产品
+        /// <summary>
+        /// 食品销售统计
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Products()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 查询食品销售统计数据
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="type"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetProductsData([FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = type == 0 ? await service.GetProductsDataForTakeoutAsync(Business.ID, start, end.AddDays(1)) : await service.GetProductsDataAsync(Business.ID, start, end.AddDays(1));
+            return Json(result);
+        }
+        /// <summary>
+        /// 导出食品销售统计数据
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="type"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> ExportProductsData([FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var list = type == 0 ? await service.GetProductsDataForTakeoutAsync(Business.ID, start, end.AddDays(1)) : await service.GetProductsDataAsync(Business.ID, start, end.AddDays(1));
+
+            var title = "商品销售排行统计" + (type == 0 ? "[外卖]" : "");
+            using (var package = new ExcelPackage())
+            {
+                var columnCount = 14;
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells["A1"].Value = title;
+                worksheet.Cells["A2"].Value = $"营业日期：从{start:yyyy-MM-dd}到{end:yyyy-MM-dd}";
+                worksheet.Cells["A3"].Value = $"导出时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                worksheet.Cells[1, 1, 1, columnCount].Merge = true;
+                worksheet.Cells[2, 1, 2, columnCount].Merge = true;
+                worksheet.Cells[3, 1, 3, columnCount].Merge = true;
+                worksheet.Cells["A1"].Style.Font.Size = 16;
+                worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A4"].Value = "序号";
+                worksheet.Cells["B4"].Value = "商品名称";
+                worksheet.Cells["C4"].Value = "下单数量";
+                worksheet.Cells["D4"].Value = "下单总额";
+                worksheet.Cells["E4"].Value = "取消数量";
+                worksheet.Cells["F4"].Value = "取消总额";
+                worksheet.Cells["G4"].Value = "销售数量";
+                worksheet.Cells["H4"].Value = "销售总额";
+                worksheet.Cells["I4"].Value = "招待数量";
+                worksheet.Cells["J4"].Value = "招待总额";
+                worksheet.Cells["K4"].Value = "折扣总额";
+                worksheet.Cells["L4"].Value = "折后总额";
+                worksheet.Cells["M4"].Value = "净售数量";
+                worksheet.Cells["N4"].Value = "净售总额";
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                int rowIndex = 5, index = 1;
+                foreach (var item in list)
+                {
+                    var startRow = rowIndex;
+                    worksheet.Cells[$"A{rowIndex}"].Value = index;
+                    worksheet.Cells[$"B{rowIndex}"].Value = item.Name;
+                    worksheet.Cells[$"C{rowIndex}"].Value = item.Quantity;
+                    worksheet.Cells[$"D{rowIndex}"].Value = item.Amount;
+                    worksheet.Cells[$"E{rowIndex}"].Value = item.CancelQuantity;
+                    worksheet.Cells[$"F{rowIndex}"].Value = item.CancelAmount;
+                    worksheet.Cells[$"G{rowIndex}"].Value = item.SaleQuantity;
+                    worksheet.Cells[$"H{rowIndex}"].Value = item.SaleAmount;
+                    worksheet.Cells[$"I{rowIndex}"].Value = item.EntertainQuantity;
+                    worksheet.Cells[$"J{rowIndex}"].Value = item.EntertainAmount;
+                    worksheet.Cells[$"K{rowIndex}"].Value = item.DiscountAmount;
+                    worksheet.Cells[$"L{rowIndex}"].Value = item.DiscountedAmount;
+                    worksheet.Cells[$"M{rowIndex}"].Value = item.ActualQuantity;
+                    worksheet.Cells[$"N{rowIndex}"].Value = item.ActualAmount;
+
+                    index++;
+                    rowIndex++;
+                }
+                worksheet.Cells[5, 1, rowIndex, columnCount].AutoFitColumns();
+                var dataBorder = worksheet.Cells[4, 1, rowIndex - 1, columnCount].Style.Border;
+                dataBorder.Bottom.Style = dataBorder.Top.Style = dataBorder.Left.Style = dataBorder.Right.Style = ExcelBorderStyle.Thin;
+                var xls = package.GetAsByteArray();
+                return File(xls, AppData.XlsxContentType, $"{title}({start:yyyyMMdd}-{end:yyyy-MM-dd}).xlsx");
+
+            }
+        }
+        #endregion
+
+        #region 套餐
+        /// <summary>
+        /// 套餐统计
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Setmeal()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 获取套餐产品数据
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="type"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetSetmealData([FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            return Json(type == 0 ? await service.GetSetmealDataForTakeoutAsync(Business.ID, start, end.AddDays(1)) : await service.GetSetmealDataAsync(Business.ID, start, end.AddDays(1)));
+        }
+        /// <summary>
+        /// 导出套餐产品数据
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="type"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> ExportSetmealData([FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var list = type == 0 ? await service.GetSetmealDataForTakeoutAsync(Business.ID, start, end.AddDays(1)) : await service.GetSetmealDataAsync(Business.ID, start, end.AddDays(1));
+            var title = "套餐产品销售排行" + (type == 0 ? "[外卖]" : "");
+
+            using (var package = new ExcelPackage())
+            {
+                var columnCount = 5;
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells["A1"].Value = title;
+                worksheet.Cells["A2"].Value = $"营业日期：从{start:yyyy-MM-dd}到{end:yyyy-MM-dd}";
+                worksheet.Cells["A3"].Value = $"导出时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                worksheet.Cells[1, 1, 1, columnCount].Merge = true;
+                worksheet.Cells[2, 1, 2, columnCount].Merge = true;
+                worksheet.Cells[3, 1, 3, columnCount].Merge = true;
+                worksheet.Cells["A1"].Style.Font.Size = 16;
+                worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A4"].Value = "序号";
+                worksheet.Cells["B4"].Value = "商品名称";
+                worksheet.Cells["C4"].Value = "销售数量";
+                worksheet.Cells["D4"].Value = "来源套餐";
+                worksheet.Cells["E4"].Value = "套餐数量";
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                int rowIndex = 5, index = 1;
+                foreach (var item in list)
+                {
+                    var startRow = rowIndex;
+                    worksheet.Cells[$"A{rowIndex}"].Value = index;
+                    worksheet.Cells[$"B{rowIndex}"].Value = item.Name;
+                    worksheet.Cells[$"C{rowIndex}"].Value = item.Quantity;
+                    foreach (var setmeal in item.SetMeals)
+                    {
+                        worksheet.Cells[$"D{rowIndex}"].Value = setmeal.Item1;
+                        worksheet.Cells[$"E{rowIndex}"].Value = setmeal.Item2;
+                        rowIndex++;
+                    }
+                    var mergeRows = item.SetMeals.Count;
+                    if (mergeRows > 1)
+                    {
+                        worksheet.Cells[startRow, 1, rowIndex - 1, 1].Merge = true;
+                        worksheet.Cells[startRow, 2, rowIndex - 1, 2].Merge = true;
+                        worksheet.Cells[startRow, 3, rowIndex - 1, 3].Merge = true;
+                    }
+
+                    index++;
+                }
+                worksheet.Cells[5, 1, rowIndex, columnCount].AutoFitColumns();
+                var dataBorder = worksheet.Cells[4, 1, rowIndex - 1, columnCount].Style.Border;
+                dataBorder.Bottom.Style = dataBorder.Top.Style = dataBorder.Left.Style = dataBorder.Right.Style = ExcelBorderStyle.Thin;
+                var xls = package.GetAsByteArray();
+                return File(xls, AppData.XlsxContentType, $"{title}({start:yyyyMMdd}-{end:yyyy-MM-dd}).xlsx");
+
+            }
+        }
+
+        #endregion
 
 
     }

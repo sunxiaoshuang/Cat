@@ -412,6 +412,36 @@
     "inputFiles": [
       "wwwroot/js/tang/printer.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/cook.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/cook.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/tang/booth.min.js",
+    "inputFiles": [
+      "wwwroot/js/tang/booth.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/booth.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/booth.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/setmeal.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/setmeal.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/products.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/products.js"
+    ]
   }
 
 ]

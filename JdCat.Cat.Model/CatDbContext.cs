@@ -64,6 +64,9 @@ namespace JdCat.Cat.Model
         public DbSet<StaffPost> StaffPosts { get; set; }
         public DbSet<SystemMark> SystemMarks { get; set; }
         public DbSet<CookProductRelative> CookProductRelatives { get; set; }
+        public DbSet<StoreBooth> StoreBooths { get; set; }
+        public DbSet<BoothProductRelative> BoothProductRelatives { get; set; }
+        public DbSet<ProductRelative> ProductRelatives { get; set; }
 
 
         /// <summary>

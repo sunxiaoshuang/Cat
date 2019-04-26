@@ -1,0 +1,120 @@
+﻿@{
+    ViewData["Title"] = "商品销售排行统计";
+}
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+        <link href="~/css/report/index.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link href="~/css/report/index.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+    <style>
+        td,th{
+            text-align:center;
+        }
+    </style>
+}
+@section Scripts {
+    <script>
+
+    </script>
+    <environment include="Development">
+        <script src="~/lib/echarts/echarts.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/report/products.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/echarts/echarts.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/report/products.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default" style="margin-bottom: 1px;">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewBag.Title</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="flex-row margin-bottom-10">
+                            <label>统计时间：</label>
+                            <input autocomplete="off" class="form-control width-200" id="txtStartDate" v-model="start" />
+                            <label style="width: 30px; text-align: center;">-</label>
+                            <input autocomplete="off" class="form-control width-200" id="txtEndDate" v-model="end" />
+                            <label class=" margin-left-20">经营类型：</label>
+                            <select class="form-control width-200" v-model="type">
+                                <option value="0">外卖</option>
+                                <option value="1">堂食</option>
+                            </select>
+                            <button class="btn btn-primary margin-left-20" @@click="search()">
+                                <i class="fa fa-search"></i>
+                                搜索
+                            </button>
+                            <button class="btn btn-primary margin-left-20" @@click="exportData()">
+                                <i class="fa fa-file-excel-o"></i>
+                                导出统计数据
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body" style="min-height:400px;">
+                    <div class="col-md-12">
+                        <table class="table table-bordered table-striped table-cook">
+                            <thead>
+                                <tr>
+                                    <th width="80">序号</th>
+                                    <th style="text-align:left;">商品名称</th>
+                                    <th>下单数量</th>
+                                    <th>下单总额</th>
+                                    <th>取消数量</th>
+                                    <th>取消总额</th>
+                                    <th>销售数量</th>
+                                    <th>销售总额</th>
+                                    <th>招待数量</th>
+                                    <th>招待总额</th>
+                                    <th>折扣总额</th>
+                                    <th>折后总额</th>
+                                    <th>净售数量</th>
+                                    <th>净售总额</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in items">
+                                    <td v-text="index + 1"></td>
+                                    <td v-text="item.name" style="text-align:left;"></td>
+                                    <td v-text="item.quantity || '-'"></td>
+                                    <td v-text="item.amount || '-'"></td>
+                                    <td v-text="item.cancelQuantity || '-'"></td>
+                                    <td v-text="item.cancelAmount || '-'"></td>
+                                    <td v-text="item.saleQuantity || '-'"></td>
+                                    <td v-text="item.saleAmount || '-'"></td>
+                                    <td v-text="item.entertainQuantity || '-'"></td>
+                                    <td v-text="item.entertainAmount || '-'"></td>
+                                    <td v-text="item.discountAmount || '-'"></td>
+                                    <td v-text="item.discountedAmount || '-'"></td>
+                                    <td v-text="item.actualQuantity || '-'"></td>
+                                    <td v-text="item.actualAmount || '-'"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot v-if="!items || items.length === 0">
+                                <tr>
+                                    <td colspan="13">没有任何销售记录...</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

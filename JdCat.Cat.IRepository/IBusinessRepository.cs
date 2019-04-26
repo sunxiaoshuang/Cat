@@ -15,6 +15,12 @@ namespace JdCat.Cat.IRepository
     public interface IBusinessRepository : IBaseRepository<Business>
     {
         /// <summary>
+        /// 注册新商户
+        /// </summary>
+        /// <param name="business"></param>
+        /// <returns></returns>
+        Business Register(Business business);
+        /// <summary>
         /// 获取商户对象，不要跟踪状态
         /// </summary>
         /// <param name="expression"></param>

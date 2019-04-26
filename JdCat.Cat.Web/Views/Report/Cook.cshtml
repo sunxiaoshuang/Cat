@@ -69,9 +69,18 @@
                             <input autocomplete="off" class="form-control width-200" id="txtStartDate" v-model="start" />
                             <label style="width: 30px; text-align: center;">-</label>
                             <input autocomplete="off" class="form-control width-200" id="txtEndDate" v-model="end" />
+                            <label class=" margin-left-20">经营类型：</label>
+                            <select class="form-control width-200" v-model="type">
+                                <option value="0">外卖</option>
+                                <option value="1">堂食</option>
+                            </select>
                             <button class="btn btn-primary margin-left-20" @@click="search()">
                                 <i class="fa fa-search"></i>
                                 搜索
+                            </button>
+                            <button class="btn btn-primary margin-left-20" @@click="exportData()">
+                                <i class="fa fa-file-excel-o"></i>
+                                导出统计数据
                             </button>
                         </div>
                     </div>

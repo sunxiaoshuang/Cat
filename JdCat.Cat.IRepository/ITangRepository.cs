@@ -82,14 +82,14 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="cookId"></param>
         /// <returns></returns>
-        Task<List<int>> GetProductIdsByCook(int cookId);
+        Task<List<int>> GetProductIdsByCookAsync(int cookId);
         /// <summary>
         /// 厨师绑定菜品
         /// </summary>
         /// <param name="cookId"></param>
         /// <param name="relatives"></param>
         /// <returns></returns>
-        Task<List<CookProductRelative>> BindProductsForCook(int cookId, IEnumerable<CookProductRelative> relatives);
+        Task<List<CookProductRelative>> BindProductsForCookAsync(int cookId, IEnumerable<CookProductRelative> relatives);
 
         /// <summary>
         /// 获取商户定义的标签
@@ -127,7 +127,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="payment"></param>
         /// <returns></returns>
-        Task<bool> SetPaymentSortAsync(JdCat.Cat.Model.Data.PaymentType payment);
+        Task<bool> SetPaymentSortAsync(Model.Data.PaymentType payment);
         /// <summary>
         /// 删除支付方式
         /// </summary>
@@ -185,6 +185,18 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Task<List<ClientPrinter>> GetPrintersAsync(int businessId);
 
-
+        /// <summary>
+        /// 档口绑定产品
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="relatives"></param>
+        /// <returns></returns>
+        Task<List<BoothProductRelative>> BindProductsForBoothAsync(int id, IEnumerable<BoothProductRelative> relatives);
+        /// <summary>
+        /// 根据档口获取获取关联的商品id列表
+        /// </summary>
+        /// <param name="boothId"></param>
+        /// <returns></returns>
+        Task<List<int>> GetProductIdsByBoothAsync(int boothId);
     }
 }

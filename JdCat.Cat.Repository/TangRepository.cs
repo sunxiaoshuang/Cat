@@ -114,7 +114,7 @@ namespace JdCat.Cat.Repository
             result.Msg = "删除失败";
             return result;
         }
-        public async Task<List<int>> GetProductIdsByCook(int cookId)
+        public async Task<List<int>> GetProductIdsByCookAsync(int cookId)
         {
             return await Context.CookProductRelatives.Where(a => a.StaffId == cookId).Select(a => a.ProductId).ToListAsync();
         }
@@ -127,7 +127,7 @@ namespace JdCat.Cat.Repository
             await Context.SaveChangesAsync();
             return true;
         }
-        public async Task<List<CookProductRelative>> BindProductsForCook(int cookId, IEnumerable<CookProductRelative> relatives)
+        public async Task<List<CookProductRelative>> BindProductsForCookAsync(int cookId, IEnumerable<CookProductRelative> relatives)
         {
             var entitys = Context.CookProductRelatives.Where(a => a.StaffId == cookId).ToList();
             Context.RemoveRange(entitys);
@@ -291,6 +291,26 @@ namespace JdCat.Cat.Repository
         //    entity.Format = printer.Format;
         //    return await Context.SaveChangesAsync() > 0;
         //}
+        
+        public async Task<List<BoothProductRelative>> BindProductsForBoothAsync(int id, IEnumerable<BoothProductRelative> relatives)
+        {
+            var entitys = Context.BoothProductRelatives.Where(a => a.StoreBoothId == id).ToList();
+            Context.RemoveRange(entitys);
+            if (relatives != null && relatives.Count() > 0)
+            {
+                foreach (var item in relatives)
+                {
+                    item.StoreBoothId = id;
+                }
+                Context.AddRange(relatives);
+            }
+            await Context.SaveChangesAsync();
+            return relatives.ToList();
+        }
+        public async Task<List<int>> GetProductIdsByBoothAsync(int boothId)
+        {
+            return await Context.BoothProductRelatives.Where(a => a.StoreBoothId == boothId).Select(a => a.ProductId).ToListAsync();
+        }
 
 
         /// <summary>

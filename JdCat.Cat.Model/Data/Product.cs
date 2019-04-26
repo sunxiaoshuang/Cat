@@ -100,7 +100,6 @@ namespace JdCat.Cat.Model.Data
         /// 商品折扣活动集合
         /// </summary>
         public virtual ICollection<SaleProductDiscount> SaleProductDiscount { get; set; }
-
         public object Clone()
         {
             var self = (Product)MemberwiseClone();

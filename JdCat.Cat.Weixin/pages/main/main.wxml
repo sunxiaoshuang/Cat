@@ -153,6 +153,9 @@
                             <view class="comment-content">
                                 <text >{{comment.commentContent}}</text>
                             </view>
+                            <view class="comment-reply" wx:if="{{!!comment.replyContent}}">
+                                <text >商家回复：{{comment.replyContent}}</text>
+                            </view>
                             <view class="comment-result">
                                 <text class="jdcat jdcat-sign"></text>
                                 <text >{{comment.commentResult}}</text>

@@ -19,6 +19,9 @@
     <Compile Remove="Migrations\20190112184407_InitProject.cs" />
     <Compile Remove="Migrations\20190112185352_InitProject.cs" />
     <Compile Remove="Migrations\20190330163408_Add_Client.cs" />
+    <Compile Remove="Migrations\20190417020041_Add_StoreBooth.cs" />
+    <Compile Remove="Migrations\20190417020431_Add_StoreBooth.cs" />
+    <Compile Remove="Migrations\20190417044000_addd-dwd.cs" />
   </ItemGroup>
 
   <ItemGroup>
