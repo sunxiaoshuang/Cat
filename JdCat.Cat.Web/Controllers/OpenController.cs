@@ -194,16 +194,25 @@ namespace JdCat.Cat.Web.Controllers
         ///     发送的模版消息完成情况会通过该接口返回
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> WechatCallback()
+        public async Task<IActionResult> WechatCallback([FromQuery]string state)
         {
             var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
-
+            if(!string.IsNullOrEmpty(state))
+            {
+                switch (state)
+                {
+                    case "mp":
+                        var c = Request.Query["code"].ToString();
+                        return View("WeixinWebview", await WxHelper.GetOpenIdAsync(c));
+                    default:
+                        break;
+                }
+            }
             var code = Request.Query["echoStr"].ToString();
 
             using (StreamReader sr = new StreamReader(Request.Body))
             {
                 var content = sr.ReadToEnd();
-                //log.Info(content);
                 try
                 {
                     var result = UtilHelper.ReadXml<WxEvent>(content);
@@ -266,6 +275,13 @@ namespace JdCat.Cat.Web.Controllers
                 user.BusinessId = businessId;
                 service.BindWxListen(user);
             }
+        }
+        #endregion
+
+        #region 授权后跳转页面
+        public IActionResult WeixinWebview()
+        {
+            return View();
         }
         #endregion
 

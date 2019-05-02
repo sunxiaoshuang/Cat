@@ -331,6 +331,7 @@ namespace JdCat.Cat.Web.Controllers
             if (string.IsNullOrEmpty(Business.WxQrListenPath))
             {
                 var token = await WxHelper.GetTokenAsync(WxHelper.WeChatAppId, WxHelper.WeChatSecret);
+                Log.Debug(token);
                 var ticket = await WxHelper.GetTicketAsync(Business.ID, token);
                 var qrCode = UtilHelper.CreateCodeEwm(ticket.url);
                 var source = Convert.ToBase64String(qrCode);

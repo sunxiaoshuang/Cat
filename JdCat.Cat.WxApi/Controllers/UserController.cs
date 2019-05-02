@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using System.Text;
+using JdCat.Cat.Common.Models;
 
 namespace JdCat.Cat.WxApi.Controllers
 {

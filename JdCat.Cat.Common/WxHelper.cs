@@ -105,6 +105,7 @@ namespace JdCat.Cat.Common
             {
                 var result = await client.GetAsync(url);
                 var token = JsonConvert.DeserializeObject<WxToken>(await result.Content.ReadAsStringAsync());
+                
                 if (token.errcode == null)
                 {
                     token.GetTime = DateTime.Now;
@@ -205,6 +206,23 @@ namespace JdCat.Cat.Common
             var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
             var url = $"https://api.weixin.qq.com/cgi-bin/menu/delete?access_token={token}";
             return await Request(url, method: "get");
+        }
+
+        /// <summary>
+        /// 获取用户OpenId
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public static async Task<string> GetOpenIdAsync(string code)
+        {
+            var url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WeChatAppId}&secret={WeChatSecret}&code={code}&grant_type=authorization_code";
+            using (var hc = new HttpClient())
+            {
+                var response = await hc.GetAsync(url);
+                var content = await response.Content.ReadAsStringAsync();
+                return content;
+                //return JsonConvert.DeserializeObject<WxSession>(content);
+            }
         }
 
         #region 第三方开发平台业务方法
