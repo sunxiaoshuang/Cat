@@ -1086,6 +1086,10 @@ ul.dropdown-menu.dropdown-messages li a div {
     overflow: hidden;
 }
 
+.switch {
+    width: 250px;
+}
+
 .padding-right-20 {
     padding-right: 20px;
 }
