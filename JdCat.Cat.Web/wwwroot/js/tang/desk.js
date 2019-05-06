@@ -97,7 +97,7 @@
                             $.alert("请输入类别名称");
                             return;
                         }
-                        var sort = !self.types ? 1 : (self.types[self.types.length - 1].sort + 1);
+                        var sort = !self.types.length === 0 ? 1 : (self.types[self.types.length - 1].sort + 1);
                         axios.post(`/tang/addDeskType`, { name, sort })
                             .then(function (res) {
                                 if (!res.data.success) {

@@ -289,7 +289,7 @@ namespace JdCat.Cat.Repository
                         join orderProduct in Context.OrderProducts on order.ID equals orderProduct.OrderId
                         join relative in Context.ProductRelatives on orderProduct.ProductId equals relative.SetMealId
                         join product in Context.Products on relative.ProductId equals product.ID
-                        where order.CreateTime >= start && order.CreateTime < end && (order.Status & OrderStatus.Valid) > 0 && orderProduct.Feature == ProductFeature.SetMeal
+                        where order.BusinessId == businessId && order.CreateTime >= start && order.CreateTime < end && (order.Status & OrderStatus.Valid) > 0 && orderProduct.Feature == ProductFeature.SetMeal
                         select new { product.ID, product.Name, SetmealName = orderProduct.Name, SetmealQuantity = orderProduct.Quantity };
             var list = await query.ToListAsync();
             var result = list.GroupBy(a => new { a.ID, a.Name })
