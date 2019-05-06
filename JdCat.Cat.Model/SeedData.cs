@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JdCat.Cat.Common;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Enum;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace JdCat.Cat.Model
         {
             InitBusiness();
             InitSettingProductAttribute();
+            //InitProductName();
             //InitOrder();
             //InitPaymentType();
             //InitProductSetMeal();
@@ -161,87 +163,101 @@ namespace JdCat.Cat.Model
             _context.SaveChanges();
         }
 
-        private void InitOrder()
+        /// <summary>
+        /// 将之前没有设置商品拼音的商品重新设置
+        /// </summary>
+        private void InitProductName()
         {
-            var count = _context.Orders.Count();
-            if (count != 0) return;
-            var business = _context.Businesses
-                .Include("Products.Attributes")
-                .Include("Products.Formats")
-                .Include("Products.Images")
-                .OrderBy(a => a.ID).First();
-            var user = _context.Users.FirstOrDefault();
-            var product = business.Products?.ElementAt(0);
-            var product2 = business.Products?.ElementAt(0);
-            if (user == null || product == null || product2 == null) return;
-            var products = new List<OrderProduct> {
-                new OrderProduct {
-                    Description = "微辣",
-                    Product = product,
-                    Format =  product.Formats.ElementAt(0),
-                    Name = product.Name,
-                    Price = product.Formats.ElementAt(0).Price * 2,
-                    Quantity = 2,
-                    Src = product.Images.ElementAt(0).Name + "." + product.Images.ElementAt(0).ExtensionName
-                }
-            };
-            var products2 = new List<OrderProduct> {
-                new OrderProduct {
-                    Description = "加料，要椰果",
-                    Product = product2,
-                    Format =  product2.Formats.ElementAt(0),
-                    Name = product2.Name,
-                    Price = product2.Formats.ElementAt(0).Price * 2,
-                    Quantity = 1,
-                    Src = product2.Images.ElementAt(0).Name + "." + product2.Images.ElementAt(0).ExtensionName
-                }
-            };
-            var order1 = new Order
-            {
-                Business = business,
-                DeliveryMode = Enum.DeliveryMode.Third,
-                Freight = business.Freight,
-                Lat = 30.499750289775,
-                Lng = 114.429076910019,
-                PaymentType = Enum.PaymentType.OnLine,
-                Phone = "17354300837",
-                Price = 53,
-                Products = products,
-                ReceiverAddress = "湖北省武汉市汉阳区人信汇",
-                ReceiverName = "张三",
-                Remark = "不要辣，不要辣",
-                Status = Enum.OrderStatus.Payed,
-                DistributionTime = DateTime.Now.AddHours(2),
-                TablewareQuantity = 2,
-                Tips = 0,
-                Type = Enum.OrderType.Food,
-                User = user
-            };
-            var order2 = new Order
-            {
-                Business = business,
-                DeliveryMode = Enum.DeliveryMode.Own,
-                Freight = business.Freight,
-                Lat = 30.499750289775,
-                Lng = 114.429076910019,
-                PaymentType = Enum.PaymentType.OnLine,
-                Phone = "15544875530",
-                Price = 99,
-                Products = products2,
-                ReceiverAddress = "湖北省武汉市汉阳区人信汇",
-                ReceiverName = "张三",
-                Remark = "不要辣，不要辣",
-                Status = Enum.OrderStatus.Distribution,
-                DistributionTime = DateTime.Now.AddHours(1).AddMinutes(28).AddSeconds(33),
-                TablewareQuantity = 1,
-                Tips = 4,
-                Type = Enum.OrderType.Medicine,
-                User = user
-            };
-            _context.Orders.Add(order1);
-            _context.Orders.Add(order2);
+            var products = _context.Products.Where(a => a.Status != ProductStatus.Delete).ToList();
+            products.ForEach(product => {
+                //if (!string.IsNullOrEmpty(product.Pinyin)) return;
+                product.Pinyin = UtilHelper.GetPinyin(product.Name);
+                product.FirstLetter= UtilHelper.GetFirstPinyin(product.Name);
+            });
             _context.SaveChanges();
         }
+
+        //private void InitOrder()
+        //{
+        //    var count = _context.Orders.Count();
+        //    if (count != 0) return;
+        //    var business = _context.Businesses
+        //        .Include("Products.Attributes")
+        //        .Include("Products.Formats")
+        //        .Include("Products.Images")
+        //        .OrderBy(a => a.ID).First();
+        //    var user = _context.Users.FirstOrDefault();
+        //    var product = business.Products?.ElementAt(0);
+        //    var product2 = business.Products?.ElementAt(0);
+        //    if (user == null || product == null || product2 == null) return;
+        //    var products = new List<OrderProduct> {
+        //        new OrderProduct {
+        //            Description = "微辣",
+        //            Product = product,
+        //            Format =  product.Formats.ElementAt(0),
+        //            Name = product.Name,
+        //            Price = product.Formats.ElementAt(0).Price * 2,
+        //            Quantity = 2,
+        //            Src = product.Images.ElementAt(0).Name + "." + product.Images.ElementAt(0).ExtensionName
+        //        }
+        //    };
+        //    var products2 = new List<OrderProduct> {
+        //        new OrderProduct {
+        //            Description = "加料，要椰果",
+        //            Product = product2,
+        //            Format =  product2.Formats.ElementAt(0),
+        //            Name = product2.Name,
+        //            Price = product2.Formats.ElementAt(0).Price * 2,
+        //            Quantity = 1,
+        //            Src = product2.Images.ElementAt(0).Name + "." + product2.Images.ElementAt(0).ExtensionName
+        //        }
+        //    };
+        //    var order1 = new Order
+        //    {
+        //        Business = business,
+        //        DeliveryMode = Enum.DeliveryMode.Third,
+        //        Freight = business.Freight,
+        //        Lat = 30.499750289775,
+        //        Lng = 114.429076910019,
+        //        PaymentType = Enum.PaymentType.OnLine,
+        //        Phone = "17354300837",
+        //        Price = 53,
+        //        Products = products,
+        //        ReceiverAddress = "湖北省武汉市汉阳区人信汇",
+        //        ReceiverName = "张三",
+        //        Remark = "不要辣，不要辣",
+        //        Status = Enum.OrderStatus.Payed,
+        //        DistributionTime = DateTime.Now.AddHours(2),
+        //        TablewareQuantity = 2,
+        //        Tips = 0,
+        //        Type = Enum.OrderType.Food,
+        //        User = user
+        //    };
+        //    var order2 = new Order
+        //    {
+        //        Business = business,
+        //        DeliveryMode = Enum.DeliveryMode.Own,
+        //        Freight = business.Freight,
+        //        Lat = 30.499750289775,
+        //        Lng = 114.429076910019,
+        //        PaymentType = Enum.PaymentType.OnLine,
+        //        Phone = "15544875530",
+        //        Price = 99,
+        //        Products = products2,
+        //        ReceiverAddress = "湖北省武汉市汉阳区人信汇",
+        //        ReceiverName = "张三",
+        //        Remark = "不要辣，不要辣",
+        //        Status = Enum.OrderStatus.Distribution,
+        //        DistributionTime = DateTime.Now.AddHours(1).AddMinutes(28).AddSeconds(33),
+        //        TablewareQuantity = 1,
+        //        Tips = 4,
+        //        Type = Enum.OrderType.Medicine,
+        //        User = user
+        //    };
+        //    _context.Orders.Add(order1);
+        //    _context.Orders.Add(order2);
+        //    _context.SaveChanges();
+        //}
 
     }
 }

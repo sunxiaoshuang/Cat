@@ -114,7 +114,7 @@ namespace JdCat.Cat.Web
             }
         }
         /// <summary>
-        /// 重置城市编码库
+        /// 重置数据库部分数据
         /// </summary>
         /// <param name="host"></param>
         /// <returns></returns>

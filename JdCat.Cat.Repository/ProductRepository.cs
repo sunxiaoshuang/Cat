@@ -483,23 +483,18 @@ namespace JdCat.Cat.Repository
             }
             return result;
         }
-        public List<object> GetProductTree(int id, bool isSetMeal = false)
+        public async Task<object> GetProductTreeAsync(int id, bool isSetMeal = false)
         {
-            var types = Context.ProductTypes
+            var types = await Context.ProductTypes
                 .Include(a => a.Products)
                 .Where(a => a.BusinessId == id)
                 .Select(a => new
                 {
                     a.Name,
                     a.ID,
-                    List = a.Products.Where(b => b.Status != ProductStatus.Delete && (isSetMeal || b.Feature != ProductFeature.SetMeal)).Select(b => new { b.Name, b.ID })
-                }).ToList();
-            return types.Select(a =>
-            {
-                var obj = new object();
-                obj = a;
-                return obj;
-            }).ToList();
+                    List = a.Products.Where(b => b.Status != ProductStatus.Delete && (isSetMeal || b.Feature != ProductFeature.SetMeal)).Select(b => new { b.Name, b.ID, b.Status })
+                }).ToListAsync();
+            return types;
         }
         public async Task<int> Copy(CopyProduct copyData, string imageUrl)
         {

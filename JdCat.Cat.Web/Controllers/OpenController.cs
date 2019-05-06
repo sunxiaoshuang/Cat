@@ -36,6 +36,11 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
+        public IActionResult Test()
+        {
+            return View();
+        }
+
         /// <summary>
         /// 达达订单回调
         /// </summary>
@@ -203,6 +208,7 @@ namespace JdCat.Cat.Web.Controllers
                 {
                     case "mp":
                         var c = Request.Query["code"].ToString();
+                        ViewBag.Url = HttpContext.RequestServices.GetService<AppData>().MpUrl;
                         return View("WeixinWebview", await WxHelper.GetOpenIdAsync(c));
                     default:
                         break;
@@ -213,17 +219,20 @@ namespace JdCat.Cat.Web.Controllers
             using (StreamReader sr = new StreamReader(Request.Body))
             {
                 var content = sr.ReadToEnd();
-                try
+                if (!string.IsNullOrEmpty(content))
                 {
-                    var result = UtilHelper.ReadXml<WxEvent>(content);
-                    if (result.MsgType == "event" && result.Event == "SCAN")
+                    try
                     {
-                        await Listen(result);
+                        var result = UtilHelper.ReadXml<WxEvent>(content);
+                        if (result.MsgType == "event" && result.Event == "SCAN")
+                        {
+                            await Listen(result);
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    log.Error("微信公众号开发平台错误：" + e);
+                    catch (Exception e)
+                    {
+                        log.Error("微信公众号开发平台错误：" + e);
+                    }
                 }
             }
 

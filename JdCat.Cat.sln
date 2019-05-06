@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JdCat.Cat.WxApi", "JdCat.Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JdCat.Cat.WsService", "JdCat.Cat.WsService\JdCat.Cat.WsService.csproj", "{5ED91004-30BA-4A26-A044-D29C062DE483}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JdCat.Cat.MpWeb", "JdCat.Cat.MpWeb\JdCat.Cat.MpWeb.csproj", "{EC3B88DB-7E39-45BB-8E2C-2599FB4F5725}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JdCat.Cat.MpApi", "JdCat.Cat.MpApi\JdCat.Cat.MpApi.csproj", "{B5F7ADBF-B2A2-4D29-A880-D05F9BAB07F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,10 +59,10 @@ Global
 		{5ED91004-30BA-4A26-A044-D29C062DE483}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ED91004-30BA-4A26-A044-D29C062DE483}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5ED91004-30BA-4A26-A044-D29C062DE483}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EC3B88DB-7E39-45BB-8E2C-2599FB4F5725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC3B88DB-7E39-45BB-8E2C-2599FB4F5725}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC3B88DB-7E39-45BB-8E2C-2599FB4F5725}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC3B88DB-7E39-45BB-8E2C-2599FB4F5725}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5F7ADBF-B2A2-4D29-A880-D05F9BAB07F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5F7ADBF-B2A2-4D29-A880-D05F9BAB07F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5F7ADBF-B2A2-4D29-A880-D05F9BAB07F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5F7ADBF-B2A2-4D29-A880-D05F9BAB07F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

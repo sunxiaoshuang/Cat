@@ -22,6 +22,7 @@
     <Compile Remove="Migrations\20190417020041_Add_StoreBooth.cs" />
     <Compile Remove="Migrations\20190417020431_Add_StoreBooth.cs" />
     <Compile Remove="Migrations\20190417044000_addd-dwd.cs" />
+    <Compile Remove="Migrations\20190505083911_Modify_Product_Pinyin.cs" />
   </ItemGroup>
 
   <ItemGroup>

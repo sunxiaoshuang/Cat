@@ -154,11 +154,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         List<object> GetStoreTree(int id);
         /// <summary>
-        /// 获取商户商品树（不包含套餐商品）
+        /// 获取商户商品树
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">商户id</param>
+        /// <param name="isSetMeal">是否查询出套餐</param>
         /// <returns></returns>
-        List<object> GetProductTree(int id, bool isSetMeal = false);
+        Task<object> GetProductTreeAsync(int id, bool isSetMeal = false);
         /// <summary>
         /// 复制商品
         /// </summary>

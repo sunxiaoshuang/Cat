@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.International.Converters.PinYinConverter;
 using Newtonsoft.Json;
 
 namespace JdCat.Cat.Web.Controllers
@@ -213,6 +214,8 @@ namespace JdCat.Cat.Web.Controllers
                 Description = product.Description,
                 MinBuyQuantity = product.MinBuyQuantity,
                 Name = product.Name,
+                Pinyin = UtilHelper.GetPinyin(product.Name),
+                FirstLetter = UtilHelper.GetFirstPinyin(product.Name),
                 ProductTypeId = product.ProductTypeId,
                 UnitName = product.UnitName,
                 Images = product.Images,
@@ -275,7 +278,8 @@ namespace JdCat.Cat.Web.Controllers
                 }
                 product.Images = new List<ProductImage> { file };
             }
-
+            product.Pinyin = UtilHelper.GetPinyin(product.Name);
+            product.FirstLetter = UtilHelper.GetFirstPinyin(product.Name);
             // 图片上传成功后，修改商品
             Service.Update(product);
             result.Success = true;
@@ -391,9 +395,9 @@ namespace JdCat.Cat.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetProductTree([FromQuery]int? isSetMeal)
+        public async Task<IActionResult> GetProductTree([FromQuery]int? isSetMeal)
         {
-            return Json(Service.GetProductTree(Business.ID, isSetMeal.HasValue));
+            return Json(await Service.GetProductTreeAsync(Business.ID, isSetMeal.HasValue));
         }
 
         /// <summary>
@@ -421,6 +425,7 @@ namespace JdCat.Cat.Web.Controllers
             result.Data = count;
             return Json(result);
         }
+
 
     }
 }

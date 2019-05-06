@@ -12,6 +12,7 @@ using System.DrawingCore;
 using System.DrawingCore.Imaging;
 using ZXing.Common;
 using ZXing;
+using Microsoft.International.Converters.PinYinConverter;
 
 namespace JdCat.Cat.Common
 {
@@ -50,6 +51,56 @@ namespace JdCat.Cat.Common
             TimeSpan toNow = new TimeSpan(lTime);
             DateTime targetDt = dtStart.Add(toNow);
             return targetDt;
+        }
+
+        /// <summary>
+        /// 汉字转化为拼音
+        /// </summary>
+        /// <param name="str">汉字</param>
+        /// <returns>全拼</returns>
+        public static string GetPinyin(string str)
+        {
+            string r = string.Empty;
+            str = str.Replace("红", "洪");
+            foreach (char obj in str)
+            {
+                try
+                {
+                    ChineseChar chineseChar = new ChineseChar(obj);
+                    string t = chineseChar.Pinyins[0].ToString();
+                    r += t.Substring(0, t.Length - 1);
+                }
+                catch
+                {
+                    r += obj.ToString();
+                }
+            }
+            return r.ToLower();
+        }
+
+        /// <summary>
+        /// 汉字转化为拼音首字母
+        /// </summary>
+        /// <param name="str">汉字</param>
+        /// <returns>首字母</returns>
+        public static string GetFirstPinyin(string str)
+        {
+            string r = string.Empty;
+            str = str.Replace("红", "洪");
+            foreach (char obj in str)
+            {
+                try
+                {
+                    ChineseChar chineseChar = new ChineseChar(obj);
+                    string t = chineseChar.Pinyins[0].ToString();
+                    r += t.Substring(0, 1);
+                }
+                catch
+                {
+                    r += obj.ToString();
+                }
+            }
+            return r.ToLower();
         }
 
         #region 加密与解密

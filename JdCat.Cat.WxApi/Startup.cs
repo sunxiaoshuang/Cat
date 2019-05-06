@@ -37,12 +37,12 @@ namespace JdCat.Cat.WxApi
                 options.Filters.Add<GlobalExceptionAttribute>();
             });
             // 配置会话应用状态
-            services.AddDistributedMemoryCache();
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromSeconds(600);
-                options.Cookie.HttpOnly = true;
-            });
+            //services.AddDistributedMemoryCache();
+            //services.AddSession(options =>
+            //{
+            //    options.IdleTimeout = TimeSpan.FromSeconds(600);
+            //    options.Cookie.HttpOnly = true;
+            //});
             // 配置依赖
             //services.AddDbContext<CatDbContext>(a => a.UseLazyLoadingProxies()
             //.ConfigureWarnings(b => b.Log(CoreEventId.DetachedLazyLoadingWarning))
@@ -93,7 +93,7 @@ namespace JdCat.Cat.WxApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseSession();
+            //app.UseSession();
             app.UseMvc();
         }
     }

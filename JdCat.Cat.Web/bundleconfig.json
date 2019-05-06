@@ -442,6 +442,12 @@
     "inputFiles": [
       "wwwroot/js/report/products.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/weixin/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/weixin/index.js"
+    ]
   }
 
 ]

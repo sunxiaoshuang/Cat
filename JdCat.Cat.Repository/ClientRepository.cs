@@ -82,18 +82,18 @@ namespace JdCat.Cat.Repository
              * 7. 同步菜单
              * 8. 同步厨师与商品关联
              */
-            var staffs = await Context.Staffs.Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).ToListAsync();
+            var staffs = await Context.Staffs.AsNoTracking().Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).ToListAsync();
             data.Staffs = staffs;
-            data.StaffPosts = await Context.StaffPosts.Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).ToListAsync();
-            data.Payments = await Context.PaymentTypes.Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).OrderBy(a => a.Sort).ToListAsync();
-            data.DeskTypes = await Context.DeskTypes.Where(a => a.BusinessId == businessId && a.Status != EntityStatus.Deleted).OrderBy(a => a.Sort).ToListAsync();
-            data.Desks = await Context.Desks.Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).ToListAsync();
-            data.Marks = await Context.SystemMarks.Where(a => a.BusinessId == businessId).ToListAsync();
-            data.Printers = await Context.ClientPrinters.Where(a => a.BusinessId == businessId).ToListAsync();
-            data.ProductTypes = await Context.ProductTypes.Where(a => a.BusinessId == businessId).OrderBy(a => a.Sort).ToListAsync();
-            data.Products = await Context.Products.Include(a => a.Formats).Include(a => a.Attributes).Include(a => a.Images).Where(a => a.BusinessId == businessId).ToListAsync();
+            data.StaffPosts = await Context.StaffPosts.AsNoTracking().Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).ToListAsync();
+            data.Payments = await Context.PaymentTypes.AsNoTracking().Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).OrderBy(a => a.Sort).ToListAsync();
+            data.DeskTypes = await Context.DeskTypes.AsNoTracking().Where(a => a.BusinessId == businessId && a.Status != EntityStatus.Deleted).OrderBy(a => a.Sort).ToListAsync();
+            data.Desks = await Context.Desks.AsNoTracking().Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).ToListAsync();
+            data.Marks = await Context.SystemMarks.AsNoTracking().Where(a => a.BusinessId == businessId).ToListAsync();
+            data.Printers = await Context.ClientPrinters.AsNoTracking().Where(a => a.BusinessId == businessId).ToListAsync();
+            data.ProductTypes = await Context.ProductTypes.AsNoTracking().Where(a => a.BusinessId == businessId).OrderBy(a => a.Sort).ToListAsync();
+            data.Products = await Context.Products.AsNoTracking().Include(a => a.Formats).Include(a => a.Attributes).Include(a => a.Images).Where(a => a.BusinessId == businessId).ToListAsync();
             var staffIds = staffs.Select(a => a.ID);
-            data.CookProductRelatives = await Context.CookProductRelatives.Where(a => staffIds.Contains(a.StaffId)).ToListAsync();
+            data.CookProductRelatives = await Context.CookProductRelatives.AsNoTracking().Where(a => staffIds.Contains(a.StaffId)).ToListAsync();
             return data;
         }
 

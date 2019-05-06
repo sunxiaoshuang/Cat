@@ -20,6 +20,14 @@ namespace JdCat.Cat.Model.Data
         [Required]
         public string Name { get; set; }
         /// <summary>
+        /// 名称拼音
+        /// </summary>
+        public string Pinyin { get; set; }
+        /// <summary>
+        /// 拼音首字母
+        /// </summary>
+        public string FirstLetter { get; set; }
+        /// <summary>
         /// 描述
         /// </summary>
         public string Description { get; set; }

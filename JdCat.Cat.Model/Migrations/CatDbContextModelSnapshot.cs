@@ -831,6 +831,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("Feature");
 
+                    b.Property<string>("FirstLetter");
+
                     b.Property<double?>("MinBuyQuantity");
 
                     b.Property<DateTime?>("ModifyTime");
@@ -839,6 +841,8 @@ namespace JdCat.Cat.Model.Migrations
                         .IsRequired();
 
                     b.Property<DateTime?>("NotSaleTime");
+
+                    b.Property<string>("Pinyin");
 
                     b.Property<string>("ProductIdSet");
 

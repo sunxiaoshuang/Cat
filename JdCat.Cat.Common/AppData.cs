@@ -236,6 +236,10 @@ namespace JdCat.Cat.Common
         /// 腾讯地图WebService接口Secret
         /// </summary>
         public string MapApiSecret { get; set; }
+        /// <summary>
+        /// 公众号管理后台地址
+        /// </summary>
+        public string MpUrl { get; set; }
 
     }
 }
