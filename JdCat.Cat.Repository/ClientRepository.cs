@@ -81,6 +81,7 @@ namespace JdCat.Cat.Repository
              * 6. 同步打印机
              * 7. 同步菜单
              * 8. 同步厨师与商品关联
+             * 9. 同步档口、档口与商品关系
              */
             var staffs = await Context.Staffs.AsNoTracking().Where(a => a.Status != EntityStatus.Deleted && a.BusinessId == businessId).ToListAsync();
             data.Staffs = staffs;
@@ -94,6 +95,10 @@ namespace JdCat.Cat.Repository
             data.Products = await Context.Products.AsNoTracking().Include(a => a.Formats).Include(a => a.Attributes).Include(a => a.Images).Where(a => a.BusinessId == businessId).ToListAsync();
             var staffIds = staffs.Select(a => a.ID);
             data.CookProductRelatives = await Context.CookProductRelatives.AsNoTracking().Where(a => staffIds.Contains(a.StaffId)).ToListAsync();
+            var booths = await Context.StoreBooths.AsNoTracking().Where(a => a.BusinessId == businessId).ToListAsync();
+            var boothIds = booths.Select(a => a.ID).ToList();
+            data.Booths = booths;
+            data.BoothProductRelatives = await Context.BoothProductRelatives.AsNoTracking().Where(a => boothIds.Contains(a.StoreBoothId)).ToListAsync();
             return data;
         }
 
