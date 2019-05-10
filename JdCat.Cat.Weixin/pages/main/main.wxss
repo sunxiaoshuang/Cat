@@ -1422,7 +1422,7 @@ page {
   width: 700rpx;
   height: 100%;
   border-radius: 20rpx;
-  opacity: .2;
+  /* opacity: .2; */
   background-color: rgb(170, 138, 78);
 }
 

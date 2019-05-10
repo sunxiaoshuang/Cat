@@ -110,7 +110,7 @@
 
             modeFormat: function (mode) {
                 if (mode === 0) return "一菜一打";
-                else if (mode === 1) return "一分一打";
+                else if (mode === 1) return "一份一打";
                 else if (mode === 2) return "一单一打";
             }
         },
