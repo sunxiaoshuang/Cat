@@ -186,6 +186,12 @@ namespace JdCat.Cat.IRepository
         Task<List<ClientPrinter>> GetPrintersAsync(int businessId);
 
         /// <summary>
+        /// 获取商户档口列表
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        Task<List<StoreBooth>> GetBoothsAsync(int businessId);
+        /// <summary>
         /// 档口绑定产品
         /// </summary>
         /// <param name="id"></param>

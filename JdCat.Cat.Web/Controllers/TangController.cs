@@ -529,7 +529,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> GetBooths()
         {
-            var list = await Service.GetAllAsync<StoreBooth>();
+            var list = await Service.GetBoothsAsync(Business.ID);
             return Json(list);
         }
         /// <summary>

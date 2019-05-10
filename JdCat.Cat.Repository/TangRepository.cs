@@ -291,7 +291,14 @@ namespace JdCat.Cat.Repository
         //    entity.Format = printer.Format;
         //    return await Context.SaveChangesAsync() > 0;
         //}
-        
+
+
+        public async Task<List<StoreBooth>> GetBoothsAsync(int businessId)
+        {
+            return await Context.StoreBooths
+                .Where(a => a.BusinessId == businessId)
+                .ToListAsync();
+        }
         public async Task<List<BoothProductRelative>> BindProductsForBoothAsync(int id, IEnumerable<BoothProductRelative> relatives)
         {
             var entitys = Context.BoothProductRelatives.Where(a => a.StoreBoothId == id).ToList();
