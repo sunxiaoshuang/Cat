@@ -7,6 +7,8 @@
 *.userosscache
 *.sln.docstates
 JdCat.Cat.Web/wwwroot/js/*.min.js
+JdCat.Cat.Web/Properties
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -94,7 +96,7 @@ ipch/
 *.vsp
 *.vspx
 *.sap
-CustomProfile.pubxml
+
 
 # TFS 2012 Local Workspace
 $tf/
