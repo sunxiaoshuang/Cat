@@ -25,7 +25,7 @@ bld/
 Temp/
 File/
 js/*.min.js
-Properties/
+[Pp]roperties/
 
 # Visual Studio 2015 cache/options directory
 .vs/
