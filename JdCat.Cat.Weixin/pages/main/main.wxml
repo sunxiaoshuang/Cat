@@ -80,13 +80,13 @@
                                         </view>
                                     </view>
                                     <view class="single-format" wx:if="{{item.formats.length == 1 && item.attributes.length == 0}}">
-                                        <view class="item-remove" bindtap="remove" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
+                                        <view class="item-remove" bindtap="deleteProduct" wx:if="{{item.quantity > 0}}" data-index="{{index}}">
                                             <image src="../../images/icon/minus-5.png" />
                                         </view>
                                         <view class="item-food-text" wx:if="{{item.quantity > 0}}">
                                             {{item.quantity}}
                                         </view>
-                                        <view class="item-add" bindtap="add" data-index="{{index}}">
+                                        <view class="item-add" bindtap="addProduct" data-productid="{{item.id}}" data-index="{{index}}">
                                             <image src="../../images/icon/plus-5.png" />
                                         </view>
                                     </view>
@@ -224,7 +224,7 @@
         <view class="howMuch" bindtap="showCart">
             <view class="img">
                 <image src="/images/icon/{{cartList.length == 0 ? 'cart-1.png' : 'cart-2.png'}}" style="width: 105rpx;height: 105rpx;"></image>
-                <view class="cart-quantity" wx:if="{{cartQuantity > 0}}">{{cartQuantity}}</view>
+                <view class="cart-quantity" wx:if="{{calc.getCartsQuantity(cartList) > 0}}">{{calc.getCartsQuantity(cartList)}}</view>
             </view>
             <view class="cost" wx:if="{{cartList.length!=0}}">
                 <text class="cost-price">￥{{calc.precision(calc.cartTotalPrice(cartList) + packagePrice, 2)}}</text>
@@ -263,11 +263,11 @@
                     <text wx:if="{{!!cart.discount}}" class="oldPrice">￥{{cart.oldPrice}}</text>
                 </view>
                 <view class="item-food-numb">
-                    <view class="item-remove" bindtap="removeCart" data-index="{{index}}">
+                    <view class="item-remove" bindtap="decreaseCart" data-index="{{index}}">
                         <image src="../../images/icon/minus-5.png" />
                     </view>
                     <text class="item-food-text">{{cart.quantity}}</text>
-                    <view class="item-add" bindtap="addCart" data-index="{{index}}">
+                    <view class="item-add" bindtap="increaseCart" data-index="{{index}}">
                         <image src="../../images/icon/plus-5.png" />
                     </view>
                 </view>
@@ -332,13 +332,13 @@
     <view class="format-footer" catchtap="attch1">
         <view class="format-price">￥ {{productList[productIndex].price}}</view>
         <view class="item-food-numb">
-            <view class="item-remove" bindtap="remove">
+            <view class="item-remove" bindtap="reduceProductOnFormat" data-index="{{productIndex}}">
                 <image src="../../images/icon/minus-5.png" />
             </view>
             <view class="item-food-text">
                 <text>{{curQuantity}}</text>
             </view>
-            <view class="item-add" bindtap="add">
+            <view class="item-add" bindtap="increaseProductOnFormat" data-index="{{productIndex}}">
                 <image src="../../images/icon/plus-5.png" />
             </view>
         </view>
@@ -376,7 +376,7 @@
                 <text>￥ {{curProduct.price}}</text>
             </view>
             <view class="formatter">
-                <view class="selectFormat" wx:if="{{curProduct.formats.length == 1}}" bindtap="addAtDetail">
+                <view class="selectFormat" wx:if="{{curProduct.formats.length == 1}}" bindtap="addProductOnInfo" data-id="{{curProduct.id}}">
                     加入购物车
                 </view>
                 <view class="selectFormat" wx:else bindtap="showFormatAtDetail">选规格</view>

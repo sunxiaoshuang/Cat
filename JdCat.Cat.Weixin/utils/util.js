@@ -133,11 +133,11 @@ var method = {
             }
         }, delay);
     },
-    throttle: function(method, time, context){      // 函数节流
+    throttle: function(method, time, context, obj){      // 函数节流
         clearTimeout(method.tId);
         time = time || 1000;
         method.tId = setTimeout(function(){
-            method.call(context);
+            method.call(context, obj);
         }, time);
     }
 }

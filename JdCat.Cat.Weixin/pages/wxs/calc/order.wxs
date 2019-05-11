@@ -60,6 +60,14 @@ var order = {
     total = parseFloat(total);
     return total;
   },
+  getCartsQuantity: function(cartList){
+    var total = 0;
+    cartList.forEach(function (cart) {
+      total += cart.quantity;
+    });
+    total = total.toFixed(2);
+    return +total;
+  },
   productQuantity: function (order) {
     var quantity = 0;
     order.products.forEach(function (obj) {
@@ -130,6 +138,7 @@ var order = {
 
 module.exports = {
   cartTotalPrice: order.totalPrice,
+  getCartsQuantity: order.getCartsQuantity,
   productQuantity: order.productQuantity,
   orderStatus: order.orderStatus,
   precision: order.precision,

@@ -64,6 +64,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         IEnumerable<ShoppingCart> GetCarts(int businessId, int userId);
         /// <summary>
+        /// 根据用户获取购物车列表
+        /// </summary>
+        /// <param name="userId">用户id</param>
+        /// <returns></returns>
+        Task<List<ShoppingCart>> GetCartsAsync(int businessId, int userId);
+        /// <summary>
         /// 创建购物车
         /// </summary>
         /// <param name="cart"></param>
@@ -82,12 +88,19 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         void DeleteCart(ShoppingCart cart);
         /// <summary>
-        /// 情况购物车
+        /// 清空购物车
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="businessId"></param>
         /// <returns></returns>
         bool ClearCart(int userId, int businessId);
+        /// <summary>
+        /// 清空购物车
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        Task<int> ClearCartAsync(int userId, int businessId);
         /// <summary>
         /// 更新购物车数量
         /// </summary>

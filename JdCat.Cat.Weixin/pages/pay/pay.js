@@ -247,6 +247,7 @@ Page({
         if (res.data.success) {
           self.data.cartList = [];
           wx.setStorageSync('cartList', []);
+          wx.setStorageSync('orderSubmit',true);
           wx.setStorageSync("orderDetail", res.data.data);
           self.useCoupon(order.saleCouponUserId);
           wx.redirectTo({

@@ -109,6 +109,12 @@ namespace JdCat.Cat.Repository
             }
             return Context.ShoppingCarts.Where(a => a.UserId == userId && a.BusinessId == businessId).ToList();
         }
+        public async Task<List<ShoppingCart>> GetCartsAsync(int businessId, int userId)
+        {
+            var query = Context.ShoppingCarts.Where(a => a.UserId == userId);
+            if (businessId > 0) query = query.Where(a => a.BusinessId == businessId);
+            return await query.ToListAsync();
+        }
         public ShoppingCart CreateCart(ShoppingCart cart)
         {
             Context.ShoppingCarts.Add(cart);
@@ -146,6 +152,16 @@ namespace JdCat.Cat.Repository
         {
             return Context.Database.ExecuteSqlCommand("delete from `ShoppingCart` where userid={0} and businessid={1}", userId, businessId) > 0;
 
+        }
+        public async Task<int> ClearCartAsync(int userId, int businessId)
+        {
+            var carts = await Context.ShoppingCarts
+                .Where(a => a.UserId == userId && a.BusinessId == businessId)
+                .Select(a => a.ID)
+                .ToListAsync();
+            if (carts.Count == 0) return 0;
+            Context.RemoveRange(carts.Select(a => new ShoppingCart { ID = a }));
+            return await Context.SaveChangesAsync();
         }
         public Order CreateOrder(Order order)
         {
@@ -234,9 +250,9 @@ namespace JdCat.Cat.Repository
             var start = DateTime.Now.AddYears(-1);
             var end = DateTime.Now;
             var query = from comment in Context.OrderComments
-            join business in Context.Businesses on comment.BusinessId equals business.ID
-            where comment.CreateTime > start && comment.CreateTime < end && comment.UserId == user
-            select new { comment.CreateTime, comment.OrderScore, comment.DeliveryScore, comment.OrderId, comment.CommentContent, comment.CommentResult, comment.DeliveryResult, comment.ReplyContent, business.Name };
+                        join business in Context.Businesses on comment.BusinessId equals business.ID
+                        where comment.CreateTime > start && comment.CreateTime < end && comment.UserId == user
+                        select new { comment.CreateTime, comment.OrderScore, comment.DeliveryScore, comment.OrderId, comment.CommentContent, comment.CommentResult, comment.DeliveryResult, comment.ReplyContent, business.Name };
             return await query.ToListAsync();
         }
         //public bool SetPrimaryUser(Business business)
