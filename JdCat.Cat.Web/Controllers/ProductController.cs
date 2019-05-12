@@ -218,6 +218,7 @@ namespace JdCat.Cat.Web.Controllers
                 FirstLetter = UtilHelper.GetFirstPinyin(product.Name),
                 ProductTypeId = product.ProductTypeId,
                 UnitName = product.UnitName,
+                Scope = product.Scope,
                 Images = product.Images,
                 Formats = product.Formats,
                 Attributes = product.Attributes,

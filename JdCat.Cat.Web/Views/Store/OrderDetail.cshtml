@@ -141,10 +141,15 @@
                     @foreach (var item in Model.TangOrderProducts)
                     {
                         <tr>
-                            <td>@item.Name</td>
+                            <td>
+                                @item.Name
+                                @if (item.ProductStatus == TangOrderProductStatus.Return) {
+                                    <span class="text-danger">（已退菜）</span>
+                                }
+                            </td>
                             <td>@item.Description</td>
                             <td>@item.Remark</td>
-                            <td>@item.Price</td>
+                            <td>@((item.Price * item.Quantity).ToString("f2"))</td>
                             <td>@item.Quantity</td>
                         </tr>
                     }

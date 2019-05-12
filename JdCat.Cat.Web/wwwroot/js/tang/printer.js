@@ -65,6 +65,20 @@
             </div>
             <div class="form-group">
                 <label class="control-label col-xs-3">
+                    打印范围：
+                </label>
+                <div class="col-xs-8">
+                    <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20" v-for="scope in scopeList">
+                        <label class="label-checkbox">
+                            <input type="checkbox" name="scope" v-model="scope.checked">
+                            <span class="custom-checkbox"></span>
+                            <span v-text="scope.name"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-3">
                     状态：
                 </label>
                 <div class="col-xs-8">
@@ -112,6 +126,12 @@
                 if (mode === 0) return "一菜一打";
                 else if (mode === 1) return "一份一打";
                 else if (mode === 2) return "一单一打";
+            },
+            scopeFormat: function (scope) {
+                var result = "";
+                if (scope & 1) result += "外卖;";
+                if (scope & 2) result += "堂食;";
+                return result;
             }
         },
         created: function () {
@@ -125,11 +145,12 @@
 
     function editPrinter(printer) {
         var isNew = !printer,
-            entity = !isNew ? JSON.parse(JSON.stringify(printer)) : { id: 0, name: "", ip: "", port: 9100, type: 2, quantity: 1, mode: 0, format: 80, state: 1 },
+            entity = !isNew ? JSON.parse(JSON.stringify(printer)) : { id: 0, name: "", ip: "", port: 9100, type: 2, quantity: 1, mode: 0, format: 80, scope: 0, state: 1 },
             types = [{ name: "前台", value: 1 }, { name: "后厨", value: 2 }],
             modes = [{ name: "一菜一打", value: 0 }, { name: "一份一打", value: 1 }, { name: "一单一打", value: 2 }],
             formats = [{ name: "58mm", value: 58 }, { name: "80mm", value: 80 }],
             states = [{ name: "正常", value: 1 }, { name: "停用", value: 2 }],
+            scopeList = [{ name: "外卖", value: 1, checked: false }, { name: "堂食", value: 2, checked: false }],
             vueObj;
         $.view({
             title: isNew ? "新增打印机" : "编辑打印机",
@@ -139,7 +160,13 @@
                 vueObj = new Vue({
                     el: "#edit-printer",
                     data: {
-                        entity, types, modes, formats, states
+                        entity, types, modes, formats, states, scopeList
+                    },
+                    created: function () {
+                        var self = this;
+                        this.scopeList.forEach(function (obj) {
+                            if (self.entity.scope & obj.value) obj.checked = true;
+                        });
                     }
                 });
                 destroyVue.call(this, vueObj);
@@ -166,6 +193,12 @@
                     $.alert("请输入打印数量");
                     return;
                 }
+                var scope = 0;
+                vueObj.scopeList.forEach(function (obj) {
+                    if (!obj.checked) return;
+                    scope += obj.value;
+                });
+                entity.scope = scope;
                 var url = isNew ? "/tang/addPrinter" : "/tang/updatePrinter";
                 axios.post(url, entity)
                     .then(function (res) {
@@ -181,6 +214,7 @@
                         printer.mode = entity.mode;
                         printer.format = entity.format;
                         printer.quantity = entity.quantity;
+                        printer.scope = entity.scope;
                         printer.state = entity.state;
                     })
                     .catch(function (err) { $.alert(err); });

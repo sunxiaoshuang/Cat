@@ -113,13 +113,6 @@
                                 单品
                             </label>
                         </div>
-                        @*<div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
-                            <label class="label-checkbox">
-                                <input type="radio" name="feature" value="1" v-model="entity.feature">
-                                <span class="custom-checkbox"></span>
-                                招牌
-                            </label>
-                        </div>*@
                         <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
                             <label class="label-checkbox">
                                 <input type="radio" name="feature" value="2" v-model="entity.feature">
@@ -131,6 +124,20 @@
                     <label class="control-label col-xs-1 pull-left" style="text-align:left;" v-else>
                         {{feature}}
                     </label>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span class="require">使用范围</span>
+                    </label>
+                    <div class="col-xs-6">
+                        <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20" v-for="scope in scopeList">
+                            <label class="label-checkbox">
+                                <input type="checkbox" name="scope" v-model="scope.checked">
+                                <span class="custom-checkbox"></span>
+                                <span v-text="scope.name"></span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group" v-show="entity.feature == 2">
                     <label class="control-label col-xs-1">

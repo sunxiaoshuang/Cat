@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JdCat.Cat.Common;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -23,18 +24,28 @@ namespace JdCat.Cat.WxApi.Controllers
 
         }
 
+        /// <summary>
+        /// 获取外卖菜单
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("menus/{id}")]
         public IActionResult GetMenus(int id)
         {
-            var list = Service.GetTypes(new Business() { ID = id }, Model.Enum.ProductStatus.Sale).ToList();
-            list.RemoveAll(a => a.Products.Count == 0);
+            var list = Service.GetTypes(new Business() { ID = id }, ProductStatus.Sale).ToList();
             list.ForEach(a =>
             {
+                var tangProduct = a.Products.Where(product => (product.Scope & ActionScope.Takeout) == 0).ToList();
+                foreach (var item in tangProduct)
+                {
+                    a.Products.Remove(item);
+                }
                 foreach (var item in a.Products)
                 {
                     item.Description = item.Description ?? "";
                 }
             });
+            list.RemoveAll(a => a.Products.Count == 0);
             return Json(list);
         }
 

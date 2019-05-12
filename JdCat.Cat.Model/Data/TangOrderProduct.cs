@@ -49,6 +49,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string Description { get; set; }
         /// <summary>
+        /// 退菜原因
+        /// </summary>
+        public string RefundReason { get; set; }
+        /// <summary>
         /// 备注
         /// </summary>
         public string Remark { get; set; }

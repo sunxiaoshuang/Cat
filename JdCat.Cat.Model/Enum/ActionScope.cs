@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace JdCat.Cat.Model.Enum
 {
     /// <summary>
-    /// 订单类别
+    /// 订单范围
     /// </summary>
-    public enum OrderCategory
+    [Flags]
+    public enum ActionScope
     {
         /// <summary>
         /// 外卖
         /// </summary>
-        TakeOut = 0,
+        [Description("外卖")]
+        Takeout = 1,
         /// <summary>
         /// 快餐
         /// </summary>
-        FastFood = 1,
-        /// <summary>
-        /// 中餐
-        /// </summary>
-        ChineseFood = 2
+        [Description("堂食")]
+        Store = 2
     }
 }

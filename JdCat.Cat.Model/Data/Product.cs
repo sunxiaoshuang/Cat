@@ -72,6 +72,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public DateTime? NotSaleTime { get; set; }
         /// <summary>
+        /// 商品售卖范围
+        /// </summary>
+        public ActionScope Scope { get; set; }
+        /// <summary>
         /// 备用属性
         /// </summary>
         [NotMapped]

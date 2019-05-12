@@ -471,7 +471,7 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> UpdatePrinter([FromBody]ClientPrinter printer)
         {
             var count = await Service.UpdateAsync(printer, new List<string> {
-                nameof(printer.Name), nameof(printer.IP), nameof(printer.Port), nameof(printer.Type), nameof(printer.State), nameof(printer.Quantity),nameof(printer.Mode), nameof(printer.Format)
+                nameof(printer.Name), nameof(printer.IP), nameof(printer.Port), nameof(printer.Type), nameof(printer.State), nameof(printer.Quantity),nameof(printer.Mode), nameof(printer.Format), nameof(printer.Scope)
             });
             return Json(new JsonData { Success = true, Msg = "更新成功" });
         }

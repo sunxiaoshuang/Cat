@@ -7,6 +7,7 @@ using JdCat.Cat.Common;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -172,6 +173,7 @@ namespace JdCat.Cat.Web.Controllers
             foreach (var item in printers)
             {
                 item.BusinessId = id;
+                item.Scope = ActionScope.Takeout;
             }
             try
             {
@@ -197,6 +199,7 @@ namespace JdCat.Cat.Web.Controllers
             printer.BusinessId = id;
             try
             {
+                printer.Scope = ActionScope.Takeout;
                 service.SavePrinter(printer);
                 result.Success = true;
                 result.Msg = "成功";

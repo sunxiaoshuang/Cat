@@ -30,6 +30,7 @@
             typeList: pageData.types,   // 待选择的分类
             attrList: pageData.attrs,   // 待选择的属性
             productTypes: null,
+            scopeList: [{ name: "外卖", value: 1, checked: false }, { name: "堂食", value: 2, checked: false }],
             entity: pageData.entity || {// 商品实体
                 id: 0,
                 productTypeId: null,
@@ -41,12 +42,19 @@
                     { id: 0, code: null, name: "", price: 0, stock: -1, packingPrice: 0, packingQuantity: 1 }
                 ],
                 attributes: [],
+                scope: 0,
                 tag1: [],
                 feature: 0
             },
             imgsrc: imgsrc,
             showError: false,           // 是否表单错误
             isDisabled: false
+        },
+        created: function () {
+            var self = this;
+            this.scopeList.forEach(function (obj) {
+                if (self.entity.scope & obj.value) obj.checked = true;
+            });
         },
         computed: {
             feature: function () {
@@ -250,6 +258,12 @@
 
     function save(entity, flag) {
         var self = this;
+        var scope = 0;
+        this.scopeList.forEach(function (obj) {
+            if (!obj.checked) return;
+            scope += obj.value;
+        });
+        entity.scope = scope;
         $.loading();
         this.isDisabled = true;                     // 按钮是否禁用
         var url = entity.id === 0 ? "/Product/Save" : "/Product/Update";

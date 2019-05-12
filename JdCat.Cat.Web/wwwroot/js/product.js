@@ -38,6 +38,7 @@
             return false;
         })
         .on("click", "#type .btn-save", function () {
+
             var $list = $(".list-type");
             var $new = $list.find(".list-type-item.new"),
                 $edit = $list.find(".list-type-item.edit"),
@@ -332,6 +333,12 @@
                 else if (feature == 1) return "招牌";
                 else if (feature == 2) return "套餐";
                 return "";
+            },
+            scopeFormat: function (scope) {
+                var result = "";
+                if (scope & 1) result += "外卖;";
+                if (scope & 2) result += "堂食;";
+                return result;
             }
         },
         watch: {
@@ -351,9 +358,6 @@
     });
     function loadData() {
         $.loading();
-        //var types = category.list.filter(function (item) { return item.selected; });
-        //var type = types.length === 0 ? "" : types[0].id;
-        //axios.get("/Product/GetProducts?pageIndex=" + productList.pageIndex + "&typeId=" + type)
         axios.get("/Product/GetProducts")
             .then(function (response) {
                 $.loaded();

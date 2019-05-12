@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JdCat.Cat.Model.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
@@ -43,6 +44,10 @@ namespace JdCat.Cat.Model.Data
         /// 打印机规格：58mm或80mm
         /// </summary>
         public int Format { get; set; }
+        /// <summary>
+        /// 打印订单范围
+        /// </summary>
+        public ActionScope Scope { get; set; }
         /// <summary>
         /// 打印机关联的菜品id
         /// </summary>
