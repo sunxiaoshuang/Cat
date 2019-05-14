@@ -362,10 +362,18 @@ namespace JdCat.Cat.Web.Controllers
         //        Data = list?.Select(a => new { a.ID, a.ObjectId })
         //    });
         //}
-        public IActionResult UploadTangOrder([FromBody]IEnumerable<TangOrder> list, [FromServices]IClientRepository service)
+        [HttpPost]
+        public IActionResult UploadTangOrder([FromBody]List<TangOrder> list, [FromServices]IClientRepository service)
         {
             int count = 0;
-            if (list != null) count = service.UploadOrder(list);
+            if (list != null)
+            {
+                list.ForEach(a =>
+                {
+                    if (a.StaffId == 0) a.StaffId = null;
+                });
+                count = service.UploadOrder(list);
+            }
             return Json(new JsonData
             {
                 Success = true,
@@ -373,6 +381,7 @@ namespace JdCat.Cat.Web.Controllers
                 Data = list?.Select(a => new { a.ID, a.ObjectId })
             });
         }
+        [HttpPost]
         public IActionResult UploadTangOrderProduct([FromBody]IEnumerable<TangOrderProduct> list, [FromServices]IClientRepository service)
         {
             int count = 0;

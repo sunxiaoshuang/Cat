@@ -48,11 +48,18 @@ namespace JdCat.Cat.Repository
     
         public int UploadOrder(IEnumerable<TangOrder> list)
         {
-            var paymentIds = list.Select(a => a.PaymentTypeId).Distinct();
-            var paymentTypes = Context.PaymentTypes.Where(a => paymentIds.Contains(a.ID)).ToList();
+            var codes = list.Select(a => a.Code).ToList();
+            var uploadedOrder = Context.TangOrders.Where(a => codes.Contains(a.Code))
+                .Select(a => new { a.ID, a.Code })
+                .ToList();
+            uploadedOrder.ForEach(a =>
+            {
+                var order = list.FirstOrDefault(b => b.Code == a.Code);
+                if (order == null) return;
+                order.ID = a.ID;
+            });
             foreach (var item in list)
             {
-                item.PaymentTypeId = paymentTypes.FirstOrDefault(a => a.ID == item.PaymentTypeId).ID;
                 if (item.StaffId == 0) item.StaffId = null;
             }
             return UploadData(list);
