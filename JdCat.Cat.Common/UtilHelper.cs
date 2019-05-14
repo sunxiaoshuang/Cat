@@ -60,22 +60,27 @@ namespace JdCat.Cat.Common
         /// <returns>全拼</returns>
         public static string GetPinyin(string str)
         {
-            string r = string.Empty;
-            str = str.Replace("红", "洪");
+            if (string.IsNullOrEmpty(str)) return null;
+            var list = new List<List<string>>();
             foreach (char obj in str)
             {
-                try
+                var chars = new List<string>();
+                list.Add(chars);
+                if (!ChineseChar.IsValidChar(obj))
                 {
-                    ChineseChar chineseChar = new ChineseChar(obj);
-                    string t = chineseChar.Pinyins[0].ToString();
-                    r += t.Substring(0, t.Length - 1);
+                    chars.Add(obj.ToString());
+                    continue;
                 }
-                catch
+                ChineseChar chineseChar = new ChineseChar(obj);
+                foreach (var item in chineseChar.Pinyins.Where(a => a != null))
                 {
-                    r += obj.ToString();
+                    var pinyin = item.Substring(0, item.Length - 1);
+                    if (chars.Contains(pinyin)) continue;
+                    chars.Add(pinyin);
                 }
             }
-            return r.ToLower();
+
+            return string.Join(',', CombineString(list[0], list.GetRange(1, list.Count - 1))).ToLower();
         }
 
         /// <summary>
@@ -85,23 +90,49 @@ namespace JdCat.Cat.Common
         /// <returns>首字母</returns>
         public static string GetFirstPinyin(string str)
         {
-            string r = string.Empty;
-            str = str.Replace("红", "洪");
+            if (string.IsNullOrEmpty(str)) return null;
+            List<List<string>> list = new List<List<string>>();
             foreach (char obj in str)
             {
-                try
+                var chars = new List<string>();
+                list.Add(chars);
+                if (!ChineseChar.IsValidChar(obj))
                 {
-                    ChineseChar chineseChar = new ChineseChar(obj);
-                    string t = chineseChar.Pinyins[0].ToString();
-                    r += t.Substring(0, 1);
+                    chars.Add(obj.ToString());
+                    continue;
                 }
-                catch
+                ChineseChar chineseChar = new ChineseChar(obj);
+                foreach (var item in chineseChar.Pinyins.Where(a => a != null))
                 {
-                    r += obj.ToString();
+                    var firstLetter = item.Substring(0, 1);
+                    if (chars.Contains(firstLetter)) continue;
+                    chars.Add(firstLetter);
                 }
             }
-            return r.ToLower();
+            return string.Join(',', CombineString(list[0], list.GetRange(1, list.Count - 1))).ToLower();
         }
+
+        /// <summary>
+        /// 递归字符串列表，按笛卡尔积排列
+        /// </summary>
+        /// <param name="resultList"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static List<string> CombineString(List<string> resultList, List<List<string>> list)
+        {
+            if (list == null || list.Count == 0) return resultList;
+            var result = new List<string>();
+            foreach (var item in list[0])
+            {
+                foreach (var str in resultList)
+                {
+                    result.Add(str + item);
+                }
+            }
+            var combineArr = list.GetRange(1, list.Count - 1);
+            return CombineString(result, combineArr);
+        }
+
 
         #region 加密与解密
 

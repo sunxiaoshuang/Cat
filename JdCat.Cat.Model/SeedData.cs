@@ -168,7 +168,7 @@ namespace JdCat.Cat.Model
         /// </summary>
         private void InitProductName()
         {
-            var products = _context.Products.Where(a => a.Status != ProductStatus.Delete).ToList();
+            var products = _context.Products.ToList();
             products.ForEach(product => {
                 //if (!string.IsNullOrEmpty(product.Pinyin)) return;
                 product.Pinyin = UtilHelper.GetPinyin(product.Name);
