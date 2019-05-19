@@ -241,6 +241,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string YcfkSecret { get; set; }
         /// <summary>
+        /// 订单可享受折扣商品数量
+        /// </summary>
+        public int DiscountQuantity { get; set; }
+        /// <summary>
+        /// 优惠活动是否同时享受
+        /// </summary>
+        public bool IsEnjoymentActivity { get; set; }
+        /// <summary>
         /// 所属连锁店的id
         /// </summary>
         public int? ParentId { get; set; }

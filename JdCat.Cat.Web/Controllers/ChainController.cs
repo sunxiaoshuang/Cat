@@ -120,6 +120,8 @@ namespace JdCat.Cat.Web.Controllers
             business.Delivery = 5;
             business.YcfkKey = Business.YcfkKey;
             business.YcfkSecret = Business.YcfkSecret;
+            business.DiscountQuantity = 1;
+            business.IsEnjoymentActivity = false;
 
             Service.Add(business);
             result.Success = true;

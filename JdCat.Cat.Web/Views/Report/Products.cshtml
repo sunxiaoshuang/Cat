@@ -92,23 +92,23 @@
                                 <tr v-for="(item, index) in items">
                                     <td v-text="index + 1"></td>
                                     <td v-text="item.name" style="text-align:left;"></td>
-                                    <td v-text="item.quantity || '-'"></td>
-                                    <td v-text="item.amount || '-'"></td>
-                                    <td v-text="item.cancelQuantity || '-'"></td>
-                                    <td v-text="item.cancelAmount || '-'"></td>
-                                    <td v-text="item.saleQuantity || '-'"></td>
-                                    <td v-text="item.saleAmount || '-'"></td>
-                                    <td v-text="item.entertainQuantity || '-'"></td>
-                                    <td v-text="item.entertainAmount || '-'"></td>
-                                    <td v-text="item.discountAmount || '-'"></td>
-                                    <td v-text="item.discountedAmount || '-'"></td>
-                                    <td v-text="item.actualQuantity || '-'"></td>
-                                    <td v-text="item.actualAmount || '-'"></td>
+                                    <td v-text="formatData(item.quantity)"></td>
+                                    <td v-text="formatData(item.amount)"></td>
+                                    <td v-text="formatData(item.cancelQuantity)"></td>
+                                    <td v-text="formatData(item.cancelAmount)"></td>
+                                    <td v-text="formatData(item.saleQuantity)"></td>
+                                    <td v-text="formatData(item.saleAmount)"></td>
+                                    <td v-text="formatData(item.entertainQuantity)"></td>
+                                    <td v-text="formatData(item.entertainAmount)"></td>
+                                    <td v-text="formatData(item.discountAmount)"></td>
+                                    <td v-text="formatData(item.discountedAmount)"></td>
+                                    <td v-text="formatData(item.actualQuantity)"></td>
+                                    <td v-text="formatData(item.actualAmount)"></td>
                                 </tr>
                             </tbody>
                             <tfoot v-if="!items || items.length === 0">
                                 <tr>
-                                    <td colspan="13">没有任何销售记录...</td>
+                                    <td colspan="14">没有任何销售记录...</td>
                                 </tr>
                             </tfoot>
                         </table>

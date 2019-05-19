@@ -68,6 +68,27 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-2">
+                        <span class="require">订单可享受折扣商品数</span>
+                    </label>
+                    <div class="col-xs-3 col-md-2">
+                        <input type="number" v-model="entity.discountQuantity" class="form-control" disabled />
+                    </div>
+                    <div class="col-xs-1 col-md-1" style="padding: 6px 0 0 0;">
+                        <a class="text-primary" @@click.prevent="editDiscountQuantity()">修改</a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-2">
+                        <span class="require">订单是否可同时享受活动</span>
+                    </label>
+                    <div class="col-xs-4 col-md-3">
+                        <div class="switch">
+                            <input type="checkbox" data-on-text="是" data-off-text="否" id="switchEnjoyment" />
+                        </div>
+                    </div>
+                </div>
             </div>
                 <div class="panel panel-default">
                     <div class="panel-heading">

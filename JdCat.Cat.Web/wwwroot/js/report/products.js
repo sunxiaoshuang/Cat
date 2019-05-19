@@ -25,6 +25,10 @@
             },
             exportData: function () {
                 location = `/report/exportProductsData?start=${this.start}&end=${this.end}&type=${this.type}`;
+            },
+            formatData: function (num) {
+                if (num === 0) return "-";
+                return +num.toFixed(2);
             }
         },
         created: function () {

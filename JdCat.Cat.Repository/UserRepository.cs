@@ -125,8 +125,11 @@ namespace JdCat.Cat.Repository
         {
             var entity = new ShoppingCart { ID = cart.ID };
             Context.Attach(entity);
-            entity.Quantity = cart.Quantity;
-            Context.SaveChanges();
+            if (entity.Quantity != cart.Quantity)
+            {
+                entity.Quantity = cart.Quantity;
+                Context.SaveChanges();
+            }
             return cart;
         }
         public void DeleteCart(ShoppingCart cart)

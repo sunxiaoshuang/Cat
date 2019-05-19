@@ -138,6 +138,46 @@
                     index++;
                 }
                 return arr;
+            },
+            editDiscountQuantity: function () {
+                var $modal = $.view({
+                    title: "修改折扣数量",
+                    footDisplay: "block",
+                    template: `
+                        <div class="row form-horizontal">
+                            <div class="form-group">
+                                <label class="control-label col-xs-3">
+                                    <span class="require">数量：</span>
+                                </label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" autocomplete="off" id="name" />
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    load: function () {
+                        var self = this;
+                        this.find("#name").val(data.entity.discountQuantity);
+                        setTimeout(function () { self.find("#name").focus(); }, 1000);
+                    },
+                    submit: function () {
+                        var quantity = +$modal.find("#name").val();
+                        if (quantity <= 0) {
+                            $.alert("数量必须大于零");
+                            return false;
+                        }
+                        axios.get(`/business/setDiscount?quantity=${quantity}`)
+                            .then(function (res) {
+                                if (!res.data.success) {
+                                    $.alert(res.data.msg);
+                                    return;
+                                }
+                                $.alert("操作成功", "success");
+                                data.entity.discountQuantity = quantity;
+                            });
+                        return true;
+                    }
+                });
             }
         },
         computed: {
@@ -252,6 +292,23 @@
                 });
         }
     }).bootstrapSwitch("state", data.entity.isClose);
+
+    $('#switchEnjoyment').bootstrapSwitch({
+        onSwitchChange: function (e, state) {
+            if (data.entity.isEnjoymentActivity === state) return;
+            data.entity.isEnjoymentActivity = state;
+            $.loading();
+            axios.get(`/business/setEnjoymentActivity?flag=${state}`)
+                .then(function (res) {
+                    $.loaded();
+                    if (!res.data.success) {
+                        $.alert(res.data.msg);
+                        return;
+                    }
+                    $.alert("操作成功", "success");
+                });
+        }
+    }).bootstrapSwitch("state", data.entity.isEnjoymentActivity);
 
 
     // 裁剪图片

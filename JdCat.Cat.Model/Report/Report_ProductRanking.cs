@@ -29,7 +29,11 @@ namespace JdCat.Cat.Model.Report
         /// </summary>
         public double CancelQuantity { get; set; }
         /// <summary>
-        /// 取消总额
+        /// 取消商品总额
+        /// </summary>
+        public double CancelSaleAmount { get; set; }
+        /// <summary>
+        /// 取消商品净额
         /// </summary>
         public double CancelAmount { get; set; }
         /// <summary>
@@ -52,6 +56,10 @@ namespace JdCat.Cat.Model.Report
         /// 折扣总额
         /// </summary>
         public double DiscountAmount { get; set; }
+        /// <summary>
+        /// 折扣商品数量
+        /// </summary>
+        public double DiscountQuantity { get; set; }
         /// <summary>
         /// 折后总额
         /// </summary>

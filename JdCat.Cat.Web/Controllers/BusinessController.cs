@@ -405,6 +405,38 @@ namespace JdCat.Cat.Web.Controllers
             var result = new JsonData { Success = flag, Msg = flag ? "删除成功" : "删除失败，记录不存在或已删除，请刷新页面后再试" };
             return Json(result);
         }
+        /// <summary>
+        /// 设置整单可享受折扣商品数
+        /// </summary>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> SetDiscount([FromQuery]int quantity)
+        {
+            Business.DiscountQuantity = quantity;
+            var affect = await Service.UpdateAsync(Business, new List<string> { nameof(Business.DiscountQuantity) });
+            if(affect > 0)
+            {
+                SaveSession();
+                return Json(new JsonData { Success = true });
+            }
+            return Json(new JsonData { Msg = "保存失败，请刷新后重试！" });
+        }
+        /// <summary>
+        /// 设置是否可同时享受活动
+        /// </summary>
+        /// <param name="flag"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> SetEnjoymentActivity([FromQuery]bool flag)
+        {
+            Business.IsEnjoymentActivity = flag;
+            var affect = await Service.UpdateAsync(Business, new List<string> { nameof(Business.IsEnjoymentActivity) });
+            if (affect > 0)
+            {
+                SaveSession();
+                return Json(new JsonData { Success = true });
+            }
+            return Json(new JsonData { Msg = "保存失败，请刷新后重试！" });
+        }
 
 
         public IActionResult OpenSetting()

@@ -217,7 +217,7 @@
     </swiper>
 </scroll-view>
 <view class="pageBottom {{cartList.length!=0?'active':''}}" wx:if="{{isShowFoot}}">
-    <view class="saleActive" wx:if="{{cartList.length > 0 && fullReduceList.length > 0}}">
+    <view class="saleActive" wx:if="{{!!saleText && cartList.length > 0 && fullReduceList.length > 0}}">
         <text>{{saleText}}</text>
     </view>
     <view class="footer">

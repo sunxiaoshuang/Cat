@@ -280,17 +280,18 @@ namespace JdCat.Cat.WxApi.Controllers
                     return BadRequest("简单猫订单参数错误");
                 }
             }
-            var result = string.Empty;
-            using (MemoryStream stream = new MemoryStream())
-            {
-                UtilHelper.XmlSerializeInternal(stream, new { return_code = "SUCCESS", return_msg = "OK" });
-                stream.Position = 0;
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    result = reader.ReadToEnd();
-                }
-            }
-            return Ok(result);
+            //var result = string.Empty;
+            //using (MemoryStream stream = new MemoryStream())
+            //{
+            //    UtilHelper.XmlSerializeInternal(stream, new { return_code = "SUCCESS", return_msg = "OK" });
+            //    stream.Position = 0;
+            //    using (StreamReader reader = new StreamReader(stream))
+            //    {
+            //        result = reader.ReadToEnd();
+            //    }
+            //}
+            //return Ok(result);
+            return Content("SUCCESS");
         }
 
         [HttpGet("recevice/{id}")]

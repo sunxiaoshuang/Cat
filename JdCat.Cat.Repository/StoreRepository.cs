@@ -222,17 +222,21 @@ namespace JdCat.Cat.Repository
                             Id = g.Key.ID,
                             Name = g.Key.Name,
                             Quantity = g.Sum(a => a.Quantity),
-                            Amount = g.Sum(a => a.Amount),
+                            Amount = g.Sum(a => a.OriginalPrice * a.Quantity),
+                            SaleAmount = g.Where(a => a.ProductStatus != TangOrderProductStatus.Return).Sum(a => a.OriginalPrice * a.Quantity),
+                            ActualAmount = g.Where(a => a.ProductStatus != TangOrderProductStatus.Return).Sum(a => a.Amount),
                             CancelQuantity = g.Where(a => a.ProductStatus == TangOrderProductStatus.Return).Sum(a => a.Quantity),
                             CancelAmount = g.Where(a => a.ProductStatus == TangOrderProductStatus.Return).Sum(a => a.Amount),
+                            DiscountQuantity = g.Where(a => a.Discount < 10).Sum(a => a.Quantity),
                             DiscountAmount = g.Where(a => a.Discount < 10).Sum(a => a.Quantity * (a.OriginalPrice - a.Price)),
-                            DiscountedAmount = g.Where(a => a.Discount < 10).Sum(a => a.Amount)
+                            DiscountedAmount = g.Where(a => a.Discount < 10).Sum(a => a.Amount),
+
                         };
             var list = await query.ToListAsync();
             list.ForEach(item =>
             {
+                item.CancelSaleAmount = item.Amount - item.SaleAmount;
                 item.SaleQuantity = item.ActualQuantity = item.Quantity - item.CancelQuantity;
-                item.SaleAmount = item.ActualAmount = item.Amount - item.CancelAmount;
             });
             list.Sort((a, b) => (int)(b.ActualAmount - a.ActualAmount));
             return list;
@@ -248,15 +252,17 @@ namespace JdCat.Cat.Repository
                             Id = g.Key.ProductId.Value,
                             Name = g.Key.Name,
                             Quantity = g.Sum(a => a.Quantity ?? 0),
-                            Amount = g.Sum(a => a.Price ?? 0),
-                            DiscountAmount = g.Where(a => a.Discount < 10).Sum(a => a.OldPrice ?? 0 - a.Price ?? 0),
-                            DiscountedAmount = g.Where(a => a.Discount < 10).Sum(a => a.Price ?? 0)
+                            Amount = g.Sum(a => a.OldPrice ?? 0),
+                            ActualAmount = g.Sum(a => a.Price ?? 0),
+                            DiscountQuantity = g.Sum(a => a.DiscountProductQuantity ?? 0),
+                            DiscountAmount = g.Where(a => a.DiscountProductQuantity > 0).Sum(a => (a.OldPrice ?? 0) - (a.Price ?? 0)),
+                            DiscountedAmount = g.Where(a => a.DiscountProductQuantity > 0).Sum(a => a.Price ?? 0)
                         };
             var list = await query.ToListAsync();
             list.ForEach(item =>
             {
-                item.SaleQuantity = item.ActualQuantity = item.Quantity - item.CancelQuantity;
-                item.SaleAmount = item.ActualAmount = item.Amount - item.CancelAmount;
+                item.SaleAmount = item.Amount;
+                item.SaleQuantity = item.ActualQuantity = item.Quantity;
             });
             list.Sort((a, b) => (int)(b.ActualAmount - a.ActualAmount));
             return list;

@@ -525,6 +525,7 @@ namespace JdCat.Cat.Repository
                 product.ProductIdSet = null;
                 product.ProductTypeId = null;
                 product.PublishTime = now;
+                product.Code = null;
                 if (product.ProductType != null)
                 {
                     product.Tag1 = product.ProductType.Name;
@@ -594,6 +595,8 @@ namespace JdCat.Cat.Repository
                         }
                     }
                     Context.Add(product);
+                    product.Code = product.ID.ToString().PadLeft(6, '0');
+                    Context.SaveChanges();
                 });
             }
             var count = Context.SaveChanges();

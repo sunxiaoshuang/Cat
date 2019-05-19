@@ -45,6 +45,11 @@ namespace JdCat.Cat.Repository
         public JsonData CreateOrder(Order order)
         {
             var result = new JsonData();
+            if (order.Products == null || order.Products.Count == 0)
+            {
+                result.Msg = "系统异常，请返回点餐页重新结算";
+                return result;
+            }
             if (order.ReceiverAddress.Contains("undefined"))
             {
                 result.Msg = "请选择收货地址";
@@ -67,14 +72,6 @@ namespace JdCat.Cat.Repository
             }
             lock (loop)
             {
-                //var nowStr = now.ToString("yyyy-MM-dd");
-                //var query = Context.Orders.Where(a => a.BusinessId == order.BusinessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == nowStr);
-                //int max = 0;
-                //if (query.Count() > 0)
-                //{
-                //    max = query.Max(a => a.Identifier);
-                //}
-                //order.Identifier = max + 1;
                 var orderCode = ExecuteScalar("SELECT CONCAT(DATE_FORMAT(NOW(),'%Y%m%d'), fn_right_padding(NEXT_VAL('OrderNumbers'), 6), fn_right_padding(floor(rand()*100000), 5))") + "";
                 order.OrderCode = orderCode;
                 Context.Orders.Add(order);

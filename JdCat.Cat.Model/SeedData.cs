@@ -27,6 +27,8 @@ namespace JdCat.Cat.Model
             //InitOrder();
             //InitPaymentType();
             //InitProductSetMeal();
+            //InitProductCode();
+            Init();
         }
 
         private void InitSettingProductAttribute()
@@ -174,6 +176,26 @@ namespace JdCat.Cat.Model
                 product.Pinyin = UtilHelper.GetPinyin(product.Name);
                 product.FirstLetter= UtilHelper.GetFirstPinyin(product.Name);
             });
+            _context.SaveChanges();
+        }
+
+        private void InitProductCode()
+        {
+            var products = _context.Products.Where(a => string.IsNullOrEmpty(a.Code)).ToList();
+            products.ForEach(product => {
+                product.Code = product.ID.ToString().PadLeft(6, '0');
+            });
+            _context.SaveChanges();
+        }
+
+        private void Init()
+        {
+            var businesses = _context.Businesses.Where(a => a.Category == BusinessCategory.Store).ToList();
+            foreach (var item in businesses)
+            {
+                item.DiscountQuantity = 1;
+                item.IsEnjoymentActivity = false;
+            }
             _context.SaveChanges();
         }
 

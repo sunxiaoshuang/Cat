@@ -8,15 +8,21 @@
     var vm = new Vue({
         el: "#app",
         data: {
-            price: pageData.list.length > 0 ? pageData.list[pageData.list.length - 1].price : 0,
+            price: pageData.list.length > 0 ? +pageData.list[pageData.list.length - 1].price.toFixed(2) : 0,
             todayQuantity: pageData.list.length > 0 ? pageData.list[pageData.list.length - 1].quantity : 0,
             list: [],
             start: undefined,
             end: undefined,
-            total: 0,
+            productOriginalAmount: 0,
+            productAmount: 0,
             freightAmount: 0,
             packageAmount: 0,
-            quantity: 0
+            discountAmount: 0,
+            activityAmount: 0,
+            benefitAmount: 0,
+            quantity: 0,
+            total: 0,
+            actualTotal: 0
         },
         methods: {
             search: function () {
@@ -35,16 +41,36 @@
                         self.total = 0;
                         self.quantity = 0;
                         self.list.forEach(item => {
-                            self.total += item.total;
                             self.quantity += item.quantity;
+                            self.productOriginalAmount += item.productOriginalAmount;
+                            self.productAmount += item.productAmount;
                             self.freightAmount += item.freightAmount;
                             self.packageAmount += item.packageAmount;
+                            self.discountAmount += item.discountAmount;
+                            self.activityAmount += item.activityAmount;
+                            self.benefitAmount += item.benefitAmount;
+                            self.total += item.total;
+                            self.actualTotal += item.actualTotal;
+
+                            item.productOriginalAmount = +item.productOriginalAmount.toFixed(2);
+                            item.productAmount = +item.productAmount.toFixed(2);
+                            item.freightAmount = +item.freightAmount.toFixed(2);
+                            item.discountAmount = +item.discountAmount.toFixed(2);
+                            item.activityAmount = +item.activityAmount.toFixed(2);
+                            item.benefitAmount = +item.benefitAmount.toFixed(2);
                             item.total = +item.total.toFixed(2);
+                            item.actualTotal = +item.actualTotal.toFixed(2);
                         });
-                        self.total = +self.total.toFixed(2);
                         self.quantity = +self.quantity.toFixed(2);
+                        self.productOriginalAmount = +self.productOriginalAmount.toFixed(2);
+                        self.productAmount = +self.productAmount.toFixed(2);
                         self.freightAmount = +self.freightAmount.toFixed(2);
                         self.packageAmount = +self.packageAmount.toFixed(2);
+                        self.discountAmount = +self.discountAmount.toFixed(2);
+                        self.activityAmount = +self.activityAmount.toFixed(2);
+                        self.benefitAmount = +self.benefitAmount.toFixed(2);
+                        self.total = +self.total.toFixed(2);
+                        self.actualTotal = +self.actualTotal.toFixed(2);
                     })
                     .catch(function (msg) {
                         $.alert(msg);

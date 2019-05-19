@@ -69,6 +69,7 @@ Page({
     });
 
     var freight = wx.getStorageSync("orderFreight"),
+      isInvoice = wx.getStorageSync("isInvoice"),
       invoiceName = wx.getStorageSync("invoiceName"),
       invoiceTax = wx.getStorageSync("invoiceTax");
 
@@ -82,7 +83,7 @@ Page({
       packagePrice,
       invoiceName,
       invoiceTax,
-      isInvoice: !!invoiceName
+      isInvoice: !!isInvoice
     });
   },
   onShow: function () {
@@ -196,6 +197,7 @@ Page({
       wx.setStorageSync("invoiceTax", this.data.invoiceTax);
       remark += `(开票公司：${this.data.invoiceName}，识别码：${this.data.invoiceTax})`;
     }
+    wx.setStorageSync("isInvoice", this.data.isInvoice);
     var order = {
       price: this.data.total,
       oldPrice: this.data.oldPrice,
@@ -235,6 +237,7 @@ Page({
         saleProductDiscountId: a.saleProductDiscountId,
         discountProductQuantity: a.discountProductQuantity,
         oldPrice: a.oldPrice,
+        discount: a.product.discount ? a.product.discount.discount : 10,
         feature: a.product.feature,
         productIdSet: a.product.productIdSet
       });

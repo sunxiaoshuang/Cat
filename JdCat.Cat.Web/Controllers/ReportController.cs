@@ -101,17 +101,29 @@ namespace JdCat.Cat.Web.Controllers
             var index = 1;
             var totalPrice = 0d;
             var totalQuantity = 0;
+            var totalProductOriginalAmount = 0d;
+            var totalProductAmount = 0d;
             var totalFreightAmount = 0d;
             var totalPackageAmount = 0d;
+            var totalDiscountAmount = 0d;
+            var totalActivity = 0d;
+            var totalBenefitAmount = 0d;
+            var totalActual = 0d;
             list.ForEach(a =>
             {
                 a.Index = index++;
                 totalPrice += a.Total;
+                totalProductOriginalAmount += a.ProductOriginalAmount;
+                totalProductAmount += a.ProductAmount;
                 totalFreightAmount += a.FreightAmount;
                 totalPackageAmount += a.PackageAmount;
                 totalQuantity += a.Quantity;
+                totalDiscountAmount += a.DiscountAmount;
+                totalActivity += a.ActivityAmount;
+                totalBenefitAmount += a.BenefitAmount;
+                totalActual += a.ActualTotal;
             });
-            list.Add(new Report_SaleStatistics { Index = index, Date = "合计", Total = totalPrice, FreightAmount = totalFreightAmount, PackageAmount = totalPackageAmount, Quantity = totalQuantity });
+            list.Add(new Report_SaleStatistics { Index = index, Date = "合计", Total = totalPrice, ProductOriginalAmount = totalProductOriginalAmount, ProductAmount = totalProductAmount, FreightAmount = totalFreightAmount, PackageAmount = totalPackageAmount, Quantity = totalQuantity, DiscountAmount = totalDiscountAmount, ActivityAmount = totalActivity, BenefitAmount = totalBenefitAmount, ActualTotal = totalActual });
 
             return File(list.ToWorksheet(), AppData.XlsxContentType, name);
         }
@@ -298,7 +310,7 @@ namespace JdCat.Cat.Web.Controllers
                     worksheet.Cells[$"C{rowIndex}"].Value = item.Quantity;
                     worksheet.Cells[$"D{rowIndex}"].Value = item.Amount;
                     worksheet.Cells[$"E{rowIndex}"].Value = item.CancelQuantity;
-                    worksheet.Cells[$"F{rowIndex}"].Value = item.CancelAmount;
+                    worksheet.Cells[$"F{rowIndex}"].Value = item.CancelSaleAmount;
                     worksheet.Cells[$"G{rowIndex}"].Value = item.SaleQuantity;
                     worksheet.Cells[$"H{rowIndex}"].Value = item.SaleAmount;
                     worksheet.Cells[$"I{rowIndex}"].Value = item.EntertainQuantity;
@@ -315,7 +327,7 @@ namespace JdCat.Cat.Web.Controllers
                 var dataBorder = worksheet.Cells[4, 1, rowIndex - 1, columnCount].Style.Border;
                 dataBorder.Bottom.Style = dataBorder.Top.Style = dataBorder.Left.Style = dataBorder.Right.Style = ExcelBorderStyle.Thin;
                 var xls = package.GetAsByteArray();
-                return File(xls, AppData.XlsxContentType, $"{title}({start:yyyyMMdd}-{end:yyyy-MM-dd}).xlsx");
+                return File(xls, AppData.XlsxContentType, $"{title}({start:yyyyMMdd}-{end:yyyyMMdd}).xlsx");
 
             }
         }

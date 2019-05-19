@@ -42,7 +42,7 @@
                     { id: 0, code: null, name: "", price: 0, stock: -1, packingPrice: 0, packingQuantity: 1 }
                 ],
                 attributes: [],
-                scope: 0,
+                scope: 3,
                 tag1: [],
                 feature: 0
             },

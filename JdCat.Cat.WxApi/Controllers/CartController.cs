@@ -53,7 +53,7 @@ namespace JdCat.Cat.WxApi.Controllers
         {
             if(cart.Quantity > 0)
             {
-                await Service.UpdateAsync(cart, new[] { nameof(cart.Quantity), nameof(cart.Price) });
+                Service.UpdateCart(cart);
             }
             else
             {

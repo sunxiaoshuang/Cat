@@ -1,5 +1,5 @@
 
-var host = 'https://api.jiandanmao.cn';
+var host = 'https://t.api.jiandanmao.cn';
 // e.jiandanmao.cn
 // t.e.jiandanmao.cn
 // e.whliupangzi.cn
@@ -22,7 +22,7 @@ var config = {
         uploadUrl: `${host}/api/upload`,
 
         // 图片地址
-      imageUrl: `http://f.jiandanmao.cn`
+      imageUrl: `http://t.f.jiandanmao.cn`
     },
     globalData: {
         openText: "简单猫\r\n让您的生活更简单"

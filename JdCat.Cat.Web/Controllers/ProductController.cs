@@ -226,6 +226,8 @@ namespace JdCat.Cat.Web.Controllers
                 Feature = product.Feature
             };
             Service.Add(entity);
+            entity.Code = entity.ID.ToString().PadLeft(6, '0');
+            Service.Commit();
             if(entity.Feature == ProductFeature.SetMeal && !string.IsNullOrEmpty(product.ProductIdSet))
             {
                 product.ProductIdSet.Split(',').ToList().ForEach(a => {

@@ -73,7 +73,9 @@ namespace JdCat.Cat.Web.Controllers
                     StoreId = service.GetNextStoreNumber(),
                     ObjectId = Guid.NewGuid().ToString().ToLower(),
                     Score = 5,
-                    Delivery = 5
+                    Delivery = 5,
+                    IsEnjoymentActivity = false,
+                    DiscountQuantity = 1
                 };
                 userInfo.FeyinMemberCode = appData.FeyinMemberCode;
                 userInfo.FeyinApiKey = appData.FeyinApiKey;

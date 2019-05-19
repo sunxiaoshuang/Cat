@@ -294,37 +294,77 @@ namespace JdCat.Cat.Repository
 
         public List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end)
         {
-            var startTime = new DateTime(start.Year, start.Month, start.Day); ;
+            var startTime = new DateTime(start.Year, start.Month, start.Day);
             var endTime = new DateTime(end.Year, end.Month, end.Day);
             endTime = endTime.AddDays(1);
 
+            //var query1 = from order in Context.Orders
+            //             where order.BusinessId == business.ID && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= startTime && order.CreateTime < endTime
+            //             select new { order.Price, order.PackagePrice, order.Freight, CreateTime = order.CreateTime.Value.ToString("yyyy-MM-dd"), order.SaleFullReduceMoney, order.SaleCouponUserMoney };
+
+
+            //var query2 = from order in query1
+            //             group order by order.CreateTime into g
+            //             select new Report_SaleStatistics
+            //             {
+            //                 Date = g.Key,
+            //                 PackageAmount = g.Sum(a => a.PackagePrice ?? 0),
+            //                 FreightAmount = g.Sum(a => a.Freight ?? 0),
+            //                 ActivityAmount = g.Sum(a => a.SaleFullReduceMoney ?? 0 + a.SaleCouponUserMoney ?? 0),
+            //                 Quantity = g.Count(),
+            //                 ActualTotal = g.Sum(a => a.Price ?? 0)
+            //};
+
             var query1 = from order in Context.Orders
+                         join product in Context.OrderProducts on order.ID equals product.OrderId
                          where order.BusinessId == business.ID && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= startTime && order.CreateTime < endTime
-                         select new { order.Price, order.PackagePrice, order.Freight, CreateTime = order.CreateTime.Value.ToString("yyyy-MM-dd") };
-
-            var query2 = from order in query1
-                         group order by order.CreateTime into g
-                         select new Report_SaleStatistics
+                         select new
                          {
-                             Date = g.Key,
-                             Total = g.Sum(a => a.Price ?? 0),
-                             PackageAmount = g.Sum(a => a.PackagePrice ?? 0),
-                             FreightAmount = g.Sum(a => a.Freight ?? 0),
-                             Quantity = g.Count()
+                             order.ID,
+                             CreateTime = order.CreateTime.Value.ToString("yyyy-MM-dd"),
+                             Amount = order.Price,
+                             order.PackagePrice,
+                             order.Freight,
+                             order.SaleFullReduceMoney,
+                             order.SaleCouponUserMoney,
+                             ProductOriginalAmount = product.OldPrice,
+                             ProductAmount = product.Price
                          };
-            return query2.OrderByDescending(a => a.Date).ToList();
+            var query2 = query1.ToList()
+                .GroupBy(a => new { a.ID, a.CreateTime, a.Amount, a.PackagePrice, a.Freight, a.SaleFullReduceMoney, a.SaleCouponUserMoney })
+                .Select(a => new
+                {
+                    a.Key.CreateTime,
+                    a.Key.Amount,
+                    a.Key.PackagePrice,
+                    a.Key.Freight,
+                    a.Key.SaleFullReduceMoney,
+                    a.Key.SaleCouponUserMoney,
+                    ProductOriginalAmount = a.Sum(b => b.ProductOriginalAmount),
+                    ProductAmount = a.Sum(b => b.ProductAmount)
+                })
+                .GroupBy(a => a.CreateTime)
+                .Select(g => new Report_SaleStatistics
+                {
+                    Date = g.Key,
+                    ProductOriginalAmount = g.Sum(a => a.ProductOriginalAmount ?? 0),
+                    ProductAmount = g.Sum(a => a.ProductAmount ?? 0),
+                    PackageAmount = g.Sum(a => a.PackagePrice ?? 0),
+                    FreightAmount = g.Sum(a => a.Freight ?? 0),
+                    ActivityAmount = g.Sum(a => (a.SaleFullReduceMoney ?? 0) + (a.SaleCouponUserMoney ?? 0)),
+                    Quantity = g.Count(),
+                    ActualTotal = g.Sum(a => a.Amount ?? 0)
+                });
 
+            var list = query2.OrderByDescending(a => a.Date).ToList();
+            foreach (var item in list)
+            {
+                item.Total = item.ProductOriginalAmount + item.FreightAmount + item.PackageAmount;
+                item.DiscountAmount = item.ProductOriginalAmount - item.ProductAmount;
+                item.BenefitAmount = item.DiscountAmount + item.ActivityAmount;
+            }
+            return list;
 
-            //return ExecuteReader<Report_SaleStatistics>($@"
-            //    select CreateTime AS [Date], sum(Price) Total, sum(PackagePrice) PackageAmount, sum(Freight) FreightAmount, count(CreateTime) Quantity from (
-            //     select Price, PackagePrice, Freight, convert(VARCHAR(10), CreateTime, 120) CreateTime from dbo.[Order] where 
-            //     [BusinessId] = {business.ID} and 
-            //     [Status] & {(int)OrderStatus.Valid} > 0 and 
-            //     [CreateTime] between '{start:yyyy-MM-dd}' and '{end.AddDays(1):yyyy-MM-dd}' 
-            //    )t
-            //    group by t.CreateTime
-            //    order by CreateTime desc
-            //");
         }
 
         public SaleFullReduce GetFullReduceById(int id)

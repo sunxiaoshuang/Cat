@@ -3,14 +3,16 @@ using System;
 using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190515030127_Modify_Product_Code")]
+    partial class Modify_Product_Code
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,8 +132,6 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<int>("DiscountQuantity");
-
                     b.Property<string>("Email");
 
                     b.Property<string>("FeyinApiKey");
@@ -147,8 +147,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<bool>("IsAutoReceipt");
 
                     b.Property<bool>("IsClose");
-
-                    b.Property<bool>("IsEnjoymentActivity");
 
                     b.Property<bool>("IsPublish");
 
