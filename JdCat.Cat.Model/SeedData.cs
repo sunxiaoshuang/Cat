@@ -190,13 +190,13 @@ namespace JdCat.Cat.Model
 
         private void Init()
         {
-            var businesses = _context.Businesses.Where(a => a.Category == BusinessCategory.Store).ToList();
-            foreach (var item in businesses)
-            {
-                item.DiscountQuantity = 1;
-                item.IsEnjoymentActivity = false;
-            }
-            _context.SaveChanges();
+            //var businesses = _context.Businesses.Where(a => a.Category == BusinessCategory.Store).ToList();
+            //foreach (var item in businesses)
+            //{
+            //    item.DiscountQuantity = 2;
+            //    item.IsEnjoymentActivity = true;
+            //}
+            //_context.SaveChanges();
         }
 
         //private void InitOrder()
