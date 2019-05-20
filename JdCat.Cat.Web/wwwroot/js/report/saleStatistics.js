@@ -35,6 +35,7 @@
                     $.alert("起止时间跨度最大为31天");
                     return;
                 }
+                this.clearTotal();
                 axios.get(`/Report/GetSaleStatistics?start=${this.start}&end=${this.end}`)
                     .then(function (res) {
                         self.list = res.data;
@@ -75,6 +76,9 @@
                     .catch(function (msg) {
                         $.alert(msg);
                     });
+            },
+            clearTotal: function () {
+                this.quantity = this.productOriginalAmount = this.productAmount = this.freightAmount = this.packageAmount = this.discountAmount = this.activityAmount = this.benefitAmount = this.total = this.actualTotal = 0;
             },
             report: function () {
                 window.open(`/Report/ExportSaleStatistics?start=${this.start}&end=${this.end}`);
