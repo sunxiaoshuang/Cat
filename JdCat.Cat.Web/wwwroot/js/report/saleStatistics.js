@@ -39,16 +39,6 @@
                 axios.get(`/Report/GetSaleStatistics?start=${this.start}&end=${this.end}`)
                     .then(function (res) {
                         self.list = res.data;
-                        self.total = 0;
-                        self.productOriginalAmount = 0;
-                        self.productAmount = 0;
-                        self.freightAmount = 0;
-                        self.packageAmount = 0;
-                        self.discountAmount = 0;
-                        self.activityAmount = 0;
-                        self.benefitAmount = 0;
-                        self.total = 0;
-                        self.actualTotal = 0;
                         self.list.forEach(item => {
                             // 合计
                             self.quantity += item.quantity;
@@ -71,6 +61,7 @@
                             item.total = +item.total.toFixed(2);
                             item.actualTotal = +item.actualTotal.toFixed(2);
                         });
+                        // 每一项合计最多保留两位小数
                         self.quantity = +self.quantity.toFixed(2);
                         self.productOriginalAmount = +self.productOriginalAmount.toFixed(2);
                         self.productAmount = +self.productAmount.toFixed(2);
