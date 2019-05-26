@@ -125,5 +125,22 @@ namespace JdCat.Cat.IRepository
         /// <param name="end"></param>
         /// <returns></returns>
         Task<List<Report_Setmeal>> GetSetmealDataForTakeoutAsync(int businessId, DateTime start, DateTime end);
+        /// <summary>
+        /// 获取商户优惠统计
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<List<Report_Benefit>> GetBenefitDataAsync(int businessId, DateTime start, DateTime end);
+        /// <summary>
+        /// 获取商户在指定时间内，单个优惠方式的订单详情
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <param name="name"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<object> GetSingleBenetifDataAsync(int businessId, string name, DateTime start, DateTime end);
     }
 }

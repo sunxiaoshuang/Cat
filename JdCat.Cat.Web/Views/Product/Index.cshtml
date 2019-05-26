@@ -175,20 +175,20 @@
                                 </div>
                                 <div class="product-remark">
                                     <p style="display:flex;">
-                                        <span style="line-height:1.1;min-height: 30px;">
+                                        <span style="line-height:1.1;min-height: 25px;">
                                             <span class="bold">描述：</span>
                                             <span v-text="product.description"></span>
                                         </span>
                                     </p>
                                     <hr style="margin: 5px 0;" />
-                                    <p style="display:flex; height: 30px">
+                                    <p style="display:flex; height: 25px">
                                         <span style="line-height:1.1;">
                                             <span class="bold">属性：</span>
                                             <span v-html="attribute(product.attributes)"></span>
                                         </span>
                                     </p>
                                     <hr style="margin: 5px 0;" />
-                                    <p style="display:flex; height: 30px">
+                                    <p style="display:flex; height: 25px">
                                         <span style="line-height:1.1;">
                                             <span class="bold">特性：</span>
                                             <span v-html="feature(product.feature)"></span>
@@ -196,6 +196,12 @@
                                         <span style="line-height:1.1; margin-left: 30px;">
                                             <span class="bold">范围：</span>
                                             <span v-html="scopeFormat(product.scope)"></span>
+                                        </span>
+                                    </p>
+                                    <p style="display:flex; height: 25px">
+                                        <span style="line-height:1.1;">
+                                            <span class="bold">是否参与订单折扣活动（堂食）：</span>
+                                            <span v-html="product.isDiscount ? '参与' : '不参与'"></span>
                                         </span>
                                     </p>
                                 </div>

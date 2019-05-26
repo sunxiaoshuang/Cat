@@ -79,6 +79,14 @@
             </div>
             <div class="form-group">
                 <label class="control-label col-xs-3">
+                    相关收银台：
+                </label>
+                <div class="col-xs-8">
+                    <input class="form-control" v-model.trim="entity.cashierName" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-xs-3">
                     状态：
                 </label>
                 <div class="col-xs-8">
@@ -216,6 +224,7 @@
                         printer.quantity = entity.quantity;
                         printer.scope = entity.scope;
                         printer.state = entity.state;
+                        printer.cashierName = entity.cashierName;
                     })
                     .catch(function (err) { $.alert(err); });
                 return true;

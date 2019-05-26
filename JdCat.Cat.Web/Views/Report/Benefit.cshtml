@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "档口统计";
+    ViewData["Title"] = "优惠金额统计";
 }
 @section Styles {
     <environment include="Development">
@@ -40,12 +40,10 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
     <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
     <environment include="Development">
-        <script src="~/lib/echarts/echarts.js"></script>
-        <script src="~/js/report/booth.js"></script>
+        <script src="~/js/report/benefit.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="~/lib/echarts/echarts.min.js"></script>
-        <script src="~/js/report/booth.min.js" asp-append-version="true"></script>
+        <script src="~/js/report/benefit.min.js" asp-append-version="true"></script>
     </environment>
 }
 <div class="mainframe" id="app">
@@ -64,11 +62,6 @@
                             <input autocomplete="off" class="form-control width-200" id="txtStartDate" v-model="start" />
                             <label style="width: 30px; text-align: center;">-</label>
                             <input autocomplete="off" class="form-control width-200" id="txtEndDate" v-model="end" />
-                            <label class=" margin-left-20">经营类型：</label>
-                            <select class="form-control width-200" v-model="type">
-                                <option value="0">外卖</option>
-                                <option value="1">堂食</option>
-                            </select>
                             <button class="btn btn-primary margin-left-20" @@click="search()">
                                 <i class="fa fa-search"></i>
                                 搜索
@@ -83,49 +76,71 @@
             </div>
             <div class="panel panel-default">
                 <div class="panel-body" style="min-height:400px;">
-                    <div class="col-md-5">
+                    <div class="col-md-6">
+                        <p class="text-primary">
+                            <span class="fa fa-bars"></span>
+                            支付方式汇总
+                        </p>
                         <table class="table table-bordered table-striped table-cook">
                             <thead>
                                 <tr>
                                     <th width="80">序号</th>
-                                    <th>档口</th>
-                                    <th>产出数量</th>
-                                    <th>产出总额</th>
+                                    <th>优惠方式</th>
+                                    <th>优惠订单数</th>
+                                    <th>优惠总金额</th>
+                                    <th>优惠前订单总额</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(item, index) in items" v-bind:class="{'selected': item.selected}" @@click="cat(item)">
+                                <tr v-for="(item, index) in items" v-bind:class="{'selected': item.selected}" @@click="cat(item, index)">
                                     <td v-text="index + 1"></td>
                                     <td v-text="item.name"></td>
-                                    <td v-text="item.count"></td>
-                                    <td v-text="item.amount"></td>
+                                    <td v-text="item.quantity"></td>
+                                    <td>
+                                        <span class="fa fa-rmb" v-text="+item.amount.toFixed(2)"></span>
+                                    </td>
+                                    <td>
+                                        <span class="fa fa-rmb" v-text="+item.orderAmount.toFixed(2)"></span>
+                                    </td>
                                 </tr>
                             </tbody>
                             <tfoot v-if="!items || items.length === 0">
                                 <tr>
-                                    <td colspan="4">没有任何档口...</td>
+                                    <td colspan="5">没有任何优惠信息...</td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
-                    <div class="col-md-7">
-                        <div class="chart" id="chart">
-                        </div>
-                        <table class="table table-bordered table-striped table-cook" v-show="products && products.length > 0">
+                    <div class="col-md-6">
+                        <p class="text-primary">
+                            <span class="fa fa-bars"></span>
+                            详细订单
+                        </p>
+                        <table class="table table-bordered table-striped table-cook" v-show="orders && orders.length > 0">
                             <thead>
                                 <tr>
                                     <th width="80">序号</th>
-                                    <th>菜品</th>
-                                    <th>菜品数量</th>
-                                    <th>菜品总额</th>
+                                    <th>订单编号</th>
+                                    <th>结账时间</th>
+                                    <th>订单总额</th>
+                                    <th>订单实收</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(item, index) in products">
+                                <tr v-for="(item, index) in orders">
                                     <td v-text="index + 1"></td>
-                                    <td v-text="item.name"></td>
-                                    <td v-text="item.count"></td>
-                                    <td v-text="item.amount"></td>
+                                    <td v-text="item.code"></td>
+                                    <td v-text="item.payTime"></td>
+                                    <td>
+                                        <span class="fa fa-rmb" v-text="+item.amount.toFixed(2)"></span>
+                                    </td>
+                                    <td>
+                                        <span class="fa fa-rmb" v-text="+item.actualAmount.toFixed(2)"></span>
+                                    </td>
+                                    <td>
+                                        <a @@click.prevent="info(item)" class="text-primary">查看</a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

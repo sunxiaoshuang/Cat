@@ -29,6 +29,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public double Amount { get; set; }
         /// <summary>
+        /// 订单实收
+        /// </summary>
+        public double ActualAmount { get; set; }
+        /// <summary>
+        /// 订单折扣
+        /// </summary>
+        public double OrderDiscount { get; set; }
+        /// <summary>
         /// 优惠金额
         /// </summary>
         public double PreferentialAmount { get; set; }
@@ -116,6 +124,10 @@ namespace JdCat.Cat.Model.Data
         /// 餐桌名称
         /// </summary>
         public string DeskName { get; set; }
+        /// <summary>
+        /// 结算的服务台
+        /// </summary>
+        public string CashierName { get; set; }
         /// <summary>
         /// 订单所属商户id
         /// </summary>

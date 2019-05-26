@@ -81,6 +81,28 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-6" style="padding-left: 0">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="title">支付备注（堂食）</span>
+                            <a @@click="add(7, payRemark)" class="text-primary pull-right">
+                                <span class="fa fa-plus"> 新增</span>
+                            </a>
+                        </h3>
+                    </div>
+                    <div class="panel-body" style="min-height: 200px;">
+                        <ul class="list-mark">
+                            <li class="list-mark-item" v-for="item in payRemark">
+                                <span v-text="item.name"></span>
+                                <a @@click="remove(item, payRemark)" class="text-primary">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

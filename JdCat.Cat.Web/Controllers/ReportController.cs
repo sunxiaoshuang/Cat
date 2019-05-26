@@ -140,6 +140,21 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
+        #region 营业统计（堂食）
+        public IActionResult Tang()
+        {
+            return null;
+        }
+        public async Task<IActionResult> GetTangData([FromQuery]DateTime? start, [FromQuery]DateTime? end)
+        {
+            return null;
+        }
+        public async Task<IActionResult> ExportTangData([FromQuery]DateTime? start, [FromQuery]DateTime? end)
+        {
+            return null;
+        }
+        #endregion
+
         #region 厨师
         /// <summary>
         /// 厨师统计
@@ -275,7 +290,7 @@ namespace JdCat.Cat.Web.Controllers
             var title = "商品销售排行统计" + (type == 0 ? "[外卖]" : "");
             using (var package = new ExcelPackage())
             {
-                var columnCount = 14;
+                var columnCount = 11;
                 var worksheet = package.Workbook.Worksheets.Add("Sheet1");
                 worksheet.Cells["A1"].Value = title;
                 worksheet.Cells["A2"].Value = $"营业日期：从{start:yyyy-MM-dd}到{end:yyyy-MM-dd}";
@@ -293,12 +308,12 @@ namespace JdCat.Cat.Web.Controllers
                 worksheet.Cells["F4"].Value = "取消总额";
                 worksheet.Cells["G4"].Value = "销售数量";
                 worksheet.Cells["H4"].Value = "销售总额";
-                worksheet.Cells["I4"].Value = "招待数量";
-                worksheet.Cells["J4"].Value = "招待总额";
-                worksheet.Cells["K4"].Value = "折扣总额";
-                worksheet.Cells["L4"].Value = "折后总额";
-                worksheet.Cells["M4"].Value = "净售数量";
-                worksheet.Cells["N4"].Value = "净售总额";
+                //worksheet.Cells["I4"].Value = "招待数量";
+                //worksheet.Cells["J4"].Value = "招待总额";
+                worksheet.Cells["I4"].Value = "折扣总额";
+                //worksheet.Cells["L4"].Value = "折后总额";
+                worksheet.Cells["J4"].Value = "净售数量";
+                worksheet.Cells["K4"].Value = "商品净额";
                 worksheet.Cells[4, 1, 4, columnCount].Style.Fill.PatternType = ExcelFillStyle.Solid;
                 worksheet.Cells[4, 1, 4, columnCount].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
                 int rowIndex = 5, index = 1;
@@ -313,12 +328,12 @@ namespace JdCat.Cat.Web.Controllers
                     worksheet.Cells[$"F{rowIndex}"].Value = item.CancelSaleAmount;
                     worksheet.Cells[$"G{rowIndex}"].Value = item.SaleQuantity;
                     worksheet.Cells[$"H{rowIndex}"].Value = item.SaleAmount;
-                    worksheet.Cells[$"I{rowIndex}"].Value = item.EntertainQuantity;
-                    worksheet.Cells[$"J{rowIndex}"].Value = item.EntertainAmount;
-                    worksheet.Cells[$"K{rowIndex}"].Value = item.DiscountAmount;
-                    worksheet.Cells[$"L{rowIndex}"].Value = item.DiscountedAmount;
-                    worksheet.Cells[$"M{rowIndex}"].Value = item.ActualQuantity;
-                    worksheet.Cells[$"N{rowIndex}"].Value = item.ActualAmount;
+                    //worksheet.Cells[$"I{rowIndex}"].Value = item.EntertainQuantity;
+                    //worksheet.Cells[$"J{rowIndex}"].Value = item.EntertainAmount;
+                    worksheet.Cells[$"I{rowIndex}"].Value = item.DiscountAmount;
+                    //worksheet.Cells[$"L{rowIndex}"].Value = item.DiscountedAmount;
+                    worksheet.Cells[$"J{rowIndex}"].Value = item.ActualQuantity;
+                    worksheet.Cells[$"K{rowIndex}"].Value = item.ActualAmount;
 
                     index++;
                     rowIndex++;
@@ -416,6 +431,39 @@ namespace JdCat.Cat.Web.Controllers
                 return File(xls, AppData.XlsxContentType, $"{title}({start:yyyyMMdd}-{end:yyyy-MM-dd}).xlsx");
 
             }
+        }
+
+        #endregion
+
+        #region 优惠统计
+        public IActionResult Benefit()
+        {
+            return View();
+        }
+        public async Task<IActionResult> GetBenefitData([FromQuery]DateTime start, [FromQuery]DateTime end, [FromServices]IStoreRepository service)
+        {
+            return Json(await service.GetBenefitDataAsync(Business.ID, start, end.AddDays(1)));
+        }
+        public async Task<IActionResult> ExportBenefitData([FromQuery]DateTime start, [FromQuery]DateTime end, [FromServices]IStoreRepository service)
+        {
+            var result = await service.GetBenefitDataAsync(Business.ID, start, end.AddDays(1));
+            result.Add(new Report_Benefit
+            {
+                Name = "合计",
+                Amount = result.Sum(a => a.Amount),
+                OrderAmount = result.Sum(a => a.OrderAmount),
+                Quantity = result.Sum(a => a.Quantity)
+            });
+            var num = 1;
+            result.ForEach(a => a.Index = num++);
+            var title = $"优惠统计（{start:yyyy年MM月dd日}-{end:yyyy年MM月dd日}）";
+            var xls = result.ToWorksheet(title);
+            return File(xls, AppData.XlsxContentType, title + ".xlsx");
+        }
+        public async Task<IActionResult> GetSingleBenetifData([FromQuery]string name, [FromQuery]DateTime start, [FromQuery]DateTime end, [FromServices]IStoreRepository service)
+        {
+            var result = await service.GetSingleBenetifDataAsync(Business.ID, name, start, end.AddDays(1));
+            return Json(result);
         }
 
         #endregion

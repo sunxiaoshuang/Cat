@@ -223,7 +223,8 @@ namespace JdCat.Cat.Web.Controllers
                 RefundFoodReason = marks.Where(a => a.Category == MarkCategory.RefundFoodReason),
                 CancelDeliveryReason = marks.Where(a => a.Category == MarkCategory.CancelDeliveryReason),
                 RefundMoneyReason = marks.Where(a => a.Category == MarkCategory.RefundMoneyReason),
-                CancelOrderReason = marks.Where(a => a.Category == MarkCategory.CancelOrderReason)
+                CancelOrderReason = marks.Where(a => a.Category == MarkCategory.CancelOrderReason),
+                PayRemark = marks.Where(a => a.Category == MarkCategory.PayRemark)
             });
         }
         /// <summary>
@@ -471,7 +472,7 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> UpdatePrinter([FromBody]ClientPrinter printer)
         {
             var count = await Service.UpdateAsync(printer, new List<string> {
-                nameof(printer.Name), nameof(printer.IP), nameof(printer.Port), nameof(printer.Type), nameof(printer.State), nameof(printer.Quantity),nameof(printer.Mode), nameof(printer.Format), nameof(printer.Scope)
+                nameof(printer.Name), nameof(printer.IP), nameof(printer.Port), nameof(printer.Type), nameof(printer.State), nameof(printer.Quantity),nameof(printer.Mode), nameof(printer.Format), nameof(printer.Scope), nameof(printer.CashierName)
             });
             return Json(new JsonData { Success = true, Msg = "更新成功" });
         }

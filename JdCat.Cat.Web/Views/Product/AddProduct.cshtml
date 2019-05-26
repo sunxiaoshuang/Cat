@@ -139,6 +139,19 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        <span class="require">是否参与订单折扣</span>
+                    </label>
+                    <div class="col-xs-6">
+                        <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                            <label class="label-checkbox">
+                                <input type="checkbox" name="scope" v-model="entity.isDiscount">
+                                <span class="custom-checkbox"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group" v-show="entity.feature == 2">
                     <label class="control-label col-xs-1">
                         <span class="require">套餐商品</span>

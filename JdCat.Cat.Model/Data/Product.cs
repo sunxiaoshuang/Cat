@@ -80,6 +80,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public ActionScope Scope { get; set; }
         /// <summary>
+        /// 是否参与订单折扣活动
+        /// </summary>
+        public bool IsDiscount { get; set; }
+        /// <summary>
         /// 备用属性
         /// </summary>
         [NotMapped]

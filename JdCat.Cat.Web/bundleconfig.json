@@ -448,6 +448,12 @@
     "inputFiles": [
       "wwwroot/js/weixin/index.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/benefit.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/benefit.js"
+    ]
   }
 
 ]

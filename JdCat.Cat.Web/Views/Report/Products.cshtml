@@ -80,12 +80,12 @@
                                     <th>取消总额</th>
                                     <th>销售数量</th>
                                     <th>销售总额</th>
-                                    <th>招待数量</th>
-                                    <th>招待总额</th>
+                                    @*<th>招待数量</th>*@
+                                    @*<th>招待总额</th>*@
                                     <th>折扣总额</th>
-                                    <th>折后总额</th>
+                                    @*<th>折后总额</th>*@
                                     <th>净售数量</th>
-                                    <th>净售总额</th>
+                                    <th>商品净额</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -98,17 +98,17 @@
                                     <td v-text="formatData(item.cancelAmount)"></td>
                                     <td v-text="formatData(item.saleQuantity)"></td>
                                     <td v-text="formatData(item.saleAmount)"></td>
-                                    <td v-text="formatData(item.entertainQuantity)"></td>
-                                    <td v-text="formatData(item.entertainAmount)"></td>
+                                    @*<td v-text="formatData(item.entertainQuantity)"></td>*@
+                                    @*<td v-text="formatData(item.entertainAmount)"></td>*@
                                     <td v-text="formatData(item.discountAmount)"></td>
-                                    <td v-text="formatData(item.discountedAmount)"></td>
+                                    @*<td v-text="formatData(item.discountedAmount)"></td>*@
                                     <td v-text="formatData(item.actualQuantity)"></td>
                                     <td v-text="formatData(item.actualAmount)"></td>
                                 </tr>
                             </tbody>
                             <tfoot v-if="!items || items.length === 0">
                                 <tr>
-                                    <td colspan="14">没有任何销售记录...</td>
+                                    <td colspan="11">没有任何销售记录...</td>
                                 </tr>
                             </tfoot>
                         </table>

@@ -343,6 +343,7 @@ namespace JdCat.Cat.Repository
             entity.ProductTypeId = product.ProductTypeId;
             entity.UnitName = product.UnitName;
             entity.Scope = product.Scope;
+            entity.IsDiscount = product.IsDiscount;
             if (entity.ProductIdSet != product.ProductIdSet)
             {
                 entity.ProductIdSet = product.ProductIdSet;

@@ -223,7 +223,8 @@ namespace JdCat.Cat.Web.Controllers
                 Formats = product.Formats,
                 Attributes = product.Attributes,
                 ProductIdSet = product.ProductIdSet,
-                Feature = product.Feature
+                Feature = product.Feature,
+                IsDiscount = product.IsDiscount
             };
             Service.Add(entity);
             entity.Code = entity.ID.ToString().PadLeft(6, '0');

@@ -3,14 +3,16 @@ using System;
 using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190521082932_Modify_ClientPrinter_CashierName")]
+    partial class Modify_ClientPrinter_CashierName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1363,15 +1365,11 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<double>("ActualAmount");
-
                     b.Property<double>("Amount");
 
                     b.Property<int>("BusinessId");
 
                     b.Property<string>("CancelReason");
-
-                    b.Property<string>("CashierName");
 
                     b.Property<string>("Code");
 
@@ -1390,8 +1388,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<DateTime>("ModifyTime");
 
                     b.Property<string>("ObjectId");
-
-                    b.Property<double>("OrderDiscount");
 
                     b.Property<int>("OrderMode");
 

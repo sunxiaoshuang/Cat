@@ -99,7 +99,7 @@ namespace JdCat.Cat.Repository
             data.Marks = await Context.SystemMarks.AsNoTracking().Where(a => a.BusinessId == businessId).ToListAsync();
             data.Printers = await Context.ClientPrinters.AsNoTracking().Where(a => a.BusinessId == businessId).ToListAsync();
             data.ProductTypes = await Context.ProductTypes.AsNoTracking().Where(a => a.BusinessId == businessId).OrderBy(a => a.Sort).ToListAsync();
-            data.Products = await Context.Products.AsNoTracking().Include(a => a.Formats).Include(a => a.Attributes).Include(a => a.Images).Where(a => a.BusinessId == businessId).ToListAsync();
+            data.Products = await Context.Products.AsNoTracking().Include(a => a.Formats).Include(a => a.Attributes).Include(a => a.Images).Where(a => a.BusinessId == businessId && a.Status == ProductStatus.Sale).ToListAsync();
             var staffIds = staffs.Select(a => a.ID);
             data.CookProductRelatives = await Context.CookProductRelatives.AsNoTracking().Where(a => staffIds.Contains(a.StaffId)).ToListAsync();
             var booths = await Context.StoreBooths.AsNoTracking().Where(a => a.BusinessId == businessId).ToListAsync();

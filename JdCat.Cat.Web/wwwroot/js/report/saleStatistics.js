@@ -39,8 +39,17 @@
                     .then(function (res) {
                         self.list = res.data;
                         self.total = 0;
-                        self.quantity = 0;
+                        self.productOriginalAmount = 0;
+                        self.productAmount = 0;
+                        self.freightAmount = 0;
+                        self.packageAmount = 0;
+                        self.discountAmount = 0;
+                        self.activityAmount = 0;
+                        self.benefitAmount = 0;
+                        self.total = 0;
+                        self.actualTotal = 0;
                         self.list.forEach(item => {
+                            // 合计
                             self.quantity += item.quantity;
                             self.productOriginalAmount += item.productOriginalAmount;
                             self.productAmount += item.productAmount;
@@ -51,7 +60,7 @@
                             self.benefitAmount += item.benefitAmount;
                             self.total += item.total;
                             self.actualTotal += item.actualTotal;
-
+                            // 每一项最多保留两位小数
                             item.productOriginalAmount = +item.productOriginalAmount.toFixed(2);
                             item.productAmount = +item.productAmount.toFixed(2);
                             item.freightAmount = +item.freightAmount.toFixed(2);

@@ -298,23 +298,6 @@ namespace JdCat.Cat.Repository
             var endTime = new DateTime(end.Year, end.Month, end.Day);
             endTime = endTime.AddDays(1);
 
-            //var query1 = from order in Context.Orders
-            //             where order.BusinessId == business.ID && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= startTime && order.CreateTime < endTime
-            //             select new { order.Price, order.PackagePrice, order.Freight, CreateTime = order.CreateTime.Value.ToString("yyyy-MM-dd"), order.SaleFullReduceMoney, order.SaleCouponUserMoney };
-
-
-            //var query2 = from order in query1
-            //             group order by order.CreateTime into g
-            //             select new Report_SaleStatistics
-            //             {
-            //                 Date = g.Key,
-            //                 PackageAmount = g.Sum(a => a.PackagePrice ?? 0),
-            //                 FreightAmount = g.Sum(a => a.Freight ?? 0),
-            //                 ActivityAmount = g.Sum(a => a.SaleFullReduceMoney ?? 0 + a.SaleCouponUserMoney ?? 0),
-            //                 Quantity = g.Count(),
-            //                 ActualTotal = g.Sum(a => a.Price ?? 0)
-            //};
-
             var query1 = from order in Context.Orders
                          join product in Context.OrderProducts on order.ID equals product.OrderId
                          where order.BusinessId == business.ID && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= startTime && order.CreateTime < endTime

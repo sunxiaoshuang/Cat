@@ -44,7 +44,8 @@
                 attributes: [],
                 scope: 3,
                 tag1: [],
-                feature: 0
+                feature: 0,
+                isDiscount: true
             },
             imgsrc: imgsrc,
             showError: false,           // 是否表单错误
@@ -83,6 +84,7 @@
             },
             save: function (flag) {
                 var entity = $.extend({}, this._data.entity), self = this;
+                console.log(entity);
 
                 if (!entity.productTypeId || !entity.name || !entity.unitName || !entity.minBuyQuantity) {
                     $.alert("请将表单填写完整！", "warning");

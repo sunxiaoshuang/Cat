@@ -311,6 +311,31 @@ namespace JdCat.Cat.Repository
             return result;
         }
 
+        public async Task<List<Report_Benefit>> GetBenefitDataAsync(int businessId, DateTime start, DateTime end)
+        {
+            var query = from order in Context.TangOrders
+                        where order.BusinessId == businessId && (order.OrderStatus & TangOrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
+                        group order by order.PaymentRemark into g
+                        select new Report_Benefit
+                        {
+                            Name = g.Key,
+                            Amount = g.Sum(a => a.PreferentialAmount),
+                            OrderAmount = g.Sum(a => a.Amount),
+                            Quantity = g.Count()
+                        };
+            return await query.ToListAsync();
+        }
+
+        public async Task<object> GetSingleBenetifDataAsync(int businessId, string name, DateTime start, DateTime end)
+        {
+            var query = from order in Context.TangOrders
+                        where order.BusinessId == businessId && order.PaymentRemark == name && (order.OrderStatus & TangOrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
+                        select new
+                        {
+                            order.ID, order.Code, order.PayTime, order.Amount, order.ActualAmount
+                        };
+            return await query.ToListAsync();
+        }
 
 
     }

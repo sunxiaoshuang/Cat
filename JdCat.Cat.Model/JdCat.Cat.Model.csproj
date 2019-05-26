@@ -24,6 +24,7 @@
     <Compile Remove="Migrations\20190417044000_addd-dwd.cs" />
     <Compile Remove="Migrations\20190505083911_Modify_Product_Pinyin.cs" />
     <Compile Remove="Migrations\20190512025728_Modify_Product_Scope.cs" />
+    <Compile Remove="Migrations\20190521082445_Modify_ClientPrinter_CashierName.cs" />
   </ItemGroup>
 
   <ItemGroup>

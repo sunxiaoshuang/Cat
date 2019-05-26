@@ -43,6 +43,7 @@
                         </h3>
                     </div>
                     <div class="panel-body" style="min-height: 400px;">
+                        <p class="text-primary">注：仅前台打印机可设置相关收银台。</p>
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -55,6 +56,7 @@
                                     <th width="120">打印模式</th>
                                     <th width="120">打印机规格</th>
                                     <th width="120">打印范围</th>
+                                    <th width="120">相关收银台</th>
                                     <th width="120">打印机状态</th>
                                     <th style="text-align:left;">操作</th>
                                 </tr>
@@ -70,6 +72,7 @@
                                     <td v-html="modeFormat(item.mode)"></td>
                                     <td v-text="item.format + 'mm'"></td>
                                     <td v-text="scopeFormat(item.scope)"></td>
+                                    <td v-text="item.cashierName"></td>
                                     <td v-text="item.state === 1 ? '正常' : '停用'"></td>
                                     <td style="text-align:left;">
                                         <a @@click="modify(item)" class="text-primary margin-right-20">
@@ -86,7 +89,7 @@
                             </tbody>
                             <tfoot v-if="!items || items.length === 0">
                                 <tr>
-                                    <th colspan="11">未添加任何打印机...</th>
+                                    <th colspan="12">未添加任何打印机...</th>
                                 </tr>
                             </tfoot>
                         </table>

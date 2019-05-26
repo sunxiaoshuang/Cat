@@ -154,6 +154,11 @@
         },
         ipValid: function (ip) {
             return /((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))/.test(ip);
+        },
+        diffDay: function (start, end) {
+            var timespan = new Date(end) - new Date(start);
+            var days = +(timespan / (1000 * 60 * 60 * 24)).toFixed();
+            return days;
         }
     };
 

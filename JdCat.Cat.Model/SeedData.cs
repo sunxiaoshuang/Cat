@@ -190,12 +190,8 @@ namespace JdCat.Cat.Model
 
         private void Init()
         {
-            //var businesses = _context.Businesses.Where(a => a.Category == BusinessCategory.Store).ToList();
-            //foreach (var item in businesses)
-            //{
-            //    item.DiscountQuantity = 2;
-            //    item.IsEnjoymentActivity = true;
-            //}
+            //var products = _context.Products.ToList();
+            //products.ForEach(a => a.IsDiscount = true);
             //_context.SaveChanges();
         }
 

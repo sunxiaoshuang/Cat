@@ -6,7 +6,7 @@
                     <span class="require">名称：</span>
                 </label>
                 <div class="col-xs-8">
-                    <input class="form-control" id="markName" />
+                    <input class="form-control" autocomplete="off" id="markName" />
                 </div>
             </div>
         </div>
@@ -16,7 +16,8 @@
         data: {
             flavor: null,
             orderMark: null,
-            refundFoodReason: null
+            refundFoodReason: null,
+            payRemark: null
         },
         methods: {
             add: function (category, list) {
@@ -68,6 +69,7 @@
                     self.flavor = res.data.flavor;
                     self.orderMark = res.data.orderMark;
                     self.refundFoodReason = res.data.refundFoodReason;
+                    self.payRemark = res.data.payRemark;
                 });
         }
     });

@@ -30,6 +30,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 取消订单原因
         /// </summary>
-        CancelOrderReason = 6
+        CancelOrderReason = 6,
+        /// <summary>
+        /// 支付备注
+        /// </summary>
+        PayRemark = 7
     }
 }
