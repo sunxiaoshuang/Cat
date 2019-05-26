@@ -1,5 +1,9 @@
 
+<<<<<<< HEAD
 var host = 'https://api.jiandanmao.cn';
+=======
+var host = 'https://api.whliupangzi.cn';
+>>>>>>> f743e3f2ac082ba87680efae926468da09eab0f0
 // e.jiandanmao.cn
 // t.e.jiandanmao.cn
 // e.whliupangzi.cn
@@ -22,12 +26,16 @@ var config = {
         uploadUrl: `${host}/api/upload`,
 
         // 图片地址
+<<<<<<< HEAD
       imageUrl: `http://f.jiandanmao.cn`
+=======
+      imageUrl: `http://f.whliupangzi.cn`
+>>>>>>> f743e3f2ac082ba87680efae926468da09eab0f0
     },
     globalData: {
         openText: "简单猫\r\n让您的生活更简单"
     },
-    businessId: 1
+    businessId: 2
     
 };
 

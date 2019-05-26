@@ -1300,10 +1300,12 @@ Page({
       if(discountQuantity === 1) {
         util.showError("本店满减活动不可与折扣商品同时享受");
       }
-      this.setData({
-        saleText: ""
-      });
-      return;
+      if(discountQuantity > 0) {
+        this.setData({
+          saleText: ""
+        });
+        return;
+      }
     }
     if (this.data.cartList.length === 0 || fullReduceList.length === 0) return;
     // 折扣商品不参与满减
