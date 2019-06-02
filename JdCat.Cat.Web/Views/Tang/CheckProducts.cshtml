@@ -1,4 +1,22 @@
 ﻿<div class="container-fluid" id="bindProduct">
+    <div class="row" style="position: relative; margin-bottom: 10px;">
+
+        <p class="text-primary pull-left">注：最多显示8个搜索结果...</p>
+        <div class="pull-right" style="width: 250px;">
+            <div class="input-group">
+                <input type="text" class="form-control" v-model="search.key" @@keyup.esc="clear()" @@keyup.enter="enter()" @@keyup.up="up()" @@keyup.down="down()" @@blur="blur()" @@focus="focus()" placeholder="商品搜索..." />
+                <span class="input-group-addon">
+                    <i class="fa fa-search"></i>
+                </span>
+            </div>
+        </div>
+        <div class="search-container" v-bind:style="{'min-height': search.boxHeight}">
+            <div class="search-box">
+                <div class="search-item" v-for="item in search.result" v-bind:class="{'selected': item.selected, 'binded': !!item.title, 'checked': item.checked}" v-text="item.name" @@click="clickItem(item)" :title="item.title" data-placement="bottom">
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-xs-6">
 
@@ -8,7 +26,7 @@
                     <span v-text="item.name"></span>
                     <ul class="list product" v-show="item.checked" style="display: none;">
                         <li v-for="product in item.list">
-                            <a @@click.stop="choice(product)" v-bind:class="{'selected': product.checked}">{{product.name}}</a>
+                            <a @@click.stop="choice(product)" data-toggle="tooltip" v-bind:title="product.title" v-bind:class="{'selected': product.checked, 'binded': !!product.title}">{{product.name}}</a>
                         </li>
                     </ul>
                 </li>

@@ -17,7 +17,8 @@
             flavor: null,
             orderMark: null,
             refundFoodReason: null,
-            payRemark: null
+            payRemark: null,
+            goodRemark: null
         },
         methods: {
             add: function (category, list) {
@@ -70,6 +71,7 @@
                     self.orderMark = res.data.orderMark;
                     self.refundFoodReason = res.data.refundFoodReason;
                     self.payRemark = res.data.payRemark;
+                    self.goodRemark = res.data.goodRemark;
                 });
         }
     });

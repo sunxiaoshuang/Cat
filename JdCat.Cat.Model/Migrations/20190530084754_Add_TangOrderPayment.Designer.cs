@@ -3,14 +3,16 @@ using System;
 using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190530084754_Add_TangOrderPayment")]
+    partial class Add_TangOrderPayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1445,6 +1447,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("ObjectId");
 
+                    b.Property<int>("OrderId");
+
                     b.Property<string>("OrderObjectId");
 
                     b.Property<int>("PaymentTypeId");
@@ -1455,13 +1459,13 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<DateTime>("SyncTime");
 
-                    b.Property<int>("TangOrderId");
+                    b.Property<int?>("TangOrderID");
 
                     b.HasKey("ID");
 
                     b.HasIndex("PaymentTypeId");
 
-                    b.HasIndex("TangOrderId");
+                    b.HasIndex("TangOrderID");
 
                     b.ToTable("TangOrderPayment");
                 });
@@ -2005,8 +2009,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.HasOne("JdCat.Cat.Model.Data.TangOrder", "TangOrder")
                         .WithMany("TangOrderPayments")
-                        .HasForeignKey("TangOrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("TangOrderID");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.TangOrderProduct", b =>

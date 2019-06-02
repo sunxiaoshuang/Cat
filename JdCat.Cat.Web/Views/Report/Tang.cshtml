@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "销售统计（堂食）";
+}
+
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+        @*<link href="~/css/report/index.css" rel="stylesheet" />*@
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        @*<link href="~/css/report/index.min.css" rel="stylesheet" asp-append-version="true" />*@
+    </environment>
+}
+@section Scripts {
+    <environment include="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/report/tang.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/report/tang.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">堂食订单统计</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-1 col-sm-2 text-right">起止日期：</label>
+                            <div class="col-md-8">
+                                <div class="input-group pull-left" style="width: 200px;">
+                                    <input type="text" class="form-control" value="@DateTime.Now.AddMonths(-1).AddDays(1).ToString("yyyy-MM-dd")" id="txtStartDate" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                <span class="pull-left" style="margin-top: 8px;padding: 0 10px;">至</span>
+                                <div class="input-group pull-left" style="width: 200px;">
+                                    <input type="text" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="txtEndDate" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                <button class="btn btn-primary pull-left" style="margin-left: 20px;" @@click="search()">
+                                    <i class="fa fa-search"></i>
+                                    查询
+                                </button>
+                                <button class="btn btn-primary pull-left" style="margin-left: 20px;" @@click="report()">
+                                    <i class="fa fa-search"></i>
+                                    导出Excel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+
+                    <div class="col-md-12">
+                        <p>
+                            注：
+                            <span style="color:red;">商品销售总额</span> = 所有商品的原价总额；
+                            <span style="color:red;">商品销售净额</span> = 原价商品总额 - 折扣商品总额；
+                            <span style="color:red;">应收金额</span> = 商品销售总额 + 餐位费；
+                            <span style="color:red;">实收金额</span> = 应收金额 - 折扣商品总额 - 订单折扣优惠 - 优惠金额；
+                        </p>
+                    </div>
+                    <div class="col-md-12">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th width="100" style="text-align: center !important;">序号</th>
+                                    <th>日期</th>
+                                    <th>订单实数</th>
+                                    <th>商品销售总额</th>
+                                    <th>商品销售净额</th>
+                                    <th>餐位费</th>
+                                    <th>折扣商品总额</th>
+                                    <th>订单折扣优惠</th>
+                                    <th>订单优惠金额</th>
+                                    <th>应收金额</th>
+                                    <th>实收金额</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, $index) in list">
+                                    <td v-text="$index + 1" align="center"></td>
+                                    <td v-text="item.date"></td>
+                                    <td v-text="item.quantity"></td>
+                                    <td v-text="currency(item.goodAmount)"></td>
+                                    <td v-text="currency(item.actualGoodAmount)"></td>
+                                    <td v-text="currency(item.mealFee)"></td>
+                                    <td v-text="currency(item.goodDiscountAmount)"></td>
+                                    <td v-text="currency(item.orderDiscountAmount)"></td>
+                                    <td v-text="currency(item.preferentialAmount)"></td>
+                                    <td v-text="currency(item.amount)"></td>
+                                    <td v-text="currency(item.actualAmount)"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr v-if="list.length > 0">
+                                    <td align="center">总计</td>
+                                    <td></td>
+                                    <td v-text="quantity"></td>
+                                    <td v-text="currency(goodAmount)"></td>
+                                    <td v-text="currency(actualGoodAmount)"></td>
+                                    <td v-text="currency(mealFee)"></td>
+                                    <td v-text="currency(goodDiscountAmount)"></td>
+                                    <td v-text="currency(orderDiscountAmount)"></td>
+                                    <td v-text="currency(preferentialAmount)"></td>
+                                    <td v-text="currency(amount)"></td>
+                                    <td v-text="currency(actualAmount)"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px;"></div>
+</div>

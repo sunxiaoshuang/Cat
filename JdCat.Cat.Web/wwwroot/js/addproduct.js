@@ -228,6 +228,8 @@
                                     title: "选择套餐商品",
                                     footDisplay: "block",
                                     template: selectTemplate,
+                                    keyboard: false,
+                                    dialogWidth: 800,
                                     load: function () {
                                         initSetMeal.call(this);
                                     },
@@ -294,15 +296,103 @@
 
     var setMealVm;
     function initSetMeal() {
-        var typeList = JSON.parse(JSON.stringify(productTypes));
-        typeList.forEach(function (obj) { obj.checked = false; });
+        var typeList = JSON.parse(JSON.stringify(productTypes)), products = [], exists = [];
+        var setMeals = appData.entity.productIdSet ? appData.entity.productIdSet.split(',').map(a => +a) : "";
+        typeList.forEach(function (obj) {
+            obj.checked = false;
+            obj.products.forEach(a => {
+                products.push(a);
+                a.checked = setMeals.indexOf(a.id) > -1;
+                a.selected = false;
+                if (a.checked) {
+                    exists.push(a);
+                }
+            });
+        });
         setMealVm = new Vue({
             el: `#setMeal`,
             data: {
-                typeList: typeList,
-                productList: []
+                typeList, products,
+                productList: exists,
+                search: {
+                    key: "",
+                    result: [],
+                    boxHeight: 0
+                }
+            },
+            watch: {
+                'search.key': function (key) {
+                    this.seek(key);
+                }
             },
             methods: {
+                focus: function () {
+                    this.seek(this.search.key);
+                },
+                blur: function () {
+                    this.search.boxHeight = 0;
+                },
+                seek: function (key) {
+                    if (!key) {
+                        this.search.boxHeight = "0";
+                        this.search.result = [];
+                        return;
+                    }
+                    this.search.boxHeight = "120px";
+                    this.products.forEach(a => a.selected = false);
+                    this.search.result = this.products
+                        .filter(a => a.name.indexOf(key) > -1 || a.code.indexOf(key) > -1 || a.pinyin.indexOf(key) > -1 || a.firstLetter.indexOf(key) > -1)
+                        .slice(0, 8);
+                },
+                down: function () {
+                    var self = this;
+                    this.move(function (index) {
+                        if (index === self.search.result.length - 1) {
+                            index = 0;
+                        } else {
+                            index++;
+                        }
+                        return index;
+                    });
+                },
+                up: function () {
+                    var self = this;
+                    this.move(function (index) {
+                        if (index === 0) {
+                            index = self.search.result.length - 1;
+                        } else {
+                            if (index === -1) {
+                                index = 0;
+                            } else {
+                                index--;
+                            }
+                        }
+                        return index;
+                    });
+                },
+                enter: function () {
+                    var products = this.search.result.filter(a => a.selected);
+                    if (products.length === 0) return;
+                    this.clickItem(products[0]);
+                },
+                clear: function () {
+                    this.search.key = "";
+                },
+                move: function (callback) {
+                    if (this.search.result.length === 0) return;
+                    var selected, index;
+                    var selecteds = this.search.result.filter(a => a.selected);
+                    if (selecteds.length > 0) selected = selecteds[0];
+                    index = this.search.result.indexOf(selected);
+                    index = callback(index);
+                    selecteds.forEach(a => a.selected = false);
+                    this.search.result[index].selected = true;
+                },
+                clickItem: function (product) {
+                    if (product.checked) return;
+                    product.checked = true;
+                    this.productList.push(product);
+                },
                 open: function (item) {
                     var state = item.checked;
                     this.typeList.forEach(function (type) { type.checked = false; });
@@ -312,9 +402,11 @@
                     var item = this.productList.filter(a => a.id === product.id);
                     if (item.length > 0) return;
                     this.productList.push(product);
+                    product.checked = true;
                 },
                 remove: function (index) {
-                    this.productList.splice(index, 1);
+                    var product = this.productList.splice(index, 1)[0];
+                    product.checked = false;
                 }
             }
         });

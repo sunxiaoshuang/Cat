@@ -3,14 +3,16 @@ using System;
 using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190530094031_Drop_TangOrderPayment")]
+    partial class Drop_TangOrderPayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1430,42 +1432,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("TangOrder");
                 });
 
-            modelBuilder.Entity("JdCat.Cat.Model.Data.TangOrderPayment", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<double>("Amount");
-
-                    b.Property<DateTime?>("CreateTime");
-
-                    b.Property<DateTime>("ModifyTime");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("ObjectId");
-
-                    b.Property<string>("OrderObjectId");
-
-                    b.Property<int>("PaymentTypeId");
-
-                    b.Property<string>("PaymentTypeObjectId");
-
-                    b.Property<int>("Status");
-
-                    b.Property<DateTime>("SyncTime");
-
-                    b.Property<int>("TangOrderId");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("PaymentTypeId");
-
-                    b.HasIndex("TangOrderId");
-
-                    b.ToTable("TangOrderPayment");
-                });
-
             modelBuilder.Entity("JdCat.Cat.Model.Data.TangOrderProduct", b =>
                 {
                     b.Property<int>("ID")
@@ -1994,19 +1960,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.Staff", "Staff")
                         .WithMany()
                         .HasForeignKey("StaffId");
-                });
-
-            modelBuilder.Entity("JdCat.Cat.Model.Data.TangOrderPayment", b =>
-                {
-                    b.HasOne("JdCat.Cat.Model.Data.PaymentType", "PaymentType")
-                        .WithMany()
-                        .HasForeignKey("PaymentTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("JdCat.Cat.Model.Data.TangOrder", "TangOrder")
-                        .WithMany("TangOrderPayments")
-                        .HasForeignKey("TangOrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.TangOrderProduct", b =>

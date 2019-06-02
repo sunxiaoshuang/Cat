@@ -143,15 +143,39 @@ namespace JdCat.Cat.Web.Controllers
         #region 营业统计（堂食）
         public IActionResult Tang()
         {
-            return null;
+            return View();
         }
         public async Task<IActionResult> GetTangData([FromQuery]DateTime? start, [FromQuery]DateTime? end)
         {
-            return null;
+            if (!start.HasValue || !end.HasValue)
+            {
+                return Json(new string[] { });
+            }
+            return Json(await Service.GetSaleStatisticsTangAsync(Business, start.Value, end.Value));
         }
         public async Task<IActionResult> ExportTangData([FromQuery]DateTime? start, [FromQuery]DateTime? end)
         {
-            return null;
+            var name = $"销售统计[堂食]({start.Value:yyyyMMdd}-{end.Value:yyyyMMdd}).xlsx";
+            var list = await Service.GetSaleStatisticsTangAsync(Business, start.Value, end.Value);
+            var index = 1;
+            var total = new Report_SaleStatisticsTang { Date = "合计"};
+            list.ForEach(a =>
+            {
+                a.Index = index++;
+                total.Quantity += a.Quantity;
+                total.GoodAmount += a.GoodAmount;
+                total.ActualGoodAmount += a.ActualGoodAmount;
+                total.MealFee += a.MealFee;
+                total.GoodDiscountAmount += a.GoodDiscountAmount;
+                total.OrderDiscountAmount += a.OrderDiscountAmount;
+                total.PreferentialAmount += a.PreferentialAmount;
+                total.Amount += a.Amount;
+                total.ActualAmount += a.ActualAmount;
+            });
+            total.Index = index;
+            list.Add(total);
+
+            return File(list.ToWorksheet(), AppData.XlsxContentType, name);
         }
         #endregion
 
@@ -435,7 +459,7 @@ namespace JdCat.Cat.Web.Controllers
 
         #endregion
 
-        #region 优惠统计
+        #region 支付备注统计
         public IActionResult Benefit()
         {
             return View();
@@ -465,6 +489,70 @@ namespace JdCat.Cat.Web.Controllers
             var result = await service.GetSingleBenetifDataAsync(Business.ID, name, start, end.AddDays(1));
             return Json(result);
         }
+
+        #endregion
+
+        #region 支付方式统计
+
+        public IActionResult Payment()
+        {
+            return View();
+        }
+        public async Task<IActionResult> GetPaymentData([FromQuery]DateTime start, [FromQuery]DateTime end, [FromServices]IStoreRepository service)
+        {
+            return Json(await service.GetPaymentDataAsync(Business.ID, start, end.AddDays(1)));
+        }
+        public async Task<IActionResult> ExportPaymentData([FromQuery]DateTime start, [FromQuery]DateTime end, [FromServices]IStoreRepository service)
+        {
+            var list = await service.GetPaymentDataAsync(Business.ID, start, end.AddDays(1));
+            list.Add(new Report_Payment
+            {
+                Name = "合计", Amount = list.Sum(a => a.Amount), Quantity = list.Sum(a => a.Quantity)
+            });
+            var title = $"支付方式统计（{start:yyyy年MM月dd日}-{end:yyyy年MM月dd日}）";
+            using (var package = new ExcelPackage())
+            {
+                var columnCount = 4;
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells["A1"].Value = title;
+                worksheet.Cells["A2"].Value = $"导出时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                worksheet.Cells[1, 1, 1, columnCount].Merge = true;
+                worksheet.Cells[2, 1, 2, columnCount].Merge = true;
+                worksheet.Cells["A1"].Style.Font.Size = 16;
+                worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A3"].Value = "序号";
+                worksheet.Cells["B3"].Value = "支付方式";
+                worksheet.Cells["C3"].Value = "订单数";
+                worksheet.Cells["D3"].Value = "支付金额";
+                worksheet.Cells[3, 1, 3, columnCount].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[3, 1, 3, columnCount].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                int rowIndex = 4, index = 1;
+                foreach (var item in list)
+                {
+                    var startRow = rowIndex;
+                    worksheet.Cells[$"A{rowIndex}"].Value = index;
+                    worksheet.Cells[$"B{rowIndex}"].Value = item.Name;
+                    worksheet.Cells[$"C{rowIndex}"].Value = item.Quantity;
+                    worksheet.Cells[$"D{rowIndex}"].Value = item.Amount;
+
+                    index++;
+                    rowIndex++;
+                }
+                worksheet.Cells[4, 1, rowIndex, columnCount].AutoFitColumns();
+                var dataBorder = worksheet.Cells[3, 1, rowIndex - 1, columnCount].Style.Border;
+                dataBorder.Bottom.Style = dataBorder.Top.Style = dataBorder.Left.Style = dataBorder.Right.Style = ExcelBorderStyle.Thin;
+                var xls = package.GetAsByteArray();
+                return File(xls, AppData.XlsxContentType, $"{title}({start:yyyyMMdd}-{end:yyyyMMdd}).xlsx");
+            }
+
+        }
+
+        public async Task<IActionResult> GetSinglePaymentData([FromQuery]int id, [FromQuery]DateTime start, [FromQuery]DateTime end, [FromServices]IStoreRepository service)
+        {
+            return Json(await service.GetSinglePaymentDataAsync(id, start, end.AddDays(1)));
+        }
+
+
 
         #endregion
 

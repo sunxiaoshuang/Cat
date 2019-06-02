@@ -1,57 +1,42 @@
-﻿@using JdCat.Cat.Common
-@model TangOrder
-
-<div class="form-horizontal">
+﻿<div class="form-horizontal" id="reservePay">
     <div class="form-group">
         <label class="col-xs-2">
             订单编号：
         </label>
-        <span class="col-xs-4">
-            @Model.Code
+        <span class="col-xs-4" v-text="entity.code">
         </span>
         <label class="col-xs-2">
             当日流水：
         </label>
-        <span class="col-xs-3">
-            @Model.Identifier
+        <span class="col-xs-3" v-text="entity.identifier">
         </span>
     </div>
     <div class="form-group">
         <label class="col-xs-2">
             餐桌：
         </label>
-        <span class="col-xs-4">
-            @Model.DeskName
+        <span class="col-xs-4" v-text="entity.deskName">
         </span>
         <label class="col-xs-2">
             用餐人数：
         </label>
-        <span class="col-xs-3">
-            @Model.PeopleNumber
+        <span class="col-xs-3" v-text="entity.peopleNumber">
         </span>
     </div>
     <div class="form-group">
         <label class="col-xs-2">
             结算时间：
         </label>
-        <span class="col-xs-4">
-            @(Model.PayTime?.ToString("yyyy-MM-dd HH:mm:ss"))
+        <span class="col-xs-4" v-text="entity.payTime">
         </span>
         <label class="col-xs-2">
             支付方式：
         </label>
         <span class="col-xs-3">
-            @if (Model.TangOrderPayments != null)
-            {
-                if (Model.TangOrderPayments.Count == 1)
-                {
-                    <span>@Model.TangOrderPayments.First().Name</span>
-                }
-                else
-                {
-                    <span>@string.Join(',', Model.TangOrderPayments.Select(a => $"{a.Name}:{a.Amount}元"))</span>
-                }
-            }
+            <span>
+                {{entity.tangOrderPayments | paymentFilter}}
+            </span>
+            <a @@click="editPayment()" class="text-primary margin-left-20">修改</a>
         </span>
     </div>
     <div class="form-group">
@@ -59,13 +44,13 @@
             订单来源：
         </label>
         <span class="col-xs-4">
-            @Model.OrderSource.ToDescription();
+            {{entity.orderSource | sourceFilter}}
         </span>
         <label class="col-xs-2">
             订单类别：
         </label>
         <span class="col-xs-3">
-            @Model.OrderMode.ToDescription()
+            {{entity.orderMode | modeFilter}}
         </span>
     </div>
     <div class="form-group">
@@ -73,13 +58,13 @@
             收银员：
         </label>
         <span class="col-xs-4">
-            @Model.StaffName
+            {{entity.staffName}}
         </span>
         <label class="col-xs-2">
             订单状态：
         </label>
         <span class="col-xs-3">
-            @Model.OrderStatus.ToDescription()
+            {{entity.orderStatus | statusFilter}}
         </span>
     </div>
     <div class="form-group">
@@ -87,38 +72,34 @@
             订单备注：
         </label>
         <span class="col-xs-4">
-            @Model.Remark
+            {{entity.remark}}
         </span>
         <label class="col-xs-2">
             支付备注：
         </label>
-        <span class="col-xs-3">
-            @Model.PaymentRemark
+        <span class="col-xs-3" v-text="entity.paymentRemark">
         </span>
     </div>
-    @if (!string.IsNullOrEmpty(Model.CancelReason))
-    {
-        <div class="form-group">
+        <div class="form-group" v-if="!!entity.cancelReason">
             <label class="col-xs-2">
                 退款原因：
             </label>
             <span class="col-xs-8">
-                @Model.CancelReason
+                {{entity.cancelReason}}
             </span>
         </div>
-    }
     <div class="form-group">
         <label class="col-xs-2 nowarp">
             商品原价总额：
         </label>
         <span class="col-xs-4">
-            ￥ @(Model.OriginalAmount - Model.MealFee)
+            {{'￥' + +(entity.originalAmount - entity.mealFee).toFixed(2)}}
         </span>
         <label class="col-xs-2">
             餐位费：
         </label>
         <span class="col-xs-3">
-            ￥ @Model.MealFee
+            {{entity.mealFee}}
         </span>
     </div>
     <div class="form-group">
@@ -126,13 +107,13 @@
             单品折扣立减：
         </label>
         <span class="col-xs-4">
-            ￥ @(Model.OriginalAmount - Model.Amount)
+            {{'￥' + +(entity.originalAmount - entity.amount).toFixed(2)}}
         </span>
         <label class="col-xs-2 nowarp">
             整单折扣立减：
         </label>
         <span class="col-xs-3">
-            ￥ @(Model.Amount - Model.ActualAmount - Model.PreferentialAmount)
+            {{'￥' + +(entity.amount - entity.actualAmount - entity.preferentialAmount).toFixed(2)}}
         </span>
     </div>
     <div class="form-group">
@@ -140,13 +121,13 @@
             整单优惠立减：
         </label>
         <span class="col-xs-4">
-            ￥ @Model.PreferentialAmount
+            {{'￥' + entity.preferentialAmount}}
         </span>
         <label class="col-xs-2">
             订单原价：
         </label>
         <span class="col-xs-3">
-            ￥ @Model.OriginalAmount
+            {{'￥' + entity.originalAmount}}
         </span>
     </div>
     <div class="form-group">
@@ -154,7 +135,7 @@
             订单实收：
         </label>
         <span class="col-xs-3" style="color: red;">
-            ￥ @Model.ActualAmount
+            {{'￥' + entity.actualAmount}}
         </span>
     </div>
     <div class="form-group">
@@ -162,30 +143,35 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
+                        <th colspan="6" style="position: relative; text-align: center">
+                            订单商品
+                            <a class="text-primary pull-right" @@click="">
+                                <i class="fa fa-plus">添加</i>
+                            </a>
+                        </th>
+                    </tr>
+                    <tr>
                         <th>商品名称</th>
                         <th>规格描述</th>
                         <th>备注</th>
                         <th width="80">总价</th>
                         <th width="80">数量</th>
+                        <th width="60">操作</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.TangOrderProducts)
-                    {
-                        <tr>
-                            <td>
-                                @item.Name
-                                @if (item.ProductStatus == TangOrderProductStatus.Return)
-                                {
-                                    <span class="text-danger">（已退菜）</span>
-                                }
-                            </td>
-                            <td>@item.Description</td>
-                            <td>@item.Remark</td>
-                            <td>@(Convert.ToDouble((item.Price * item.Quantity).ToString("f2")))</td>
-                            <td>@item.Quantity</td>
-                        </tr>
-                    }
+                    <tr v-for="item in entity.tangOrderProducts">
+                        <td>
+                            <span v-text="item.name"></span>
+                        </td>
+                        <td v-text="item.description"></td>
+                        <td v-text="item.Remark"></td>
+                        <td v-text="item.amount"></td>
+                        <td v-text="item.quantity"></td>
+                        <td>
+                            <a @@click.prevent="" class="text-primary">修改</a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>

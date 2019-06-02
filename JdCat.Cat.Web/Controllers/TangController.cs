@@ -224,7 +224,8 @@ namespace JdCat.Cat.Web.Controllers
                 CancelDeliveryReason = marks.Where(a => a.Category == MarkCategory.CancelDeliveryReason),
                 RefundMoneyReason = marks.Where(a => a.Category == MarkCategory.RefundMoneyReason),
                 CancelOrderReason = marks.Where(a => a.Category == MarkCategory.CancelOrderReason),
-                PayRemark = marks.Where(a => a.Category == MarkCategory.PayRemark)
+                PayRemark = marks.Where(a => a.Category == MarkCategory.PayRemark),
+                GoodRemark = marks.Where(a => a.Category == MarkCategory.GoodRemark)
             });
         }
         /// <summary>
@@ -574,6 +575,14 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> GetProductIdsByBooth(int id)
         {
             return Json(await Service.GetProductIdsByBoothAsync(id));
+        }
+        /// <summary>
+        /// 获取商户所有档口所绑定的商品id
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetProductIdsWithBusinessBooth()
+        {
+            return Json(await Service.GetProductIdsWithBusinessBoothAsync(Business.ID));
         }
         /// <summary>
         /// 档口绑定菜品

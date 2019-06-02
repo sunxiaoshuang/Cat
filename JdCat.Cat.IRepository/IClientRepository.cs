@@ -34,6 +34,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         int UploadOrderProducts(IEnumerable<TangOrderProduct> list);
         /// <summary>
+        /// 上传订单产品
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        int UploadOrderPayments(IEnumerable<TangOrderPayment> list);
+        /// <summary>
         /// 获取客户端需要同步的数据
         /// </summary>
         /// <returns></returns>

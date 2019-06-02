@@ -46,6 +46,7 @@
             var self = this;
             axios.get("/tang/getBooths")
                 .then(function (res) {
+                    res.data.forEach(a => a.productIds = null);
                     self.items = res.data;
                 });
         }
@@ -68,6 +69,7 @@
                 axios.post(url, { id: isNew ? 0 : booth.id, name: boothName })
                     .then(function (res) {
                         if (isNew) {
+                            res.data.data.productIds = [];
                             app.items.push(res.data.data);
                             $.alert("新增成功", "success");
                         } else {
@@ -91,9 +93,24 @@
                 $.loaded();
 
                 var openDialog = function (productIds) {
-                    var vueObj, typeList = JSON.parse(JSON.stringify(types)), productList = [], allProducts = [], self = this;
+                    var vueObj,
+                        typeList = JSON.parse(JSON.stringify(types)),   // 商品类别
+                        productList = [],                               // 已经勾选的商品
+                        allProducts = [],                               // 所有商品
+                        self = this;                                    // 档口对象
                     typeList.forEach(function (type) { allProducts = allProducts.concat(type.list); });
-                    allProducts.forEach(function (product) { product.checked = false; });
+                    allProducts.forEach(function (product) {
+                        product.checked = false;
+                        product.selected = false;
+                        product.title = "";
+                        app.items.forEach(item => {
+                            if (item.productIds.indexOf(product.id) > -1) {
+                                product.title += item.name + ',';
+                            }
+                        });
+                        if (!product.title) return;
+                        product.title = `已绑定${product.title.slice(0, product.title.length - 1)}`;
+                    });
 
                     if (productIds && productIds.length > 0) {
                         productIds.forEach(function (id) {
@@ -108,14 +125,92 @@
                         footDisplay: "block",
                         template,
                         dialogWidth: 800,
+                        keyboard: false,
                         load: function () {
                             vueObj = new Vue({
                                 el: "#bindProduct",
                                 data: {
-                                    typeList,
-                                    productList
+                                    typeList, products: allProducts,
+                                    productList,
+                                    search: {
+                                        key: "",
+                                        result: [],
+                                        boxHeight: 0
+                                    }
+                                },
+                                watch: {
+                                    'search.key': function (key) {
+                                        this.seek(key);
+                                    }
                                 },
                                 methods: {
+                                    focus: function () {
+                                        this.seek(this.search.key);
+                                    },
+                                    blur: function () {
+                                        this.search.boxHeight = 0;
+                                    },
+                                    seek: function (key) {
+                                        if (!key) {
+                                            this.search.result = [];
+                                            this.search.boxHeight = "0";
+                                            return;
+                                        }
+                                        this.search.boxHeight = "120px";
+                                        this.products.forEach(a => a.selected = false);
+                                        this.search.result = this.products
+                                            .filter(a => a.name.indexOf(key) > -1 || a.code.indexOf(key) > -1 || a.pinyin.indexOf(key) > -1 || a.firstLetter.indexOf(key) > -1)
+                                            .slice(0, 8);
+                                    },
+                                    down: function () {
+                                        var self = this;
+                                        this.move(function (index) {
+                                            if (index === self.search.result.length - 1) {
+                                                index = 0;
+                                            } else {
+                                                index++;
+                                            }
+                                            return index;
+                                        });
+                                    },
+                                    up: function () {
+                                        var self = this;
+                                        this.move(function (index) {
+                                            if (index === 0) {
+                                                index = self.search.result.length - 1;
+                                            } else {
+                                                if (index === -1) {
+                                                    index = 0;
+                                                } else {
+                                                    index--;
+                                                }
+                                            }
+                                            return index;
+                                        });
+                                    },
+                                    enter: function () {
+                                        var products = this.search.result.filter(a => a.selected);
+                                        if (products.length === 0) return;
+                                        this.clickItem(products[0]);
+                                    },
+                                    clear: function () {
+                                        this.search.key = "";
+                                    },
+                                    move: function (callback) {
+                                        if (this.search.result.length === 0) return;
+                                        var selected, index;
+                                        var selecteds = this.search.result.filter(a => a.selected);
+                                        if (selecteds.length > 0) selected = selecteds[0];
+                                        index = this.search.result.indexOf(selected);
+                                        index = callback(index);
+                                        selecteds.forEach(a => a.selected = false);
+                                        this.search.result[index].selected = true;
+                                    },
+                                    clickItem: function (product) {
+                                        if (product.checked) return;
+                                        product.checked = true;
+                                        this.productList.push(product);
+                                    },
                                     open: function (type) {
                                         type.checked = !type.checked;
                                     },
@@ -150,10 +245,22 @@
 
                 bindProducts = function (booth) {
                     if (!booth.productIds) {
-                        axios.get(`/tang/getProductIdsByBooth/${booth.id}`)
+                        //axios.get(`/tang/getProductIdsByBooth/${booth.id}`)
+                        //    .then(function (res) {
+                        //        booth.productIds = res.data;
+                        //        openDialog.call(booth, res.data);
+                        //    })
+                        //    .catch(function (err) { $.alert(err); });
+
+                        axios.get(`/tang/getProductIdsWithBusinessBooth`)
                             .then(function (res) {
-                                booth.productIds = res.data;
-                                openDialog.call(booth, res.data);
+                                var booths = res.data;
+                                app.items.forEach(item => {
+                                    var first = booths.first(a => a.id === item.id);
+                                    if (!first) return;
+                                    item.productIds = first.ids;
+                                });
+                                openDialog.call(booth, booth.productIds);
                             })
                             .catch(function (err) { $.alert(err); });
                     } else {
@@ -165,8 +272,7 @@
             })
             .catch(function (err) { $.alert(err); });
     };
-
-
+    
     // 销毁vue对象
     function destroyVue(obj) {
         this.on("hidden.bs.modal", function () {
@@ -175,6 +281,11 @@
             obj = null;
         });
     }
+
+    $(document).on("mouseenter", "a[title!=''], div[title!='']", function () {
+        if (!this.title) return;
+        $(this).tooltip();
+    });
 
 })();
 

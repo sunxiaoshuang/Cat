@@ -454,6 +454,18 @@
     "inputFiles": [
       "wwwroot/js/report/benefit.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/tang.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/tang.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/payment.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/payment.js"
+    ]
   }
 
 ]

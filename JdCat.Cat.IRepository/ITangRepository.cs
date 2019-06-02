@@ -204,5 +204,11 @@ namespace JdCat.Cat.IRepository
         /// <param name="boothId"></param>
         /// <returns></returns>
         Task<List<int>> GetProductIdsByBoothAsync(int boothId);
+        /// <summary>
+        /// 获取商户所有档口所绑定的商品id
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        Task<object> GetProductIdsWithBusinessBoothAsync(int businessId);
     }
 }

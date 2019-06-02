@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "支付备注统计";
+    ViewData["Title"] = "支付方式统计";
 }
 @section Styles {
     <environment include="Development">
@@ -40,10 +40,10 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
     <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
     <environment include="Development">
-        <script src="~/js/report/benefit.js"></script>
+        <script src="~/js/report/payment.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="~/js/report/benefit.min.js" asp-append-version="true"></script>
+        <script src="~/js/report/payment.min.js" asp-append-version="true"></script>
     </environment>
 }
 <div class="mainframe" id="app">
@@ -79,16 +79,15 @@
                     <div class="col-md-6">
                         <p class="text-primary">
                             <span class="fa fa-bars"></span>
-                            支付备注汇总
+                            支付方式汇总
                         </p>
                         <table class="table table-bordered table-striped table-cook">
                             <thead>
                                 <tr>
                                     <th width="80">序号</th>
-                                    <th>备注名称</th>
+                                    <th>支付方式</th>
                                     <th>订单数</th>
-                                    <th>优惠总金额</th>
-                                    <th>优惠前订单总额</th>
+                                    <th>支付金额</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,14 +98,11 @@
                                     <td>
                                         <span class="fa fa-rmb" v-text="+item.amount.toFixed(2)"></span>
                                     </td>
-                                    <td>
-                                        <span class="fa fa-rmb" v-text="+item.orderAmount.toFixed(2)"></span>
-                                    </td>
                                 </tr>
                             </tbody>
                             <tfoot v-if="!items || items.length === 0">
                                 <tr>
-                                    <td colspan="5">没有任何优惠信息...</td>
+                                    <td colspan="4">没有任何优惠信息...</td>
                                 </tr>
                             </tfoot>
                         </table>

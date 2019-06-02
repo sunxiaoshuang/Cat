@@ -83,6 +83,7 @@ namespace JdCat.Cat.Repository
             //var list = query.ToList();
 
             var query = Context.ProductTypes
+                .AsNoTracking()
                 .Include(a => a.Products)
                 .Include("Products.Attributes")
                 .Include("Products.Formats")
@@ -150,6 +151,7 @@ namespace JdCat.Cat.Repository
             //});
 
             var list = Context.ProductTypes
+                .AsNoTracking()
                 .Include(a => a.Products)
                 .Where(a => a.BusinessId == businessId)
                 .Select(a => new { Type = a, Products = a.Products.Where(b => b.Status != ProductStatus.Delete) })
@@ -488,13 +490,14 @@ namespace JdCat.Cat.Repository
         public async Task<object> GetProductTreeAsync(int id, bool isSetMeal = false)
         {
             var types = await Context.ProductTypes
+                .AsNoTracking()
                 .Include(a => a.Products)
                 .Where(a => a.BusinessId == id)
                 .Select(a => new
                 {
                     a.Name,
                     a.ID,
-                    List = a.Products.Where(b => b.Status != ProductStatus.Delete && (isSetMeal || b.Feature != ProductFeature.SetMeal)).Select(b => new { b.Name, b.ID, b.Status })
+                    List = a.Products.Where(b => b.Status != ProductStatus.Delete && (isSetMeal || b.Feature != ProductFeature.SetMeal)).Select(b => new { b.Name, b.ID, b.Status, b.Pinyin, b.FirstLetter, b.Code })
                 }).ToListAsync();
             return types;
         }

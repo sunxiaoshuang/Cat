@@ -51,7 +51,7 @@
             var loadView = function (obj) {
                 var html = template.format(obj);
                 var $modal = $(html).appendTo($body);
-                $modal.modal({ backdrop: "static" });
+                $modal.modal({ backdrop: "static", keyboard: obj.keyboard === undefined ? true : obj.keyboard });
                 $modal.on("hidden.bs.modal", function () {
                     $modal.remove();
                 });
@@ -70,7 +70,7 @@
             };
             $.view = function (name, title, url, template) {
                 var obj = {
-                    title: title, url: url, template: template, name,
+                    title: title, url: url, template: template, name: `modal_${Date.parse(new Date())}`,
                     footDisplay: "none", closeText: "关闭", saveText: "保存", dialogWidth: 600
                 };
                 if (arguments.length === 1) {

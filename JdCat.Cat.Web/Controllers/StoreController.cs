@@ -37,7 +37,6 @@ namespace JdCat.Cat.Web.Controllers
         {
             return View();
         }
-        
         /// <summary>
         /// 获取堂食订单列表
         /// </summary>
@@ -46,9 +45,9 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="endDate"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetOrders([FromQuery]PagingQuery paging, [FromQuery]DateTime? startDate, [FromQuery]DateTime? endDate)
+        public async Task<IActionResult> GetOrders([FromQuery]PagingQuery paging, [FromQuery]DateTime? startDate, [FromQuery]DateTime? endDate, [FromQuery]string code)
         {
-            var list = await Service.GetOrdersAsync(Business.ID, paging, startDate ?? DateTime.Now, endDate ?? DateTime.Now);
+            var list = await Service.GetOrdersAsync(Business.ID, paging, startDate ?? DateTime.Now, endDate ?? DateTime.Now, code);
             return Json(new {
                 rows = list,
                 count = paging.RecordCount
@@ -71,6 +70,34 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> OrderDetail(int id)
         {
             return PartialView(await Service.GetOrderAsync(id));
+        }
+        /// <summary>
+        /// 订单反结账视图
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IActionResult ReservePay()
+        {
+            return PartialView();
+        }
+
+        /// <summary>
+        /// 获取商户支付方式
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetPayments()
+        {
+            return Json(await Service.GetPaymentsAsync(Business.ID));
+        }
+
+        /// <summary>
+        /// 更新订单支付方式
+        /// </summary>
+        /// <param name="payments"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> UpdatePayments([FromBody]IEnumerable<Model.Data.PaymentType> payments)
+        {
+            return null;
         }
 
     }

@@ -28,17 +28,26 @@ namespace JdCat.Cat.Repository
         {
         }
 
-        public async Task<List<TangOrder>> GetOrdersAsync(int businessId, PagingQuery paging, DateTime startTime, DateTime endTime)
+        public async Task<List<TangOrder>> GetOrdersAsync(int businessId, PagingQuery paging, DateTime startTime, DateTime endTime, string code = null)
         {
             var end = endTime.AddDays(1);
             var query = Context.TangOrders.Where(a => a.BusinessId == businessId && a.CreateTime >= startTime && a.CreateTime < end);
+            if(!string.IsNullOrEmpty(code))
+            {
+                query = query.Where(a => a.Code.Contains(code));
+            }
             paging.RecordCount = query.Count();
             return await query.OrderByDescending(a => a.CreateTime).Skip(paging.Skip).Take(paging.PageSize).ToListAsync();
         }
 
         public async Task<TangOrder> GetOrderAsync(int id)
         {
-            return await Context.TangOrders.Include(a => a.TangOrderProducts).FirstOrDefaultAsync(a => a.ID == id);
+            return await Context.TangOrders.Include(a => a.TangOrderProducts).Include(a => a.TangOrderPayments).FirstOrDefaultAsync(a => a.ID == id);
+        }
+
+        public async Task<List<Cat.Model.Data.PaymentType>> GetPaymentsAsync(int id)
+        {
+            return await Context.PaymentTypes.Where(a => a.BusinessId == id && a.Status == EntityStatus.Normal).ToListAsync();
         }
 
         public async Task<List<Report_ProductSale>> GetCooksReportAsync(int businessId, DateTime start, DateTime end)
@@ -329,14 +338,48 @@ namespace JdCat.Cat.Repository
         public async Task<object> GetSingleBenetifDataAsync(int businessId, string name, DateTime start, DateTime end)
         {
             var query = from order in Context.TangOrders
-                        where order.BusinessId == businessId && order.PaymentRemark == name && (order.OrderStatus & TangOrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
+                        where order.BusinessId == businessId && (order.OrderStatus & TangOrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
                         select new
                         {
-                            order.ID, order.Code, order.PayTime, order.Amount, order.ActualAmount
+                            order.ID, order.Code, order.PayTime, order.Amount, order.ActualAmount, order.PaymentRemark
+                        };
+            if (string.IsNullOrEmpty(name))
+            {
+                query = query.Where(a => a.PaymentRemark == "" || a.PaymentRemark == null);
+            }
+            else
+            {
+                query = query.Where(a => a.PaymentRemark == name);
+            }
+            return await query.ToListAsync();
+        }
+
+        public async Task<List<Report_Payment>> GetPaymentDataAsync(int businessId, DateTime start, DateTime end)
+        {
+            var query = from order in Context.TangOrders
+                        join payment in Context.TangOrderPayments on order.ID equals payment.TangOrderId
+                        where order.BusinessId == businessId && (order.OrderStatus & TangOrderStatus.Valid) > 0 && order.PayTime >= start && order.PayTime < end
+                        group payment by new { payment.PaymentTypeId, payment.Name } into g
+                        select new Report_Payment
+                        {
+                            Id = g.Key.PaymentTypeId,
+                            Name = g.Key.Name,
+                            Quantity = g.Count(),
+                            Amount = g.Sum(a => a.Amount)
                         };
             return await query.ToListAsync();
         }
 
+        public async Task<object> GetSinglePaymentDataAsync(int id, DateTime start, DateTime end)
+        {
+            var query = from order in Context.TangOrders
+                        join payment in Context.TangOrderPayments on order.ID equals payment.TangOrderId
+                        where payment.PaymentTypeId == id && (order.OrderStatus & TangOrderStatus.Valid) > 0 && order.PayTime >= start && order.PayTime < end
+                        group order by new { order.ID, order.Code, order.PayTime, order.Amount, order.ActualAmount } into g
+                        select g.Key;
+
+            return await query.ToListAsync();
+        }
 
     }
 }

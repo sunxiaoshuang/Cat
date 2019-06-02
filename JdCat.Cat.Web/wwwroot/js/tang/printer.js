@@ -243,7 +243,10 @@
                 selectProduct = function (printer) {
                     var vueObj, typeList = JSON.parse(JSON.stringify(types)), productList = [], allProducts = [];
                     typeList.forEach(function (type) { allProducts = allProducts.concat(type.list); });
-                    allProducts.forEach(function (product) { product.checked = false; });
+                    allProducts.forEach(function (product) {
+                        product.checked = false;
+                        product.selected = false;
+                    });
                     if (printer.foodIds) {
                         JSON.parse(printer.foodIds).forEach(function (id) {
                             var product = allProducts.first(function (item) { return item.id === id; });
@@ -257,14 +260,92 @@
                         footDisplay: "block",
                         template,
                         dialogWidth: 800,
+                        keyboard: false,
                         load: function () {
                             vueObj = new Vue({
                                 el: "#bindPrinter",
                                 data: {
-                                    typeList,
-                                    productList
+                                    typeList, products: allProducts,
+                                    productList,
+                                    search: {
+                                        key: "",
+                                        result: [],
+                                        boxHeight: 0
+                                    }
+                                },
+                                watch: {
+                                    'search.key': function (key) {
+                                        this.seek(key);
+                                    }
                                 },
                                 methods: {
+                                    focus: function () {
+                                        this.seek(this.search.key);
+                                    },
+                                    blur: function () {
+                                        this.search.boxHeight = 0;
+                                    },
+                                    seek: function (key) {
+                                        if (!key) {
+                                            this.search.result = [];
+                                            this.search.boxHeight = "0";
+                                            return;
+                                        }
+                                        this.search.boxHeight = "120px";
+                                        this.products.forEach(a => a.selected = false);
+                                        this.search.result = this.products
+                                            .filter(a => a.name.indexOf(key) > -1 || a.code.indexOf(key) > -1 || a.pinyin.indexOf(key) > -1 || a.firstLetter.indexOf(key) > -1)
+                                            .slice(0, 8);
+                                    },
+                                    down: function () {
+                                        var self = this;
+                                        this.move(function (index) {
+                                            if (index === self.search.result.length - 1) {
+                                                index = 0;
+                                            } else {
+                                                index++;
+                                            }
+                                            return index;
+                                        });
+                                    },
+                                    up: function () {
+                                        var self = this;
+                                        this.move(function (index) {
+                                            if (index === 0) {
+                                                index = self.search.result.length - 1;
+                                            } else {
+                                                if (index === -1) {
+                                                    index = 0;
+                                                } else {
+                                                    index--;
+                                                }
+                                            }
+                                            return index;
+                                        });
+                                    },
+                                    enter: function () {
+                                        var products = this.search.result.filter(a => a.selected);
+                                        if (products.length === 0) return;
+                                        this.clickItem(products[0]);
+                                    },
+                                    clear: function () {
+                                        this.search.key = "";
+                                    },
+                                    move: function (callback) {
+                                        if (this.search.result.length === 0) return;
+                                        var selected, index;
+                                        var selecteds = this.search.result.filter(a => a.selected);
+                                        if (selecteds.length > 0) selected = selecteds[0];
+                                        index = this.search.result.indexOf(selected);
+                                        index = callback(index);
+                                        selecteds.forEach(a => a.selected = false);
+                                        this.search.result[index].selected = true;
+                                    },
+                                    clickItem: function (product) {
+                                        if (product.checked) return;
+                                        product.checked = true;
+                                        this.productList.push(product);
+                                    },
                                     open: function (type) {
                                         type.checked = !type.checked;
                                     },
@@ -279,6 +360,8 @@
                                     }
                                 }
                             });
+                            
+                            destroyVue.call(this, vueObj);
                         },
                         submit: function () {
                             var foodIds = JSON.stringify(vueObj.productList.map(function (obj) { return obj.id; }));

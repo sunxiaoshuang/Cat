@@ -2299,3 +2299,50 @@ ul.tree a.selected, ul.leaf a.selected {
         padding: 3px;
         text-decoration: none;
     }
+
+.search-container {
+    position: absolute;
+    top: 34px;
+    height: 0;
+    min-height: 0;
+    width: 100%;
+    z-index: 100;
+    background: #fff;
+    transition: .3s all;
+    overflow: hidden;
+}
+
+    .search-container .search-box {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        min-height: 100px;
+        width: 100%;
+        border: solid #ccc 1px;
+        box-shadow: 0 0 10px 0 #555;
+    }
+
+    .search-container .search-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: 80px;
+        height: 80px;
+        padding: 5px;
+        border: #ccc solid 1px;
+        margin: 5px;
+    }
+.search-item.binded {
+    background-color: #0e933e;
+    border-color: #0e933e;
+    color: #fff;
+}
+.search-item.checked {
+    background-color: #ea7042;
+    border-color: #ea7042;
+    color: #fff;
+}
+.search-item.selected {
+    background-color: #ccc;
+}

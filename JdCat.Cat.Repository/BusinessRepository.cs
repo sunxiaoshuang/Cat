@@ -350,6 +350,40 @@ namespace JdCat.Cat.Repository
 
         }
 
+        /// <summary>
+        /// 获取指定日期的销售统计数据（堂食）
+        /// </summary>
+        /// <param name="business"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public async Task<List<Report_SaleStatisticsTang>> GetSaleStatisticsTangAsync(Business business, DateTime start, DateTime end)
+        {
+            var startTime = new DateTime(start.Year, start.Month, start.Day);
+            var endTime = new DateTime(end.Year, end.Month, end.Day).AddDays(1);
+
+            var query1 = from order in Context.TangOrders
+                        where order.BusinessId == business.ID && order.Status == EntityStatus.Normal && (order.OrderStatus & TangOrderStatus.Finish) > 0 && order.PayTime >= startTime && order.PayTime < endTime
+                         select new { PayTime = order.PayTime.HasValue ? order.PayTime.Value.ToString("yyyy-MM-dd") : null, order.OriginalAmount, order.Amount, order.ActualAmount, order.MealFee, order.PreferentialAmount };
+            var query2 = from order in query1
+                         group order by order.PayTime into g
+                         select new Report_SaleStatisticsTang
+                         {
+                             Date = g.Key,
+                             Quantity = g.Count(),
+                             GoodAmount = g.Sum(a => a.OriginalAmount - a.MealFee),
+                             ActualGoodAmount = g.Sum(a => a.Amount - a.MealFee),
+                             MealFee = g.Sum(a => a.MealFee),
+                             GoodDiscountAmount = g.Sum(a => a.OriginalAmount - a.Amount),
+                             OrderDiscountAmount = g.Sum(a => a.Amount - a.ActualAmount - a.PreferentialAmount),
+                             PreferentialAmount = g.Sum(a => a.PreferentialAmount),
+                             Amount = g.Sum(a => a.OriginalAmount),
+                             ActualAmount = g.Sum(a => a.ActualAmount)
+                         };
+
+            return await query2.ToListAsync();
+        }
+
         public SaleFullReduce GetFullReduceById(int id)
         {
             return Context.SaleFullReduces.Single(a => a.ID == id);

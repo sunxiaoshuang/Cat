@@ -108,6 +108,24 @@
         this.splice(i, 1, entity);
         return this;
     };
+    Array.prototype.sum = function (fn) {
+        var total = 0;
+        this.forEach(function (obj) {
+            total += fn(obj);
+        });
+        return total;
+    };
+    Array.prototype.group = function (fn) {
+        var groups = [];
+        this.forEach(function (obj) {
+            var key = fn(obj);
+            var group = groups.first(a => a.key === key) || { key, list: [] };
+            group.list.push(obj);
+            if (groups.indexOf(group) > -1) return;
+            groups.push(group);
+        });
+        return groups;
+    };
 
     // Vue过滤器
     if (Vue) {

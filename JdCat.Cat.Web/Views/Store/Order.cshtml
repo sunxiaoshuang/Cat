@@ -29,7 +29,7 @@
             <div class="panel panel-default" style="margin-bottom: 1px;">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <span class="title">今日订单</span>
+                        <span class="title">堂食订单</span>
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -39,6 +39,8 @@
                             <input autocomplete="off" class="form-control width-200" id="txtStartDate" v-model="startDate" />
                             <label style="width: 30px; text-align: center;">-</label>
                             <input autocomplete="off" class="form-control width-200" id="txtEndDate" v-model="endDate" />
+                            <label class="margin-left-20">订单编号：</label>
+                            <input autocomplete="off" class="form-control width-200" v-model="code" />
                             <button class="btn btn-primary margin-left-20" @@click="search()">
                                 <i class="fa fa-search"></i>
                                 搜索
@@ -58,13 +60,13 @@
                                 <th>餐台</th>
                                 <th>服务员</th>
                                 <th width="80">用餐人数</th>
-                                <th>支付方式</th>
+                                @*<th>支付方式</th>*@
                                 <th>支付时间</th>
                                 <th width="100">订单状态</th>
                                 <th>餐位费</th>
-                                <th>订单金额</th>
-                                <th>优惠金额</th>
-                                <th width="80"></th>
+                                <th>实收金额</th>
+                                @*<th>优惠金额</th>*@
+                                <th width="120"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -75,26 +77,27 @@
                                 <td v-text="item.deskName"></td>
                                 <td v-text="item.staffName"></td>
                                 <td v-text="item.peopleNumber"></td>
-                                <td v-text="item.paymentTypeName"></td>
+                                @*<td v-text="item.paymentTypeName"></td>*@
                                 <td v-text="item.payTime"></td>
                                 <td v-html="orderStatus(item.orderStatus)"></td>
                                 <td>
                                     <span class="fa fa-rmb" v-text="item.mealFee"></span>
                                 </td>
                                 <td>
-                                    <span class="fa fa-rmb" v-text="item.amount"></span>
+                                    <span class="fa fa-rmb" v-text="item.actualAmount"></span>
                                 </td>
-                                <td>
+                                @*<td>
                                     <span class="fa fa-rmb" v-text="item.preferentialAmount"></span>
-                                </td>
+                                </td>*@
                                 <td>
                                     <a @@click="catInfo(item)" class="text-primary">查看</a>
+                                    <a @@click="reversePay(item)" class="text-primary margin-left-20">反结账</a>
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot v-if="items == null || items.length == 0">
                             <tr>
-                                <th colspan="13">暂无任何订单数据...</th>
+                                <th colspan="11">暂无任何订单数据...</th>
                             </tr>
                         </tfoot>
                     </table>

@@ -189,6 +189,17 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end);
 
+        /// <summary>
+        /// 获取指定日期的销售统计数据（堂食）
+        /// </summary>
+        /// <param name="business"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<List<Report_SaleStatisticsTang>> GetSaleStatisticsTangAsync(Business business, DateTime start, DateTime end);
+
+
+
         #endregion
 
         #region 营销类方法

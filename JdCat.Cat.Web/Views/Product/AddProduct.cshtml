@@ -3,6 +3,18 @@
 }
 
 @section Styles {
+    <style>
+        th, td {
+            text-align: center;
+        }
+
+        ul.product a.selected {
+            color: #ff6a00;
+            border: 1px solid #ff6a00;
+            border-radius: 5px;
+            padding: 3px;
+        }
+    </style>
     <environment include="Development">
         <link href="~/css/sale/discount.css" rel="stylesheet" />
     </environment>
@@ -70,6 +82,14 @@
                     </label>
                     <div class="col-xs-6">
                         <input type="text" maxlength="30" v-model.trim="entity.name" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-1">
+                        商品编号
+                    </label>
+                    <div class="col-xs-6">
+                        <label v-text="entity.code" class="control-label"></label>
                     </div>
                 </div>
                 <div class="form-group">

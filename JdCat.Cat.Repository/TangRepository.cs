@@ -319,6 +319,16 @@ namespace JdCat.Cat.Repository
             return await Context.BoothProductRelatives.Where(a => a.StoreBoothId == boothId).Select(a => a.ProductId).ToListAsync();
         }
 
+        public async Task<object> GetProductIdsWithBusinessBoothAsync(int businessId)
+        {
+            return await Context.StoreBooths
+                .AsNoTracking()
+                .Include(a => a.BoothProductRelatives)
+                .Where(a => a.BusinessId == businessId)
+                .Select(a => new { a.ID, Ids = a.BoothProductRelatives.Select(b => b.ProductId).ToList() })
+                .ToListAsync();
+        }
+
 
         /// <summary>
         /// 获取最大员工编号

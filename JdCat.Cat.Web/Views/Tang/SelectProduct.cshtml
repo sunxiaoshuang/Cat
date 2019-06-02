@@ -1,10 +1,27 @@
 ﻿<div class="container-fluid" id="bindPrinter">
+    <div class="row" style="position: relative; margin-bottom: 10px;">
+
+        <p class="text-primary pull-left">注：最多显示8个搜索结果...</p>
+        <div class="pull-right" style="width: 250px;">
+            <div class="input-group">
+                <input type="text" class="form-control" v-model="search.key" @@keyup.esc="clear()" @@keyup.enter="enter()" @@keyup.up="up()" @@keyup.down="down()" @@blur="blur()" @@focus="focus()" placeholder="商品搜索..." />
+                <span class="input-group-addon">
+                    <i class="fa fa-search"></i>
+                </span>
+            </div>
+        </div>
+        <div class="search-container" v-bind:style="{'min-height': search.boxHeight}">
+            <div class="search-box">
+                <div class="search-item" v-for="item in search.result" v-bind:class="{'selected': item.selected, 'checked': item.checked}" v-text="item.name" @@click="clickItem(item)">
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-xs-12">
-            <p class="text-primary">注：套餐商品不单独绑定打印机，请勾选对应的套餐单品。</p>
+            <p class="text-primary small">PS：套餐商品不单独绑定打印机，请勾选对应的套餐单品。</p>
         </div>
         <div class="col-xs-6">
-            
             <ul class="list type">
                 <li v-for="item in typeList" @@click="open(item)">
                     <i class="fa fa-folder-o" v-bind:class="item.checked ? 'fa-folder-open-o' : 'fa-folder-o'"></i>

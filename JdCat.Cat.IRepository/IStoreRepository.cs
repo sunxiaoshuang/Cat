@@ -22,13 +22,19 @@ namespace JdCat.Cat.IRepository
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
         /// <returns></returns>
-        Task<List<TangOrder>> GetOrdersAsync(int businessId, PagingQuery paging, DateTime startDate, DateTime endDate);
+        Task<List<TangOrder>> GetOrdersAsync(int businessId, PagingQuery paging, DateTime startDate, DateTime endDate, string code = null);
         /// <summary>
         /// 获取订单
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         Task<TangOrder> GetOrderAsync(int id);
+        /// <summary>
+        /// 获取商户支付方式
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<List<Model.Data.PaymentType>> GetPaymentsAsync(int id);
         /// <summary>
         /// 获取商户厨师报表
         /// </summary>
@@ -142,5 +148,21 @@ namespace JdCat.Cat.IRepository
         /// <param name="end"></param>
         /// <returns></returns>
         Task<object> GetSingleBenetifDataAsync(int businessId, string name, DateTime start, DateTime end);
+        /// <summary>
+        /// 获取商户支付方式汇总数据
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<List<Report_Payment>> GetPaymentDataAsync(int businessId, DateTime start, DateTime end);
+        /// <summary>
+        /// 获取单个支付方式所关联的订单
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<object> GetSinglePaymentDataAsync(int id, DateTime start, DateTime end);
     }
 }

@@ -34,6 +34,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 支付备注
         /// </summary>
-        PayRemark = 7
+        PayRemark = 7,
+        /// <summary>
+        /// 单品备注
+        /// </summary>
+        GoodRemark = 8
     }
 }

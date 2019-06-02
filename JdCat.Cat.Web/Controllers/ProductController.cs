@@ -154,7 +154,7 @@ namespace JdCat.Cat.Web.Controllers
         [HttpGet]
         public IActionResult SelectProduct()
         {
-            return View();
+            return PartialView();
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace JdCat.Cat.Web.Controllers
                 {
                     a.ID,
                     a.Name,
-                    Products = a.Products.Select(b => new { b.ID, b.Name }).ToList()
+                    Products = a.Products.Select(b => new { b.ID, b.Name, b.Pinyin, b.FirstLetter, b.Code }).ToList()
                 });
             return Json(types);
         }

@@ -41,14 +41,6 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public double PreferentialAmount { get; set; }
         /// <summary>
-        /// 收到的金额
-        /// </summary>
-        public double ReceivedAmount { get; set; }
-        /// <summary>
-        /// 找赎
-        /// </summary>
-        public double GiveAmount { get; set; }
-        /// <summary>
         /// 用餐人数
         /// </summary>
         public int PeopleNumber { get; set; }
@@ -80,18 +72,22 @@ namespace JdCat.Cat.Model.Data
         /// 订单类别
         /// </summary>
         public OrderMode OrderMode { get; set; }
-        /// <summary>
-        /// 支付方式id（远程）
-        /// </summary>
-        public int PaymentTypeId { get; set; }
-        /// <summary>
-        /// 支付方式名称
-        /// </summary>
-        public string PaymentTypeName { get; set; }
+        ///// <summary>
+        ///// 支付方式id（远程）
+        ///// </summary>
+        //public int PaymentTypeId { get; set; }
+        ///// <summary>
+        ///// 支付方式名称
+        ///// </summary>
+        //public string PaymentTypeName { get; set; }
+        ///// <summary>
+        ///// 支付方式
+        ///// </summary>
+        //public virtual PaymentType PaymentType { get; set; }
         /// <summary>
         /// 支付方式
         /// </summary>
-        public virtual PaymentType PaymentType { get; set; }
+        public virtual ICollection<TangOrderPayment> TangOrderPayments { get; set; }
         /// <summary>
         /// 支付时间
         /// </summary>

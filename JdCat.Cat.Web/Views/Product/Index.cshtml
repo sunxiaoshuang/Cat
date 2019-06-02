@@ -152,7 +152,7 @@
                                 </div>
                                 <div class="product-data">
                                     <div class="product-name">
-                                        <span style="font-size: 16px;font-weight:800;" v-text="product.name"></span>
+                                        <span style="font-size: 16px;font-weight:800;" v-text="product.name + '（' + product.code + '）'"></span>
                                     </div>
                                     <div class="product-format">
                                         <ul class="list-group">
@@ -200,8 +200,8 @@
                                     </p>
                                     <p style="display:flex; height: 25px">
                                         <span style="line-height:1.1;">
-                                            <span class="bold">是否参与订单折扣活动（堂食）：</span>
-                                            <span v-html="product.isDiscount ? '参与' : '不参与'"></span>
+                                            <span class="bold">是否打折（堂食）：</span>
+                                            <span v-html="product.isDiscount ? '是' : '否'"></span>
                                         </span>
                                     </p>
                                 </div>

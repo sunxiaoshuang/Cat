@@ -36,7 +36,8 @@ namespace JdCat.Cat.Repository
                 item.SyncTime = DateTime.Now;
                 if (item.ID > 0)
                 {
-                    Context.Attach(item).State = EntityState.Modified;
+                    // 已经上传过的数据，不再更新
+                    //Context.Attach(item).State = EntityState.Modified;
                 }
                 else
                 {
@@ -67,7 +68,7 @@ namespace JdCat.Cat.Repository
 
         public int UploadOrderProducts(IEnumerable<TangOrderProduct> list)
         {
-            var orderIds = list.Select(a => a.OrderObjectId).ToList();
+            var orderIds = list.Select(a => a.OrderObjectId).ToList().Distinct();
             var orders = Context.TangOrders.Where(a => orderIds.Contains(a.ObjectId)).Select(a => new { a.ID, a.ObjectId }).ToList();
             orders.ForEach(order => {
                 var products = list.Where(a => a.OrderObjectId == order.ObjectId).ToList();
@@ -75,6 +76,23 @@ namespace JdCat.Cat.Repository
             });
             return UploadData(list);
         }
+
+        public int UploadOrderPayments(IEnumerable<TangOrderPayment> list)
+        {
+            var orderIds = list.Select(a => a.OrderObjectId).ToList().Distinct();
+            var orders = Context.TangOrders.Where(a => orderIds.Contains(a.ObjectId)).Select(a => new { a.ID, a.ObjectId }).ToList();
+            orders.ForEach(order => {
+                var payments = list.Where(a => a.OrderObjectId == order.ObjectId).ToList();
+                payments.ForEach(a => 
+                {
+                    a.TangOrderId = order.ID;
+                    a.ID = 0;
+                });
+            });
+            Context.Database.ExecuteSqlCommand($"delete from tangorderpayment where TangOrderId in ({string.Join(',', orders.Select(a => a.ID))})");
+            return UploadData(list);
+        }
+
 
         public async Task<dynamic> GetSynchronousDataAsync(int businessId)
         {
@@ -108,6 +126,7 @@ namespace JdCat.Cat.Repository
             data.BoothProductRelatives = await Context.BoothProductRelatives.AsNoTracking().Where(a => boothIds.Contains(a.StoreBoothId)).ToListAsync();
             return data;
         }
+
 
     }
 }
