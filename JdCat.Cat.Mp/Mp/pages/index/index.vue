@@ -33,10 +33,22 @@
 			return {
 				openid: '', 
 				title: '功能',
-				data1: [{
+				data1: [
+					{
+						image: '/static/shangdian.png',
+						text: '商户信息',
+						url: '/pages/store/store'
+					},
+					{
 						image: '/static/menu.png',
-						text: '我的商品'
-					}
+						text: '我的商品',
+						url: '/pages/product/product'
+					},
+					// {
+					// 	image: '/static/yingye-cny.png',
+					// 	text: '营业统计',
+					// 	url: '/pages/orderTotal/orderTotal'
+					// }
 				],
 				index: 0,
 				array: [{name: '', id: 0}],
@@ -71,8 +83,9 @@
 					})
 					return;
 				}
+				var url = this.data1[e.index].url;
 				uni.navigateTo({
-					url: '/pages/product/product?id=' + this.businessId
+					url: `${url}?id=` + this.businessId
 				});
 			},
 			bindPickerChange(e){

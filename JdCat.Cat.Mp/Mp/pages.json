@@ -6,13 +6,25 @@
 				"navigationBarTitleText": "首页"
 			}
 		},
+	    {
+            "path" : "pages/store/store",
+            "style" : {
+				"navigationBarTitleText": "商户信息"
+			}
+        },
 		{
 			"path": "pages/product/product",
 			"style": {
 				"navigationBarTitleText": "我的商品"
 			}
 		}
-	],
+        ,{
+            "path" : "pages/orderTotal/orderTotal",
+            "style" : {
+				"navigationBarTitleText": "营业统计"
+			}
+        }
+    ],
     "condition": { //模式配置，仅开发期间生效
         "current": 0, //当前激活的模式（list 的索引项）
         "list": [{

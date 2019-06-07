@@ -217,7 +217,7 @@
                 this.timeList.push({ startHour: start[0], startMinus: start[1], endHour: end[0], endMinus: end[1] });
             }
             // 初始化所属城市
-            axios.get("/data/city.json")
+            axios.get("/data/city2.json")
                 .then(function (res) {
                     cityJson = res.data;
                     for (var key in cityJson) {
@@ -235,7 +235,7 @@
                         }
                     }
                 })
-                .catch(function (err) { $.alert(err); });
+                .catch(function (err) { $.alert("所属城市区域加载错误，请重新选择"); });
         },
         watch: {
             "entity.province": function (val) {

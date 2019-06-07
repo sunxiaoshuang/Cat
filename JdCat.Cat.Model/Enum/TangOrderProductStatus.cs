@@ -29,6 +29,10 @@ namespace JdCat.Cat.Model.Data
         /// 退菜商品
         /// </summary>
         Return = 16,
+        /// <summary>
+        /// 反结账添加
+        /// </summary>
+        AddReserve = 32,
 
         /// <summary>
         /// 可累加

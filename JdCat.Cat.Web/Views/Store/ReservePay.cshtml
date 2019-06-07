@@ -139,13 +139,13 @@
         </span>
     </div>
     <div class="form-group">
-        <div class="col-xs-11">
+        <div class="col-xs-12">
             <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th colspan="6" style="position: relative; text-align: center">
                             订单商品
-                            <a class="text-primary pull-right" @@click="">
+                            <a class="text-primary pull-right" @@click="add()">
                                 <i class="fa fa-plus">添加</i>
                             </a>
                         </th>
@@ -162,14 +162,15 @@
                 <tbody>
                     <tr v-for="item in entity.tangOrderProducts">
                         <td>
-                            <span v-text="item.name"></span>
+                            <span>{{item.name}}</span>
+                            <span style="color: red" v-if="item.productStatus === 16">（已退货）</span>
                         </td>
-                        <td v-text="item.description"></td>
-                        <td v-text="item.Remark"></td>
-                        <td v-text="item.amount"></td>
-                        <td v-text="item.quantity"></td>
+                        <td>{{item.description}}</td>
+                        <td>{{item.remark}}</td>
+                        <td>{{item.amount}}</td>
+                        <td>{{item.quantity}}</td>
                         <td>
-                            <a @@click.prevent="" class="text-primary">修改</a>
+                            <a v-if="item.productStatus !== 16" @@click.prevent="ret(item)" class="text-primary">退货</a>
                         </td>
                     </tr>
                 </tbody>

@@ -32,7 +32,7 @@ namespace JdCat.Cat.Repository
         {
             var end = endTime.AddDays(1);
             var query = Context.TangOrders.Where(a => a.BusinessId == businessId && a.CreateTime >= startTime && a.CreateTime < end);
-            if(!string.IsNullOrEmpty(code))
+            if (!string.IsNullOrEmpty(code))
             {
                 query = query.Where(a => a.Code.Contains(code));
             }
@@ -48,6 +48,50 @@ namespace JdCat.Cat.Repository
         public async Task<List<Cat.Model.Data.PaymentType>> GetPaymentsAsync(int id)
         {
             return await Context.PaymentTypes.Where(a => a.BusinessId == id && a.Status == EntityStatus.Normal).ToListAsync();
+        }
+        public async Task UpdateOrderPaymentsAsync(int id, IEnumerable<TangOrderPayment> payments)
+        {
+            var ids = payments.Select(a => a.ID).Distinct().ToList();
+            var items = await Context.TangOrderPayments.Where(a => a.TangOrderId == id).ToListAsync();
+            var removeItems = items.Where(a => !ids.Contains(a.ID));
+            if (removeItems.Count() > 0)
+            {
+                Context.TangOrderPayments.RemoveRange(removeItems);
+            }
+            foreach (var payment in payments.Where(a => a.ID > 0))
+            {
+                var item = items.FirstOrDefault(a => a.ID == payment.ID);
+                if (item == null) continue;
+                item.Amount = payment.Amount;
+                item.ModifyTime = DateTime.Now;
+                item.Name = payment.Name;
+
+                item.PaymentTypeId = payment.PaymentTypeId;
+                item.PaymentTypeObjectId = payment.PaymentTypeObjectId;
+            }
+            foreach (var payment in payments.Where(a => a.ID == 0))
+            {
+                payment.ModifyTime = DateTime.Now;
+                payment.Status = EntityStatus.Normal;
+                Context.Add(payment);
+            }
+            await Context.SaveChangesAsync();
+        }
+        public async Task<object> GetSimpleStoreProductsAsync(int id)
+        {
+            var query = from product in Context.Products
+                        join format in Context.ProductFormats on product.ID equals format.ProductId
+                        where product.BusinessId == id && product.Status != ProductStatus.Delete && (product.Scope & ActionScope.Store) > 0
+                        group format by new { product.ID, product.Name, product.Code, product.Pinyin, product.FirstLetter, product.ProductIdSet } into g
+                        select new { g.Key.ID, g.Key.Name, g.Key.Code, g.Key.Pinyin, g.Key.FirstLetter, g.Key.ProductIdSet, Format = g.Select(a => new { a.ID, a.Name, a.Price }) };
+            return await query.ToListAsync();
+        }
+        public async Task<TangOrderProduct> RetTangProductAsync(TangOrderProduct product)
+        {
+            product.ProductStatus = TangOrderProductStatus.Return;
+            Context.Attach(product).Property(a => a.ProductStatus).IsModified = true;
+            await Context.SaveChangesAsync();
+            return product;
         }
 
         public async Task<List<Report_ProductSale>> GetCooksReportAsync(int businessId, DateTime start, DateTime end)
@@ -341,7 +385,12 @@ namespace JdCat.Cat.Repository
                         where order.BusinessId == businessId && (order.OrderStatus & TangOrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
                         select new
                         {
-                            order.ID, order.Code, order.PayTime, order.Amount, order.ActualAmount, order.PaymentRemark
+                            order.ID,
+                            order.Code,
+                            order.PayTime,
+                            order.Amount,
+                            order.ActualAmount,
+                            order.PaymentRemark
                         };
             if (string.IsNullOrEmpty(name))
             {

@@ -13,6 +13,19 @@ const request = function(obj){
 	uni.request(obj);
 }
 
+const extend = function(obj, ...objArr){
+	objArr.forEach(a => {
+		for(var key in a) {
+			obj[key] = a[key];
+		}
+	});
+	return obj;
+}
+
+const firstLetterUpper = function (str) {
+	return str.slice(0, 1).toUpperCase() + str.slice(1);
+}
+
 export default {  
-    request
+    request, extend, firstLetterUpper
 }  

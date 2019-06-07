@@ -95,9 +95,51 @@ namespace JdCat.Cat.Web.Controllers
         /// </summary>
         /// <param name="payments"></param>
         /// <returns></returns>
-        public async Task<IActionResult> UpdatePayments([FromBody]IEnumerable<Model.Data.PaymentType> payments)
+        public async Task<IActionResult> UpdatePayments(int id, [FromBody]IEnumerable<TangOrderPayment> payments)
         {
-            return null;
+            await Service.UpdateOrderPaymentsAsync(id, payments);
+            return Json(payments);
+        }
+        /// <summary>
+        /// 获取堂食菜单（简单版）
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetSimpleStoreProducts()
+        {
+            return Json(await Service.GetSimpleStoreProductsAsync(Business.ID));
+        }
+        /// <summary>
+        /// 反结账时，新增商品
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> IncreaseOrderProduct([FromBody]TangOrderProduct product)
+        {
+            product.ProductStatus = TangOrderProductStatus.AddReserve;
+            product.Status = EntityStatus.Normal;
+            await Service.AddAsync(product);
+            var order = await Service.GetAsync<TangOrder>(product.OrderId);
+            order.ActualAmount += product.Amount;
+            order.Amount += product.Amount;
+            order.OriginalAmount += product.Amount;
+            await Service.CommitAsync();
+            return Json(new {
+                order, product
+            });
+        }
+        /// <summary>
+        /// 订单商品退货
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> RetTangProduct([FromBody]TangOrderProduct product)
+        {
+            await Service.RetTangProductAsync(product);
+            var order = await Service.GetAsync<TangOrder>(product.OrderId);
+            order.ActualAmount -= product.Amount;
+            order.Amount -= product.Amount;
+            order.OriginalAmount -= product.Amount;
+            await Service.CommitAsync();
+            return Json(order);
         }
 
     }

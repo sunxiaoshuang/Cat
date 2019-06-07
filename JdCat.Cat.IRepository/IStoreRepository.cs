@@ -36,6 +36,27 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Task<List<Model.Data.PaymentType>> GetPaymentsAsync(int id);
         /// <summary>
+        /// 更新订单支付方式
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="payments"></param>
+        /// <returns></returns>
+        Task UpdateOrderPaymentsAsync(int id, IEnumerable<TangOrderPayment> payments);
+        /// <summary>
+        /// 获取堂食菜单（简单版）
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<object> GetSimpleStoreProductsAsync(int id);
+        /// <summary>
+        /// 订单商品退货
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        Task<TangOrderProduct> RetTangProductAsync(TangOrderProduct product);
+
+
+        /// <summary>
         /// 获取商户厨师报表
         /// </summary>
         /// <param name="businessId"></param>

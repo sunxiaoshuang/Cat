@@ -1087,6 +1087,7 @@ Page({
         data: cartClone,
         success: function (res) {
           self.getCart(cart).id = res.data;
+          wx.setStorageSync("cartList", self.data.cartList);
         },
         fail: function (error) {
           util.showModel("错误", "请求错误，请检查网络连接");

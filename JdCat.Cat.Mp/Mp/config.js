@@ -1,4 +1,4 @@
-const apiUrl = 'http://mpapi.whliupangzi.cn/api';
+const apiUrl = 'http://mpapi.jiandanmao.cn/api';
 const openid = '';
 
 export default {  

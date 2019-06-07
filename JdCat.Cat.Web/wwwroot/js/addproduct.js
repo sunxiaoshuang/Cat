@@ -330,7 +330,8 @@
                     this.seek(this.search.key);
                 },
                 blur: function () {
-                    this.search.boxHeight = 0;
+                    var self = this;
+                    setTimeout(function () { self.search.boxHeight = 0; }, 200);
                 },
                 seek: function (key) {
                     if (!key) {
