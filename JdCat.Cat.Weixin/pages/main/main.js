@@ -112,7 +112,7 @@ Page({
       this.initComment();
 
       qcloud.request({
-        url: `/business/init/${business.id}?userId=${user.id}`,
+        url: `/business/init2/${business.id}?userId=${user.id}`,
         method: "GET",
         success: function (res) {
           // 商户满减活动
@@ -126,11 +126,9 @@ Page({
           self.data.myCoupon = myCoupon; // 用户优惠券
           self.data.unreceived = unreceived; // 未领取的优惠券
           self.data.discount = res.data.discount; // 商品折扣券
-          self.data.cartList = res.data.carts; // 用户购物车
           self.data.freights = res.data.freights; // 商户运费配置
           self.data.initLoaded = true; // 标识数据初始化完成
           wx.setStorageSync("myCoupon", myCoupon); // 将用户优惠券缓存起来
-          wx.setStorageSync("cartList", self.data.cartList); // 将用户购物车写入缓存
           wx.setStorageSync("freights", self.data.freights); // 将配送费用写入缓存
           if (couponList.length > 0) {
             self.couponHandler();
@@ -146,7 +144,7 @@ Page({
       var now = Date.now(),
         lastTime = this.data.refreshTime,
         second = Math.floor((now - lastTime) / 1000),
-        orderSubmit = wx.getStorageSync('orderSubmit');
+        orderSubmit = wx.getStorageSync('orderSubmit');   // 是否是提交订单后进入点餐页面
       if (second >= 20 || orderSubmit) {
         // 如果距上次刷新时间已过去20秒或者提交过订单，则重新加载商户信息与菜单
         this.data.refreshTime = now;
@@ -175,7 +173,7 @@ Page({
 
     // 加载菜单类别及产品
     qcloud.request({
-      url: "/product/menus/" + business.id,
+      url: "/product/menus2/" + business.id,
       method: "GET",
       success: function (res) {
         var menuArr = [];
@@ -231,11 +229,9 @@ Page({
       productList = this.data.productList,
       self = this,
       cartList = wx.getStorageSync("cartList") || [],
-      cartQuantity = 0,
       packagePrice = 0,
       format,
       existCart = []; // 存储购物车与商品可以匹配的记录
-    this.data.cartList = cartList;
     // 商品与折扣券关联
     this.discountHandler();
     // 商品与购物车关联
@@ -254,6 +250,9 @@ Page({
         self.cartHandlerForSingle(obj);
       });
     }
+    this.data.cartList = existCart;
+    wx.setStorageSync("cartList", existCart);
+
     this.cartHandlerForAll();
 
     // 根据购物车，计算营销文本展示
@@ -349,34 +348,34 @@ Page({
       });
     }
   },
-  // 重新加载单个购物车的价格与名称（购物车加载，更新时均需要执行）
-  reloadCart: function (cart) {
-    var product = cart.product,
-      format = cart.format,
-      discount = product.discount;
-    cart.name = product.name;
-    if (discount) {
-      var oldQuantity = cart.quantity - discount.upperLimit, // 原价商品数量
-        amount = 0,
-        oldPrice = cart.quantity * discount.oldPrice;
-      if (oldQuantity > 0) {
-        amount += discount.upperLimit * discount.price;
-        amount += oldQuantity * discount.oldPrice;
-        cart.discountProductQuantity = discount.upperLimit;
-      } else {
-        amount = cart.quantity * discount.price;
-        cart.discountProductQuantity = cart.quantity;
-      }
+  // // 重新加载单个购物车的价格与名称（购物车加载，更新时均需要执行）
+  // reloadCart: function (cart) {
+  //   var product = cart.product,
+  //     format = cart.format,
+  //     discount = product.discount;
+  //   cart.name = product.name;
+  //   if (discount) {
+  //     var oldQuantity = cart.quantity - discount.upperLimit, // 原价商品数量
+  //       amount = 0,
+  //       oldPrice = cart.quantity * discount.oldPrice;
+  //     if (oldQuantity > 0) {
+  //       amount += discount.upperLimit * discount.price;
+  //       amount += oldQuantity * discount.oldPrice;
+  //       cart.discountProductQuantity = discount.upperLimit;
+  //     } else {
+  //       amount = cart.quantity * discount.price;
+  //       cart.discountProductQuantity = cart.quantity;
+  //     }
 
-      cart.price = qcloud.utils.getNumber(amount, 2);
-      cart.saleProductDiscountId = discount.id;
-      cart.oldPrice = oldPrice;
-      cart.discount = discount;
-    } else {
-      cart.price = qcloud.utils.getNumber(format.price * cart.quantity, 2);
-      cart.oldPrice = cart.price;
-    }
-  },
+  //     cart.price = qcloud.utils.getNumber(amount, 2);
+  //     cart.saleProductDiscountId = discount.id;
+  //     cart.oldPrice = oldPrice;
+  //     cart.discount = discount;
+  //   } else {
+  //     cart.price = qcloud.utils.getNumber(format.price * cart.quantity, 2);
+  //     cart.oldPrice = cart.price;
+  //   }
+  // },
   // 计算当前商户的营业状态
   calcBusinessStatus: function (start, end) {
     var now = new Date(),
@@ -486,29 +485,32 @@ Page({
   },
   // 清空购物车
   clearCart: function (e) {
-    var self = this;
-    var session = qcloud.getSession();
-    qcloud.request({
-      url: `/cart?userId=${session.userinfo.id}&businessId=${session.business.id}`,
-      method: "DELETE",
-      success: function (res) {
-        if (res.data.success) {
-          self.reset();
-        } else {
-          util.showModel("提示", res.data.msg);
-        }
-        self.showCartAnimation(false);
-      },
-      fail: function (error) {
-        util.showModel("错误", "请检查网络连接");
-      }
-    });
+    // var self = this;
+    // var session = qcloud.getSession();
+    // qcloud.request({
+    //   url: `/cart?userId=${session.userinfo.id}&businessId=${session.business.id}`,
+    //   method: "DELETE",
+    //   success: function (res) {
+    //     if (res.data.success) {
+    //       self.reset();
+    //     } else {
+    //       util.showModel("提示", res.data.msg);
+    //     }
+    //     self.showCartAnimation(false);
+    //   },
+    //   fail: function (error) {
+    //     util.showModel("错误", "请检查网络连接");
+    //   }
+    // });
+    this.reset();
+    this.showCartAnimation(false);
   },
   // 所有数据还原
   reset: function () {
     var productList = this.data.productList;
     productList.forEach(a => a.quantity = 0);
-    wx.removeStorageSync("cartList");
+    // wx.removeStorageSync("cartList");
+    wx.setStorageSync("cartList", []);
     this.setData({
       productList,
       cartList: [],
@@ -964,7 +966,7 @@ Page({
           });
         } else {
           wx.getLocation({
-            type: "wgs84",
+            type: "gcj02",
             success: function (res) {
               var lat = res.latitude,
                 lng = res.longitude;
@@ -1052,7 +1054,7 @@ Page({
       let imgSrc = product.images.length > 0 ? (product.images[0].name + "." + product.images[0].extensionName) : null;
       let discount = product.discount;
       cart = {
-        id: 0,
+        // id: 0,
         name: product.name,
         src: imgSrc,
         quantity: 0,
@@ -1067,35 +1069,37 @@ Page({
         businessId: product.businessId
       };
       this.data.cartList.push(cart);
-    } else {
-      if (!cart.id) return; // 如果购物车还没有获取到id，则本次操作取消
-    }
+    } 
+    // else {
+    //   if (!cart.id) return; // 如果购物车还没有获取到id，则本次操作取消
+    // }
     product.quantity++; // 添加后的商品数量
     cart.quantity++;
     this.cartChange(cart);
+    wx.setStorageSync("cartList", this.data.cartList);
 
-    if (!cart.id) { // 购物车不存在于数据库中，则新增购物车
-      var cartClone = qcloud.utils.extend({}, cart, {
-        product: null,
-        format: null,
-        discount: null
-      });
-      // 请求服务器
-      qcloud.request({
-        url: "/cart",
-        method: "POST",
-        data: cartClone,
-        success: function (res) {
-          self.getCart(cart).id = res.data;
-          wx.setStorageSync("cartList", self.data.cartList);
-        },
-        fail: function (error) {
-          util.showModel("错误", "请求错误，请检查网络连接");
-        }
-      });
-    } else { // 购物车已存在于数据库中，则修改购物车数量
-      util.method.throttle(this.updateCartHttp, 500, this, cart);
-    }
+    // if (!cart.id) { // 购物车不存在于数据库中，则新增购物车
+    //   var cartClone = qcloud.utils.extend({}, cart, {
+    //     product: null,
+    //     format: null,
+    //     discount: null
+    //   });
+    //   // 请求服务器
+    //   qcloud.request({
+    //     url: "/cart",
+    //     method: "POST",
+    //     data: cartClone,
+    //     success: function (res) {
+    //       self.getCart(cart).id = res.data;
+    //       wx.setStorageSync("cartList", self.data.cartList);
+    //     },
+    //     fail: function (error) {
+    //       util.showModel("错误", "请求错误，请检查网络连接");
+    //     }
+    //   });
+    // } else { // 购物车已存在于数据库中，则修改购物车数量
+    //   util.method.throttle(this.updateCartHttp, 500, this, cart);
+    // }
   },
   deleteProduct: function (e) {
     var product;
@@ -1113,7 +1117,7 @@ Page({
         return false;
       }
     });
-    if (!cart.id) return; // 如果购物车还没有获取到id，则本次操作取消
+    // if (!cart.id) return; // 如果购物车还没有获取到id，则本次操作取消
 
     product.quantity--;
     cart.quantity--;
@@ -1122,27 +1126,27 @@ Page({
     }
     this.cartChange(cart);
 
-    util.method.throttle(this.updateCartHttp, 500, this, cart);
+    // util.method.throttle(this.updateCartHttp, 500, this, cart);
   },
   // 在购物车中增加同类商品数量
   increaseCart: function (e) {
     var cart = this.data.cartList[e.currentTarget.dataset.index],
       product = this.data.productList.filter(a => a.id == cart.productId)[0];
 
-    if (!cart.id) return; // 如果购物车还没有获取到id，则本次操作取消
+    // if (!cart.id) return; // 如果购物车还没有获取到id，则本次操作取消
 
     product.quantity++;
     cart.quantity++;
     this.cartChange(cart);
 
-    util.method.throttle(this.updateCartHttp, 500, this, cart);
+    // util.method.throttle(this.updateCartHttp, 500, this, cart);
   },
   // 在购物车中减少同类商品数量
   decreaseCart: function (e) {
     var cart = this.data.cartList[e.currentTarget.dataset.index],
       product = this.data.productList.filter(a => a.id == cart.productId)[0];
 
-    if (!cart.id) return; // 如果购物车还没有获取到id，则本次操作取消
+    // if (!cart.id) return; // 如果购物车还没有获取到id，则本次操作取消
 
     product.quantity--;
     if (product.quantity < 0) product.quantity = 0;
@@ -1153,7 +1157,7 @@ Page({
     }
     this.cartChange(cart);
 
-    util.method.throttle(this.updateCartHttp, 500, this, cart);
+    // util.method.throttle(this.updateCartHttp, 500, this, cart);
   },
   // 在商品详情页中添加购物车
   addProductOnInfo: function (e) {

@@ -802,6 +802,26 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("OrderProduct");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.PaymentTarget", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("ObjectId");
+
+                    b.Property<int>("OrderId");
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("PaymentTarget");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.PaymentType", b =>
                 {
                     b.Property<int>("ID")
@@ -1569,6 +1589,32 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.WxCard", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<string>("CardId");
+
+                    b.Property<int>("Category");
+
+                    b.Property<string>("Color");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("WxCard");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.WxListenUser", b =>
                 {
                     b.Property<int>("ID")
@@ -1597,6 +1643,52 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasIndex("BusinessId");
 
                     b.ToTable("WxListenUser");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.WxMember", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("Balance");
+
+                    b.Property<DateTime>("Birthday");
+
+                    b.Property<double>("Bonus");
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<string>("CardId");
+
+                    b.Property<string>("Code");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("Gender");
+
+                    b.Property<string>("Logo");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("NickName");
+
+                    b.Property<string>("OpenId");
+
+                    b.Property<string>("Phone");
+
+                    b.Property<int>("PurchaseTimes");
+
+                    b.Property<double>("RechargeAmount");
+
+                    b.Property<int>("WxCardId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.HasIndex("WxCardId");
+
+                    b.ToTable("WxMember");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.YcfkLocation", b =>
@@ -2026,11 +2118,32 @@ namespace JdCat.Cat.Model.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.WxCard", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.WxListenUser", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
                         .WithMany()
                         .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.WxMember", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("JdCat.Cat.Model.Data.WxCard", "WxCard")
+                        .WithMany()
+                        .HasForeignKey("WxCardId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

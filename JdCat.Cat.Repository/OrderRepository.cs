@@ -96,7 +96,7 @@ namespace JdCat.Cat.Repository
             }
             result.Data = order;
             result.Success = true;
-            // 清空购物车
+            // 清空购物车（以后删除这段代码）
             Context.Database.ExecuteSqlCommand("delete from `ShoppingCart` where userid={0}", order.UserId);
             return result;
         }

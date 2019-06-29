@@ -1,0 +1,141 @@
+﻿@model JdCat.Cat.Model.Data.WxMember
+@{
+    Layout = null;
+    ViewData["Title"] = "会员支付";
+}
+<!DOCTYPE html>
+<html class="darkbg">
+<head>
+    <title>@ViewData["Title"]</title>
+    <meta charset="UTF-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta content="telephone=no" name="format-detection">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="Shortcut Icon" href="~/images/logo1.png">
+    <link rel="stylesheet" href="~/css/member/index.css">
+    <style>
+        .card:before, .card:after {
+            background: @ViewBag.color;
+        }
+
+        .u_head, .guideIndex .coin_header, .j-theme, .darkbg, .main-color {
+            /*background: -webkit-linear-gradient(top,#d9746d, #cc463d) !important;*/
+            background: @ViewBag.color;
+        }
+
+        .coupon-list-logo, .box .img-box .card-box, .bottom-cell .lihuo, .myDetail .myrto {
+            /*background: -webkit-linear-gradient(left,#d9746d, #cc463d) !important;*/
+            background: @ViewBag.color;
+        }
+
+        .box-img .pic-box, .card-face-body.theme-bg, .recharge-box, .cardhead .topbtn, .btn-active, .btn.theme-bg, .u_head .uinfo .ucardinfo a, .coupon-infor-ft .main-color, #self-consume .btn, .modal .form-group .input-group .input-group-addon {
+            background: @ViewBag.color !important;
+        }
+
+        .a-btn, .cardhead b, .look-info a, .box-title .first-line, .gift-info .price, .topupmoney a.active i, .topupmoney a.active span, .checkAllRule, .quanLineLeft .ico-mall, .consumerlist li span sup, .coupon-info .coupon-brand {
+            color: @ViewBag.color;
+        }
+
+        .wx_loading .wx_loading_icon {
+            border-color: @ViewBag.color;
+        }
+
+        .tabs .tab a.active {
+            color: @ViewBag.color;
+            border-bottom: 2px solid @ViewBag.color;
+        }
+    </style>
+</head>
+<body>
+    <header class="trheader" style=" font-weight: 600; ">
+        <a class="back" onclick="javascript :history.back(-1)"></a>
+        <h2 class="headtitle">
+            付款码
+            <span>结账时出示会员卡</span>
+        </h2>
+    </header>
+    <div class="pageload" style=" display: none; ">
+        <div class="loadingbox loadingbox-w"></div>
+    </div>
+    <div id="content" class="scrollwarp mpage">
+        <div class="scrollcont">
+            <div class="cardhead">
+                <div class="card">
+                    <div class="txm" style="margin-bottom: -10px;">
+                        <div style="margin:0 -20px;padding-top: 20px;">
+                            <img id="t-code" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==" alt="" style=" width: 100%; ">
+                        </div>
+                        <div id="payCode" style="margin-top: 8px;margin-bottom: 16px;font-size: 15px;"></div>
+                    </div>
+                    <div class="ewm">
+                        <img id="q-code" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvIAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==" />
+                    </div>
+                    <div style="font-size: 12px;margin-top: 20px;color: #888;text-align: center;margin-bottom: 12px;"><i class="ico-help"></i> 本支付码定时更新，请勿截屏，以免影响正常使用</div>
+                </div>
+                <b> <i class="ico-mymoney"></i> 余额<span>¥ @Model.Balance</span></b>
+                <a href="javascript:void(0);" class="topbtn" id="ico-mymoney">充值</a>
+            </div>
+        </div>
+    </div>
+    <script src="~/js/member/app.js"></script>
+    <script src="~/js/member/index.js"></script>
+
+    <script>
+        var memberId = '@Model.ID';
+        // 后退缓存刷新
+        window.onpageshow = function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+        lpage.addScroll('content');
+        //去充值
+        $(document).on("touchstart", "#ico-mymoney", function () {
+            $(".pageload").show();
+            window.location.href = "/Member/Recharge/@Model.ID";
+        })
+        //动态支付码相关
+        var paycodeNode = $("#payCode");
+        if (paycodeNode != null && paycodeNode.length > 0) {
+            //刷新支付码
+            function refreshCode() {
+                jQuery.get("/Member/GetPayCode/" + memberId, function (data) {
+                    if (data != "") {
+                        $("#t-code").attr("src", "/Member/GetPayTxm?code=" + data);
+                        $("#q-code").attr("src", "/Member/GetPayEwm?code=" + data);
+                        paycodeNode.text(data);
+                    }
+                }, "text");
+            }
+            refreshCode();
+            payCodeInter = setInterval(refreshCode, 110000);
+            // 检测支付结果
+            payCodeInterRes = setInterval(function () {
+                jQuery.post("/Member/GetPaymentResult?code=" + paycodeNode.text(), function (data) {
+                    if (data.hasOwnProperty("code")) {
+                        if (data.code == 0) {
+                            //支付开始
+                            $(".pageload").show();
+                        } else if (data.code == 1) {
+                            location.href = "/Member/OrderInfo/" + data.orderId;
+                        } else if (data.code == 2) {
+                            //支付错误
+                            refreshCode();
+                            $(".pageload").hide();
+                            if (data.msg != '' && data.msg.indexOf('余额不足') != -1) {
+                                errolayer("支付失败，您的账户余额不足", 2000);
+                            } else {
+                                errolayer(data.msg);
+                            }
+
+
+                        }
+                    }
+                }, "json");
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

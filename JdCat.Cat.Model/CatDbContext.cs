@@ -68,6 +68,10 @@ namespace JdCat.Cat.Model
         public DbSet<StoreBooth> StoreBooths { get; set; }
         public DbSet<BoothProductRelative> BoothProductRelatives { get; set; }
         public DbSet<ProductRelative> ProductRelatives { get; set; }
+        public DbSet<WxCard> WxCards { get; set; }
+        public DbSet<WxMember> WxMembers { get; set; }
+        public DbSet<PaymentTarget> PaymentTargets { get; set; }
+
 
 
         /// <summary>

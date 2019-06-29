@@ -130,6 +130,44 @@ namespace JdCat.Cat.Repository
 
             return list;
         }
+
+
+        public async Task<object> GetTakeoutMenusAsync(int id)
+        {
+            var list = await Context.ProductTypes
+                .AsNoTracking()
+                .Include(a => a.Products)
+                .Include("Products.Attributes")
+                .Include("Products.Formats")
+                .Include("Products.Images")
+                .Where(a => a.BusinessId == id)
+                .Select(a => new
+                {
+                    a.ID,
+                    a.Name,
+                    a.Sort,
+                    Products = a.Products.Where(b => b.Status == ProductStatus.Sale && (b.Scope & ActionScope.Takeout) > 0)
+                    .Select(b => new
+                    {
+                        b.ID,
+                        b.MinBuyQuantity,
+                        b.Name,
+                        b.ProductIdSet,
+                        b.ProductTypeId,
+                        b.UnitName,
+                        b.Feature,
+                        Description = b.Description ?? "",
+                        Formats = b.Formats.Where(c => !c.IsDelete).Select(c => new { c.ID, c.Name, c.Code, c.Price, c.PackingPrice, c.PackingQuantity, c.ProductId, c.SKU, c.Stock, c.UPC }),
+                        Attributes = b.Attributes.Select(c => new { c.ID, c.Item1, c.Item2, c.Item3, c.Item4, c.Item5, c.Item6, c.Item7, c.Item8, c.Name }),
+                        Images = b.Images.Select(c => new { c.ID, c.Name, c.ExtensionName })
+                    })
+                })
+                .OrderBy(a => a.Sort)
+                .ToListAsync();
+
+            return list.Where(a => a.Products.Count() > 0).ToList();
+        }
+
         public IEnumerable<ProductType> GetTypes(int businessId)
         {
             //var list = Context.ProductTypes
@@ -599,6 +637,7 @@ namespace JdCat.Cat.Repository
                         }
                     }
                     Context.Add(product);
+                    Context.SaveChanges();
                     product.Code = product.ID.ToString().PadLeft(6, '0');
                     Context.SaveChanges();
                 });

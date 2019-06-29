@@ -419,6 +419,35 @@ namespace JdCat.Cat.Common
             return byteArray;
         }
         /// <summary>
+        /// 生成条形码
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public static byte[] CreateCodeTxm(string message, int width = 500, int height = 120)
+        {
+            var w = new ZXing.OneD.CodaBarWriter();
+            var b = w.encode(message, BarcodeFormat.ITF, width, height);
+            var zzb = new ZXing.ZKWeb.BarcodeWriter
+            {
+                Options = new EncodingOptions()
+                {
+                    Margin = 3,
+                    PureBarcode = true
+                }
+            };
+            var bmp = zzb.Write(b);
+            byte[] byteArray = null;
+            using (MemoryStream stream = new MemoryStream())
+            {
+                bmp.Save(stream, ImageFormat.Png);
+                byteArray = stream.GetBuffer();
+            }
+            bmp.Dispose();
+            return byteArray;
+        }
+        /// <summary>
         /// 生成随机数字
         /// </summary>
         /// <param name="len"></param>
@@ -435,7 +464,6 @@ namespace JdCat.Cat.Common
             }
             return num.ToString();
         }
-
         /// <summary>
         /// 计算出文本中的中文字符数量
         /// </summary>

@@ -8,6 +8,7 @@
     <PackageReference Include="EPPlus.Core" Version="1.5.4" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="PinYinConverterCore" Version="1.0.2" />
     <PackageReference Include="ZKWeb.System.Drawing" Version="4.0.1" />
     <PackageReference Include="ZXing.Net" Version="0.16.4" />
@@ -41,9 +42,6 @@
     </Reference>-->
     <Reference Include="Microsoft.Extensions.Configuration.Binder">
       <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.configuration.binder\2.0.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\10.0.1\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
 

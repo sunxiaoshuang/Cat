@@ -13,10 +13,12 @@ using JdCat.Cat.Common.Models;
 using JdCat.Cat.Common.Weixin;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using JdCat.Cat.Repository.Service;
 using JdCat.Cat.Web.App_Code;
 using log4net;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -38,8 +40,6 @@ namespace JdCat.Cat.Web.Controllers
         {
             return View();
         }
-
-
 
         public async Task<IActionResult> GetAppMenu()
         {
@@ -123,10 +123,10 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         /// <summary>
-        /// 消息管理action
+        /// 开放平台消息管理action
         /// </summary>
         /// <returns></returns>
-        public IActionResult Message()
+        public async Task<IActionResult> Message()
         {
             var wxcpt = HttpContext.RequestServices.GetService<WXBizMsgCrypt>();
             var signature = Request.Query["signature"];
@@ -147,28 +147,53 @@ namespace JdCat.Cat.Web.Controllers
                 }
                 else
                 {
-                    Log.Debug("客户消息：" + sMsg);
+                    //Log.Debug("客户消息：" + sMsg);
                     var document = XDocument.Parse(sMsg);
-                    var content = document.Root.Elements("Content").First().Value;
-                    var openId = document.Root.Elements("FromUserName").First().Value;
-                    if (content == "TESTCOMPONENT_MSG_TYPE_TEXT")                // 模拟接到消息后直接返回
+                    //var content = document.Root.Elements("Content").FirstOrDefault()?.Value;
+                    //var openId = document.Root.Elements("FromUserName").First().Value;
+                    //if (content == "TESTCOMPONENT_MSG_TYPE_TEXT")                // 模拟接到消息后直接返回
+                    //{
+                    //    document.Root.Elements("Content").First().Value = "TESTCOMPONENT_MSG_TYPE_TEXT_callback";
+                    //    Log.Debug(document.ToString());
+                    //    return Content(document.ToString());
+                    //}
+                    //else
+                    //{
+                    //    // 模拟接到消息后，暂停5秒，然后调用接口发送消息
+                    //    Thread.Sleep(4000);
+                    //    ReturnMsg(content, openId, HttpContext.RequestServices.GetService<AppData>());
+                    //    return Content("");
+                    //}
+
+
+                    var even = UtilHelper.ReadXml<WxEvent>(sMsg);
+
+                    // 公众号消息处理
+                    //if (!string.IsNullOrEmpty(even.Event) && !string.IsNullOrEmpty(even.MsgType))
+                    //{
+                    //    var service = HttpContext.RequestServices.GetService<IUtilRepository>();
+                    //    await service.WxMsgHandlerAsync(even);
+
+                    //    var code = Request.Query["echoStr"].ToString();
+                    //    return Content(code);
+                    //}
+                    
+                    
+                    if(even.Content == "TESTCOMPONENT_MSG_TYPE_TEXT")   // 模拟接到消息后直接返回
                     {
                         document.Root.Elements("Content").First().Value = "TESTCOMPONENT_MSG_TYPE_TEXT_callback";
-                        Log.Debug(document.ToString());
                         return Content(document.ToString());
                     }
                     else
                     {
                         // 模拟接到消息后，暂停5秒，然后调用接口发送消息
                         Thread.Sleep(4000);
-                        ReturnMsg(content, openId, HttpContext.RequestServices.GetService<AppData>());
+                        ReturnMsg(even.Content, even.FromUserName, HttpContext.RequestServices.GetService<AppData>());
                         return Content("");
                     }
                 }
             }
-
-
-            //log.Debug(id);
+            
             return Content("success");
         }
 
@@ -224,5 +249,6 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         #endregion
+
     }
 }

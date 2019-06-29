@@ -185,6 +185,14 @@ namespace JdCat.Cat.Web.Controllers
             return Json(await Service.GetProductIdsByCookAsync(id));
         }
         /// <summary>
+        /// 获取商户所有厨师所绑定的商品id
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetProductIdsWithCook()
+        {
+            return Json(await Service.GetProductIdsWithCookAsync(Business.ID));
+        }
+        /// <summary>
         /// 厨师绑定菜品
         /// </summary>
         /// <param name="id"></param>

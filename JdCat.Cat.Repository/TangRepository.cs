@@ -118,6 +118,15 @@ namespace JdCat.Cat.Repository
         {
             return await Context.CookProductRelatives.Where(a => a.StaffId == cookId).Select(a => a.ProductId).ToListAsync();
         }
+        public async Task<object> GetProductIdsWithCookAsync(int id)
+        {
+            return await Context.Staffs
+                .AsNoTracking()
+                .Include(a => a.CookProductRelatives)
+                .Where(a => a.BusinessId == id && a.Status != EntityStatus.Deleted)
+                .Select(a => new { a.ID, Ids = a.CookProductRelatives.Select(b => b.ProductId).ToList() })
+                .ToListAsync();
+        }
         public async Task<bool> ResetPasswordAsync(Staff staff)
         {
             var entity = new Staff { ID = staff.ID };

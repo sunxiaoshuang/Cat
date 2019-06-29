@@ -89,6 +89,22 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Task<List<Report_ProductSale>> GetSingleCookReportForTakeoutAsync(int cookId, DateTime start, DateTime end);
         /// <summary>
+        /// 获取厨师的产出详情
+        /// </summary>
+        /// <param name="cookIds"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<List<Report_ProductSale>> GetCookDetailReportAsync(IEnumerable<int> cookIds, DateTime start, DateTime end);
+        /// <summary>
+        /// 获取厨师产出详情（外卖）
+        /// </summary>
+        /// <param name="cookIds"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<List<Report_ProductSale>> GetCookDetailReportForTakeoutAsync(IEnumerable<int> cookIds, DateTime start, DateTime end);
+        /// <summary>
         /// 获取商户档口报表
         /// </summary>
         /// <param name="businessId"></param>
@@ -120,6 +136,22 @@ namespace JdCat.Cat.IRepository
         /// <param name="end"></param>
         /// <returns></returns>
         Task<List<Report_ProductSale>> GetSingleBoothReportForTakeoutAsync(int boothId, DateTime start, DateTime end);
+        /// <summary>
+        /// 获取档口产出详情
+        /// </summary>
+        /// <param name="boothIds"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<List<Report_ProductSale>> GetBoothDetailReportAsync(IEnumerable<int> boothIds, DateTime start, DateTime end);
+        /// <summary>
+        /// 获取档口产出详情（外卖）
+        /// </summary>
+        /// <param name="boothIds"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<List<Report_ProductSale>> GetBoothDetailReportForTakeoutAsync(IEnumerable<int> boothIds, DateTime start, DateTime end);
         /// <summary>
         /// 获取商户食品销售统计数据
         /// </summary>

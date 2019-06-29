@@ -192,7 +192,7 @@
                                     enter: function () {
                                         var products = this.search.result.filter(a => a.selected);
                                         if (products.length === 0) return;
-                                        this.clickItem(products[0]);
+                                        this.choice(products[0]);
                                     },
                                     clear: function () {
                                         this.search.key = "";
@@ -207,11 +207,11 @@
                                         selecteds.forEach(a => a.selected = false);
                                         this.search.result[index].selected = true;
                                     },
-                                    clickItem: function (product) {
-                                        if (product.checked) return;
-                                        product.checked = true;
-                                        this.productList.push(product);
-                                    },
+                                    //clickItem: function (product) {
+                                    //    if (product.checked) return;
+                                    //    product.checked = true;
+                                    //    this.productList.push(product);
+                                    //},
                                     open: function (type) {
                                         type.checked = !type.checked;
                                     },

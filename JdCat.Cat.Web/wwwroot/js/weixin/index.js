@@ -52,19 +52,33 @@
                 </div>
             </div>
         </div>
-    `, types = [{ name: "", value: 0 }, { name: "点击类型", value: 1 }, { name: "网页类型", value: 2 }, { name: "小程序类型", value: 3 }];
+    `, types = [{ name: "", value: 0 }, { name: "点击类型", value: 1 }, { name: "网页类型", value: 2 }, { name: "小程序类型", value: 3 }],
+        typeMaps = { "click": 1, "view": 2, "miniprogram": 3 };
 
     var app = new Vue({
         el: "#app",
         data: {
             tree: [],
-            selectItem: {}
+            selectItem: {},
+            menu: {},
+            types: JSON.parse(JSON.stringify(types))
         },
         methods: {
             open: function (menu) {
                 var result = !menu.checked;
                 this.tree.forEach(function (obj) { obj.checked = false; });
                 menu.checked = result;
+                if (result) {
+                    this.menu = menu;
+                } else {
+                    this.menu = {};
+                }
+            },
+            choice: function (menu, parent) {
+                parent.sub_button.forEach(a => a.checked = false);
+                parent.checked = false;
+                menu.checked = true;
+                this.menu = menu;
             },
             save: function () {
                 axios.post("/weixin/createAppMenu", this.tree)
@@ -121,6 +135,7 @@
                     if (!result.menu) return;
                     self.tree = result.menu.button.map(function (obj) {
                         obj.checked = false;
+                        obj.type = typeMaps[obj.type];
                         return obj;
                     });
                 })

@@ -25,6 +25,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         IEnumerable<ProductType> GetTypes(Business business, ProductStatus? status = null);
         /// <summary>
+        /// 获取外卖菜单（小程序端接口）
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<object> GetTakeoutMenusAsync(int id);
+        /// <summary>
         /// 根据商户Id获取商品类别列表
         /// </summary>
         /// <param name="businessId"></param>

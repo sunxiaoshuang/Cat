@@ -34,5 +34,20 @@ namespace JdCat.Cat.Common.Models
         /// 二维码的ticket，可用来换取二维码图片
         /// </summary>
         public string Ticket { get; set; }
+
+        #region 开放平台消息参数
+        public string Content { get; set; }
+        #endregion
+
+        #region 会员卡激活通知字段
+        /// <summary>
+        /// 会员卡id
+        /// </summary>
+        public string CardId { get; set; }
+        /// <summary>
+        /// 会员编号
+        /// </summary>
+        public string UserCardCode { get; set; }
+        #endregion
     }
 }

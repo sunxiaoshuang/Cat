@@ -230,67 +230,186 @@
                 types = res[0].data.map(function (type) { type.checked = false; return type; });
                 $.loaded();
 
-                bindProducts = function (cook) {
-                    var vueObj, typeList = JSON.parse(JSON.stringify(types)), productList = [], allProducts = [];
+                var openDialog = function (productIds) {
+                    var cook = this,        // 厨师对象
+                        vueObj,             // 选择页面vue对象
+                        typeList = JSON.parse(JSON.stringify(types)),   // 商品类别列表
+                        productList = [],                               // 厨师已经绑定的商品
+                        allProducts = [];                               // 所有可选择商品
+
                     typeList.forEach(function (type) { allProducts = allProducts.concat(type.list); });
-                    allProducts.forEach(function (product) { product.checked = false; });
 
-                    axios.get(`/tang/getProductIdsByCook/${cook.id}`)
-                        .then(function (res) {
-                            var productIds = res.data;
-
-                            if (productIds && productIds.length > 0) {
-                                productIds.forEach(function (id) {
-                                    var product = allProducts.first(function (item) { return item.id === id; });
-                                    if (!product) return;
-                                    product.checked = true;
-                                    productList.push(product);
-                                });
+                    allProducts.forEach(function (product) {
+                        product.checked = false;
+                        product.selected = false;
+                        product.title = "";
+                        app.items.forEach(item => {
+                            if (item.productIds.indexOf(product.id) > -1) {
+                                product.title += item.name + ',';
                             }
-                            $.view({
-                                title: `厨师[${cook.name}]绑定菜单`,
-                                footDisplay: "block",
-                                template,
-                                dialogWidth: 800,
-                                load: function () {
-                                    vueObj = new Vue({
-                                        el: "#bindProduct",
-                                        data: {
-                                            typeList,
-                                            productList
-                                        },
-                                        methods: {
-                                            open: function (type) {
-                                                type.checked = !type.checked;
-                                            },
-                                            choice: function (product) {
-                                                if (product.checked) return;
-                                                product.checked = true;
-                                                this.productList.push(product);
-                                            },
-                                            remove: function (product) {
-                                                product.checked = false;
-                                                this.productList.remove(product);
-                                            }
-                                        }
-                                    });
-                                    // 隐藏时销毁
-                                    destroyVue.call(this, vueObj);
+                        });
+                        if (!product.title) return;
+                        product.title = `已绑定${product.title.slice(0, product.title.length - 1)}`;
+                    });
+
+                    if (productIds && productIds.length > 0) {
+                        productIds.forEach(function (id) {
+                            var product = allProducts.first(function (item) { return item.id === id; });
+                            if (!product) return;
+                            product.checked = true;
+                            productList.push(product);
+                        });
+                    }
+
+                    $.view({
+                        title: `厨师[${cook.name}]绑定菜单`,
+                        footDisplay: "block",
+                        template,
+                        dialogWidth: 800,
+                        load: function () {
+                            vueObj = new Vue({
+                                el: "#bindProduct",
+                                data: {
+                                    typeList,
+                                    products: allProducts,
+                                    productList,
+                                    search: {
+                                        key: "",
+                                        result: [],
+                                        boxHeight: 0
+                                    }
                                 },
-                                submit: function () {
-                                    var relative = vueObj.productList.map(function (obj) { return { staffId: cook.id, productId: obj.id }; });
-                                    axios.post(`/tang/bindProductsForCook/${cook.id}`, relative)
-                                        .then(function (res) {
-                                            $.alert(res.data.msg, "success");
-                                        })
-                                        .catch(function (err) { $.alert(err); });
-                                    return true;
+                                watch: {
+                                    'search.key': function (key) {
+                                        this.seek(key);
+                                    }
+                                },
+                                methods: {
+                                    focus: function () {
+                                        this.seek(this.search.key);
+                                    },
+                                    blur: function () {
+                                        var self = this;
+                                        setTimeout(function () { self.search.boxHeight = 0; }, 200);
+                                    },
+                                    seek: function (key) {
+                                        if (!key) {
+                                            this.search.result = [];
+                                            this.search.boxHeight = "0";
+                                            return;
+                                        }
+                                        this.search.boxHeight = "120px";
+                                        this.products.forEach(a => a.selected = false);
+                                        this.search.result = this.products
+                                            .filter(a => a.name.indexOf(key) > -1 || a.code.indexOf(key) > -1 || a.pinyin.indexOf(key) > -1 || a.firstLetter.indexOf(key) > -1)
+                                            .slice(0, 8);
+                                    },
+                                    down: function () {
+                                        var self = this;
+                                        this.move(function (index) {
+                                            if (index === self.search.result.length - 1) {
+                                                index = 0;
+                                            } else {
+                                                index++;
+                                            }
+                                            return index;
+                                        });
+                                    },
+                                    up: function () {
+                                        var self = this;
+                                        this.move(function (index) {
+                                            if (index === 0) {
+                                                index = self.search.result.length - 1;
+                                            } else {
+                                                if (index === -1) {
+                                                    index = 0;
+                                                } else {
+                                                    index--;
+                                                }
+                                            }
+                                            return index;
+                                        });
+                                    },
+                                    enter: function () {
+                                        var products = this.search.result.filter(a => a.selected);
+                                        if (products.length === 0) return;
+                                        this.choice(products[0]);
+                                    },
+                                    clear: function () {
+                                        this.search.key = "";
+                                    },
+                                    move: function (callback) {
+                                        if (this.search.result.length === 0) return;
+                                        var selected, index;
+                                        var selecteds = this.search.result.filter(a => a.selected);
+                                        if (selecteds.length > 0) selected = selecteds[0];
+                                        index = this.search.result.indexOf(selected);
+                                        index = callback(index);
+                                        selecteds.forEach(a => a.selected = false);
+                                        this.search.result[index].selected = true;
+                                    },
+                                    //clickItem: function (product) {
+                                    //    if (product.checked) return;
+                                    //    product.checked = true;
+                                    //    this.productList.push(product);
+                                    //},
+                                    open: function (type) {
+                                        type.checked = !type.checked;
+                                    },
+                                    choice: function (product) {
+                                        if (product.checked) return;
+                                        if (product.title) {
+                                            $.alert(product.title, "warning");
+                                            return;
+                                        }
+                                        product.checked = true;
+                                        this.productList.push(product);
+                                    },
+                                    remove: function (product) {
+                                        product.checked = false;
+                                        this.productList.remove(product);
+                                    }
                                 }
-
-
                             });
-                        })
-                        .catch(function (err) { $.alert(err); });
+                            // 隐藏时销毁
+                            destroyVue.call(this, vueObj);
+                        },
+                        submit: function () {
+                            var relative = vueObj.productList.map(function (obj) { return { staffId: cook.id, productId: obj.id }; });
+                            axios.post(`/tang/bindProductsForCook/${cook.id}`, relative)
+                                .then(function (res) {
+                                    if (!res.data.success) {
+                                        $.alert(res.data.msg);
+                                        return;
+                                    }
+                                    cook.productIds = vueObj.productList.map(item => item.id);
+                                    $.alert(res.data.msg, "success");
+                                })
+                                .catch(function (err) { $.alert(err); });
+                            return true;
+                        }
+
+
+                    });
+                };
+
+                bindProducts = function (cook) {
+                    if (!cook.productIds) {
+                        axios.get(`/tang/getProductIdsWithCook`)
+                            .then(function (res) {
+                                var cooks = res.data;
+                                app.items.forEach(item => {
+                                    var first = cooks.first(a => a.id === item.id);
+                                    if (!first) return;
+                                    item.productIds = first.ids;
+                                });
+                                openDialog.call(cook, cook.productIds);
+                            })
+                            .catch(function (err) { $.alert(err); });
+                    } else {
+                        openDialog.call(cook, cook.productIds);
+                    }
+
                 };
                 bindProducts(obj);
             })
@@ -306,6 +425,11 @@
             obj = null;
         });
     }
+
+    $(document).on("mouseenter", "a[title!=''], div[title!='']", function () {
+        if (!this.title) return;
+        $(this).tooltip();
+    });
 
 })();
 

@@ -2346,3 +2346,8 @@ ul.tree a.selected, ul.leaf a.selected {
 .search-item.selected {
     background-color: #ccc;
 }
+
+.oneline .col-md-2 {
+    width: 120px;
+    white-space: nowrap;
+}

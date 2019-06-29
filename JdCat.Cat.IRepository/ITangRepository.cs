@@ -84,6 +84,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Task<List<int>> GetProductIdsByCookAsync(int cookId);
         /// <summary>
+        /// 获取商户所有厨师所绑定的商品id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<object> GetProductIdsWithCookAsync(int id);
+        /// <summary>
         /// 厨师绑定菜品
         /// </summary>
         /// <param name="cookId"></param>

@@ -466,6 +466,18 @@
     "inputFiles": [
       "wwwroot/js/report/payment.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/card/memberCard.min.js",
+    "inputFiles": [
+      "wwwroot/js/card/memberCard.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/card/memberCard.min.css",
+    "inputFiles": [
+      "wwwroot/css/card/memberCard.css"
+    ]
   }
 
 ]

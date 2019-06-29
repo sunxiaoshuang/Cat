@@ -150,31 +150,67 @@ namespace JdCat.Cat.Repository
 
         public async Task<List<Report_ProductSale>> GetSingleCookReportAsync(int cookId, DateTime start, DateTime end)
         {
+            return await GetCookDetailReportAsync(new[] { cookId }, start, end);
+            //var query = from relative in Context.CookProductRelatives
+            //            join product in Context.TangOrderProducts on relative.ProductId equals product.ProductId into joinProduct
+            //            from product in joinProduct.DefaultIfEmpty()
+            //            where relative.StaffId == cookId && product.ProductStatus != TangOrderProductStatus.Return && product.CreateTime >= start && product.CreateTime < end
+            //            group product by new { product.ProductId, product.Name } into g
+            //            select new Report_ProductSale
+            //            {
+            //                Id = g.Key.ProductId,
+            //                Name = g.Key.Name,
+            //                Count = g.Sum(a => a.Quantity),
+            //                Amount = g.Sum(a => a.Amount)
+            //            };
+            //return await query.OrderByDescending(a => a.Amount).ToListAsync();
+        }
+        public async Task<List<Report_ProductSale>> GetSingleCookReportForTakeoutAsync(int cookId, DateTime start, DateTime end)
+        {
+            return await GetCookDetailReportForTakeoutAsync(new[] { cookId }, start, end);
+            //var query = from relative in Context.CookProductRelatives
+            //            join product in Context.OrderProducts on relative.ProductId equals product.ProductId into joinProduct
+            //            from product in joinProduct.DefaultIfEmpty()
+            //            join order in Context.Orders on product.OrderId equals order.ID
+            //            where relative.StaffId == cookId && (order.Status & OrderStatus.Valid) > 0 && product.CreateTime >= start && product.CreateTime < end
+            //            group product by new { product.ProductId, product.Name } into g
+            //            select new Report_ProductSale
+            //            {
+            //                Id = g.Key.ProductId.Value,
+            //                Name = g.Key.Name,
+            //                Count = g.Sum(a => a.Quantity ?? 0),
+            //                Amount = g.Sum(a => a.Price ?? 0)
+            //            };
+            //return await query.OrderByDescending(a => a.Amount).ToListAsync();
+        }
+
+        public async Task<List<Report_ProductSale>> GetCookDetailReportAsync(IEnumerable<int> cookIds, DateTime start, DateTime end)
+        {
             var query = from relative in Context.CookProductRelatives
                         join product in Context.TangOrderProducts on relative.ProductId equals product.ProductId into joinProduct
                         from product in joinProduct.DefaultIfEmpty()
-                        where relative.StaffId == cookId && product.ProductStatus != TangOrderProductStatus.Return && product.CreateTime >= start && product.CreateTime < end
-                        group product by new { product.ProductId, product.Name } into g
+                        where cookIds.Contains(relative.StaffId) && product.ProductStatus != TangOrderProductStatus.Return && product.CreateTime >= start && product.CreateTime < end
+                        group product by new { product.ProductId, relative.StaffId, product.Name } into g
                         select new Report_ProductSale
                         {
-                            Id = g.Key.ProductId,
+                            Id = g.Key.StaffId,
                             Name = g.Key.Name,
                             Count = g.Sum(a => a.Quantity),
                             Amount = g.Sum(a => a.Amount)
                         };
             return await query.OrderByDescending(a => a.Amount).ToListAsync();
         }
-        public async Task<List<Report_ProductSale>> GetSingleCookReportForTakeoutAsync(int cookId, DateTime start, DateTime end)
+        public async Task<List<Report_ProductSale>> GetCookDetailReportForTakeoutAsync(IEnumerable<int> cookIds, DateTime start, DateTime end)
         {
             var query = from relative in Context.CookProductRelatives
                         join product in Context.OrderProducts on relative.ProductId equals product.ProductId into joinProduct
                         from product in joinProduct.DefaultIfEmpty()
                         join order in Context.Orders on product.OrderId equals order.ID
-                        where relative.StaffId == cookId && (order.Status & OrderStatus.Valid) > 0 && product.CreateTime >= start && product.CreateTime < end
-                        group product by new { product.ProductId, product.Name } into g
+                        where cookIds.Contains(relative.StaffId) && (order.Status & OrderStatus.Valid) > 0 && product.CreateTime >= start && product.CreateTime < end
+                        group product by new { product.ProductId, product.Name, relative.StaffId } into g
                         select new Report_ProductSale
                         {
-                            Id = g.Key.ProductId.Value,
+                            Id = g.Key.StaffId,
                             Name = g.Key.Name,
                             Count = g.Sum(a => a.Quantity ?? 0),
                             Amount = g.Sum(a => a.Price ?? 0)
@@ -232,36 +268,76 @@ namespace JdCat.Cat.Repository
 
         public async Task<List<Report_ProductSale>> GetSingleBoothReportAsync(int boothId, DateTime start, DateTime end)
         {
+            return await GetBoothDetailReportAsync(new[] { boothId }, start, end);
+            //var query = from relative in Context.BoothProductRelatives
+            //            join product in Context.TangOrderProducts on relative.ProductId equals product.ProductId into joinProduct
+            //            from product in joinProduct.DefaultIfEmpty()
+            //            where relative.StoreBoothId == boothId && product.ProductStatus != TangOrderProductStatus.Return && product.CreateTime >= start && product.CreateTime < end
+            //            group product by new { product.ProductId, product.Name } into g
+            //            select new Report_ProductSale
+            //            {
+            //                Id = g.Key.ProductId,
+            //                Name = g.Key.Name,
+            //                Count = g.Sum(a => a.Quantity),
+            //                Amount = g.Sum(a => a.Amount)
+            //            };
+            //return await query.OrderByDescending(a => a.Amount).ToListAsync();
+        }
+        public async Task<List<Report_ProductSale>> GetSingleBoothReportForTakeoutAsync(int boothId, DateTime start, DateTime end)
+        {
+            return await GetBoothDetailReportForTakeoutAsync(new [] { boothId }, start, end);
+            //var query = from relative in Context.BoothProductRelatives
+            //            join product in Context.OrderProducts on relative.ProductId equals product.ProductId into joinProduct
+            //            from product in joinProduct.DefaultIfEmpty()
+            //            join order in Context.Orders on product.OrderId equals order.ID
+            //            where relative.StoreBoothId == boothId && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
+            //            group product by new { product.ProductId, product.Name } into g
+            //            select new Report_ProductSale
+            //            {
+            //                Id = g.Key.ProductId.Value,
+            //                Name = g.Key.Name,
+            //                Count = g.Sum(a => a.Quantity ?? 0),
+            //                Amount = g.Sum(a => a.Price ?? 0)
+            //            };
+            //return await query.OrderByDescending(a => a.Amount).ToListAsync();
+        }
+
+        public async Task<List<Report_ProductSale>> GetBoothDetailReportAsync(IEnumerable<int> boothIds, DateTime start, DateTime end)
+        {
             var query = from relative in Context.BoothProductRelatives
-                        join product in Context.TangOrderProducts on relative.ProductId equals product.ProductId into joinProduct
-                        from product in joinProduct.DefaultIfEmpty()
-                        where relative.StoreBoothId == boothId && product.ProductStatus != TangOrderProductStatus.Return && product.CreateTime >= start && product.CreateTime < end
-                        group product by new { product.ProductId, product.Name } into g
+                        join product in Context.TangOrderProducts on relative.ProductId equals product.ProductId
+                        where boothIds.Contains(relative.StoreBoothId) && product.ProductStatus != TangOrderProductStatus.Return && product.CreateTime >= start && product.CreateTime < end
+                        group product by new { product.ProductId, product.Name, relative.StoreBoothId } into g
                         select new Report_ProductSale
                         {
-                            Id = g.Key.ProductId,
+                            Id = g.Key.StoreBoothId,
                             Name = g.Key.Name,
                             Count = g.Sum(a => a.Quantity),
                             Amount = g.Sum(a => a.Amount)
                         };
             return await query.OrderByDescending(a => a.Amount).ToListAsync();
         }
-        public async Task<List<Report_ProductSale>> GetSingleBoothReportForTakeoutAsync(int boothId, DateTime start, DateTime end)
+        public async Task<List<Report_ProductSale>> GetBoothDetailReportForTakeoutAsync(IEnumerable<int> boothIds, DateTime start, DateTime end)
         {
             var query = from relative in Context.BoothProductRelatives
-                        join product in Context.OrderProducts on relative.ProductId equals product.ProductId into joinProduct
-                        from product in joinProduct.DefaultIfEmpty()
+                        where boothIds.Contains(relative.StoreBoothId)
+                        select relative;
+
+            var query1 = from relative in query
+                        join product in Context.OrderProducts on relative.ProductId equals product.ProductId
                         join order in Context.Orders on product.OrderId equals order.ID
-                        where relative.StoreBoothId == boothId && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
-                        group product by new { product.ProductId, product.Name } into g
+                        where (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
+                        group product by new { product.ProductId, product.Name, relative.StoreBoothId } into g
                         select new Report_ProductSale
                         {
-                            Id = g.Key.ProductId.Value,
+                            Id = g.Key.StoreBoothId,
                             Name = g.Key.Name,
                             Count = g.Sum(a => a.Quantity ?? 0),
                             Amount = g.Sum(a => a.Price ?? 0)
                         };
-            return await query.OrderByDescending(a => a.Amount).ToListAsync();
+            var result = await query1.OrderByDescending(a => a.Amount).ToListAsync();
+            Log.Debug(JsonConvert.SerializeObject(result));
+            return result;
         }
 
         public async Task<List<Report_ProductRanking>> GetProductsDataAsync(int businessId, DateTime start, DateTime end)

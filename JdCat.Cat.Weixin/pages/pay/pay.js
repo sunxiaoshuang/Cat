@@ -87,7 +87,6 @@ Page({
     });
   },
   onShow: function () {
-    var business = qcloud.getSession().business;
     /** 页面每次展示时，执行的操作：
      * 1. 载入正在使用的优惠券
      * 2. 载入正在使用的地址

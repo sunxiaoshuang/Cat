@@ -265,7 +265,8 @@
                             vueObj = new Vue({
                                 el: "#bindPrinter",
                                 data: {
-                                    typeList, products: allProducts,
+                                    typeList,
+                                    products: allProducts,
                                     productList,
                                     search: {
                                         key: "",
