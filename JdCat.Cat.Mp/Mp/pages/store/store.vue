@@ -451,7 +451,6 @@
 	.info {
 		display: flex;
 		flex-flow: column;
-		margin-bottom: 500upx;
 	}
 
 	.info .info-item {
