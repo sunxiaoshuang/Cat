@@ -10,6 +10,7 @@ using JdCat.Cat.Common.Dianwoda;
 using JdCat.Cat.Common.Models;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using JdCat.Cat.Repository.Service;
 using JdCat.Cat.Web.App_Code;
 using log4net;
@@ -38,6 +39,15 @@ namespace JdCat.Cat.Web.Controllers
 
         public IActionResult Test()
         {
+            Log.Debug("querystring:" + Request.QueryString.Value);
+            using (var st = new StreamReader(Request.Body))
+            {
+                Log.Debug("body:" + st.ReadToEnd());
+            }
+            foreach (var item in Request.Headers)
+            {
+                Log.Debug(item.Key + ":" + item.Value);
+            }
             return View();
         }
 
@@ -154,21 +164,21 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="code"></param>
         /// <param name="state"></param>
         /// <returns></returns>
-        public async Task<IActionResult> WxUser([FromQuery]string code, [FromQuery]string state)
-        {
-            var appId = "wx37df4bb420888824";                       // 公众号AppId
-            var secret = "8db34ed73016a5f22878295ed409cc52";        // 公众号密钥
-            var tokenUrl = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={appId}&secret={secret}&code={code}&grant_type=authorization_code";
-            using (var client = new HttpClient())
-            {
-                var res = await client.GetAsync(tokenUrl);
-                var content = await res.Content.ReadAsStringAsync();
-                var json = JObject.Parse(content);
-                var openId = json["openid"].Value<string>();
-                ViewBag.body = openId;
-            }
-            return View();
-        }
+        //public async Task<IActionResult> WxUser([FromQuery]string code, [FromQuery]string state)
+        //{
+        //    var appId = "wx37df4bb420888824";                       // 公众号AppId
+        //    var secret = "8db34ed73016a5f22878295ed409cc52";        // 公众号密钥
+        //    var tokenUrl = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={appId}&secret={secret}&code={code}&grant_type=authorization_code";
+        //    using (var client = new HttpClient())
+        //    {
+        //        var res = await client.GetAsync(tokenUrl);
+        //        var content = await res.Content.ReadAsStringAsync();
+        //        var json = JObject.Parse(content);
+        //        var openId = json["openid"].Value<string>();
+        //        ViewBag.body = openId;
+        //    }
+        //    return View();
+        //}
         /// <summary>
         /// 根据商户编码绑定OpenId
         /// </summary>
@@ -194,19 +204,19 @@ namespace JdCat.Cat.Web.Controllers
         //    result.Success = true;
         //    return Json(result);
         //}
+
         /// <summary>
         /// 微信事件通知
-        ///     发送的模版消息完成情况会通过该接口返回
         /// </summary>
         /// <returns></returns>
         public async Task<IActionResult> WechatCallback([FromQuery]string state)
         {
-            var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
             if(!string.IsNullOrEmpty(state))
             {
                 switch (state)
                 {
                     case "mp":
+                        // 公众号管理平台验证
                         var c = Request.Query["code"].ToString();
                         ViewBag.Url = HttpContext.RequestServices.GetService<AppData>().MpUrl;
                         return View("WeixinWebview", await WxHelper.GetOpenIdAsync(c));
@@ -224,14 +234,20 @@ namespace JdCat.Cat.Web.Controllers
                     try
                     {
                         var result = UtilHelper.ReadXml<WxEvent>(content);
-                        if (result.MsgType == "event" && result.Event == "SCAN")
-                        {
-                            await Listen(result);
-                        }
+                        var service = HttpContext.RequestServices.GetService<IUtilRepository>();
+                        await service.WxMsgHandlerAsync(result);
+                        //if (result.MsgType == "event" && result.Event == "SCAN")
+                        //{
+                        //    await Listen(result);
+                        //}
+                        //else if(result.MsgType == "event" && result.Event == "submit_membercard_user_info")
+                        //{
+
+                        //}
                     }
                     catch (Exception e)
                     {
-                        log.Error("微信公众号开发平台错误：" + e);
+                        Log.Error("微信公众号回调异常：" + e);
                     }
                 }
             }
@@ -259,32 +275,64 @@ namespace JdCat.Cat.Web.Controllers
 
 
         #region 微信事件
-        private async Task Listen(WxEvent e)
-        {
-            //var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
-            if (!int.TryParse(e.EventKey, out int businessId))
-            {
-                return;
-            }
-            var service = HttpContext.RequestServices.GetService<IBusinessRepository>();
-            var users = service.GetWxListenUser(businessId);
-            if (users.Count >= 3) return;
+        //private async Task Listen(WxEvent e)
+        //{
+        //    //var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
+        //    if (!int.TryParse(e.EventKey, out int businessId))
+        //    {
+        //        return;
+        //    }
+        //    var service = HttpContext.RequestServices.GetService<IBusinessRepository>();
+        //    var users = service.GetWxListenUser(businessId);
+        //    if (users.Count >= 4) return;
 
-            var token = await WxHelper.GetTokenAsync(WxHelper.WeChatAppId, WxHelper.WeChatSecret);
-            var url = $"https://api.weixin.qq.com/cgi-bin/user/info?access_token={token}&openid={e.FromUserName}&lang=zh_CN";
-            using (var client = new HttpClient())
-            {
-                var res = client.GetAsync(url);
-                var result = await res.Result.Content.ReadAsStringAsync();
-                var user = JsonConvert.DeserializeObject<WxListenUser>(result);
-                if (users.Exists(a => a.openid == user.openid))
-                {
-                    return;
-                }
-                user.BusinessId = businessId;
-                service.BindWxListen(user);
-            }
-        }
+        //    var token = await WxHelper.GetTokenAsync(WxHelper.WeChatAppId, WxHelper.WeChatSecret);
+        //    var url = $"https://api.weixin.qq.com/cgi-bin/user/info?access_token={token}&openid={e.FromUserName}&lang=zh_CN";
+        //    using (var client = new HttpClient())
+        //    {
+        //        var res = client.GetAsync(url);
+        //        var result = await res.Result.Content.ReadAsStringAsync();
+        //        var user = JsonConvert.DeserializeObject<WxListenUser>(result);
+        //        if (users.Exists(a => a.openid == user.openid))
+        //        {
+        //            return;
+        //        }
+        //        user.BusinessId = businessId;
+        //        service.BindWxListen(user);
+        //    }
+        //}
+
+        //private async Task MemberActiveAsync(WxEvent e)
+        //{
+        //    var res = await WxHelper.GetMemberInfoAsync(e.CardId, e.UserCardCode);
+        //    var json = JObject.Parse(res);
+        //    if(json["errcode"].ToString() != "0")
+        //    {
+        //        Log.Error($"获取会员[{e.UserCardCode}]信息失败：{json["errmsg"]}");
+        //        return;
+        //    }
+        //    var service = HttpContext.RequestServices.GetService<ICardRepository>();
+        //    var card = await service.GetCardAsync(e.CardId);
+        //    var entity = new WxMember {
+        //        Code = e.UserCardCode,
+        //        NickName = json["nickname"].ToString(),
+        //        CardId = e.CardId,
+        //        WxCardId = card.ID,
+        //        BusinessId = card.BusinessId
+        //    };
+        //    if(json["user_info"]["common_field_list"] != null)
+        //    {
+        //        var arr = json["user_info"]["common_field_list"].ToArray();
+        //        entity.Name = arr.FirstOrDefault(a => a["name"].ToString() == "USER_FORM_INFO_FLAG_NAME")?["value"].ToString();
+        //        entity.Phone = arr.FirstOrDefault(a => a["name"].ToString() == "USER_FORM_INFO_FLAG_MOBILE")?["value"].ToString();
+        //        var gender = arr.FirstOrDefault(a => a["name"].ToString() == "USER_FORM_INFO_FLAG_SEX")?["value"].ToString();
+        //        if (gender == "MALE") entity.Gender = UserGender.Male;
+        //        else if (gender == "FEMALE") entity.Gender = UserGender.Female;
+        //        var birthday = arr.FirstOrDefault(a => a["name"].ToString() == "USER_FORM_INFO_FLAG_BIRTHDAY")?["value"].ToString();
+        //        if (birthday != null) entity.Birthday = Convert.ToDateTime(birthday);
+        //    }
+        //    await service.AddAsync(entity);
+        //}
         #endregion
 
         #region 授权后跳转页面

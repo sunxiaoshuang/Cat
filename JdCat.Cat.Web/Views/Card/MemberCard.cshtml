@@ -1,0 +1,131 @@
+﻿@{
+    ViewData["Title"] = "会员卡设置";
+}
+@section Styles {
+    <environment include="Development">
+        <link href="~/css/card/memberCard.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/css/card/memberCard.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+}
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/card/memberCard.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/card/memberCard.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewData["Title"]</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    @*<button class="btn btn-primary" @@click="setWhiteList()">确定</button>
+                        <button class="btn btn-primary" @@click="qrcode()">创建二维码</button>
+                        <button class="btn btn-primary" @@click="update()">修改会员卡</button>*@
+                    <p>
+                        <span>会员卡状态：</span>
+                        <span class="badge" v-text="cardStatus" v-bind:class="{'bg-success': cardStatus === '可投放'}"></span>
+                        <button class="btn btn-primary pull-right margin-right" @@click="qrcode()">投放会员卡</button>
+                    </p>
+                    <div class="membercard-container">
+                        <div class="membercard">
+
+                        </div>
+                        <div class="info">
+                            <div class="panel panel-default" style="background: #f4f8fb;">
+                                <div class="panel-heading" style="background: #fff; box-shadow: none;border: 1px #f0f0f0 solid;">
+                                    <h3 class="panel-title">
+                                        <span class="title" style="font-size: 90%;">基础配置</span>
+                                    </h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="form-horizontal oneline">
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">
+                                                <span class="require">品牌名称：</span>
+                                            </label>
+                                            <div class="col-md-4">
+                                                <input class="form-control" placeholder="创建后不可修改" v-model.trim="card.member_card.base_info.brand_name" v-bind:disabled="card.member_card.base_info.id" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">
+                                                <span class="require">副标题：</span>
+                                            </label>
+                                            <div class="col-md-4">
+                                                <input class="form-control" v-model.trim="card.member_card.base_info.title" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">
+                                                会员卡LOGO：
+                                            </label>
+                                            <label class="col-md-8 control-label" style="text-align:left;font-weight:400;color:gray;">
+                                                使用商户设置中的LOGO
+                                            </label>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">
+                                                <span class="require">会员卡颜色：</span>
+                                            </label>
+                                            <div class="col-md-10">
+                                                <div class="card-color">
+                                                    <div class="item" v-for="color in colors" v-bind:class="{'selected': color.selected}" v-bind:style="{backgroundColor: color.color}" @@click="selectColor(color)"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">
+                                                <span class="require">操作提示：</span>
+                                            </label>
+                                            <div class="col-md-4">
+                                                <input class="form-control" v-model.trim="card.member_card.base_info.notice" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">
+                                                <span class="require">特权说明：</span>
+                                            </label>
+                                            <div class="col-md-4">
+                                                <textarea class="form-control" v-model.trim="card.member_card.prerogative" style="resize: none;" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">
+                                                <span class="require">使用须知：</span>
+                                            </label>
+                                            <div class="col-md-4">
+                                                <textarea class="form-control" v-model.trim="card.member_card.base_info.description" style="resize: none;" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">
+                                                <span class="require">联系电话：</span>
+                                            </label>
+                                            <div class="col-md-4">
+                                                <input class="form-control" v-model.trim="card.member_card.base_info.service_phone" />
+                                            </div>
+                                        </div>
+                                        <p class="text-center">
+                                            <button class="btn btn-primary" @@click="save()">保存会员卡</button>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -12,7 +12,7 @@
         </div>
         <div class="search-container" v-bind:style="{'min-height': search.boxHeight}">
             <div class="search-box">
-                <div class="search-item" v-for="item in search.result" v-bind:class="{'selected': item.selected, 'binded': !!item.title, 'checked': item.checked}" v-text="item.name" @@click="clickItem(item)" :title="item.title" data-placement="bottom">
+                <div class="search-item" v-for="item in search.result" v-bind:class="{'selected': item.selected, 'binded': !!item.title, 'checked': item.checked}" v-text="item.name" @@click="choice(item)" :title="item.title" data-placement="bottom">
                 </div>
             </div>
         </div>

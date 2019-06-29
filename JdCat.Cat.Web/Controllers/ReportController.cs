@@ -222,11 +222,76 @@ namespace JdCat.Cat.Web.Controllers
             var result = type == 0 ?
                 await service.GetCooksReportForTakeoutAsync(Business.ID, start, end.AddDays(1))
                 : await service.GetCooksReportAsync(Business.ID, start, end.AddDays(1));
-            var num = 1;
-            result.ForEach(a => a.Id = num++);
-            var title = $"厨师{(type == 0 ? "[外卖]" : "")}产出统计（{start:yyyy年MM月dd日}-{end:yyyy年MM月dd日}）";
-            var xls = result.ToWorksheet(title);
-            return File(xls, AppData.XlsxContentType, title + ".xlsx");
+            var total = new Report_ProductSale { Name = "合计", Amount = 0, Count = 0 };
+            result.ForEach(item => {
+                total.Amount += item.Amount;
+                total.Count += item.Count;
+            });
+            var title = $"厨师{(type == 0 ? "[外卖]" : "")}产出统计";
+
+            var detail = type == 0 ? await service.GetCookDetailReportForTakeoutAsync(result.Select(a => a.Id), start, end.AddDays(1)) : await service.GetCookDetailReportAsync(result.Select(a => a.Id), start, end.AddDays(1));
+
+            using (var package = new ExcelPackage())
+            {
+                var columnCount = 5;
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells["A1"].Value = title;
+                worksheet.Cells["A2"].Value = $"营业日期：从{start:yyyy-MM-dd}到{end:yyyy-MM-dd}";
+                worksheet.Cells["A3"].Value = $"导出时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                worksheet.Cells[1, 1, 1, columnCount].Merge = true;
+                worksheet.Cells[2, 1, 2, columnCount].Merge = true;
+                worksheet.Cells[3, 1, 3, columnCount].Merge = true;
+                worksheet.Cells["A1"].Style.Font.Size = 16;
+                worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A4"].Value = "序号";
+                worksheet.Cells["B4"].Value = "厨师";
+                worksheet.Cells["C4"].Value = "商品";
+                worksheet.Cells["D4"].Value = "总数";
+                worksheet.Cells["E4"].Value = "总销售额";
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                int rowIndex = 5, index = 1;
+                foreach (var cook in result)
+                {
+                    var startRow = rowIndex;
+                    worksheet.Cells[$"B{rowIndex}"].Value = cook.Name;
+                    var detailList = detail.Where(a => a.Id == cook.Id).ToList();
+                    foreach (var item in detailList)
+                    {
+                        worksheet.Cells[$"A{rowIndex}"].Value = index;
+                        worksheet.Cells[$"C{rowIndex}"].Value = item.Name;
+                        worksheet.Cells[$"D{rowIndex}"].Value = item.Count;
+                        worksheet.Cells[$"E{rowIndex}"].Value = item.Amount;
+                        index++;
+                        rowIndex++;
+                    }
+                    worksheet.Cells[$"A{rowIndex}"].Value = index;
+                    worksheet.Cells[$"C{rowIndex}"].Value = "合计";
+                    worksheet.Cells[$"D{rowIndex}"].Value = cook.Count;
+                    worksheet.Cells[$"E{rowIndex}"].Value = cook.Amount;
+
+                    worksheet.Cells[rowIndex - detailList.Count, 2, rowIndex, 2].Merge = true;
+
+                    index++;
+                    rowIndex++;
+                }
+                worksheet.Cells[$"A{rowIndex}"].Value = index;
+                worksheet.Cells[$"B{rowIndex}"].Value = "合计";
+                worksheet.Cells[$"D{rowIndex}"].Value = total.Count;
+                worksheet.Cells[$"E{rowIndex}"].Value = total.Amount;
+                worksheet.Cells[5, 1, rowIndex, columnCount].AutoFitColumns();
+                var dataBorder = worksheet.Cells[4, 1, rowIndex, columnCount].Style.Border;
+                dataBorder.Bottom.Style = dataBorder.Top.Style = dataBorder.Left.Style = dataBorder.Right.Style = ExcelBorderStyle.Thin;
+                var xls = package.GetAsByteArray();
+                return File(xls, AppData.XlsxContentType, $"{title}({start:yyyyMMdd}-{end:yyyyMMdd}).xlsx");
+
+            }
+
+
+            //result.Add(total);
+            //result.ForEach(a => a.Id = num++);
+            //var xls = result.ToWorksheet(title);
+            //return File(xls, AppData.XlsxContentType, title + ".xlsx");
         }
         #endregion
 
@@ -269,11 +334,77 @@ namespace JdCat.Cat.Web.Controllers
             var result = type == 0 ?
                 await service.GetBoothsReportForTakeoutAsync(Business.ID, start, end.AddDays(1))
                 : await service.GetBoothsReportAsync(Business.ID, start, end.AddDays(1));
-            var num = 1;
-            result.ForEach(a => a.Id = num++);
-            var title = $"档口{(type == 0 ? "[外卖]" : "")}产出统计（{start:yyyy年MM月dd日}-{end:yyyy年MM月dd日}）";
-            var xls = result.ToWorksheet(title);
-            return File(xls, AppData.XlsxContentType, title + ".xlsx");
+            var total = new Report_ProductSale { Name = "合计", Amount = 0, Count = 0 };
+            result.ForEach(item => {
+                total.Amount += item.Amount;
+                total.Count += item.Count;
+            });
+
+            var title = $"档口{(type == 0 ? "[外卖]" : "")}产出统计";
+
+            var detail = type == 0 ? await service.GetBoothDetailReportForTakeoutAsync(result.Select(a => a.Id), start, end.AddDays(1)) : await service.GetBoothDetailReportAsync(result.Select(a => a.Id), start, end.AddDays(1));
+
+            using (var package = new ExcelPackage())
+            {
+                var columnCount = 5;
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells["A1"].Value = title;
+                worksheet.Cells["A2"].Value = $"营业日期：从{start:yyyy-MM-dd}到{end:yyyy-MM-dd}";
+                worksheet.Cells["A3"].Value = $"导出时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                worksheet.Cells[1, 1, 1, columnCount].Merge = true;
+                worksheet.Cells[2, 1, 2, columnCount].Merge = true;
+                worksheet.Cells[3, 1, 3, columnCount].Merge = true;
+                worksheet.Cells["A1"].Style.Font.Size = 16;
+                worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A4"].Value = "序号";
+                worksheet.Cells["B4"].Value = "档口";
+                worksheet.Cells["C4"].Value = "商品";
+                worksheet.Cells["D4"].Value = "总数";
+                worksheet.Cells["E4"].Value = "总销售额";
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                int rowIndex = 5, index = 1;
+                foreach (var booth in result)
+                {
+                    var startRow = rowIndex;
+                    worksheet.Cells[$"B{rowIndex}"].Value = booth.Name;
+                    var detailList = detail.Where(a => a.Id == booth.Id).ToList();
+                    foreach (var item in detailList)
+                    {
+                        worksheet.Cells[$"A{rowIndex}"].Value = index;
+                        worksheet.Cells[$"C{rowIndex}"].Value = item.Name;
+                        worksheet.Cells[$"D{rowIndex}"].Value = item.Count;
+                        worksheet.Cells[$"E{rowIndex}"].Value = item.Amount;
+                        index++;
+                        rowIndex++;
+                    }
+                    worksheet.Cells[$"A{rowIndex}"].Value = index;
+                    worksheet.Cells[$"C{rowIndex}"].Value = "合计";
+                    worksheet.Cells[$"D{rowIndex}"].Value = booth.Count;
+                    worksheet.Cells[$"E{rowIndex}"].Value = booth.Amount;
+
+                    worksheet.Cells[rowIndex - detailList.Count, 2, rowIndex, 2].Merge = true;
+
+                    index++;
+                    rowIndex++;
+                }
+                worksheet.Cells[$"A{rowIndex}"].Value = index;
+                worksheet.Cells[$"B{rowIndex}"].Value = "合计";
+                worksheet.Cells[$"D{rowIndex}"].Value = total.Count;
+                worksheet.Cells[$"E{rowIndex}"].Value = total.Amount;
+                worksheet.Cells[5, 1, rowIndex, columnCount].AutoFitColumns();
+                var dataBorder = worksheet.Cells[4, 1, rowIndex, columnCount].Style.Border;
+                dataBorder.Bottom.Style = dataBorder.Top.Style = dataBorder.Left.Style = dataBorder.Right.Style = ExcelBorderStyle.Thin;
+                var xls = package.GetAsByteArray();
+                return File(xls, AppData.XlsxContentType, $"{title}({start:yyyyMMdd}-{end:yyyyMMdd}).xlsx");
+
+            }
+
+            //result.Add(total);
+            //result.ForEach(a => a.Id = num++);
+            //var title = $"档口{(type == 0 ? "[外卖]" : "")}产出统计（{start:yyyy年MM月dd日}-{end:yyyy年MM月dd日}）";
+            //var xls = result.ToWorksheet(title);
+            //return File(xls, AppData.XlsxContentType, title + ".xlsx");
         }
         #endregion
 
@@ -310,6 +441,24 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> ExportProductsData([FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
         {
             var list = type == 0 ? await service.GetProductsDataForTakeoutAsync(Business.ID, start, end.AddDays(1)) : await service.GetProductsDataAsync(Business.ID, start, end.AddDays(1));
+            var total = new Report_ProductRanking { Name = "合计" };
+            list.ForEach(item => {
+                total.Quantity += item.Quantity;
+                total.Amount += item.Amount;
+                total.CancelQuantity += item.CancelQuantity;
+                total.CancelSaleAmount += item.CancelSaleAmount;
+                total.CancelAmount += item.CancelAmount;
+                total.SaleQuantity += item.SaleQuantity;
+                total.SaleAmount += item.SaleAmount;
+                total.EntertainQuantity += item.EntertainQuantity;
+                total.EntertainAmount += item.EntertainAmount;
+                total.DiscountAmount += item.DiscountAmount;
+                total.DiscountQuantity += item.DiscountQuantity;
+                total.DiscountedAmount += item.DiscountedAmount;
+                total.ActualQuantity += item.ActualQuantity;
+                total.ActualAmount += item.ActualAmount;
+            });
+            list.Add(total);
 
             var title = "商品销售排行统计" + (type == 0 ? "[外卖]" : "");
             using (var package = new ExcelPackage())

@@ -25,7 +25,7 @@
     <script src="~/js/lib/iscroll-zoom.min.js"></script>
     <script src="~/js/lib/lrz.all.bundle.min.js"></script>
     <script src="~/js/lib/jquery.photoClip.min.js"></script>
-    @*<script src="~/data/province.js"></script>
+    <script src="~/data/province.js"></script>
     <script src="~/data/city.js"></script>
     <script src="~/data/area.js"></script>
     <script>
@@ -34,13 +34,14 @@
             cc[province.label] = {};
             cityData[index1].forEach((city, index2) => {
                 //cc[province.label][city.label] = {};
-                areaData[index2].forEach(area => {
-                    cc[province.label][city.label] = area.map(a => a.label);
-                });
+                //areaData[index1][index2].forEach(area => {
+                //    cc[province.label][city.label] = area.map(a => a.label);
+                //});
+                cc[province.label][city.label] = areaData[index1][index2].map(a => a.label);
             });
         });
-        console.log(cc);
-    </script>*@
+        console.log(JSON.stringify(cc));
+    </script>
     <environment include="Development">
         <script src="~/lib/bootstrap/dist/js/bootstrap-switch.js"></script>
         <script src="~/js/business/index.js"></script>

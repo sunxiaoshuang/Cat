@@ -15,7 +15,7 @@ Page({
     util.showBusy("正在定位"); 
     setTimeout(function () {
       wx.getLocation({
-        type: "wgs84",
+        type: "gcj02",
         success: function (res) {
           var location = res.latitude + "," + res.longitude;
           qcloud.request({

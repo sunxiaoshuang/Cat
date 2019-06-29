@@ -33,6 +33,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Business GetBusinessByStoreId(string code);
         /// <summary>
+        /// 根据商户的ObjectId获取商户实体（不跟踪）
+        /// </summary>
+        /// <param name="objectId"></param>
+        /// <returns></returns>
+        Task<Business> GetNoTrackingAsync(string objectId);
+        /// <summary>
         /// 编码是否存在
         /// </summary>
         /// <param name="code"></param>

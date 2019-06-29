@@ -35,14 +35,65 @@
                                 <a href="javascript:void(0)" v-bind:class="{'selected': item.checked}" v-text="item.name"></a>
                                 <ul class="list leaf" v-show="item.checked" style="display: none;">
                                     <li v-for="leaf in item.sub_button">
-                                        <a @@click.stop="choice(leaf)" v-bind:class="{'selected': leaf.checked}">{{leaf.name}}</a>
+                                        <a @@click.stop="choice(leaf, item)" v-bind:class="{'selected': leaf.checked}">{{leaf.name}}</a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
                     </div>
                     <div class="col-md-9">
-
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="control-label col-xs-3">
+                                    菜单类型：
+                                </label>
+                                <div class="col-xs-8">
+                                    <select class="form-control" v-model="menu.type">
+                                        <option v-for="item in types" :value="item.value">{{item.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-3">
+                                    <span class="require">菜单标题：</span>
+                                </label>
+                                <div class="col-xs-8">
+                                    <input type="text" class="form-control" v-model="menu.name" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-3">
+                                    KEY值：
+                                </label>
+                                <div class="col-xs-8">
+                                    <input type="text" class="form-control" v-model="menu.key" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-3">
+                                    URL：
+                                </label>
+                                <div class="col-xs-8">
+                                    <input type="text" class="form-control" v-model="menu.url" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-3">
+                                    小程序AppID：
+                                </label>
+                                <div class="col-xs-8">
+                                    <input type="text" class="form-control" v-model="menu.appid" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-3">
+                                    小程序路径：
+                                </label>
+                                <div class="col-xs-8">
+                                    <input type="text" class="form-control" v-model="menu.pagepath" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

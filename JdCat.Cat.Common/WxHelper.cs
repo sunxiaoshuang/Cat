@@ -22,6 +22,22 @@ namespace JdCat.Cat.Common
         public static string WeChatSecret;                      // 简单猫科技公众号Secret
         public static string MapApiKey;                         // 腾讯地图开发者key
         public static string MapApiSecret;                      // 腾讯地图WebService接口Secret
+
+        /// <summary>
+        /// 微信卡券颜色对应表
+        /// </summary>
+        public static Dictionary<string, string> WxColors = new Dictionary<string, string> {    
+            { "Color010", "#63b359" },
+            { "Color020", "#2c9f67" },
+            { "Color030", "#509fc9" },
+            { "Color040", "#5885cf" },
+            { "Color050", "#9062c0" },
+            { "Color060", "#d09a45" },
+            { "Color070", "#e4b138" },
+            { "Color080", "#ee903c" },
+            { "Color090", "#dd6549" },
+            { "Color100", "#cc463d" }
+        };
         public static void Init(AppData config)
         {
             Msg_Refund = config.Msg_Refund;
@@ -37,7 +53,7 @@ namespace JdCat.Cat.Common
         /// <param name="content"></param>
         /// <param name="method"></param>
         /// <returns></returns>
-        private static async Task<string> Request(string url, HttpContent content = null, string method = "post")
+        private static async Task<string> RequestAsync(string url, HttpContent content = null, string method = "post")
         {
             method = method.ToLower();
             HttpResponseMessage result;
@@ -105,7 +121,7 @@ namespace JdCat.Cat.Common
             {
                 var result = await client.GetAsync(url);
                 var token = JsonConvert.DeserializeObject<WxToken>(await result.Content.ReadAsStringAsync());
-                
+
                 if (token.errcode == null)
                 {
                     token.GetTime = DateTime.Now;
@@ -180,7 +196,7 @@ namespace JdCat.Cat.Common
         {
             var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
             var url = $"https://api.weixin.qq.com/cgi-bin/menu/get?access_token={token}";
-            return await Request(url, method: "get");
+            return await RequestAsync(url, method: "get");
         }
 
         /// <summary>
@@ -194,7 +210,7 @@ namespace JdCat.Cat.Common
             var content = new InputData();
             content.SetValue("button", menus);
             var body = new StringContent(content.ToJson());
-            return await Request(url, body);
+            return await RequestAsync(url, body);
         }
 
         /// <summary>
@@ -205,7 +221,7 @@ namespace JdCat.Cat.Common
         {
             var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
             var url = $"https://api.weixin.qq.com/cgi-bin/menu/delete?access_token={token}";
-            return await Request(url, method: "get");
+            return await RequestAsync(url, method: "get");
         }
 
         /// <summary>
@@ -221,8 +237,19 @@ namespace JdCat.Cat.Common
                 var response = await hc.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
                 return content;
-                //return JsonConvert.DeserializeObject<WxSession>(content);
             }
+        }
+
+        /// <summary>
+        /// 获取用户信息
+        /// </summary>
+        /// <param name="openId"></param>
+        /// <returns></returns>
+        public static async Task<string> GetUserInfoAsync(string openId)
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            var url = $"https://api.weixin.qq.com/cgi-bin/user/info?access_token={token}&openid={openId}&lang=zh_CN";
+            return await RequestAsync(url, null, method: "get");
         }
 
         #region 第三方开发平台业务方法
@@ -452,6 +479,88 @@ namespace JdCat.Cat.Common
                 mapApiDic.Add(location, result);
                 return result;
             }
+        }
+
+        #endregion
+
+        #region 卡券
+
+        /// <summary>
+        /// 创建卡券
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static async Task<string> CreateCardAsync(JObject json)
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            return await RequestAsync($"https://api.weixin.qq.com/card/create?access_token={token}", new StringContent(JsonConvert.SerializeObject(json)));
+        }
+
+        /// <summary>
+        /// 根据CardId获取卡券详情
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        public static async Task<string> GetCardAsync(string cardId)
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            return await RequestAsync($"https://api.weixin.qq.com/card/get?access_token={token}", new StringContent(JsonConvert.SerializeObject(new { card_id = cardId })));
+        }
+
+        /// <summary>
+        /// 设置公众号白名单
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static async Task<string> SetWhiteListAsync(object obj)
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            return await RequestAsync($"https://api.weixin.qq.com/card/testwhitelist/set?access_token={token}", new StringContent(JsonConvert.SerializeObject(obj)));
+        }
+
+        /// <summary>
+        /// 获取卡券二维码信息
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static async Task<string> GetCardQrcodeAsync(object obj)
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            return await RequestAsync($"https://api.weixin.qq.com/card/qrcode/create?access_token={token}", new StringContent(JsonConvert.SerializeObject(obj)));
+        }
+
+        /// <summary>
+        /// 更新会员卡信息
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static async Task<string> UpdateCardAsync(object obj)
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            return await RequestAsync($"https://api.weixin.qq.com/card/update?access_token={token}", new StringContent(JsonConvert.SerializeObject(obj)));
+        }
+
+        /// <summary>
+        /// 设置会员卡表单内容
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static async Task<string> SetMemberCardActiveOptionAsync(object obj)
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            return await RequestAsync($"https://api.weixin.qq.com/card/membercard/activateuserform/set?access_token={token}", new StringContent(JsonConvert.SerializeObject(obj)));
+        }
+
+        /// <summary>
+        /// 拉取会员信息（积分查询）
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public static async Task<string> GetMemberInfoAsync(string cardId, string code)
+        {
+            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
+            return await RequestAsync($"https://api.weixin.qq.com/card/membercard/userinfo/get?access_token={token}", new StringContent(JsonConvert.SerializeObject(new { card_id = cardId, code })));
         }
 
         #endregion

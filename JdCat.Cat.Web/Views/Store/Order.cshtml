@@ -58,12 +58,12 @@
                                 <th width="220">订单编号</th>
                                 <th>下单时间</th>
                                 <th>餐台</th>
-                                <th>服务员</th>
-                                <th width="80">用餐人数</th>
+                                <th>收银员</th>
+                                @*<th width="80">用餐人数</th>*@
                                 @*<th>支付方式</th>*@
                                 <th>支付时间</th>
                                 <th width="100">订单状态</th>
-                                <th>餐位费</th>
+                                @*<th>餐位费</th>*@
                                 <th>实收金额</th>
                                 @*<th>优惠金额</th>*@
                                 <th width="120"></th>
@@ -76,13 +76,13 @@
                                 <td v-text="item.createTime"></td>
                                 <td v-text="item.deskName"></td>
                                 <td v-text="item.staffName"></td>
-                                <td v-text="item.peopleNumber"></td>
+                                @*<td v-text="item.peopleNumber"></td>*@
                                 @*<td v-text="item.paymentTypeName"></td>*@
                                 <td v-text="item.payTime"></td>
                                 <td v-html="orderStatus(item.orderStatus)"></td>
-                                <td>
+                                @*<td>
                                     <span class="fa fa-rmb" v-text="item.mealFee"></span>
-                                </td>
+                                </td>*@
                                 <td>
                                     <span class="fa fa-rmb" v-text="item.actualAmount"></span>
                                 </td>
@@ -97,7 +97,7 @@
                         </tbody>
                         <tfoot v-if="items == null || items.length == 0">
                             <tr>
-                                <th colspan="11">暂无任何订单数据...</th>
+                                <th colspan="9">暂无任何订单数据...</th>
                             </tr>
                         </tfoot>
                     </table>

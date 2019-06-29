@@ -16,6 +16,7 @@
                 this.loadData();
             },
             cat: function (item) {
+                if (!item.id) return;
                 if (item.selected) return;
                 var self = this;
                 this.items.forEach(function (obj) { obj.selected = false; });
@@ -33,10 +34,16 @@
                 var self = this;
                 axios.get(`/report/getBoothData?start=${this.start}&end=${this.end}&type=${this.type}`)
                     .then(function (res) {
-                        self.items = res.data.map(function (obj) {
-                            obj.amount = parseFloat(obj.amount.toFixed(2));
+                        var total = { name: '合计', amount: 0, count: 0 };
+                        var items = res.data.map(function (obj) {
+                            total.amount += obj.amount;
+                            total.count += obj.count;
                             return $.extend(obj, { selected: false });
                         });
+                        total.amount = +total.amount.toFixed(2);
+                        total.count = +total.count.toFixed(2);
+                        items.push(total);
+                        self.items = items;
                     })
                     .catch(function (err) { $.alert(err); });
             },

@@ -45,6 +45,10 @@ namespace JdCat.Cat.Repository
             var p = code.ToUpper();
             return Context.Businesses.SingleOrDefault(a => a.StoreId == p);
         }
+        public async Task<Business> GetNoTrackingAsync(string objectId)
+        {
+            return await Context.Businesses.AsNoTracking().FirstOrDefaultAsync(a => a.ObjectId == objectId);
+        }
         public bool ExistForCode(string code)
         {
             return Context.Businesses.Count(a => a.Code == code) > 0;
@@ -876,7 +880,7 @@ namespace JdCat.Cat.Repository
         public List<Business> GetNearbyStore(int chainId, string city, double lat, double lng, string key = null)
         {
             if (key != null && key.Contains("'")) throw new ArgumentException("参数中不能包含单引号");
-            var condition = $" where ParentId={chainId} and City='{city}' and Category=0";
+            var condition = $" where ParentId={chainId} and (locate('{city}', City) > 0 or locate('{city}', Province) > 0) and Category=0";
             if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(key.Trim()))
             {
                 condition += $" and (locate('{key}', Name) > 0 or locate('{key}', Address) > 0)";
@@ -884,7 +888,7 @@ namespace JdCat.Cat.Repository
             var sql = $@"select *, fn_geo(Lat, Lng, {lat}, {lng}) as Distance from Business a
                         {condition}
                         order by Distance asc
-                        limit 7";
+                        limit 20";
             return Context.Businesses.FromSql(sql).ToList();
             //return ExecuteReader<Business>(sql);
         }

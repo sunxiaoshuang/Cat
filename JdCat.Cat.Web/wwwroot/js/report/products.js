@@ -19,6 +19,18 @@
                 var self = this;
                 axios.get(`/report/getProductsData?start=${this.start}&end=${this.end}&type=${this.type}`)
                     .then(function (res) {
+                        var total = { name: '合计', quantity: 0, amount: 0, cancelQuantity: 0, cancelSaleAmount: 0, cancelAmount: 0, saleQuantity: 0, saleAmount: 0, entertainQuantity: 0, entertainAmount: 0, discountAmount: 0, discountQuantity: 0, discountedAmount: 0, actualQuantity: 0, actualAmount: 0};
+                        res.data.forEach(item => {
+                            for (let key in total) {
+                                if (key === "name") continue;
+                                total[key] += item[key];
+                            }
+                            for (let key in total) {
+                                if (key === "name") continue;
+                                total[key] = +total[key].toFixed(2);
+                            }
+                        });
+                        res.data.push(total);
                         self.items = res.data;
                     })
                     .catch(function (err) { $.alert(err); });

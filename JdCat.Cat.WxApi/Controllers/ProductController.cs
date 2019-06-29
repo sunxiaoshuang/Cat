@@ -49,6 +49,17 @@ namespace JdCat.Cat.WxApi.Controllers
             return Json(list);
         }
 
+        /// <summary>
+        /// 获取外卖菜单
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("menus2/{id}")]
+        public async Task<IActionResult> GetTakeoutMenus(int id)
+        {
+            return Json(await Service.GetTakeoutMenusAsync(id));
+        }
+
         [HttpGet("types/{id}")]
         public IActionResult GetTypes(int id)
         {
