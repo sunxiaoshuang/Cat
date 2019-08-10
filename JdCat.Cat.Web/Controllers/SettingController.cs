@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JdCat.Cat.Web.Controllers
 {
-    public class SettingController : BaseController<IBusinessRepository, Business>
+    public class SettingController : BaseController<IUtilRepository, Business>
     {
-        public SettingController(AppData appData, IBusinessRepository service) : base(appData, service)
+        public SettingController(AppData appData, IUtilRepository service) : base(appData, service)
         {
         }
         /// <summary>
@@ -21,8 +21,9 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> AuthPage([FromServices]AppData appData)
         {
-            var preCode = await WxHelper.GetOpenPreAuthCodeAsync(appData);
-            var url = $"https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={appData.OpenAppId}&pre_auth_code={preCode}&redirect_uri=http://t.e.jiandanmao.cn/Setting/AuthSuccess&auth_type=3";
+            var token = await Service.GetOpenTokenAsync();
+            var preCode = await WxHelper.GetOpenPreAuthCodeAsync(token);
+            var url = $"https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={WxHelper.OpenAppId}&pre_auth_code={preCode}&redirect_uri={appData.Domain}/Setting/AuthSuccess&auth_type=3";
             return Redirect(url);
         }
         /// <summary>
@@ -33,8 +34,16 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> AuthSuccess([FromQuery]string auth_code, [FromQuery]int expires_in, [FromServices]AppData appData)
         {
-            var result = await WxHelper.GetAuthToken(appData, auth_code);
-            Service.AddAuthInfo(result, Business);
+            var token = await Service.GetOpenTokenAsync();
+            var result = await WxHelper.GetAuthTokenAsync(auth_code, token);
+            var openAuth = new OpenAuthInfo
+            {
+                AppId = result.authorization_info.authorizer_appid,
+                BusinessId = Business.ID,
+                CreateTime = DateTime.Now,
+                RefreshToken = result.authorization_info.authorizer_refresh_token
+            };
+            await Service.SaveAuthorizerInfoAsync(openAuth);
             return RedirectToAction("AuthInfo");
         }
 
@@ -53,7 +62,9 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> GetAuthInfo()
         {
-            var info = await WxHelper.GetAuthorizerInfoAsync(AppData, Business.AppId);
+            //var authInfo = Service.GetAuthInfoByBusinessIdAsync(Business.ID);
+            var token = await Service.GetAuthorizerAccessTokenAsync(Business.WeChatAppId);
+            var info = await WxHelper.GetAuthorizerInfoAsync(token, Business.WeChatAppId);
             return Content(info);
         }
 

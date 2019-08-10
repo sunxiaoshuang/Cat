@@ -31,6 +31,7 @@ namespace JdCat.Cat.Repository
     public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         private static object loop = new object();
+        private StackExchange.Redis.IDatabase _database;
         //public new Order Get(int id)
         //{
         //    return Context.Orders
@@ -38,9 +39,9 @@ namespace JdCat.Cat.Repository
         //        .Include(a => a.Products)
         //        .SingleOrDefault(a => a.ID == id);
         //}
-        public OrderRepository(CatDbContext context) : base(context)
+        public OrderRepository(CatDbContext context, StackExchange.Redis.IConnectionMultiplexer connection) : base(context)
         {
-
+            _database = connection.GetDatabase();
         }
         public JsonData CreateOrder(Order order)
         {
@@ -280,6 +281,7 @@ namespace JdCat.Cat.Repository
             result.Data = order;
             return result;
         }
+
 
         public bool CancelSuccess(Order order, DadaResult<DadaLiquidatedDamages> back)
         {
@@ -663,6 +665,8 @@ namespace JdCat.Cat.Repository
                     return SelfHandler(order);
                 case LogisticsType.Yichengfeike:
                     return await YcfkHandler(order);
+                case LogisticsType.Shunfeng:
+                    return await SfHandler(order);
                 default:
                     break;
             }
@@ -686,25 +690,6 @@ namespace JdCat.Cat.Repository
             result.Msg = "申请成功";
             result.Data = order;
             return result;
-        }
-
-        public async Task SendMsgOfRefund(Order order)
-        {
-            var msg = new WxEventMessage
-            {
-                template_id = WxHelper.Msg_Refund,
-                data = new
-                {
-                    first = new { value = $"退款订单编号-{order.OrderCode}" },
-                    keyword1 = new { value = "￥" + order.Price.Value, color = "#ff0000" },
-                    keyword2 = new { value = order.RefundReason, color = "#ff0000" },
-                    keyword3 = new { value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
-                    keyword4 = new { value = "线上" },
-                    keyword5 = new { value = $"{order.ReceiverName} - {order.Phone}" },
-                    remark = new { value = "请尽快进入简单猫后台，订单管理 -> 实时订单 页处理。" }
-                }
-            };
-            await SendMessageNotify(msg, order.BusinessId.Value);
         }
 
         public async Task<JsonData> EstimateFreight(int businessId, double lat, double lng, string address)
@@ -895,6 +880,77 @@ namespace JdCat.Cat.Repository
             return result;
         }
 
+        private async Task<JsonData> SfHandler(Order order)
+        {
+            var business = order.Business;
+            var isProduct = AppSetting.AppData.RunMode == "product";
+            var sf = new SfInputData(business.ShunfengDevId, business.ShunfengDevKey);
+            var orderCode = order.DistributionFlow == 0 ? order.OrderCode : $"{order.OrderCode}_{order.DistributionFlow}";
+            sf.SetValue("dev_id", business.ShunfengDevId);
+            sf.SetValue("shop_id", business.ShunfengShopId);
+            sf.SetValue("shop_order_id", orderCode);
+            sf.SetValue("order_source", "简单猫");
+            sf.SetValue("order_sequence", order.Identifier.ToString());
+            sf.SetValue("pay_type", 1);
+            sf.SetValue("order_time", order.PayTime.Value.ToTimestamp());
+            sf.SetValue("is_appoint", 0);
+            sf.SetValue("is_insured", 0);
+            sf.SetValue("push_time", DateTime.Now.ToTimestamp());
+            sf.SetValue("version", 17);
+            sf.SetValue("receive", new
+            {
+                user_name = isProduct ? order.ReceiverName : "顺丰同城",
+                user_phone = isProduct ? order.Phone : "18888888888",
+                user_address = isProduct ? order.ReceiverAddress : "北京市海淀区学清嘉创大厦A座15层",
+                user_lng = isProduct ? order.Lng.ToString() : "116.3534196",
+                user_lat = isProduct ? order.Lat.ToString() : "40.0159778"
+            });
+            sf.SetValue("order_detail", new
+            {
+                total_price = order.Price * 100,
+                product_type = 1,
+                weight_gram = 0,
+                product_num = 1,
+                product_type_num = 1,
+                product_detail = order.Products.Select(a => new
+                {
+                    product_name = a.Name,
+                    product_num = a.Quantity
+                })
+
+            });
+            var sign = sf.MakeSign();
+
+            var url = $"{AppSetting.AppData.ShunfengHost}/open/api/external/createorder?sign={sign}";
+            var res = await UtilHelper.RequestAsync(url, sf.ToBody());
+
+            var result = new JsonData();
+            var json = JObject.Parse(res);
+            if (json["error_code"].Value<int>() != 0)
+            {
+                result.Msg = json["error_msg"].Value<string>();
+                order.ErrorReason = result.Msg;
+                return result;
+            }
+
+            order.DistributionFlow++;       // 每次发单成功之后，配送流水号加一
+            order.DistributionId = json["result"]["sf_order_id"].Value<string>(); // 记录配送订单号
+            order.Status = OrderStatus.DistributorReceipt;
+            order.DeliveryMode = DeliveryMode.Third;
+            order.DistributionTime = DateTime.Now;
+            order.ErrorReason = "";
+            result.Success = true;
+            result.Msg = "配送成功";
+            result.Data = new
+            {
+                Mode = order.DeliveryMode,
+                Logistics = order.LogisticsType,
+                order.Status,
+                flow = order.DistributionFlow
+            };
+            return result;
+        }
+
         public YcfkLocation GetOrderLocation(int id)
         {
             return Context.YcfkLocations.OrderByDescending(a => a.ID).FirstOrDefault(a => a.OrderId == id);
@@ -942,6 +998,7 @@ namespace JdCat.Cat.Repository
             paging.RecordCount = query.Count();
             return query.Skip(paging.Skip).Take(paging.PageSize).ToList();
         }
+
         public void ChangeCommentVisible(int commentId, bool visible)
         {
             var comment = Context.OrderComments.FirstOrDefault(a => a.ID == commentId);
@@ -951,10 +1008,6 @@ namespace JdCat.Cat.Repository
             ReloadCommentScore(comment.BusinessId);
         }
 
-        /// <summary>
-        /// 每次用户评论后，重新设置商家评分、配送评分
-        /// </summary>
-        /// <param name="id"></param>
         public void ReloadCommentScore(int id)
         {
 
@@ -973,6 +1026,15 @@ namespace JdCat.Cat.Repository
             business.Delivery = Avg(deliveryScoreGroup);
             Context.SaveChanges();
         }
+
+        public async Task<bool> AddOrderNotifyAsync(Order order)
+        {
+            order.User = null;
+            order.Business = null;
+            var timespan = new TimeSpan(2, 0, 0);
+            return await _database.StringSetAsync($"Jiandanmao:Notify:Order:{order.BusinessId}:{order.ID}", JsonConvert.SerializeObject(order, AppData.JsonSetting), timespan);
+        }
+
 
 
         /// <summary>
@@ -1038,12 +1100,12 @@ namespace JdCat.Cat.Repository
         {
             var url = "https://api.mch.weixin.qq.com/secapi/pay/refund";
             order.RefundNo = Guid.NewGuid().ToString().ToLower();
-            var data = new InputData();
+            var data = new InputData(order.Business.PayServerKey);
             var price = (int)Math.Round(order.Price.Value * 100, 0);        // 订单金额
             if (order.BusinessId == 1) price = 1;
 
-            data.SetValue("appid", AppSetting.AppData.ServerAppId);
-            data.SetValue("mch_id", AppSetting.AppData.ServerMchId);
+            data.SetValue("appid", order.Business.PayServerAppId);
+            data.SetValue("mch_id", order.Business.PayServerMchId);
             data.SetValue("sub_appid", order.Business.AppId);
             data.SetValue("sub_mch_id", order.Business.MchId);
             data.SetValue("transaction_id", order.WxPayCode);
@@ -1091,7 +1153,7 @@ namespace JdCat.Cat.Repository
 
             Log.Debug("退款返回值：" + result);
 
-            var ret = new InputData();
+            var ret = new InputData(order.Business.PayServerKey);
             ret.FromXml(result);
 
             return ret;
@@ -1102,22 +1164,22 @@ namespace JdCat.Cat.Repository
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="businessId"></param>
-        private async Task SendMessageNotify(WxEventMessage msg, int businessId)
-        {
-            if (string.IsNullOrEmpty(msg.template_id)) return;
-            var users = Context.WxListenUsers.Where(a => a.BusinessId == businessId);
-            if (users == null || users.Count() == 0) return;
-            foreach (var item in users)
-            {
-                msg.touser = item.openid;
-                var result = await WxHelper.SendEventMessageAsync(msg);
-                var ret = JsonConvert.DeserializeObject<WxMessageReturn>(result);
-                if (ret.errcode != 0)
-                {
-                    Log.Info($"模版通知消息失败：[消息_{JsonConvert.SerializeObject(msg)}，结果_{result}]");
-                }
-            }
-        }
+        //private async Task SendMessageNotify(WxEventMessage msg, int businessId)
+        //{
+        //    if (string.IsNullOrEmpty(msg.template_id)) return;
+        //    var users = Context.WxListenUsers.Where(a => a.BusinessId == businessId);
+        //    if (users == null || users.Count() == 0) return;
+        //    foreach (var item in users)
+        //    {
+        //        msg.touser = item.openid;
+        //        var result = await WxHelper.SendEventMessageAsync(msg);
+        //        var ret = JsonConvert.DeserializeObject<WxMessageReturn>(result);
+        //        if (ret.errcode != 0)
+        //        {
+        //            Log.Info($"模版通知消息失败：[消息_{JsonConvert.SerializeObject(msg)}，结果_{result}]");
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// 获取今日最大订单流水
@@ -1177,6 +1239,7 @@ namespace JdCat.Cat.Repository
             var avg = Math.Round(allScore / allCount, 1);
             return avg;
         }
+
 
     }
 }

@@ -10,6 +10,9 @@
     </environment>
 }
 @section Scripts {
+    <script>
+        var mpUrl = "@ViewBag.mpUrl";
+    </script>
     <environment include="Development">
         <script src="~/js/card/memberCard.js"></script>
     </environment>
@@ -82,6 +85,32 @@
                                                 <div class="card-color">
                                                     <div class="item" v-for="color in colors" v-bind:class="{'selected': color.selected}" v-bind:style="{backgroundColor: color.color}" @@click="selectColor(color)"></div>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">
+                                                <span class="require">储值营销：</span>
+                                            </label>
+                                            <div class="col-md-8">
+                                                <ul class="list-none">
+                                                    <li v-for="(item, index) in card.chargeList">
+                                                        充值<input class="form-control input-inline" v-model.number="item.amount" type="number" />元，赠送<input class="form-control input-inline" v-model.number="item.give" type="number" />元
+                                                        <a class="text-primary margin-left-20" @@click="reduceCharge(index)" v-show="index > 0">
+                                                            <i class="fa fa-minus-circle"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                                <a class="text-primary" @@click="addCharge()">添加规则</a>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label">
+                                                <span class="require">积分规则：</span>
+                                            </label>
+                                            <div class="col-md-8">
+                                                <p class="bonus-rule">消费积分：每消费<input class="form-control input-inline" v-model.number="card.bonusSale.amount" type="number" />元，增加<input class="form-control input-inline" v-model.number="card.bonusSale.give" type="number" />积分</p>
+                                                <p class="bonus-rule">充值积分：每充值<input class="form-control input-inline" v-model.number="card.bonusCharge.amount" type="number" />元，增加<input class="form-control input-inline" v-model.number="card.bonusCharge.give" type="number" />积分</p>
+                                                <p class="bonus-rule">开卡积分：开卡送<input class="form-control input-inline" v-model.number="card.bonusOpen.give" type="number" />积分
                                             </div>
                                         </div>
                                         <div class="form-group">

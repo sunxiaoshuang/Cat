@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewBag.Title = "美团商品映射";
+}
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/thirdOrder/meituanproduct.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/thirdOrder/meituanproduct.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+@section Styles {
+    <style>
+        td img {
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        #table td{
+            vertical-align: middle;
+        }
+    </style>
+}
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewBag.Title</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <button class="btn btn-primary" @@click="save()">
+                        <i class="fa fa-save"> 保存</i>
+                    </button>
+                    <button class="btn btn-primary" @@click="clear()">
+                        <i class="fa fa-remove"> 清除映射</i>
+                    </button>
+                    <table id="table" class="table table-order table-bordered margin-top-10">
+                        <thead>
+                            <tr>
+                                <th width="60">#</th>
+                                <th width="80"></th>
+                                <th>美团商品名称</th>
+                                <th>本地商品</th>
+                                <th width="150">本地商品编号</th>
+                                <th width="100">映射状态</th>
+                                <th width="120">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in table">
+                                <td v-text="item.num"></td>
+                                <td align="center">
+                                    <img :src="item.pic" @@click="catImg(item)" />
+                                </td>
+                                <td v-text="item.name"></td>
+                                <td v-text="item.localName"></td>
+                                <td v-text="item.code"></td>
+                                <td v-text="item.isSave ? '已映射' : '未映射'" v-bind:class="{'text-danger': !item.isSave, 'text-success': item.isSave}"></td>
+                                <td>
+                                    <a class="text-primary" @@click="select(item)">选择本地商品</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot v-show="table.length === 0">
+                            <tr>
+                                <td colspan="7">没有更多商品...</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="text-center">
+                        <div class="pagination">
+                            <span v-bind:class="{'disabled': !canPrev}" class="margin-right-20">
+                                <a class="text-primary padding-10" style="border-style:solid;border-width:1px;" @@click="prev()">上一页</a>
+                            </span>
+                            <span v-bind:class="{'disabled': !canNext}">
+                                <a class="text-primary padding-10" style="border-style:solid;border-width:1px;" @@click="next()">下一页</a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

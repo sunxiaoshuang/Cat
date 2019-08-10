@@ -13,6 +13,8 @@ using JdCat.Cat.Web.App_Code;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -49,6 +51,29 @@ namespace JdCat.Cat.Web.Controllers
             ViewBag.cityList = JsonConvert.SerializeObject(cityList.Select(a => new { a.Name, a.Code }), AppData.JsonSetting);
             ViewBag.business = JsonConvert.SerializeObject(Business, AppData.JsonSetting);
             return View();
+        }
+        /// <summary>
+        /// 顺丰设置
+        /// </summary>
+        /// <param name="cityList"></param>
+        /// <returns></returns>
+        public IActionResult Shunfeng()
+        {
+            return View(Business);
+        }
+        /// <summary>
+        /// 保存顺丰设置
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> SaveShunfeng([FromBody]JObject obj)
+        {
+            Business.ShunfengDevId = obj["devId"].Value<string>();
+            Business.ShunfengDevKey = obj["key"].Value<string>();
+            Business.ShunfengShopId = obj["shopId"].Value<string>();
+            await Service.UpdateAsync(Business, new List<string> { nameof(Business.ShunfengDevId), nameof(Business.ShunfengDevKey), nameof(Business.ShunfengShopId) });
+            SaveSession();
+            return Json("ok");
         }
         /// <summary>
         /// 飞印打印机配置
@@ -185,13 +210,19 @@ namespace JdCat.Cat.Web.Controllers
             {
                 result.Msg = "保存失败";
             }
+            Business.WeChatAppId = business.WeChatAppId;
+            Business.WeChatSecret = business.WeChatSecret;
+            Business.PayServerAppId = business.PayServerAppId;
+            Business.PayServerKey = business.PayServerKey;
+            Business.PayServerMchId = business.PayServerMchId;
+            Business.CertFile = business.CertFile;
             Business.AppId = business.AppId;
             Business.Secret = business.Secret;
             Business.MchId = business.MchId;
             Business.MchKey = business.MchKey;
             Business.TemplateNotifyId = business.TemplateNotifyId;
             Business.AppQrCode = business.AppQrCode;
-            HttpContext.Session.Set(AppData.Session, Business);
+            SaveSession();
             return Ok(result);
         }
         /// <summary>
@@ -330,8 +361,9 @@ namespace JdCat.Cat.Web.Controllers
         {
             if (string.IsNullOrEmpty(Business.WxQrListenPath))
             {
-                var token = await WxHelper.GetTokenAsync(WxHelper.WeChatAppId, WxHelper.WeChatSecret);
-                Log.Debug(token);
+                if (string.IsNullOrEmpty(Business.WeChatAppId)) throw new Exception("未设置公众号AppId");
+                var util = HttpContext.RequestServices.GetService<IUtilRepository>();
+                var token = await util.GetTokenAsync(Business.WeChatAppId, Business.WeChatSecret);
                 var ticket = await WxHelper.GetTicketAsync(Business.ID, token);
                 var qrCode = UtilHelper.CreateCodeEwm(ticket.url);
                 var source = Convert.ToBase64String(qrCode);
@@ -414,7 +446,7 @@ namespace JdCat.Cat.Web.Controllers
         {
             Business.DiscountQuantity = quantity;
             var affect = await Service.UpdateAsync(Business, new List<string> { nameof(Business.DiscountQuantity) });
-            if(affect > 0)
+            if (affect > 0)
             {
                 SaveSession();
                 return Json(new JsonData { Success = true });
@@ -439,59 +471,59 @@ namespace JdCat.Cat.Web.Controllers
         }
 
 
-        public IActionResult OpenSetting()
-        {
-            return View();
-        }
+        //public IActionResult OpenSetting()
+        //{
+        //    return View();
+        //}
 
-        public async Task<IActionResult> PreAuthCode([FromServices]AppData appData)
-        {
-            var result = new JsonData();
-            var preCode = await WxHelper.GetOpenPreAuthCodeAsync(appData);
-            if (preCode == null)
-            {
-                result.Msg = "获取预授权码失败，请稍后再试";
-            }
-            else
-            {
-                result.Success = true;
-                result.Data = $"https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={appData.OpenAppId}&pre_auth_code={preCode}&redirect_uri=http://t.e.jiandanmao.cn&auth_type=3";
-            }
-            return Json(result);
-        }
+        //public async Task<IActionResult> PreAuthCode([FromServices]AppData appData)
+        //{
+        //    var result = new JsonData();
+        //    var preCode = await WxHelper.GetOpenPreAuthCodeAsync(appData);
+        //    if (preCode == null)
+        //    {
+        //        result.Msg = "获取预授权码失败，请稍后再试";
+        //    }
+        //    else
+        //    {
+        //        result.Success = true;
+        //        result.Data = $"https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={appData.OpenAppId}&pre_auth_code={preCode}&redirect_uri=http://t.e.jiandanmao.cn&auth_type=3";
+        //    }
+        //    return Json(result);
+        //}
 
-        /// <summary>
-        /// 重定向到授权页
-        /// </summary>
-        /// <param name="appData"></param>
-        /// <returns></returns>
-        public async Task<IActionResult> AuthPage([FromServices]AppData appData)
-        {
-            var preCode = await WxHelper.GetOpenPreAuthCodeAsync(appData);
-            var url = $"https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={appData.OpenAppId}&pre_auth_code={preCode}&redirect_uri=http://t.e.jiandanmao.cn/Business/AuthSuccess&auth_type=3";
-            return Redirect(url);
-        }
+        ///// <summary>
+        ///// 重定向到授权页
+        ///// </summary>
+        ///// <param name="appData"></param>
+        ///// <returns></returns>
+        //public async Task<IActionResult> AuthPage([FromServices]AppData appData)
+        //{
+        //    var preCode = await WxHelper.GetOpenPreAuthCodeAsync(appData);
+        //    var url = $"https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid={appData.OpenAppId}&pre_auth_code={preCode}&redirect_uri=http://t.e.jiandanmao.cn/Business/AuthSuccess&auth_type=3";
+        //    return Redirect(url);
+        //}
 
-        /// <summary>
-        /// 授权成功后的回调URL
-        /// </summary>
-        /// <param name="auth_code"></param>
-        /// <param name="expires_in"></param>
-        /// <returns></returns>
-        public async Task<IActionResult> AuthSuccess([FromQuery]string auth_code, [FromQuery]int expires_in, [FromServices]AppData appData)
-        {
-            var result = await WxHelper.GetAuthToken(appData, auth_code);
-            return Json(result);
-        }
+        ///// <summary>
+        ///// 授权成功后的回调URL
+        ///// </summary>
+        ///// <param name="auth_code"></param>
+        ///// <param name="expires_in"></param>
+        ///// <returns></returns>
+        //public async Task<IActionResult> AuthSuccess([FromQuery]string auth_code, [FromQuery]int expires_in, [FromServices]AppData appData)
+        //{
+        //    var result = await WxHelper.GetAuthTokenAsync(appData, auth_code);
+        //    return Json(result);
+        //}
 
-        public IActionResult SetCode([FromQuery]string code)
-        {
-            if (string.IsNullOrEmpty(WxHelper.OpenTicket))
-            {
-                WxHelper.OpenTicket = code;
-            }
-            return Content("ok");
-        }
+        //public IActionResult SetCode([FromQuery]string code)
+        //{
+        //    if (string.IsNullOrEmpty(WxHelper.OpenTicket))
+        //    {
+        //        WxHelper.OpenTicket = code;
+        //    }
+        //    return Content("ok");
+        //}
 
     }
 }

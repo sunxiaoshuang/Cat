@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using OfficeOpenXml.Table;
@@ -10,6 +11,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -100,6 +102,16 @@ namespace JdCat.Cat.Common
             return HttpUtility.UrlEncode(content, Encoding.UTF8);
         }
 
+        /// <summary>
+        /// 将内容进行UrlDecode解码
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static string ToUrlDecoding(this string content, Encoding encoding = null)
+        {
+            return HttpUtility.UrlDecode(content, encoding ?? Encoding.UTF8);
+        }
+
         public static string ToEncodeSpecial(this string url)
         {
             return url.Replace("+", " ");
@@ -110,10 +122,21 @@ namespace JdCat.Cat.Common
         /// </summary>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        public static long ToInt(this DateTime dateTime)
+        public static long ToTimestamp(this DateTime dateTime)
         {
             var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
             return Convert.ToInt64(ts.TotalSeconds);
+        }
+        /// <summary>
+        /// 将时间戳转化为时间（秒）
+        /// </summary>
+        /// <param name="timestamp"></param>
+        /// <returns></returns>
+        public static DateTime ToDateTime(this long timestamp)
+        {
+            var time = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            time = time.AddSeconds(timestamp).ToLocalTime();
+            return time;
         }
 
         /// <summary>
@@ -213,7 +236,72 @@ namespace JdCat.Cat.Common
             return attribute == null ? null : attribute.Description;
         }
 
+        /// <summary>
+        /// 将字符串加密为MD5
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static string ToMd5(this string input, Encoding encoding = null)
+        {
+            var md5 = new MD5CryptoServiceProvider();
+            var bytResult = md5.ComputeHash((encoding??Encoding.UTF8).GetBytes(input));
+            var strResult = BitConverter.ToString(bytResult);
+            strResult = strResult.Replace("-", "");
+            return strResult.ToLower();
+        }
 
+        /// <summary>
+        /// 遍历列表，执行函数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> list, Action<T> predicate)
+        {
+            foreach (var item in list)
+            {
+                predicate(item);
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 将对象转化为json字符串
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string ToJson<T>(this T obj) where T : class
+        {
+            return JsonConvert.SerializeObject(obj, AppData.JsonSetting);
+        }
+
+        /// <summary>
+        /// 将字符串转化为二进制数组
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static byte[] ToByte(this string str, Encoding encoding = null)
+        {
+            if (encoding == null) encoding = Encoding.UTF8;
+            return encoding.GetBytes(str);
+        }
+
+        /// <summary>
+        /// 将二进制数组转化为字符串
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static string ToStr(this byte[] buffer, Encoding encoding = null)
+        {
+            if (encoding == null) encoding = Encoding.UTF8;
+            return encoding.GetString(buffer);
+        }
+        
 
     }
 }

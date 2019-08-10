@@ -14,6 +14,11 @@ namespace JdCat.Cat.Common
         public const string SIGN_TYPE_MD5 = "MD5";
         public const string SIGN_TYPE_HMAC_SHA256 = "HMAC-SHA256";
 
+        public InputData(string key)
+        {
+            this.Key = key;
+        }
+
         /// <summary>
         /// 采用排序的Dictionary的好处是方便对数据包进行签名，不用再签名之前再做一次排序
         /// </summary>
@@ -22,7 +27,7 @@ namespace JdCat.Cat.Common
         /// <summary>
         /// 商户平台密钥key
         /// </summary>
-        public static string Key { get; set; }
+        public string Key { get; set; }
 
         /// <summary>
         /// 设置某个字段的值

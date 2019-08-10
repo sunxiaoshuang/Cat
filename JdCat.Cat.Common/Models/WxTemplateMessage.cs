@@ -10,7 +10,7 @@ namespace JdCat.Cat.Common.Models
         /// <summary>
         /// 访问Token
         /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonIgnore]
         public string access_token { get; set; }
         /// <summary>
         /// 通知用户

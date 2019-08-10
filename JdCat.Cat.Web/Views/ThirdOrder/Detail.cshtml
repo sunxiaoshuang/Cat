@@ -1,0 +1,193 @@
+﻿@using JdCat.Cat.Common
+@model ThirdOrder
+
+<div class="form-horizontal">
+    <div class="form-group">
+        <label class="col-xs-2">
+            订单来源：
+        </label>
+        <span class="col-xs-4">
+            @(Model.OrderSource == 0 ? "美团" : "饿了么")
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">
+            订单编号：
+        </label>
+        <span class="col-xs-4">
+            @Model.OrderId
+        </span>
+        <label class="col-xs-2">
+            当日流水：
+        </label>
+        <span class="col-xs-3">
+            @Model.DaySeq
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">
+            创建时间：
+        </label>
+        <span class="col-xs-4">
+            @Model.Ctime.ToString("yyyy-MM-dd HH:mm:ss")
+        </span>
+        <label class="col-xs-2">
+            预计送达时间：
+        </label>
+        <span class="col-xs-3">
+            @(Model.DeliveryTime?.ToString("yyyy-MM-dd HH:mm:ss"))
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">
+            用户姓名：
+        </label>
+        <span class="col-xs-4">
+            @Model.RecipientName
+        </span>
+        <label class="col-xs-2">
+            电话：
+        </label>
+        <span class="col-xs-3">
+            @Model.RecipientPhone
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">
+            地址：
+        </label>
+        <span class="col-xs-4">
+            @Model.RecipientAddress
+        </span>
+        <label class="col-xs-2">
+            经纬度：
+        </label>
+        <span class="col-xs-4">
+            @(Model.Longitude + "," + Model.Latitude)
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">
+            配送费：
+        </label>
+        <span class="col-xs-4">
+            <i class="fa fa-rmb"> @Model.ShippingFee</i>
+        </span>
+        <label class="col-xs-2">
+            餐盒费：
+        </label>
+        <span class="col-xs-3">
+            <i class="fa fa-rmb"> @Model.PackageFee</i>
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">
+            发票抬头：
+        </label>
+        <span class="col-xs-4">
+            @Model.InvoiceTitle
+        </span>
+        <label class="col-xs-2">
+            纳税人识别码：
+        </label>
+        <span class="col-xs-3">
+            @Model.TaxpayerId
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">
+            订单备注：
+        </label>
+        <span class="col-xs-9">
+            @Model.Caution
+        </span>
+    </div>
+    <div class="form-group">
+        <label class="col-xs-2">
+            订单原价：
+        </label>
+        <span class="col-xs-4">
+            <i class="fa fa-rmb"> @Model.OriginalAmount</i>
+        </span>
+        <label class="col-xs-2">
+            订单实收：
+        </label>
+        <span class="col-xs-3">
+            <i class="fa fa-rmb" style="color: red;"> @Model.Amount</i>
+        </span>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-11">
+            <table class="table table-bordered">
+                <caption>
+                    <span>订单商品</span>
+                </caption>
+                <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>规格描述</th>
+                        <th width="80">总价</th>
+                        <th width="80">数量</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ThirdOrderProducts)
+                    {
+                        <tr>
+                            <td>
+                                @item.Name
+                            </td>
+                            <td>@(item.Spec + " " + item.Description)</td>
+                            <td>
+                                <i class="fa fa-rmb"> @(Convert.ToDouble((item.Price * item.Quantity).ToString("f2")))</i>
+                            </td>
+                            <td>@item.Quantity</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @if (Model.ThirdOrderActivities != null && Model.ThirdOrderActivities.Count > 0)
+    {
+        <div class="form-group">
+            <div class="col-xs-11">
+                <table class="table table-bordered">
+                    <caption>
+                        <span>优惠活动</span>
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th>优惠方式</th>
+                            <th>优惠金额</th>
+                            <th>门店承担金额</th>
+                            <th>平台承担金额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ThirdOrderActivities)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Remark
+                                </td>
+                                <td>
+                                    <i class="fa fa-rmb"> @item.ReduceFee</i>
+                                </td>
+                                <td>
+                                    <i class="fa fa-rmb"> @item.PoiCharge</i>
+                                </td>
+                                <td>
+                                    <i class="fa fa-rmb"> @item.ThirdCharge</i>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+
+

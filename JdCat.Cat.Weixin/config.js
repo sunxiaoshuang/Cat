@@ -27,7 +27,7 @@ var config = {
     globalData: {
         openText: "简单猫\r\n让您的生活更简单"
     },
-    businessId: 46
+    businessId: 1
     
 };
 

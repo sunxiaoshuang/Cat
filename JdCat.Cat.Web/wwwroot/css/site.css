@@ -2351,3 +2351,10 @@ ul.tree a.selected, ul.leaf a.selected {
     width: 120px;
     white-space: nowrap;
 }
+
+.disabled > a {
+    color: #777 !important;
+}
+.padding-10 {
+    padding: 10px;
+}

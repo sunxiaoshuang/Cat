@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
 using JdCat.Cat.Common.Dianwoda;
@@ -49,6 +50,16 @@ namespace JdCat.Cat.Web.Controllers
                 Log.Debug(item.Key + ":" + item.Value);
             }
             return View();
+        }
+        public IActionResult Test2()
+        {
+            var sb = new StringBuilder();
+            sb.Append($"Scheme:{Request.Scheme}\n");
+            sb.Append($"Path:{Request.Path.Value}\n");
+            sb.Append($"Host:{Request.Host.Value}\n");
+            sb.Append($"Port:{Request.Host.Port}\n");
+
+            return Content(sb.ToString());
         }
 
         /// <summary>
@@ -139,7 +150,7 @@ namespace JdCat.Cat.Web.Controllers
                     Log.Error("一城飞客订单更新异常：" + e.Message);
                 }
             }
-            else if(action.ToString().ToLower() == "sendwluserlocation")
+            else if (action.ToString().ToLower() == "sendwluserlocation")
             {
                 var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(content));
                 var data = JObject.Parse(json);
@@ -158,6 +169,81 @@ namespace JdCat.Cat.Web.Controllers
             }
             return Json(new { StateCode = 0, StateMsg = "处理成功" });
         }
+
+
+        private IOrderRepository orderService;
+        [Route("/shunfeng/change")]
+        public IActionResult SfChange()
+        {
+            if (!SfValidate(out JObject json, out Order order))
+            {
+                return Json(new { error_code = 0, error_msg = "success" });
+            }
+            var status = json["order_status"].Value<int>();
+            switch (status)
+            {
+                case 10:
+                    order.Status = OrderStatus.DistributorReceipt;
+                    break;
+                case 15:
+                    order.Status = OrderStatus.Distribution;
+                    break;
+                default:
+                    break;
+            }
+            orderService.Commit();
+
+            return Json(new { error_code = 0, error_msg = "success" });
+        }
+        [Route("/shunfeng/finish")]
+        public IActionResult SfFinsh()
+        {
+            if (!SfValidate(out JObject json, out Order order))
+            {
+                return Json(new { error_code = 0, error_msg = "success" });
+            }
+            order.Status = OrderStatus.Achieve;
+            orderService.Commit();
+
+            return Json(new { error_code = 0, error_msg = "success" });
+        }
+        [Route("/shunfeng/cancel")]
+        public IActionResult SfCancel()
+        {
+            if (!SfValidate(out JObject json, out Order order))
+            {
+                return Json(new { error_code = 0, error_msg = "success" });
+            }
+            order.Status = OrderStatus.CallOff;
+            order.ErrorReason = json["cancel_reason"].Value<string>();
+            orderService.Commit();
+
+            return Json(new { error_code = 0, error_msg = "success" });
+        }
+        /// <summary>
+        /// 验证顺丰回调参数
+        /// </summary>
+        /// <param name="body"></param>
+        /// <param name="sign"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        private bool SfValidate(out JObject json, out Order order)
+        {
+            var body = string.Empty;
+            using (var stream = new StreamReader(Request.Body))
+            {
+                body = stream.ReadToEnd();
+            }
+            var sign = Request.Query["sign"].FirstOrDefault();
+            json = JObject.Parse(body);
+            orderService = HttpContext.RequestServices.GetService<IOrderRepository>();
+            order = orderService.GetOrderByCode(json["shop_order_id"].Value<string>().Split('_')[0]);
+            if (order == null) return false;
+            var business = orderService.Get<Business>(order.BusinessId.Value);
+            var sig = Convert.ToBase64String($"{body}&{business.ShunfengDevId}&{business.ShunfengDevKey}".ToMd5().ToByte());
+            return sign == sig;
+        }
+
         /// <summary>
         /// 微信公众号绑定OpenId页
         /// </summary>
@@ -211,15 +297,18 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> WechatCallback([FromQuery]string state)
         {
-            if(!string.IsNullOrEmpty(state))
+            if (!string.IsNullOrEmpty(state))
             {
-                switch (state)
+                var arr = state.Split("III");
+                switch (arr[0])
                 {
                     case "mp":
                         // 公众号管理平台验证
+                        var util = HttpContext.RequestServices.GetService<IUtilRepository>();
+                        var business = await util.GetAsync<Business>(Convert.ToInt32(arr[1]));
                         var c = Request.Query["code"].ToString();
                         ViewBag.Url = HttpContext.RequestServices.GetService<AppData>().MpUrl;
-                        return View("WeixinWebview", await WxHelper.GetOpenIdAsync(c));
+                        return View("WeixinWebview", await WxHelper.GetOpenIdAsync(c, business.WeChatAppId, business.WeChatSecret));
                     default:
                         break;
                 }
@@ -236,14 +325,6 @@ namespace JdCat.Cat.Web.Controllers
                         var result = UtilHelper.ReadXml<WxEvent>(content);
                         var service = HttpContext.RequestServices.GetService<IUtilRepository>();
                         await service.WxMsgHandlerAsync(result);
-                        //if (result.MsgType == "event" && result.Event == "SCAN")
-                        //{
-                        //    await Listen(result);
-                        //}
-                        //else if(result.MsgType == "event" && result.Event == "submit_membercard_user_info")
-                        //{
-
-                        //}
                     }
                     catch (Exception e)
                     {

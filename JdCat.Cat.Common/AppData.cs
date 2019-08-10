@@ -45,6 +45,10 @@ namespace JdCat.Cat.Common
         /// </summary>
         public string FileUri { get; set; }
         /// <summary>
+        /// 网站域名
+        /// </summary>
+        public string Domain { get; set; }
+        /// <summary>
         /// 公司名称
         /// </summary>
         public string Name { get; set; }
@@ -240,6 +244,45 @@ namespace JdCat.Cat.Common
         /// 公众号管理后台地址
         /// </summary>
         public string MpUrl { get; set; }
+        /// <summary>
+        /// 顺丰同城开发者id
+        /// </summary>
+        public string ShunfengDevId { get; set; }
+        /// <summary>
+        /// 顺丰同城开发者密钥
+        /// </summary>
+        public string ShunfengDevKey { get; set; }
+        /// <summary>
+        /// 顺丰同城api地址
+        /// </summary>
+        public string ShunfengHost { get; set; }
+
+        private string _elemeApi;
+        /// <summary>
+        /// 饿了么api请求地址
+        /// </summary>
+        public string ElemeApi
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_elemeApi)) return _elemeApi;
+                _elemeApi = RunMode == "product" ? "https://open-api.shop.ele.me/api/v1/" : "https://open-api-sandbox.shop.ele.me/api/v1/";
+                return _elemeApi;
+            }
+        }
+        private string _elemeToken;
+        /// <summary>
+        /// 饿了么token请求地址
+        /// </summary>
+        public string ElemeToken
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_elemeToken)) return _elemeToken;
+                _elemeToken = RunMode == "product" ? "https://open-api.shop.ele.me/token" : "https://open-api-sandbox.shop.ele.me/token";
+                return _elemeToken;
+            }
+        }
 
     }
 }

@@ -7,7 +7,10 @@
             card: {
                 member_card: {
                     base_info: {}
-                }
+                },
+                bonusSale: {amount: 0, give: 0, mode: 0},
+                bonusCharge: { amount: 0, give: 0, mode: 1 },
+                bonusOpen: { amount: 0, give: 0, mode: 2 }
             },
             colors: [
                 { name: "Color010", color: "#63b359", selected: false },
@@ -18,7 +21,6 @@
                 { name: "Color060", color: "#d09a45", selected: false },
                 { name: "Color070", color: "#e4b138", selected: false },
                 { name: "Color080", color: "#ee903c", selected: false },
-                //{ name: "Color090", color: "#a9d92d", selected: false },
                 { name: "Color090", color: "#dd6549", selected: false },
                 { name: "Color100", color: "#cc463d", selected: false }
             ]
@@ -77,10 +79,19 @@
                                 "notice": baseinfo.notice,
                                 "service_phone": baseinfo.service_phone,
                                 "description": baseinfo.description,
-                                //"center_url": host + "/Member"
+                                //"center_url": mpUrl + "/member.html?sign=pay",
+                                //"custom_url": mpUrl + "/member.html?sign=charge",
+                                //"custom_url_name": "会员充值",
+                                //"custom_url_sub_title": "",
+                                //promotion_url: mpUrl + "/member.html?sign=sale",       // 自定义外链
+                                //promotion_url_name: "消费记录"
                             },
                             "prerogative": this.card.member_card.prerogative
-                        }
+                        },
+                        chargeList: this.card.chargeList,
+                        bonusSale: this.card.bonusSale,
+                        bonusCharge: this.card.bonusCharge,
+                        bonusOpen: this.card.bonusOpen
                     };
                     axios.post("/Card/UpdateCard", obj)
                         .then(function (res) {
@@ -99,6 +110,7 @@
                     var postData = {
                         card: this.card
                     };
+                    postData.card.member_card.bonus_rule.init_increase_bonus = this.card.bonusOpen.give;
                     axios.post("/Card/CreateMemberCard", postData)
                         .then(function (res) {
                             $.loaded();
@@ -116,19 +128,27 @@
             },
             qrcode: function () {
                 window.open("/Card/CreateMemberQrcode?cardId=" + this.card.member_card.base_info.id);
+            },
+            addCharge: function () {
+                if (this.card.chargeList.length >= 4) return;
+                this.card.chargeList.push({amount: 0, give: 0});
+            },
+            reduceCharge: function (index) {
+                this.card.chargeList.splice(index, 1);
             }
         },
         created: function () {
-            var self = this, host = window.location.origin;
+            var self = this;
             $.loading();
 
-            axios.get("/Card/GetMemberCard")
+            axios.all([axios.get("/Card/GetMemberCard"), axios.get("/Card/GetCardRule")])
                 .then(function (res) {
                     $.loaded();
-                    if (res.data.errcode === 0) {
-                        self.card = res.data.card;
+                    var card;
+                    if (res[0].data.errcode === 0) {
+                        card = res[0].data.card;
                     } else {
-                        self.card = {
+                        card = {
                             card_type: "MEMBER_CARD",
                             member_card: {
                                 base_info: {                                // 基本信息设置
@@ -138,11 +158,11 @@
                                     can_give_friend: false,                 // 不能转赠朋友
                                     center_title: "会员支付",               // 中间的按钮文字
                                     center_sub_title: "点击生成二维码",     // 中间的副标题
-                                    center_url: host + "/Member",  // 中间的跳转链接
+                                    center_url: mpUrl + "/member.html?sign=pay",       // 中间的跳转链接
                                     color: "#63b359",
-                                    //custom_url: "",                         // 自定义外链信息
-                                    //custom_url_name: "",
-                                    //custom_url_sub_title: "",
+                                    custom_url: mpUrl + "/member.html?sign=charge",    // 自定义外链信息
+                                    custom_url_name: "会员充值",
+                                    custom_url_sub_title: "",
                                     date_info: {
                                         type: "DATE_TYPE_PERMANENT"             // 永久有效
                                     },
@@ -151,8 +171,8 @@
                                     location_id_list: [],                       // 门店位置ID。调用 POI门店管理接口 获取门店位置ID。
                                     logo_url: "",                               // 会员卡LOGO
                                     notice: "使用时向服务员出示此券",           // 卡券使用提醒，字数上限为16个汉字
-                                    //promotion_url: "",                          // 自定义外链
-                                    //promotion_url_name: ""
+                                    promotion_url: mpUrl + "/member.html?sign=sale",       // 自定义外链
+                                    promotion_url_name: "消费记录",
                                     service_phone: "",                          // 客服电话
                                     sku: {                                      // 库存
                                         quantity: 100000000
@@ -175,7 +195,7 @@
                                 auto_activate: false,                       // 不要自动激活
                                 bonus_cleared: "",                          // 积分清零规则
                                 bonus_rules: "",                            // 积分规则
-                                //bonus_rule: {                               // 积分规则
+                                bonus_rule: {                               // 积分规则
                                 //    cost_money_unit: 100,                   // 消费金额。以分为单位
                                 //    increase_bonus: 1,                      // 对应增加的积分
                                 //    max_increase_bonus: 200,                // 用户单次可获取的积分上限
@@ -184,7 +204,7 @@
                                 //    reduce_money: 100,                      // 抵扣xx元，（这里以分为单位）
                                 //    least_money_to_use_bonus: 1000,         // 抵扣条件，满xx元（这里以分为单位）可用
                                 //    max_reduce_bonus: 50                    // 抵扣条件，单笔最多使用xx积分。
-                                //}
+                                },
                                 //discount: 10，                              // 享受折扣
                                 //custom_cell1: {                               // 自定义外链，最多三个
                                 //    name: "",                                 // 入口名称
@@ -192,16 +212,27 @@
                                 //    url: ""
                                 //}，
                                 //custom_field1: {                              // 会员卡激活后呈现的信息类目，包含积分、余额，最多三个
-                                //    name_type: "FIELD_NAME_TYPE_LEVEL",
-                                //    url: ""
-                                //}
+                                //    name_type: "FIELD_NAME_TYPE_STAMP",
+                                //    url: "余额"
+                                //},
+                                //custom_field2: {
+                                //    name_type: "FIELD_NAME_TYPE_ACHIEVEMEN",
+                                //    url: "积分"
+                                //},
                                 prerogative: "",                                // 会员卡特权说明,限制1024汉字。
                                 supply_balance: false,                          // 是否支持储值
-                                supply_bonus: true,                             // 是否显示积分
+                                balance_url: mpUrl + "/member.html?sign=charge",
+                                supply_bonus: false,                             // 是否显示积分
                                 wx_activate: true                               // 使用一键开卡
                             }
                         };
                     }
+                    card.chargeList = res[1].data.charge.length === 0 ? [{ amount: 0, give: 0 }] : res[1].data.charge;
+                    card.bonusSale = res[1].data.bonus.first(a => a.mode === 0) || { amount: 0, give: 0, mode: 0 };
+                    card.bonusCharge = res[1].data.bonus.first(a => a.mode === 1) || { amount: 0, give: 0, mode: 1 };
+                    card.bonusOpen = res[1].data.bonus.first(a => a.mode === 2) || { amount: 0, give: 0, mode: 2 };
+
+                    self.card = card;
                     var color = self.colors.first(a => a.color === self.card.member_card.base_info.color);
                     if (color) {
                         self.card.member_card.base_info.color = color.name;

@@ -1,0 +1,139 @@
+﻿@model JdCat.Cat.Model.Data.WxMember
+@{
+    Layout = null;
+    ViewData["Title"] = "会员充值";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>会员充值</title>
+    <meta charset="UTF-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta content="telephone=no" name="format-detection">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="Shortcut Icon" href="~/images/logo1.png">
+    <link rel="stylesheet" href="~/css/member/base.css" asp-append-version="true">
+    <style>
+        .card:before, .card:after {
+            background: @ViewBag.color;
+        }
+
+        .u_head, .guideIndex .coin_header, .j-theme, .darkbg, .main-color {
+            background: -webkit-linear-gradient( top,@ViewBag.color, @ViewBag.color) !important;
+        }
+
+        .coupon-list-logo, .box .img-box .card-box, .bottom-cell .lihuo, .myDetail .myrto {
+            background: -webkit-linear-gradient( left,@ViewBag.color, @ViewBag.color) !important;
+        }
+
+        .box-img .pic-box, .card-face-body.theme-bg, .recharge-box, .cardhead .topbtn, .btn-active, .btn.theme-bg, .u_head .uinfo .ucardinfo a, .coupon-infor-ft .main-color, #self-consume .btn, .modal .form-group .input-group .input-group-addon {
+            background: @ViewBag.color !important;
+        }
+
+        .a-btn, .cardhead b, .look-info a, .box-title .first-line, .gift-info .price, .topupmoney a.active i, .topupmoney a.active span, .checkAllRule, .quanLineLeft .ico-mall, .consumerlist li span sup, .coupon-info .coupon-brand {
+            color: @ViewBag.color;
+        }
+
+        .wx_loading .wx_loading_icon {
+            border-color: @ViewBag.color;
+        }
+
+        .tabs .tab a.active {
+            color: @ViewBag.color;
+            border-bottom: 2px solid @ViewBag.color;
+        }
+    </style>
+    <link rel="stylesheet" href="~/css/member/weui-r.css" />
+</head>
+<body class="guideIndex">
+    <div class="pageload" style=" display: none; ">
+        <div class="loadingbox loadingbox-w"></div>
+    </div>
+    <div class="coin_header">
+        <div class="tolved" id="mytavel">
+            <div class="peiod">
+                <p class="mysos">
+                    我的余额
+                </p>
+                <p class="movre">
+                    <a href=""> <span class="dmpue">0</span> 元</a>
+                </p>
+            </div>
+        </div>
+        <div class="shdofl">
+            <ul class="dis_weket">
+                <li class="kar_li">
+                    <a href="~/Member/RechargeRecord/@Model.ID">
+                        <p class="srerp">
+                            <img src="~/images/icon_action_store.png"><span>充值记录</span>
+                        </p>
+                    </a>
+                </li>
+                <li class="kar_li">
+                    <a href="/Member?card_id=@ViewBag.card_id&encrypt_code=@ViewBag.encrypt_code&openid=@ViewBag.openid">
+                        <p class="srerp">
+                            <img src="~/images/icon_action_store_home.png"><span>会员支付</span>
+                        </p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="outer">
+        <div class="mpage">
+            <div class="headLine border border-top canwebp">
+                <div class="quanLineLeft">
+                    <i class="ico-mall" style="font-size: 20px; "></i>
+                </div>
+                <div class="quanLinecenter merchant_txt">简单猫科技（武汉）有限公司</div>
+            </div>
+            <div class="moneyform">
+                <div class="intoBar" style="z-index:999;">
+                    <em style="font-size: 34px;margin-top: -5px;">￥</em>
+                    <input type="number" id="topval" placeholder="0" onkeyup="onlyNum();validateValue(this);" oninput="onlyNum();validateValue(this);" onpropertychange="onlyNum();validateValue(this);" />
+                </div>
+
+                <div style=" margin-bottom: 20px; "></div>
+
+                <p class="checkAllRule"></p>
+                <input type="hidden" id="applyShop" value="" />
+                <div class="recharge-box" id="czbtn" style="z-index:999;">
+                    <a class="userpay recharge-btn">充值</a>
+                </div>
+
+                <div class="empty" id="nocouponft" style="display: none;">
+                    <p style=" color: #a3acbc; ">
+                        <i class="ico-mall" style=" display: inline-block; font-size: 15px; "></i>
+                        商家未开通充值功能
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sidenav-overlay"></div>
+    <input id="mr_openId" value="oifqb0SBfx2Vhk-0YL-G2zpk1iwY" type="hidden">
+    <input id="mr_merchantNo" value="EW_N1891671907" type="hidden">
+    <input id="mr_memberLevelId" value="15032" type="hidden">
+    <input id="mr_accountNo" value="CA21000003529691" type="hidden">
+    <input id="mr_aliUserId" value="" type="hidden">
+    <input id="mr_shopNo" value="EW_N1891671907" type="hidden">
+    <input id="mr_shopNoId" value="10414876" type="hidden">
+    <input id="mr_memberId" value="3162607" type="hidden">
+    <input id="mr_employeeId" value="" type="hidden" />
+    <input id="mr_terminalId" value="" type="hidden" />
+    <input id="rechargeLimit" value="0" type="hidden">
+    <input id="coreRechargeStatus" value="1" type="hidden" />
+    <script src="~/js/member/app.js"></script>
+    <script src="~/js/member/jquery-weui.min.js"></script>
+
+    <script>
+        var recharge_rules = [];
+        var card_recharge_rules = {};
+        $('#topval').on('blur', function () { setTimeout(function () { window.scrollTo(0, 0) }, 100) })
+    </script>
+    <script src="~/js/member/recharge.js" asp-append-version="true"></script>
+</body>
+</html>

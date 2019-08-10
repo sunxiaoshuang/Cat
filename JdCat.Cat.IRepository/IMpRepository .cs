@@ -6,6 +6,9 @@ using JdCat.Cat.Model.Data;
 
 namespace JdCat.Cat.IRepository
 {
+    /// <summary>
+    /// 公众号管理端接口
+    /// </summary>
     public interface IMpRepository : IBaseRepository<Business>
     {
         /// <summary>

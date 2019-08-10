@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using StackExchange.Redis;
 
 namespace JdCat.Cat.Web
 {
@@ -54,6 +55,8 @@ namespace JdCat.Cat.Web
             //.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
             //services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
             services.AddDbContext<CatDbContext>(a => a.UseMySql(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
+            // 注册redis连接
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConn")));
 
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
@@ -65,13 +68,14 @@ namespace JdCat.Cat.Web
             services.AddScoped<ITangRepository, TangRepository>();
             services.AddScoped<IUtilRepository, UtilRepository>();
             services.AddScoped<ICardRepository, CardRepository>();
+            services.AddScoped<IThirdOrderRepository, ThirdOrderRepository>();
             services.AddSingleton(new List<City>());
             services.AddSingleton(new List<DadaCancelReason>());
             // 系统参数
             var config = new AppData();
             config.Init(Configuration);
             services.AddSingleton(config);
-            InputData.Key = config.ServerKey;
+            //InputData.Key = config.ServerKey;
             AppSetting.SetAppData(config);
             // 序列化参数
             services.AddSingleton(AppData.JsonSetting);

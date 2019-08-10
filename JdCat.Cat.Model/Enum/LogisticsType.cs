@@ -44,6 +44,11 @@ namespace JdCat.Cat.Model.Enum
         /// 一城飞客
         /// </summary>
         [Description("一城飞客配送")]
-        Yichengfeike = 6
+        Yichengfeike = 6,
+        /// <summary>
+        /// 顺丰同城
+        /// </summary>
+        [Description("顺丰同城")]
+        Shunfeng = 7
     }
 }

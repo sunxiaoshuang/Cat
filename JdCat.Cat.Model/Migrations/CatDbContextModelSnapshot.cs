@@ -108,6 +108,8 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("Category");
 
+                    b.Property<string>("CertFile");
+
                     b.Property<string>("City");
 
                     b.Property<string>("CityCode");
@@ -131,6 +133,14 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<string>("Description");
 
                     b.Property<int>("DiscountQuantity");
+
+                    b.Property<long?>("Eleme_AppId");
+
+                    b.Property<string>("Eleme_AppKey");
+
+                    b.Property<string>("Eleme_AppSecret");
+
+                    b.Property<long?>("Eleme_Poi_Id");
 
                     b.Property<string>("Email");
 
@@ -158,6 +168,12 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("LogoSrc");
 
+                    b.Property<string>("MT_AppId");
+
+                    b.Property<string>("MT_AppKey");
+
+                    b.Property<string>("MT_Poi_Id");
+
                     b.Property<string>("MchId");
 
                     b.Property<string>("MchKey");
@@ -168,15 +184,25 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<string>("NewOrderTemplateId");
+
                     b.Property<string>("ObjectId");
 
                     b.Property<int?>("ParentId");
 
                     b.Property<string>("Password");
 
+                    b.Property<string>("PayServerAppId");
+
+                    b.Property<string>("PayServerKey");
+
+                    b.Property<string>("PayServerMchId");
+
                     b.Property<string>("Province");
 
                     b.Property<double>("Range");
+
+                    b.Property<string>("RefundTemplateId");
 
                     b.Property<DateTime?>("RegisterDate");
 
@@ -186,11 +212,21 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("ServiceProvider");
 
+                    b.Property<string>("ShunfengDevId");
+
+                    b.Property<string>("ShunfengDevKey");
+
+                    b.Property<string>("ShunfengShopId");
+
                     b.Property<string>("SpecialImage");
 
                     b.Property<string>("StoreId");
 
                     b.Property<string>("TemplateNotifyId");
+
+                    b.Property<string>("WeChatAppId");
+
+                    b.Property<string>("WeChatSecret");
 
                     b.Property<string>("WxQrListenPath");
 
@@ -225,6 +261,84 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasIndex("BusinessId");
 
                     b.ToTable("BusinessFreight");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.CardBonusRule", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("Amount");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<double>("Give");
+
+                    b.Property<int>("Mode");
+
+                    b.Property<int>("WxCardId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("WxCardId");
+
+                    b.ToTable("CardBonusRule");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.CardChargeRule", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("Amount");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<double>("Give");
+
+                    b.Property<int>("WxCardId");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("WxCardId");
+
+                    b.ToTable("CardChargeRule");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ChargeRecord", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Amount");
+
+                    b.Property<int>("Bonus");
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<string>("Code");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("Give");
+
+                    b.Property<string>("OpenId");
+
+                    b.Property<DateTime?>("PayTime");
+
+                    b.Property<string>("PrepayId");
+
+                    b.Property<int>("RelativeId");
+
+                    b.Property<int>("Status");
+
+                    b.Property<string>("WxPayCode");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("ChargeRecord");
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.City", b =>
@@ -603,6 +717,8 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int?>("Distance");
 
                     b.Property<int>("DistributionFlow");
+
+                    b.Property<string>("DistributionId");
 
                     b.Property<DateTime?>("DistributionTime");
 
@@ -1546,6 +1662,166 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("TangOrderProduct");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ThirdOrder", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("Amount");
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<string>("Caution");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<DateTime>("Ctime");
+
+                    b.Property<int>("DaySeq");
+
+                    b.Property<DateTime?>("DeliveryTime");
+
+                    b.Property<string>("InvoiceTitle");
+
+                    b.Property<double>("Latitude");
+
+                    b.Property<double>("Longitude");
+
+                    b.Property<string>("OrderId");
+
+                    b.Property<long>("OrderIdView");
+
+                    b.Property<int>("OrderSource");
+
+                    b.Property<double>("OriginalAmount");
+
+                    b.Property<double>("PackageFee");
+
+                    b.Property<string>("PoiAddress");
+
+                    b.Property<string>("PoiCode");
+
+                    b.Property<string>("PoiName");
+
+                    b.Property<string>("PoiPhone");
+
+                    b.Property<string>("Reason");
+
+                    b.Property<string>("RecipientAddress");
+
+                    b.Property<string>("RecipientName");
+
+                    b.Property<string>("RecipientPhone");
+
+                    b.Property<double>("ShippingFee");
+
+                    b.Property<int>("Status");
+
+                    b.Property<string>("TaxpayerId");
+
+                    b.Property<DateTime>("Utime");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("ThirdOrder");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ThirdOrderActivity", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ActiveId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<double>("PoiCharge");
+
+                    b.Property<double>("ReduceFee");
+
+                    b.Property<string>("Remark");
+
+                    b.Property<double>("ThirdCharge");
+
+                    b.Property<int>("ThirdOrderId");
+
+                    b.Property<int>("Type");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ThirdOrderId");
+
+                    b.ToTable("ThirdOrderActivity");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ThirdOrderProduct", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("BoxNum");
+
+                    b.Property<double>("BoxPrice");
+
+                    b.Property<int>("CartId");
+
+                    b.Property<string>("Code");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("Description");
+
+                    b.Property<double>("Discount");
+
+                    b.Property<string>("Name");
+
+                    b.Property<double>("Price");
+
+                    b.Property<int>("ProductId");
+
+                    b.Property<double>("Quantity");
+
+                    b.Property<string>("SkuId");
+
+                    b.Property<string>("Spec");
+
+                    b.Property<int>("ThirdOrderId");
+
+                    b.Property<string>("Unit");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ThirdOrderId");
+
+                    b.ToTable("ThirdOrderProduct");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ThirdProductMapping", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("ProductId");
+
+                    b.Property<string>("ThirdProductId");
+
+                    b.Property<string>("ThirdProductName");
+
+                    b.Property<int>("ThirdSource");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("ThirdProductMapping");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.User", b =>
                 {
                     b.Property<int>("ID")
@@ -1650,21 +1926,25 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<double>("Balance");
+                    b.Property<int>("Balance");
 
                     b.Property<DateTime>("Birthday");
 
-                    b.Property<double>("Bonus");
+                    b.Property<int>("Bonus");
 
                     b.Property<int>("BusinessId");
 
                     b.Property<string>("CardId");
+
+                    b.Property<int>("ChargeTimes");
 
                     b.Property<string>("Code");
 
                     b.Property<DateTime?>("CreateTime");
 
                     b.Property<int>("Gender");
+
+                    b.Property<int>("GiveAmount");
 
                     b.Property<string>("Logo");
 
@@ -1678,7 +1958,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<int>("PurchaseTimes");
 
-                    b.Property<double>("RechargeAmount");
+                    b.Property<int>("RechargeAmount");
 
                     b.Property<int>("WxCardId");
 
@@ -1738,6 +2018,30 @@ namespace JdCat.Cat.Model.Migrations
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.BusinessFreight", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.CardBonusRule", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.WxCard", "WxCard")
+                        .WithMany()
+                        .HasForeignKey("WxCardId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.CardChargeRule", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.WxCard", "WxCard")
+                        .WithMany()
+                        .HasForeignKey("WxCardId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ChargeRecord", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
                         .WithMany()
@@ -2115,6 +2419,38 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ThirdOrder", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ThirdOrderActivity", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.ThirdOrder", "ThirdOrder")
+                        .WithMany("ThirdOrderActivities")
+                        .HasForeignKey("ThirdOrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ThirdOrderProduct", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.ThirdOrder", "ThirdOrder")
+                        .WithMany("ThirdOrderProducts")
+                        .HasForeignKey("ThirdOrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.ThirdProductMapping", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

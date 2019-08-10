@@ -138,8 +138,8 @@ namespace JdCat.Cat.Web.Controllers
         /// </summary>
         public IActionResult Reject(int id, [FromQuery]string msg, [FromServices]IHostingEnvironment _env)
         {
-            var certPath = Path.Combine(_env.ContentRootPath, "Asserts", AppData.CertFile);
-            var result = Service.Reject(id, msg, new X509Certificate2(certPath, AppData.ServerMchId));
+            var certPath = Path.Combine(_env.ContentRootPath, "Asserts", Business.CertFile);
+            var result = Service.Reject(id, msg, new X509Certificate2(certPath, Business.PayServerMchId));
             return Json(result);
         }
 
@@ -149,8 +149,8 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public IActionResult CancelOrder(int id, [FromQuery]string reason, [FromServices]IHostingEnvironment _env)
         {
-            var certPath = Path.Combine(_env.ContentRootPath, "Asserts", AppData.CertFile);
-            var result = Service.Cancel(id, reason, new X509Certificate2(certPath, AppData.ServerMchId));
+            var certPath = Path.Combine(_env.ContentRootPath, "Asserts", Business.CertFile);
+            var result = Service.Cancel(id, reason, new X509Certificate2(certPath, Business.PayServerMchId));
             return Json(result);
         }
 
@@ -452,6 +452,8 @@ namespace JdCat.Cat.Web.Controllers
                     return await DwdCancel(order);
                 case LogisticsType.Yichengfeike:
                     return await YcfkCancel(order);
+                case LogisticsType.Shunfeng:
+                    return await SfCancel(order);
                 default:
                     break;
             }
@@ -508,7 +510,6 @@ namespace JdCat.Cat.Web.Controllers
             if (code > 0)
             {
                 result.Msg = jObj["StateMsg"].Value<string>();
-                order.ErrorReason = result.Msg;
                 return result;
             }
             order.Status = OrderStatus.CallOff;
@@ -516,6 +517,37 @@ namespace JdCat.Cat.Web.Controllers
             result.Success = true;
             result.Msg = "配送取消成功";
             Service.Commit();
+            return result;
+        }
+        private async Task<JsonData> SfCancel(Order order)
+        {
+            var result = new JsonData();
+            var reason = Request.Query["reason"].First();
+            var flow = order.DistributionFlow - 1;
+            var orderCode = flow == 0 ? order.OrderCode : (order.OrderCode + "_" + flow);
+            var sf = new SfInputData(Business.ShunfengDevId, Business.ShunfengDevKey);
+            sf.SetValue("dev_id", Business.ShunfengDevId);
+            sf.SetValue("order_id", orderCode);
+            sf.SetValue("order_type", 2);
+            sf.SetValue("shop_id", Business.ShunfengShopId);
+            sf.SetValue("shop_type", 1);
+            sf.SetValue("cancel_reason", reason);
+            sf.SetValue("push_time", DateTime.Now.ToTimestamp());
+            var sign = sf.MakeSign();
+            var url = $"{AppData.ShunfengHost}/open/api/external/cancelorder?sign={sign}";
+            var res = await UtilHelper.RequestAsync(url, sf.ToBody());
+            var json = JObject.Parse(res);
+            if(json["error_code"].Value<int>() != 0)
+            {
+                result.Msg = json["error_msg"].Value<string>();
+                return result;
+            }
+            order.Status = OrderStatus.CallOff;
+            result.Data = OrderStatus.CallOff;
+            result.Success = true;
+            result.Msg = "配送取消成功";
+            Service.Commit();
+
             return result;
         }
 

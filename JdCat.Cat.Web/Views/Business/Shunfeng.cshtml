@@ -1,0 +1,68 @@
+﻿@model Business
+@{
+    ViewData["Title"] = "顺丰配送设置";
+}
+
+@section Scripts {
+    <script>
+        var pageObj = {
+            devId: '@Model.ShunfengDevId',
+            key: '@Model.ShunfengDevKey',
+            shopId: '@Model.ShunfengShopId'
+        };
+    </script>
+    <environment include="Development">
+        <script src="~/js/business/shunfeng.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/business/shunfeng.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewData["Title"]</span>
+                    </h3>
+                </div>
+            </div>
+            <div class="panel-body form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1">
+                        <span class="require">开发者ID</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" v-model.trim="devId" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1">
+                        <span class="require">开发者KEY</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" v-model.trim="key" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1">
+                        <span class="require">门店编号</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" v-model.trim="shopId" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-offset-1 col-xs-10 margin-bottom-10">
+                <div class="kui-button">
+                    <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" v-on:click="save()">
+                        保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

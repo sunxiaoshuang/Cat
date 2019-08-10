@@ -83,6 +83,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string InvitationCode { get; set; }
         /// <summary>
+        /// 公众号id
+        /// </summary>
+        public string WeChatAppId { get; set; }
+        /// <summary>
+        /// 公众号密钥
+        /// </summary>
+        public string WeChatSecret { get; set; }
+        /// <summary>
         /// 小程序id
         /// </summary>
         public string AppId { get; set; }
@@ -98,6 +106,34 @@ namespace JdCat.Cat.Model.Data
         /// 商户密钥
         /// </summary>
         public string MchKey { get; set; }
+        /// <summary>
+        /// 新订单通知模版消息id（公众号）
+        /// </summary>
+        public string NewOrderTemplateId { get; set; }
+        /// <summary>
+        /// 退款通知的模版消息id（公众号）
+        /// </summary>
+        public string RefundTemplateId { get; set; }
+        /// <summary>
+        /// 订单交易模版Id（小程序）
+        /// </summary>
+        public string TemplateNotifyId { get; set; }
+        /// <summary>
+        /// 支付服务商AppId
+        /// </summary>
+        public string PayServerAppId { get; set; }
+        /// <summary>
+        /// 支付服务商密钥
+        /// </summary>
+        public string PayServerKey { get; set; }
+        /// <summary>
+        /// 支付服务商商户号
+        /// </summary>
+        public string PayServerMchId { get; set; }
+        /// <summary>
+        /// 退款证书文件名（文件需放在目录Asserts下）
+        /// </summary>
+        public string CertFile { get; set; }
         /// <summary>
         /// 门店id
         /// </summary>
@@ -151,11 +187,6 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string DefaultPrinterDevice { get; set; }
         /// <summary>
-        /// 飞印临时请求得到的Token
-        /// </summary>
-        //[NotMapped]
-        //public string FeyinToken { get; set; }
-        /// <summary>
         /// 商铺位置经度
         /// </summary>
         public double Lng { get; set; }
@@ -201,10 +232,6 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public bool IsClose { get; set; }
         /// <summary>
-        /// 订单交易模版Id
-        /// </summary>
-        public string TemplateNotifyId { get; set; }
-        /// <summary>
         /// 配送服务商
         /// </summary>
         public LogisticsType ServiceProvider { get; set; }
@@ -248,6 +275,47 @@ namespace JdCat.Cat.Model.Data
         /// 优惠活动是否同时享受
         /// </summary>
         public bool IsEnjoymentActivity { get; set; }
+        /// <summary>
+        /// 美团应用id
+        /// </summary>
+        public string MT_AppId { get; set; }
+        /// <summary>
+        /// 美团应用key
+        /// </summary>
+        public string MT_AppKey { get; set; }
+        /// <summary>
+        /// 美团门店id
+        /// </summary>
+        public string MT_Poi_Id { get; set; }
+        /// <summary>
+        /// 饿了么应用id
+        /// </summary>
+        public long? Eleme_AppId { get; set; }
+        /// <summary>
+        /// 饿了么应用KEY
+        /// </summary>
+        public string Eleme_AppKey { get; set; }
+        /// <summary>
+        /// 饿了么应用密钥
+        /// </summary>
+        public string Eleme_AppSecret { get; set; }
+        /// <summary>
+        /// 饿了么门店id
+        /// </summary>
+        public long? Eleme_Poi_Id { get; set; }
+        /// <summary>
+        /// 顺丰同城开发者id
+        /// </summary>
+        public string ShunfengDevId { get; set; }
+        /// <summary>
+        /// 顺丰同城开发者密钥
+        /// </summary>
+        public string ShunfengDevKey { get; set; }
+        /// <summary>
+        /// 顺丰门店id
+        /// </summary>
+        public string ShunfengShopId { get; set; }
+
         /// <summary>
         /// 所属连锁店的id
         /// </summary>

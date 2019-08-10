@@ -139,7 +139,9 @@
                         return obj;
                     });
                 })
-                .catch(function (err) { $.alert(err); });
+                .catch(function (err) {
+                    $.alert(err.response.data.message || err);
+                });
         }
     });
 

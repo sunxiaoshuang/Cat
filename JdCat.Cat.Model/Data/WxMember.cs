@@ -42,21 +42,29 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public DateTime Birthday { get; set; }
         /// <summary>
-        /// 余额
+        /// 余额（单位：分）
         /// </summary>
-        public double Balance { get; set; }
+        public int Balance { get; set; }
         /// <summary>
         /// 积分
         /// </summary>
-        public double Bonus { get; set; }
+        public int Bonus { get; set; }
         /// <summary>
-        /// 充值金额
+        /// 充值金额（单位：分）
         /// </summary>
-        public double RechargeAmount { get; set; }
+        public int RechargeAmount { get; set; }
+        /// <summary>
+        /// 充值金额（单位：分）
+        /// </summary>
+        public int GiveAmount { get; set; }
         /// <summary>
         /// 消费次数
         /// </summary>
         public int PurchaseTimes { get; set; }
+        /// <summary>
+        /// 充值次数
+        /// </summary>
+        public int ChargeTimes { get; set; }
         /// <summary>
         /// 会员卡id
         /// </summary>

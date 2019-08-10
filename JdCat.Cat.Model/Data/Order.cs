@@ -105,6 +105,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public DateTime? DistributionTime { get; set; }
         /// <summary>
+        /// 配送订单号
+        /// </summary>
+        public string DistributionId { get; set; }
+        /// <summary>
         /// 送达时间
         /// </summary>
         public DateTime? AchieveTime { get; set; }

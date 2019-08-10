@@ -41,15 +41,21 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
-        public async Task<IActionResult> GetAppMenu()
+        public async Task<IActionResult> GetAppMenu([FromServices]AppData appData, [FromServices]IUtilRepository util)
         {
-            var menu = await WxHelper.GetAppMenuAsync();
+            var business = HttpContext.Session.Get<Business>(appData.Session);
+            if (business == null) throw new Exception("请先登录");
+            var token = await util.GetTokenAsync(business.WeChatAppId, business.WeChatSecret);
+            var menu = await WxHelper.GetAppMenuAsync(token);
             return Json(menu);
         }
 
-        public async Task<IActionResult> CreateAppMenu([FromBody]List<WxMenu> menus)
+        public async Task<IActionResult> CreateAppMenu([FromBody]List<WxMenu> menus, [FromServices]AppData appData, [FromServices]IUtilRepository util)
         {
-            await WxHelper.DeleteAppMenuAsync();
+            var business = HttpContext.Session.Get<Business>(appData.Session);
+            if (business == null) throw new Exception("请先登录");
+            var token = await util.GetTokenAsync(business.WeChatAppId, business.WeChatSecret);
+            await WxHelper.DeleteAppMenuAsync(token);
             if (menus == null || menus.Count == 0) return Ok();
             var list = new List<object>();
             menus.ForEach(menu =>
@@ -59,15 +65,29 @@ namespace JdCat.Cat.Web.Controllers
                     var subList = new List<object>();
                     if (menu.sub_button != null && menu.sub_button.Count > 0)
                     {
-                        menu.sub_button.ForEach(a => subList.Add(new { type = a.type.ToString(), a.name, a.key, a.url, a.appid, a.pagepath, a.media_id }));
+                        menu.sub_button.ForEach(a => subList.Add(new { type = a.type.ToString(), a.name, a.key, url = FilterUrl(a.url), a.appid, a.pagepath, a.media_id }));
                     };
-                    list.Add(new { menu.name, sub_button = subList });
+                    list.Add(new
+                    {
+                        menu.name,
+                        sub_button = subList
+                    });
                     return;
                 }
-                list.Add(new { type = menu.type.ToString(), menu.name, menu.key, menu.url, menu.appid, menu.pagepath, menu.media_id });
+                list.Add(new { type = menu.type.ToString(), menu.name, menu.key, url = FilterUrl(menu.url), menu.appid, menu.pagepath, menu.media_id });
             });
-            var result = await WxHelper.CreateAppMenuAsync(list);
+            var result = await WxHelper.CreateAppMenuAsync(list, token);
             return Content(result);
+        }
+
+        private string FilterUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url)) return null;
+            var business = HttpContext.Session.Get<Business>(AppSetting.AppData.Session);
+            var query = "id=" + business.ID;
+            if (url.Contains(query)) return url;
+            if (url.Contains("?")) return url + "&id=" + business.ID;
+            return url + "?id=" + business.ID;
         }
 
 
@@ -75,11 +95,9 @@ namespace JdCat.Cat.Web.Controllers
 
         public IActionResult WxMsgTest()
         {
-            var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(WeixinController));
-
             foreach (var item in Request.Query)
             {
-                log.Debug(item.Key + ":" + item.Value);
+                Log.Debug(item.Key + ":" + item.Value);
             }
             return Content("ok");
         }
@@ -114,8 +132,9 @@ namespace JdCat.Cat.Web.Controllers
                     if (ticketNode != null && ticketNode.Count() > 0)
                     {
                         var ticket = ticketNode.First().Value;
-                        WxHelper.OpenTicket = ticket;
-                        Log.Debug("ticket:" + ticket);
+                        var util = HttpContext.RequestServices.GetService<IUtilRepository>();
+                        util.SetOpenTicketAsync(ticket);
+                        //Log.Debug("ticket:" + ticket);
                     }
                 }
             }
@@ -126,7 +145,7 @@ namespace JdCat.Cat.Web.Controllers
         /// 开放平台消息管理action
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> Message()
+        public IActionResult Message(string id)
         {
             var wxcpt = HttpContext.RequestServices.GetService<WXBizMsgCrypt>();
             var signature = Request.Query["signature"];
@@ -140,35 +159,18 @@ namespace JdCat.Cat.Web.Controllers
                 var msg = sr.ReadToEnd();
                 var sMsg = "";
                 var ret = 0;
-                ret = wxcpt.DecryptMsg(msg_signature, timestamp, nonce, msg, ref sMsg);
+                ret = wxcpt.DecryptMsg(msg_signature, timestamp, nonce, msg, ref sMsg);     // 将消息解密
                 if (ret != 0)
                 {
                     Log.Error("客户消息处理错误");
                 }
                 else
                 {
-                    //Log.Debug("客户消息：" + sMsg);
                     var document = XDocument.Parse(sMsg);
-                    //var content = document.Root.Elements("Content").FirstOrDefault()?.Value;
-                    //var openId = document.Root.Elements("FromUserName").First().Value;
-                    //if (content == "TESTCOMPONENT_MSG_TYPE_TEXT")                // 模拟接到消息后直接返回
-                    //{
-                    //    document.Root.Elements("Content").First().Value = "TESTCOMPONENT_MSG_TYPE_TEXT_callback";
-                    //    Log.Debug(document.ToString());
-                    //    return Content(document.ToString());
-                    //}
-                    //else
-                    //{
-                    //    // 模拟接到消息后，暂停5秒，然后调用接口发送消息
-                    //    Thread.Sleep(4000);
-                    //    ReturnMsg(content, openId, HttpContext.RequestServices.GetService<AppData>());
-                    //    return Content("");
-                    //}
-
 
                     var even = UtilHelper.ReadXml<WxEvent>(sMsg);
 
-                    // 公众号消息处理
+                    // 公众号（授权后）消息处理
                     //if (!string.IsNullOrEmpty(even.Event) && !string.IsNullOrEmpty(even.MsgType))
                     //{
                     //    var service = HttpContext.RequestServices.GetService<IUtilRepository>();
@@ -177,40 +179,38 @@ namespace JdCat.Cat.Web.Controllers
                     //    var code = Request.Query["echoStr"].ToString();
                     //    return Content(code);
                     //}
-                    
-                    
-                    if(even.Content == "TESTCOMPONENT_MSG_TYPE_TEXT")   // 模拟接到消息后直接返回
+
+
+                    if (even.Content == "TESTCOMPONENT_MSG_TYPE_TEXT")   // 模拟接到消息后直接返回
                     {
                         document.Root.Elements("Content").First().Value = "TESTCOMPONENT_MSG_TYPE_TEXT_callback";
                         return Content(document.ToString());
                     }
-                    else
+                    else if (even.Content.Contains("QUERY_AUTH_CODE"))
                     {
                         // 模拟接到消息后，暂停5秒，然后调用接口发送消息
                         Thread.Sleep(4000);
-                        ReturnMsg(even.Content, even.FromUserName, HttpContext.RequestServices.GetService<AppData>());
+                        ReturnMsg(even.Content.Split(':')[1], even.FromUserName);
                         return Content("");
                     }
                 }
             }
-            
+
             return Content("success");
         }
 
-        private async void ReturnMsg(string code, string openId, AppData appData)
+        /// <summary>
+        /// 检测用回复粉丝消息
+        /// </summary>
+        /// <param name="code">授权码</param>
+        /// <param name="openId">用户openid</param>
+        private async void ReturnMsg(string code, string openId)
         {
-            var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(WeixinController));
             try
             {
+                var util = HttpContext.RequestServices.GetService<IUtilRepository>();
 
-                log.Debug("客服正在回复消息，请稍等...");
-                var token = await WxHelper.GetAuthToken(appData, code);
-                if (token == null)
-                {
-                    Log.Debug("token是空的");
-                    Log.Debug("appData:" + JsonConvert.SerializeObject(appData));
-                }
-                log.Debug(JsonConvert.SerializeObject(token));
+                var token = await WxHelper.GetAuthTokenAsync(code, await util.GetOpenTokenAsync());
                 var url = $"https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={token.authorization_info.authorizer_access_token}";
                 var content = new
                 {
@@ -218,19 +218,13 @@ namespace JdCat.Cat.Web.Controllers
                     msgtype = "text",
                     text = new { content = code + "_from_api" }
                 };
+                var result = await UtilHelper.RequestAsync(url, content);
                 var sendData = JsonConvert.SerializeObject(content);
-                log.Debug("回复的消息：" + sendData);
-                using (var client = new HttpClient())
-                using (var body = new StringContent(sendData))
-                {
-                    var res = await client.PostAsync(url, body);
-                    var result = await res.Content.ReadAsStringAsync();
-                    Log.Debug(result);
-                }
+                Log.Debug(result);
             }
             catch (Exception e)
             {
-                log.Debug("回复消息错误：", e);
+                Log.Debug("回复消息错误：", e);
             }
         }
 
@@ -239,12 +233,9 @@ namespace JdCat.Cat.Web.Controllers
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
-        public IActionResult SetCode([FromQuery]string code)
+        public IActionResult SetCode([FromQuery]string code, [FromServices]IUtilRepository util)
         {
-            if (string.IsNullOrEmpty(WxHelper.OpenTicket))
-            {
-                WxHelper.OpenTicket = code;
-            }
+            util.SetOpenTicketAsync(code);
             return Content("ok");
         }
 

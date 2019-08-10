@@ -64,5 +64,61 @@ namespace JdCat.Cat.Repository
             return payment;
         }
 
+        public async Task<List<CardChargeRule>> GetCardChargesAsync(int id)
+        {
+            return await Context.CardChargeRules.Where(a => a.WxCardId == id).ToListAsync();
+        }
+
+        public async Task SaveCardChargesAsync(IEnumerable<CardChargeRule> charges)
+        {
+            var entities = await Context.CardChargeRules.Where(a => a.WxCardId == charges.ElementAt(0).WxCardId).ToListAsync();
+            Context.RemoveRange(entities);
+            await Context.AddRangeAsync(charges);
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task<List<CardBonusRule>> GetCardBonusAsync(int id)
+        {
+            return await Context.CardBonusRules.Where(a => a.WxCardId == id).ToListAsync();
+        }
+
+        public async Task SaveCardBonusAsync(IEnumerable<CardBonusRule> charges)
+        {
+            var entities = await Context.CardBonusRules.Where(a => a.WxCardId == charges.ElementAt(0).WxCardId).ToListAsync();
+            Context.RemoveRange(entities);
+            await Context.AddRangeAsync(charges);
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task<ChargeRecord> ChargeSuccessAsync(WxPaySuccess result)
+        {
+            var record = await Context.ChargeRecords.FirstOrDefaultAsync(a => a.Code == result.out_trade_no);
+            if (record == null) return null;
+            var member = await Context.WxMembers.FirstAsync(a => a.ID == record.RelativeId);
+
+            // 充值记录
+            record.PayTime = DateTime.Now;
+            record.Status = 1;
+            record.WxPayCode = result.transaction_id;
+
+            // 余额更新
+            member.RechargeAmount += record.Amount;
+            member.ChargeTimes++;
+            member.GiveAmount += record.Give;
+            member.Balance += record.Amount + record.Give;
+
+            // 积分更新
+            member.Bonus += record.Bonus;
+
+            await Context.SaveChangesAsync();
+
+            return record;
+        }
+
+        public async Task<List<ChargeRecord>> GetChargeRecordsAsync(int id, PagingQuery paging)
+        {
+            return await Context.ChargeRecords.Where(a => a.RelativeId == id && a.Status == 1).OrderByDescending(a => a.ID).Skip(paging.Skip).Take(paging.PageSize).ToListAsync();
+        }
+
     }
 }

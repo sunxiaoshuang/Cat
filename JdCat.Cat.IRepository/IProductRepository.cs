@@ -174,5 +174,11 @@ namespace JdCat.Cat.IRepository
         /// <param name="imageUrl">上传服务接口地址</param>
         /// <returns>一共复制多少个商品</returns>
         Task<int> Copy(CopyProduct copyData, string imageUrl);
+        /// <summary>
+        /// 获取商户的所有商品，包含id，名称，编码，拼音，拼音首字母
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        Task<object> GetProductsOnlyNameAsync(int businessId);
     }
 }

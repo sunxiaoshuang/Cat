@@ -38,6 +38,8 @@
                         var items = res.data.map(function (obj) {
                             total.amount += obj.amount;
                             total.count += obj.count;
+                            obj.amount = +obj.amount.toFixed(2);
+                            obj.count = +obj.count.toFixed(2);
                             return $.extend(obj, { selected: false });
                         });
                         total.amount = +total.amount.toFixed(2);
@@ -96,7 +98,7 @@
             calculable: true,
             series: [
                 {
-                    name: '访问来源',
+                    name: '产品销售额',
                     type: 'pie',
                     radius: '55%',
                     center: ['50%', '60%']

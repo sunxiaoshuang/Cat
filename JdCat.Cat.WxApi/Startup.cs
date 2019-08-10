@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace JdCat.Cat.WxApi
 {
@@ -49,17 +50,20 @@ namespace JdCat.Cat.WxApi
             //.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
             //services.AddDbContext<CatDbContext>(a => a.UseSqlServer(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
             services.AddDbContext<CatDbContext>(a => a.UseMySql(Configuration.GetConnectionString("CatContext"), b => b.MigrationsAssembly("JdCat.Cat.Model")));
+            // 注册redis连接
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConn")));
 
             services.AddScoped<IBusinessRepository, BusinessRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<ISessionDataRepository, SessionDataRepository>();
+            services.AddScoped<IUtilRepository, UtilRepository>();
             // 系统参数
             var config = new AppData();
             config.Init(Configuration);
             services.AddSingleton(config);
-            InputData.Key = config.ServerKey;
+            //InputData.Key = config.ServerKey;
             AppSetting.SetAppData(config);
             // 达达请求
             var dada = DadaHelper.GetHelper();

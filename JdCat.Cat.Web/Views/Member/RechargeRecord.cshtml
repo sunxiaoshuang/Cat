@@ -1,0 +1,83 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "充值记录";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>充值记录</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <link rel="Shortcut Icon" href="~/images/logo1.png">
+    <link rel="stylesheet" href="~/css/member/usercenter.css" asp-append-version="true" />
+    <style>
+        .card:before, .card:after {
+            background: @ViewBag.color;
+        }
+
+        .u_head, .guideIndex .coin_header, .j-theme, .darkbg, .main-color {
+            background: -webkit-linear-gradient( top,@ViewBag.color, @ViewBag.color) !important;
+        }
+
+        .coupon-list-logo, .box .img-box .card-box, .bottom-cell .lihuo, .myDetail .myrto {
+            background: -webkit-linear-gradient( left,@ViewBag.color, @ViewBag.color) !important;
+        }
+
+        .box-img .pic-box, .card-face-body.theme-bg, .recharge-box, .cardhead .topbtn, .btn-active, .btn.theme-bg, .u_head .uinfo .ucardinfo a, .coupon-infor-ft .main-color, #self-consume .btn, .modal .form-group .input-group .input-group-addon {
+            background: @ViewBag.color !important;
+        }
+
+        .a-btn, .cardhead b, .look-info a, .box-title .first-line, .gift-info .price, .topupmoney a.active i, .topupmoney a.active span, .checkAllRule, .quanLineLeft .ico-mall, .consumerlist li span sup, .coupon-info .coupon-brand {
+            color: @ViewBag.color;
+        }
+
+        .wx_loading .wx_loading_icon {
+            border-color: @ViewBag.color;
+        }
+
+        .tabs .tab a.active {
+            color: @ViewBag.color;
+            border-bottom: 2px solid @ViewBag.color;
+        }
+    </style>
+</head>
+<body class="scroll-box">
+    <header class="header j-theme">
+        <div class="icon-wrap">
+            <i class="ico-mbag"></i>
+        </div>
+        <p class="text text-64">
+            <span class="left">
+                <b style="font-size: 18px;margin-left: -15px;">￥</b>0
+            </span>
+        </p>
+    </header>
+    <div id="wrapper" class="content" style="background: #fff">
+        <div class="empty">
+            <i class="ico-orders"></i>
+            <span>还没有充值记录哦！</span>
+        </div>
+    </div>
+    <script src="~/js/member/app.js"></script>
+    <script src="~/js/member/usercenter.js" asp-append-version="true"></script>
+    <script src="~/js/member/Iscroll.js"></script>
+
+    <script>
+        var myScroll;
+        function loaded() {
+            myScroll = new iScroll('wrapper', { bounce: false });
+        }
+        //document.addEventListener('DOMContentLoaded', loaded, false);
+        //window.onload = function () {
+        //    setTimeout(function () { new iScroll(document.getElementById('scroller')) }, 100)
+        //};
+    </script>
+</body>
+</html>

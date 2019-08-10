@@ -22,11 +22,6 @@ namespace JdCat.Cat.Common.Filter
         public void OnException(ExceptionContext context)
         {
             if (_env.IsDevelopment()) return;
-            //var filePath = Path.Combine(_env.ContentRootPath, "Log", "Error", DateTime.Now.ToString("yyyyMMdd") + ".txt");
-            //using (var stream = File.AppendText(filePath))
-            //{
-            //    stream.WriteLine($"{Environment.NewLine}\r\n【{DateTime.Now:yyyy-MM-dd HH:mm:ss}】服务器异常：{context.Exception}");
-            //}
             log.Error("服务器异常：" + context.Exception);
 
             var json = new ErrorResponse(context.Exception.Message) { DeveloperMessage = context.Exception };

@@ -3,7 +3,7 @@
         statusName = {
             "1": "已付款", "2": "已拒单", "4": "待配送", "8": "待配送", "16": "配送中", "32": "配送异常", "64": "已送达", "128": "用户已确认收货", "256": "未付款", "512": "已评价", "1024": "已关闭", "2048": "配送已取消", "4096": "订单已取消"
         },
-        providerName = { "0": "未知", "1": "自己配送", "2": "达达配送", "3": "美团配送", "4": "蜂鸟配送", "5": "点我达配送", "6": "一城飞客配送" },
+        providerName = { "0": "未知", "1": "自己配送", "2": "达达配送", "3": "美团配送", "4": "蜂鸟配送", "5": "点我达配送", "6": "一城飞客配送", "7": "顺丰同城" },
         delivered = 8 + 16 + 64 + 128 + 512;// 已发货
 
     var vueReason = null, $tipModal, cancelOrderVue;
@@ -32,10 +32,11 @@
             sendTypes: [
                 { name: "达达配送", selected: false, type: 0, logisticsType: 2, doing: false },
                 { name: "美团配送", selected: false, type: 0, logisticsType: 3, doing: true },
-                { name: "蜂鸟配送", selected: false, type: 0, logisticsType: 4, doing: true },
+                //{ name: "蜂鸟配送", selected: false, type: 0, logisticsType: 4, doing: true },
                 { name: "点我达配送", selected: false, type: 0, logisticsType: 5, doing: false },
                 { name: "一城飞客配送", selected: false, type: 0, logisticsType: 6, doing: false },
-                { name: "自己配送", selected: false, type: 1, logisticsType: 1, doing: false }
+                { name: "自己配送", selected: false, type: 1, logisticsType: 1, doing: false },
+                { name: "顺丰同城", selected: false, type: 1, logisticsType: 7, doing: false }
             ],
             curOrder: null,             // 当前选择配送的订单
             printerCode: localStorage.getItem("defaultPrinter"),          // 当前选择的打印机编码

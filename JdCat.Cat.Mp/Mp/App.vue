@@ -8,10 +8,21 @@
 		},
 		onHide: function() {
 			console.log('App Hide')
+		},
+		globalData: {
+			member: undefined
 		}
 	}
 </script>
 
+
 <style>
-	/*每个页面公共css */
+	@import "./static/fonts/iconfont.css";
+	
+	.container {
+		display: flex;
+		flex-flow: column;
+		justify-content: center;
+		align-items: center;
+	}
 </style>

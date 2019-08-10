@@ -245,7 +245,7 @@ namespace JdCat.Cat.Web.Controllers
 
         public IActionResult Refund([FromServices]IHostingEnvironment _env, [FromServices]AppData appData)
         {
-            var data = new InputData();
+            var data = new InputData(appData.ServerKey);
             data.SetValue("appid", "wx37df4bb420888824");
             data.SetValue("mch_id", "1497755942");
             data.SetValue("sub_appid", "wxeca5f33003947169");
@@ -298,7 +298,7 @@ namespace JdCat.Cat.Web.Controllers
             result = sr.ReadToEnd().Trim();
             sr.Close();
 
-            var json = new InputData();
+            var json = new InputData(appData.ServerKey);
             json.FromXml(result);
 
             return Json(json);

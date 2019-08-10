@@ -45,7 +45,7 @@ namespace JdCat.Cat.Repository.Service
         /// <returns></returns>
         public async Task<FeieReturn> AddPrintAsync(FeyinDevice device)
         {
-            var time = DateTime.Now.ToInt();
+            var time = DateTime.Now.ToTimestamp();
             var sign = UtilHelper.SHA1(user + key + time).ToLower();
 
             var postData = $"printerContent={device.Code}# {device.ApiKey}# {device.Name} #{device.Remark}";
@@ -72,7 +72,7 @@ namespace JdCat.Cat.Repository.Service
         /// <returns></returns>
         public async Task<string> PrintAsync(Order order, FeyinDevice device, Business business)
         {
-            var time = DateTime.Now.ToInt().ToString();
+            var time = DateTime.Now.ToTimestamp().ToString();
             var sign = UtilHelper.SHA1(user + key + time).ToLower();
             var content = new StringBuilder();
             content.Append($"<CB>#{order.Identifier} 简单猫</CB>");
@@ -209,7 +209,7 @@ namespace JdCat.Cat.Repository.Service
             str += "<B>简单猫提示您：</B><BR>" + $"<B>{content}</B><BR><BR>";
             str += "********************************<BR>";
 
-            var time = DateTime.Now.ToInt().ToString();
+            var time = DateTime.Now.ToTimestamp().ToString();
             var sign = UtilHelper.SHA1(user + key + time).ToLower();
 
             string postData = "sn=" + device.Code;

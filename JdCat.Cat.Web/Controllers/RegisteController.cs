@@ -29,7 +29,7 @@ namespace JdCat.Cat.Web.Controllers
             return View();
         }
 
-        public IActionResult Registe(
+        public IActionResult Registe([FromServices]AppData appData,
             string name,
             string pwd,
             string code,
@@ -65,6 +65,7 @@ namespace JdCat.Cat.Web.Controllers
                     Address = address,
                     Mobile = phone,
                     BusinessLicense = license,
+                    RegisterDate = DateTime.Now,
                     Description = mark,
                     Freight = 4,
                     BusinessStartTime = "06:00",
@@ -75,7 +76,15 @@ namespace JdCat.Cat.Web.Controllers
                     Score = 5,
                     Delivery = 5,
                     IsEnjoymentActivity = false,
-                    DiscountQuantity = 1
+                    DiscountQuantity = 1,
+                    WeChatAppId = appData.WeChatAppId,
+                    WeChatSecret = appData.WeChatSecret,
+                    RefundTemplateId = appData.Msg_Refund,
+                    NewOrderTemplateId = appData.EventMessageTemplateId,
+                    PayServerAppId = appData.ServerAppId,
+                    PayServerKey = appData.ServerKey,
+                    PayServerMchId = appData.ServerMchId,
+                    CertFile = appData.CertFile
                 };
                 userInfo.FeyinMemberCode = appData.FeyinMemberCode;
                 userInfo.FeyinApiKey = appData.FeyinApiKey;
@@ -93,7 +102,7 @@ namespace JdCat.Cat.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Registe2([FromBody]Business business)
+        public IActionResult Registe2([FromBody]Business business, [FromServices]AppData appData)
         {
             var result = new JsonData();
             var isExist = service.ExistForCode(business.Code);
@@ -107,6 +116,14 @@ namespace JdCat.Cat.Web.Controllers
             business.Category = BusinessCategory.Chain;
             business.RegisterDate = DateTime.Now;
             business.StoreId = service.GetNextStoreNumber();
+            business.WeChatAppId = appData.WeChatAppId;
+            business.WeChatSecret = appData.WeChatSecret;
+            business.RefundTemplateId = appData.Msg_Refund;
+            business.NewOrderTemplateId = appData.EventMessageTemplateId;
+            business.PayServerAppId = appData.ServerAppId;
+            business.PayServerKey = appData.ServerKey;
+            business.PayServerMchId = appData.ServerMchId;
+            business.CertFile = appData.CertFile;
             service.Add(business);
             result.Msg = "连锁店总后台注册成功";
             result.Success = true;

@@ -12,8 +12,8 @@
 				</view>
 			</view>
 		</view>
-				
-		
+
+
 		<view class="example">
 			<view class="example-title">{{title}}</view>
 			<uni-grid :options="data1" @click="onClick" />
@@ -23,18 +23,17 @@
 
 <script>
 	import uniGrid from '@/components/uni-grid/uni-grid.vue'
-    import config from '../../config.js'
-    import helper from '../../common/helper.js'
+	import config from '../../config.js'
+	import helper from '../../common/helper.js'
 	export default {
 		components: {
 			uniGrid
 		},
 		data() {
 			return {
-				openid: '', 
+				openid: '',
 				title: '功能',
-				data1: [
-					{
+				data1: [{
 						image: '/static/shangdian.png',
 						text: '商户信息',
 						url: '/pages/store/store'
@@ -51,18 +50,25 @@
 					// }
 				],
 				index: 0,
-				array: [{name: '', id: 0}],
+				array: [{
+					name: '',
+					id: 0
+				}],
 				businessId: 0
-				
-			} 
+
+			}
 		},
 		onLoad(e) {
 			var self = this;
+			if (e.sign) {
+				this.redirect(e);
+				return;
+			}
 			this.openid = e.openid || config.openid;
 			helper.request({
 				url: '/mana/business?openid=' + this.openid,
-				success: function(res){
-					if(!res.data) {
+				success: function(res) {
+					if (!res.data) {
 						uni.showToast({
 							title: '未绑定任何商户',
 							icon: 'none'
@@ -75,8 +81,30 @@
 			})
 		},
 		methods: {
-			onClick(e){
-				if(this.businessId <= 0){
+			redirect(e) {
+				let url;
+				switch (e.sign) {
+					case "pay":
+						url = `/pages/memberPayment/memberPayment?card_id=${e.card_id}&encrypt_code=${e.encrypt_code}&openid=${e.openid}`;
+						break;
+					case "charge":
+						url = `/pages/memberCharge/memberCharge?card_id=${e.card_id}&encrypt_code=${e.encrypt_code}&openid=${e.openid}`
+						break;
+					case "sale":
+						url = `/pages/memberSale/memberSale?card_id=${e.card_id}&encrypt_code=${e.encrypt_code}&openid=${e.openid}`
+						break;
+					case "record":
+						url = `/pages/memberRecord/memberRecord?card_id=${e.card_id}&encrypt_code=${e.encrypt_code}&openid=${e.openid}`
+						break;
+					default:
+						break;
+				}
+				uni.redirectTo({
+					url
+				});
+			},
+			onClick(e) {
+				if (this.businessId <= 0) {
 					uni.showToast({
 						title: '请先在网页后台绑定微信用户',
 						icon: 'none'
@@ -88,7 +116,7 @@
 					url: `${url}?id=` + this.businessId
 				});
 			},
-			bindPickerChange(e){
+			bindPickerChange(e) {
 				this.index = e.target.value
 				this.businessId = this.array[this.index].id;
 			}
@@ -108,17 +136,19 @@
 		font-size: 28upx;
 		line-height: inherit
 	}
-	
+
 	.store {
 		display: flex;
 		flex-direction: row;
 	}
 
-	.store, .example {
+	.store,
+	.example {
 		padding: 0 30upx 30upx
 	}
 
-	.store-title, .example-title {
+	.store-title,
+	.example-title {
 		font-size: 32upx;
 		line-height: 32upx;
 		color: #777;
@@ -138,10 +168,11 @@
 		/* #endif */
 		box-sizing: border-box;
 	}
-	
+
 	.store-title {
 		margin: 20upx 0;
 	}
+
 	.uni-list {
 		margin: 16upx 0;
 	}

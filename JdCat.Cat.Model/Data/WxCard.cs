@@ -28,6 +28,7 @@ namespace JdCat.Cat.Model.Data
         /// 卡券颜色
         /// </summary>
         public string Color { get; set; }
+
         /// <summary>
         /// 卡券状态
         /// </summary>

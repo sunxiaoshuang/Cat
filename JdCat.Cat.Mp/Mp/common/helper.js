@@ -10,7 +10,7 @@ const request = function(obj){
 			})
 		}
 	}
-	uni.request(obj);
+	return uni.request(obj);
 }
 
 const extend = function(obj, ...objArr){

@@ -94,7 +94,7 @@
         //去充值
         $(document).on("touchstart", "#ico-mymoney", function () {
             $(".pageload").show();
-            window.location.href = "/Member/Recharge/@Model.ID";
+            window.location.href = "/Member/Recharge?card_id=@ViewBag.card_id&encrypt_code=@ViewBag.encrypt_code&openid=@ViewBag.openid";
         })
         //动态支付码相关
         var paycodeNode = $("#payCode");

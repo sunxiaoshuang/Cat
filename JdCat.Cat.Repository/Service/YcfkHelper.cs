@@ -111,7 +111,7 @@ namespace JdCat.Cat.Repository.Service
         private string CreateRequestString(string content, string action, string key = null, string secret = null)
         {
             content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content));
-            var ts = DateTime.Now.ToInt();
+            var ts = DateTime.Now.ToTimestamp();
             var signature = CreateSignature(content, ts.ToString(), key, secret);
             var query = $"action={action}&sign={signature}&ts={ts}&key={key??PartnerKey}&content={content.ToUrlEncoding()}";
             return query;

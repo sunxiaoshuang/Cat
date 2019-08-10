@@ -198,11 +198,6 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         JsonData ApplyRefund(int id, string reason);
         /// <summary>
-        /// 发送退款消息
-        /// </summary>
-        /// <param name="order"></param>
-        Task SendMsgOfRefund(Order order);
-        /// <summary>
         /// 获取订单骑手位置
         /// </summary>
         /// <param name="id"></param>
@@ -234,5 +229,12 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="id"></param>
         void ReloadCommentScore(int id);
+
+        /// <summary>
+        /// 新增订单通知
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        Task<bool> AddOrderNotifyAsync(Order order);
     }
 }

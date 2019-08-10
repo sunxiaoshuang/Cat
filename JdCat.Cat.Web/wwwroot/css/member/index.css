@@ -158,7 +158,6 @@ img {
         font-size: 14px;
     }
 
-/**** ��ҳ*/
 .header_top {
     width: 100%;
     height: 2rem;
@@ -361,7 +360,6 @@ p.submtie {
     margin-top: 1px;
 }
 
-/**** ��Ա����***/
 .u_head {
     height: 12rem;
     background-size: 100% 100%;
@@ -632,7 +630,6 @@ s.line:after {
     clear: both
 }
 
-/*** ������*/
 header {
     height: 50px;
     background: #fff;
@@ -867,7 +864,6 @@ header:after {
     background: -webkit-linear-gradient(right,#d0a762, #e0b766);
 }
 
-/*** ��ֵ***/
 .guideIndex .coin_header {
     padding: 0 0 50px 0;
     background: -webkit-linear-gradient( top,#e0b766,#d0a762);
@@ -1213,7 +1209,6 @@ header:after {
     margin-top: 10px;
 }
 
-/** ����*/
 .member-goods {
     margin: 20px 0;
     overflow: hidden;
@@ -1419,7 +1414,6 @@ header:after {
     text-align: center;
 }
 
-/***�ο� */
 .AllCards {
     padding: 0.3rem .3rem 0;
 }
@@ -1558,7 +1552,6 @@ header:after {
     background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%);
 }
 
-/*** ����*/
 @font-face {
     font-family: 'kico';
     src: url('/css/member/kico.eot?12fe32f');
@@ -1971,7 +1964,6 @@ header:after {
     top: -1px;
 }
 
-/** ���*/
 .my_privilege_list {
     margin: 0 .3rem
 }

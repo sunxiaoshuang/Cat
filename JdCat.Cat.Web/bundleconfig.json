@@ -478,6 +478,42 @@
     "inputFiles": [
       "wwwroot/css/card/memberCard.css"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/thirdOrder/meituan.min.js",
+    "inputFiles": [
+      "wwwroot/js/thirdOrder/meituan.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/thirdOrder/eleme.min.js",
+    "inputFiles": [
+      "wwwroot/js/thirdOrder/eleme.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/thirdOrder/meituanproduct.min.js",
+    "inputFiles": [
+      "wwwroot/js/thirdOrder/meituanproduct.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/thirdOrder/elemeproduct.min.js",
+    "inputFiles": [
+      "wwwroot/js/thirdOrder/elemeproduct.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/business/shunfeng.min.js",
+    "inputFiles": [
+      "wwwroot/js/business/shunfeng.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/thirdOrder/order.min.js",
+    "inputFiles": [
+      "wwwroot/js/thirdOrder/order.js"
+    ]
   }
 
 ]

@@ -101,6 +101,14 @@ namespace JdCat.Cat.Web.Controllers
             business.Secret = Business.Secret;
             business.TemplateNotifyId = Business.TemplateNotifyId;
             business.AppQrCode = Business.AppQrCode;
+            business.WeChatAppId = Business.WeChatAppId;
+            business.WeChatSecret = Business.WeChatSecret;
+            business.RefundTemplateId = Business.RefundTemplateId;
+            business.NewOrderTemplateId = Business.NewOrderTemplateId;
+            business.PayServerAppId = Business.PayServerAppId;
+            business.PayServerKey = Business.PayServerKey;
+            business.PayServerMchId = Business.PayServerMchId;
+            business.CertFile = Business.CertFile;
             business.StoreId = Service.GetNextStoreNumber();
             business.FeyinMemberCode = Business.FeyinMemberCode;
             business.FeyinApiKey = Business.FeyinApiKey;

@@ -46,7 +46,7 @@ namespace JdCat.Cat.Repository.Service
         /// <returns></returns>
         public async Task<string> PrintAsync(Order order, FeyinDevice device, Business business)
         {
-            var time = DateTime.Now.ToInt().ToString();
+            var time = DateTime.Now.ToTimestamp().ToString();
             var dic = new Dictionary<string, string>
             {
                 { "machine_code", device.Code },
@@ -133,7 +133,7 @@ namespace JdCat.Cat.Repository.Service
             str += "**************通知**************\r\n";
             str += "<FS2>简单猫提示您：</FS2>\r\n" + $"<FS2>{content}</FS2>\r\n\r\n";
             str += "********************************\r\n";
-            var time = DateTime.Now.ToInt().ToString();
+            var time = DateTime.Now.ToTimestamp().ToString();
             var dic = new Dictionary<string, string>
             {
                 { "machine_code", device.Code },

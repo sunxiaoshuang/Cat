@@ -13,6 +13,9 @@ using System.DrawingCore.Imaging;
 using ZXing.Common;
 using ZXing;
 using Microsoft.International.Converters.PinYinConverter;
+using System.Threading.Tasks;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace JdCat.Cat.Common
 {
@@ -183,7 +186,7 @@ namespace JdCat.Cat.Common
             var result = Encoding.UTF8.GetString(plainText);
             return result;
         }
-        
+
         public static string SHA1(string content, Encoding encode = null)
         {
             if (encode == null)
@@ -208,7 +211,7 @@ namespace JdCat.Cat.Common
                 throw new Exception("SHA1加密出错：" + ex.Message);
             }
         }
-        
+
         #endregion
 
         /// <summary>
@@ -474,6 +477,56 @@ namespace JdCat.Cat.Common
             var len = text.Length;
             var byteLen = Encoding.UTF8.GetByteCount(text);
             return (byteLen - len) / 2;
+        }
+        /// <summary>
+        /// 发送请求
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="content"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        public static async Task<string> RequestAsync(string url, object content = null, string method = "post")
+        {
+            method = method.ToLower();
+            HttpResponseMessage result;
+            using (var client = new HttpClient())
+            {
+                HttpContent body = null;
+                if (content != null)
+                {
+                    if (content is string)
+                    {
+                        body = new StringContent(content.ToString());
+                    }
+                    else
+                    {
+                        body = new StringContent(JsonConvert.SerializeObject(content));
+                    }
+                }
+                switch (method)
+                {
+                    case "get":
+                        result = await client.GetAsync(url);
+                        break;
+                    case "post":
+                        result = await client.PostAsync(url, body);
+                        break;
+                    case "put":
+                        result = await client.PutAsync(url, body);
+                        break;
+                    case "delete":
+                        result = await client.DeleteAsync(url);
+                        break;
+                    default:
+                        throw new Exception($"不支持方法{method}");
+                }
+                if (body != null)
+                {
+                    body.Dispose();
+                }
+            }
+            result.EnsureSuccessStatusCode();
+            return await result.Content.ReadAsStringAsync();
         }
 
         #region 打印相关方法

@@ -46,5 +46,42 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         Task<PaymentTarget> CreatePaymentTargetAsync(int id);
+        /// <summary>
+        /// 获取会员储值规则
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<List<CardChargeRule>> GetCardChargesAsync(int id);
+        /// <summary>
+        /// 保存储值规则
+        /// </summary>
+        /// <param name="charges"></param>
+        /// <returns></returns>
+        Task SaveCardChargesAsync(IEnumerable<CardChargeRule> charges);
+        /// <summary>
+        /// 获取会员卡积分规则
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<List<CardBonusRule>> GetCardBonusAsync(int id);
+        /// <summary>
+        /// 保存会员卡积分规则
+        /// </summary>
+        /// <param name="charges"></param>
+        /// <returns></returns>
+        Task SaveCardBonusAsync(IEnumerable<CardBonusRule> charges);
+        /// <summary>
+        /// 会员充值成功
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        Task<ChargeRecord> ChargeSuccessAsync(WxPaySuccess result);
+        /// <summary>
+        /// 根据会员id获取充值记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<List<ChargeRecord>> GetChargeRecordsAsync(int id, PagingQuery paging);
     }
 }

@@ -28,7 +28,7 @@
     <script src="~/data/province.js"></script>
     <script src="~/data/city.js"></script>
     <script src="~/data/area.js"></script>
-    <script>
+    @*<script>
         var cc = {};
         provinceData.forEach((province, index1) => {
             cc[province.label] = {};
@@ -41,7 +41,7 @@
             });
         });
         console.log(JSON.stringify(cc));
-    </script>
+    </script>*@
     <environment include="Development">
         <script src="~/lib/bootstrap/dist/js/bootstrap-switch.js"></script>
         <script src="~/js/business/index.js"></script>
@@ -179,7 +179,7 @@
                     <label class="control-label col-xs-2 col-md-1  col-xs-offset-1">
                         <span class="require">所属城市区域</span>
                     </label>
-                    <div class="col-xs-4 col-md-3">
+                    <div class="col-xs-8 col-md-5">
                         <select class="businessTime" v-model.trim="entity.province" style="min-width: 100px;">
                             <option v-for="item in province" :value="item" v-text="item"></option>
                         </select>
@@ -331,6 +331,13 @@
                                 <input type="radio" name="serviceProvider" value="6" v-model="entity.serviceProvider">
                                 <span class="custom-checkbox"></span>
                                 一城飞客
+                            </label>
+                        </div>
+                        <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                            <label class="label-checkbox">
+                                <input type="radio" name="serviceProvider" value="7" v-model="entity.serviceProvider">
+                                <span class="custom-checkbox"></span>
+                                顺丰同城
                             </label>
                         </div>
                     </div>

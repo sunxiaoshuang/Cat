@@ -42,6 +42,16 @@ namespace JdCat.Cat.MpApi
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<ISessionDataRepository, SessionDataRepository>();
             services.AddScoped<IMpRepository, MpRepository>();
+            services.AddScoped<ICardRepository, CardRepository>();
+            services.AddScoped<IUtilRepository, UtilRepository>();
+            // 系统参数
+            var config = new AppData();
+            config.Init(Configuration);
+            services.AddSingleton(config);
+            //InputData.Key = config.ServerKey;
+            AppSetting.SetAppData(config);
+            // 微信
+            WxHelper.Init(config);
             // 跨域
             var urls = Configuration["Cores"].Split(',');
             services.AddCors(options =>
@@ -57,6 +67,7 @@ namespace JdCat.Cat.MpApi
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
             app.UseMvc();
             app.UseCors("AllowSameDomain");
         }

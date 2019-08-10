@@ -71,6 +71,14 @@ namespace JdCat.Cat.Model
         public DbSet<WxCard> WxCards { get; set; }
         public DbSet<WxMember> WxMembers { get; set; }
         public DbSet<PaymentTarget> PaymentTargets { get; set; }
+        public DbSet<CardChargeRule> CardChargeRules { get; set; }
+        public DbSet<CardBonusRule> CardBonusRules { get; set; }
+        public DbSet<ChargeRecord> ChargeRecords { get; set; }
+        public DbSet<ThirdOrder> ThirdOrders { get; set; }
+        public DbSet<ThirdOrderActivity> ThirdOrderActivitys { get; set; }
+        public DbSet<ThirdOrderProduct> ThirdOrderProducts { get; set; }
+        public DbSet<ThirdProductMapping> ThirdProductMappings { get; set; }
+
 
 
 

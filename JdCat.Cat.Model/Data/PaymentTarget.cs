@@ -12,7 +12,7 @@ namespace JdCat.Cat.Model.Data
     public class PaymentTarget : BaseEntity
     {
         /// <summary>
-        /// 关联对象id
+        /// 关联对象id（会员id）
         /// </summary>
         public int ObjectId { get; set; }
         /// <summary>

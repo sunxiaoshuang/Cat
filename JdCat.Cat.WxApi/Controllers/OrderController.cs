@@ -79,6 +79,7 @@ namespace JdCat.Cat.WxApi.Controllers
             var order = Service.GetOrderIncludeProduct(id);
             return Json(order, JsSetting);
         }
+
         /// <summary>
         /// 获取订单
         /// </summary>
@@ -94,6 +95,7 @@ namespace JdCat.Cat.WxApi.Controllers
             }
             return Json(order);
         }
+
         /// <summary>
         /// 客户端获取订单列表
         /// </summary>
@@ -118,17 +120,6 @@ namespace JdCat.Cat.WxApi.Controllers
             return Json(result, JsSetting);
         }
 
-        ///// <summary>
-        ///// 获取订单
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpGet("estimateFreight/{id}")]
-        //public async Task<IActionResult> EstimateFreight(int id, [FromQuery]double lat, [FromQuery]double lng, [FromQuery]string address)
-        //{
-        //    var result = await Service.EstimateFreight(id, lat, lng, address);
-        //    return Json(result);
-        //}
-
         [HttpPost("createOrder")]
         public IActionResult CreateOrder([FromBody]Order order)
         {
@@ -144,19 +135,19 @@ namespace JdCat.Cat.WxApi.Controllers
         [HttpGet("unifiePayment/{id}")]
         public async Task<IActionResult> UnifiePayment(int id, [FromQuery]int businessId, [FromQuery]int userId, [FromServices]AppData appData)
         {
-            var business = Service.Set<Business>().First(a => a.ID == businessId);
-            var user = Service.Set<User>().First(a => a.ID == userId);
+            var business = await Service.GetAsync<Business>(businessId);
+            var user = await Service.GetAsync<User>(userId);
             var order = Service.GetOrderIncludeProduct(id);
             var option = new WxUnifiePayment
             {
-                appid = appData.ServerAppId,
-                mch_id = appData.ServerMchId,
+                appid = business.PayServerAppId,
+                mch_id = business.PayServerMchId,
                 sub_appid = business.AppId,
                 sub_mch_id = business.MchId,
                 sub_openid = user.OpenId,
                 out_trade_no = order.OrderCode,
                 total_fee = (int)Math.Round(order.Price.Value * 100, 0),
-                key = appData.ServerKey,
+                key = business.PayServerKey,
                 notify_url = appData.PaySuccessUrl,
                 spbill_create_ip = appData.HostIpAddress
             };
@@ -175,7 +166,6 @@ namespace JdCat.Cat.WxApi.Controllers
                     xml = reader.ReadToEnd();
                 }
             }
-            //UtilHelper.Log(xml);
 
             using (var hc = new HttpClient())
             {
@@ -200,7 +190,7 @@ namespace JdCat.Cat.WxApi.Controllers
                     {
                         appId = business.AppId,
                         package = "prepay_id=" + ret.prepay_id,
-                        key = appData.ServerKey
+                        key = business.PayServerKey
                     };
                     // 保存支付标识码
                     order.PrepayId = ret.prepay_id;
@@ -232,24 +222,15 @@ namespace JdCat.Cat.WxApi.Controllers
                         Log.Error("自动打印失败", e);
                     }
                     await Service.AutoReceipt(order);                 // 自动接单
-                    await Task.Run(async () =>
-                     {
-                         using (var hc = new HttpClient())
-                         {
-                             await hc.GetAsync($"{appData.OrderUrl}/api/notify/{order.BusinessId}?code={order.OrderCode}&state={(int)order.Status}");
-                         }
-                     });
+                    using (var hc = new HttpClient())
+                    {
+                        await hc.GetAsync($"{appData.OrderUrl}/api/notify/{order.BusinessId}?code={order.OrderCode}&state={(int)order.Status}");
+                    }
 
-                    try
-                    {
-                        TemplateMessage(order);             // 小程序模版消息
-                        await EventMessage(order, appData);       // 公众号模版消息
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error("发送模版消息出错：" + ex.Message);
-                    }
-                    // 订单提醒：将数据存储在通知服务中，等待客户端来取
+                    var util = HttpContext.RequestServices.GetService<IUtilRepository>();
+                    await util.SendPaySuccessMsgAsync(order);
+                    await util.SendNewOrderMsgAsync(order);
+                    // （旧）订单提醒：将数据存储在通知服务中，等待客户端来取
                     try
                     {
                         using (var hc = new HttpClient())
@@ -274,23 +255,14 @@ namespace JdCat.Cat.WxApi.Controllers
                     {
                         Log.Error("新订单消息通知错误：" + e.Message);
                     }
+                    // 新：订单通知
+                    await Service.AddOrderNotifyAsync(order);
                 }
                 else
                 {
                     return BadRequest("简单猫订单参数错误");
                 }
             }
-            //var result = string.Empty;
-            //using (MemoryStream stream = new MemoryStream())
-            //{
-            //    UtilHelper.XmlSerializeInternal(stream, new { return_code = "SUCCESS", return_msg = "OK" });
-            //    stream.Position = 0;
-            //    using (StreamReader reader = new StreamReader(stream))
-            //    {
-            //        result = reader.ReadToEnd();
-            //    }
-            //}
-            //return Ok(result);
             return Content("SUCCESS");
         }
 
@@ -318,95 +290,12 @@ namespace JdCat.Cat.WxApi.Controllers
         public async Task<IActionResult> ApplyRefund(int id, [FromQuery]string reason)
         {
             var result = Service.ApplyRefund(id, reason);
-            if (!result.Success) return Json(result);
-            await Service.SendMsgOfRefund((Order)result.Data);
+            if (result.Success)
+            {
+                var util = HttpContext.RequestServices.GetService<IUtilRepository>();
+                await util.SendRefundMsgAsync((Order)result.Data);
+            }
             return Json(result);
-        }
-
-        /// <summary>
-        /// 发送模版消息，通知用户付款成功
-        /// </summary>
-        /// <param name="order"></param>
-        private void TemplateMessage(Order order)
-        {
-            if (string.IsNullOrEmpty(order.PrepayId)) return;
-            var openId = order.OpenId;
-            if (string.IsNullOrEmpty(openId))
-            {
-                var rep = HttpContext.RequestServices.GetService<IUserRepository>();
-                openId = rep.Get(order.UserId.Value).OpenId;
-            }
-            var businessRep = HttpContext.RequestServices.GetService<IBusinessRepository>();
-            var business = businessRep.Get(a => a.ID == order.BusinessId);
-            if (string.IsNullOrEmpty(business.TemplateNotifyId)) return;
-            var msg = new WxTemplateMessage
-            {
-                emphasis_keyword = "keyword2.DATA",
-                template_id = business.TemplateNotifyId,
-                touser = openId,
-                form_id = order.PrepayId,
-                page = "pages/order/orderInfo/orderInfo?id=" + order.ID
-            };
-            var token = WxHelper.GetTokenAsync(business.AppId, business.Secret);
-            token.Wait();
-            msg.access_token = token.Result;
-            msg.data = new
-            {
-                keyword1 = new { value = order.OrderCode },
-                keyword2 = new { value = order.Price + "元" },
-                keyword3 = new { value = order.PayTime.Value.ToString("yyyy-MM-dd HH:mm:ss") },
-                keyword4 = new { value = order.ReceiverAddress },
-                keyword5 = new { value = order.GetUserCall() },
-                keyword6 = new { value = order.Phone }
-            };
-
-            var res = WxHelper.SendTemplateMessageAsync(msg);
-            res.Wait();
-            var content = res.Result;
-
-        }
-        /// <summary>
-        /// 发送事件消息，通知商户订单信息
-        /// </summary>
-        /// <param name="order"></param>
-        private async Task EventMessage(Order order, AppData appData)
-        {
-            if (string.IsNullOrEmpty(appData.EventMessageTemplateId)) return;
-            var rep = HttpContext.RequestServices.GetService<IBusinessRepository>();
-            var msg = new WxEventMessage();
-            msg.template_id = appData.EventMessageTemplateId;
-            var productName = string.Empty;
-            foreach (var item in order.Products)
-            {
-                productName += item.Name + " *" + (double)item.Quantity + "、";
-            }
-            productName = productName.Remove(productName.Length - 1);
-            var keyword5 = (order.Status == OrderStatus.Distribution || order.Status == OrderStatus.DistributorReceipt) ? "待配送" : "已付款";
-            msg.data = new
-            {
-                first = new { value = $"流水号：   #{order.Identifier}      ￥{order.Price}" },
-                keyword1 = new { value = productName },
-                keyword2 = new { value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
-                keyword3 = new { value = order.ReceiverAddress },
-                keyword4 = new { value = "   " + order.GetUserCall() + "    " + order.Phone },
-                keyword5 = new { value = keyword5, color = "#ff0000" },
-                remark = new { value = order.Remark }
-            };
-            var users = rep.GetWxListenUser(order.BusinessId.Value);
-            if (users == null || users.Count == 0) return;
-            foreach (var item in users)
-            {
-                msg.touser = item.openid;
-                var result = await WxHelper.SendEventMessageAsync(msg);
-                var ret = JsonConvert.DeserializeObject<WxMessageReturn>(result);
-                if (ret.errcode == 40001)
-                {
-                    // 如果发送消息提示token失效，则重新获取token，再发送一次
-                    await WxHelper.SetTokenAsync(WxHelper.WeChatAppId, WxHelper.WeChatSecret);
-                    result = await WxHelper.SendEventMessageAsync(msg);
-                    Log.Info(result);
-                }
-            }
         }
 
         /// <summary>
@@ -431,6 +320,7 @@ namespace JdCat.Cat.WxApi.Controllers
             Service.ReloadCommentScore(comment.BusinessId);
             return Json(result);
         }
+
 
 
     }

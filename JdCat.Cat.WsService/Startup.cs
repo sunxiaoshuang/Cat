@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 
 namespace JdCat.Cat.WsService
 {
@@ -37,6 +38,8 @@ namespace JdCat.Cat.WsService
             services.AddMvc();
             services.AddSingleton(new WsHandler());
             services.AddSingleton(OrderInfoHandler.GetHandler());
+            // 注册redis连接
+            services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConn")));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, WsHandler wsHandler)

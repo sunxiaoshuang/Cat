@@ -18,7 +18,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        SessionData Get(int id);
+        SessionData GetSession(int id);
 
     }
 }

@@ -11,7 +11,7 @@ namespace JdCat.Cat.Common.Models
     /// </summary>
     public class WxPayment
     {
-        [JsonIgnore]
+        //[JsonIgnore]
         public string appId { get; set; }
         [JsonIgnore]
         public string key { get; set; }

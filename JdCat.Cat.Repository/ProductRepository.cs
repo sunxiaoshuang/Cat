@@ -668,5 +668,11 @@ namespace JdCat.Cat.Repository
 
             return count;
         }
+        public async Task<object> GetProductsOnlyNameAsync(int businessId)
+        {
+            return await Context.Products.Where(a => a.Status != ProductStatus.Delete && a.BusinessId == businessId)
+                .Select(a => new { a.ID, a.Name, a.Code, a.Pinyin, a.FirstLetter })
+                .ToListAsync();
+        }
     }
 }

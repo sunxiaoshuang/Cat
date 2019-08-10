@@ -130,7 +130,7 @@ namespace JdCat.Cat.WxApi.Controllers
         public IActionResult PostAddress(int id, [FromBody]Address address, [FromServices]ISessionDataRepository sessionService)
         {
             var result = new JsonData();
-            var user = sessionService.Get(id).User;
+            var user = sessionService.GetSession(id).User;
             address.User = user;
             address.ModifyTime = DateTime.Now;
             Service.Set<Address>().Add(address);

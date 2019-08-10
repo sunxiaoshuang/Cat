@@ -37,6 +37,9 @@ namespace JdCat.Cat.Web.Controllers
             if (member == null) return Content("会员不存在");
             var card = await service.GetCardAsync(card_id);
             ViewBag.color = WxHelper.WxColors[card.Color];
+            ViewBag.card_id = card_id;
+            ViewBag.encrypt_code = encrypt_code;
+            ViewBag.openid = openid;
             return View(member);
         }
 
@@ -83,6 +86,38 @@ namespace JdCat.Cat.Web.Controllers
         {
             var payment = await service.GetPaymentTargetAsync(code);
             return Json(payment, AppData.JsonSetting);
+        }
+
+        /// <summary>
+        /// 会员充值
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Recharge([FromQuery]string card_id, [FromQuery]string encrypt_code, [FromQuery]string openid, [FromServices]ICardRepository service)
+        {
+            var member = await service.GetMemberAsync(card_id, openid);
+            if (member == null) return Content("会员不存在");
+            var card = await service.GetCardAsync(card_id);
+            ViewBag.color = WxHelper.WxColors[card.Color];
+            ViewBag.card_id = card_id;
+            ViewBag.encrypt_code = encrypt_code;
+            ViewBag.openid = openid;
+
+            return View(member);
+        }
+
+        /// <summary>
+        /// 充值记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="card_id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> RechargeRecord(int id, [FromServices]ICardRepository service)
+        {
+            var member = await service.GetAsync<WxMember>(id);
+            var card = await service.GetAsync<WxCard>(member.WxCardId);
+            ViewBag.color = WxHelper.WxColors[card.Color];
+
+            return View();
         }
 
     }

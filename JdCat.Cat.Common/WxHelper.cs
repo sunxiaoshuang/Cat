@@ -15,18 +15,18 @@ using System.Web;
 
 namespace JdCat.Cat.Common
 {
-    public static class WxHelper
+    public class WxHelper
     {
-        public static string Msg_Refund;                        // 退款通知模版消息id
-        public static string WeChatAppId;                       // 简单猫科技公众号AppId
-        public static string WeChatSecret;                      // 简单猫科技公众号Secret
         public static string MapApiKey;                         // 腾讯地图开发者key
         public static string MapApiSecret;                      // 腾讯地图WebService接口Secret
+        public static string OpenAppId;                         // 开放平台AppId
+        public static string OpenSecret;                        // 开放平台Secret
 
         /// <summary>
         /// 微信卡券颜色对应表
         /// </summary>
-        public static Dictionary<string, string> WxColors = new Dictionary<string, string> {    
+        public static Dictionary<string, string> WxColors { get; } = new Dictionary<string, string>
+        {
             { "Color010", "#63b359" },
             { "Color020", "#2c9f67" },
             { "Color030", "#509fc9" },
@@ -38,13 +38,17 @@ namespace JdCat.Cat.Common
             { "Color090", "#dd6549" },
             { "Color100", "#cc463d" }
         };
+
+        /// <summary>
+        /// 帮助类初始化
+        /// </summary>
+        /// <param name="config"></param>
         public static void Init(AppData config)
         {
-            Msg_Refund = config.Msg_Refund;
-            WeChatAppId = config.WeChatAppId;
-            WeChatSecret = config.WeChatSecret;
             MapApiKey = config.MapApiKey;
             MapApiSecret = config.MapApiSecret;
+            OpenAppId = config.OpenAppId;
+            OpenSecret = config.OpenSecret;
         }
         /// <summary>
         /// 发送请求
@@ -53,84 +57,11 @@ namespace JdCat.Cat.Common
         /// <param name="content"></param>
         /// <param name="method"></param>
         /// <returns></returns>
-        private static async Task<string> RequestAsync(string url, HttpContent content = null, string method = "post")
+        public static async Task<string> RequestAsync(string url, object content = null, string method = "post")
         {
-            method = method.ToLower();
-            HttpResponseMessage result;
-            using (var client = new HttpClient())
-            {
-                switch (method)
-                {
-                    case "get":
-                        result = await client.GetAsync(url);
-                        break;
-                    case "post":
-                        result = await client.PostAsync(url, content);
-                        break;
-                    default:
-                        throw new Exception($"不存在方法{method}");
-                }
-            }
-            result.EnsureSuccessStatusCode();
-            return await result.Content.ReadAsStringAsync();
+            return await UtilHelper.RequestAsync(url, content, method); ;
         }
-        /// <summary>
-        /// 开放平台授权ticket，暂时存在这里
-        /// </summary>
-        public static string OpenTicket { get; set; }
-        /// <summary>
-        /// 记录小程序访问Token，如果换成分布式部署，需要存在Redis里面
-        /// </summary>
-        private static readonly Dictionary<string, WxToken> TokenDic = new Dictionary<string, WxToken>();
-        /// <summary>
-        /// 获取Token
-        /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="secret"></param>
-        /// <returns></returns>
-        public static async Task<string> GetTokenAsync(string appId, string secret)
-        {
-            // 已经存在Token时，取现有的Token
-            if (TokenDic.ContainsKey(appId))
-            {
-                var token = TokenDic[appId];
-                var second = (DateTime.Now - token.GetTime.Value).TotalSeconds;
-                // 如果Token没有过期，则直接返回
-                if (second < token.expires_in - 360)
-                {
-                    return token.access_token;
-                }
-            }
-            // 重新设置Token
-            return await SetTokenAsync(appId, secret);
-        }
-        /// <summary>
-        /// 根据id与密钥，设置Token
-        /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="secret"></param>
-        /// <returns></returns>
-        public static async Task<string> SetTokenAsync(string appId, string secret)
-        {
-            if (TokenDic.ContainsKey(appId))
-            {
-                TokenDic.Remove(appId);
-            }
-            var url = $"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appId}&secret={secret}";
-            using (var client = new HttpClient())
-            {
-                var result = await client.GetAsync(url);
-                var token = JsonConvert.DeserializeObject<WxToken>(await result.Content.ReadAsStringAsync());
 
-                if (token.errcode == null)
-                {
-                    token.GetTime = DateTime.Now;
-                    TokenDic.Add(appId, token);
-                    return token.access_token;
-                }
-            }
-            return null;
-        }
         /// <summary>
         /// 发送模版消息
         /// </summary>
@@ -138,20 +69,23 @@ namespace JdCat.Cat.Common
         /// <returns></returns>
         public static async Task<string> SendTemplateMessageAsync(WxTemplateMessage msg)
         {
-            var body = JsonConvert.SerializeObject(msg);
+            //var body = JsonConvert.SerializeObject(msg);
             var url = $"https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token={msg.access_token}";
-            using (var client = new HttpClient())
-            {
-                var post = new StringContent(body);
-                post.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                var result = await client.PostAsync(url, post);
-                var content = await result.Content.ReadAsStringAsync();
-                return content;
-            }
+            //msg.access_token = null;
+            return await RequestAsync(url, msg);
+            //using (var client = new HttpClient())
+            //{
+            //    var post = new StringContent(body);
+            //    post.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            //    var result = await client.PostAsync(url, post);
+            //    var content = await result.Content.ReadAsStringAsync();
+            //    return content;
+            //}
         }
         /// <summary>
         /// 根据商户id与Token获取公众号永久二维码
         /// </summary>
+        /// <param name="businessId">商户id</param>
         /// <param name="token"></param>
         /// <returns></returns>
         public static async Task<WxTicket> GetTicketAsync(int businessId, string token)
@@ -162,39 +96,39 @@ namespace JdCat.Cat.Common
                 action_name = "QR_LIMIT_STR_SCENE",
                 action_info = new { scene = new { scene_str = businessId.ToString() } }
             };
-            var content = new StringContent(JsonConvert.SerializeObject(body));
-            using (var client = new HttpClient())
-            {
-                var res = await client.PostAsync(url, content);
-                var data = await res.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<WxTicket>(data);
-            }
+            var result = await RequestAsync(url, body);
+            return JsonConvert.DeserializeObject<WxTicket>(result);
         }
         /// <summary>
         /// 发送订单通知
         /// </summary>
-        public static async Task<string> SendEventMessageAsync(WxEventMessage msg)
+        /// <param name="msg">消息内容</param>
+        /// <param name="token">公众号访问token</param>
+        /// <returns></returns>
+        public static async Task<string> SendEventMessageAsync(WxEventMessage msg, string token)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
             var url = $"https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={token}";
-
-            using (var client = new HttpClient())
-            {
-                var p = new StringContent(JsonConvert.SerializeObject(msg));
-                p.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                var result = await client.PostAsync(url, p);
-                var content = await result.Content.ReadAsStringAsync();
-                return content;
-            }
+            return await RequestAsync(url, msg);
+        }
+        /// <summary>
+        /// 发送订单通知
+        /// </summary>
+        /// <param name="msg">消息内容</param>
+        /// <param name="token">公众号访问token</param>
+        /// <returns></returns>
+        public static async Task<string> SendUniformMessageAsync(object msg, string token)
+        {
+            var url = $"https://api.weixin.qq.com/cgi-bin/message/wxopen/template/uniform_send?access_token={token}";
+            return await RequestAsync(url, msg);
         }
 
         /// <summary>
         /// 获取公众号自定义菜单
         /// </summary>
+        /// <param name="token">公众号访问token</param>
         /// <returns></returns>
-        public static async Task<string> GetAppMenuAsync()
+        public static async Task<string> GetAppMenuAsync(string token)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
             var url = $"https://api.weixin.qq.com/cgi-bin/menu/get?access_token={token}";
             return await RequestAsync(url, method: "get");
         }
@@ -203,23 +137,21 @@ namespace JdCat.Cat.Common
         /// 创建公众号自定义菜单
         /// </summary>
         /// <returns></returns>
-        public static async Task<string> CreateAppMenuAsync(object menus)
+        public static async Task<string> CreateAppMenuAsync(object menus, string token)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
             var url = $"https://api.weixin.qq.com/cgi-bin/menu/create?access_token={token}";
-            var content = new InputData();
+            var content = new InputData(null);
             content.SetValue("button", menus);
-            var body = new StringContent(content.ToJson());
-            return await RequestAsync(url, body);
+            return await RequestAsync(url, content.ToJson());
         }
 
         /// <summary>
         /// 删除自定义菜单
         /// </summary>
+        /// <param name="token">公众号访问token</param>
         /// <returns></returns>
-        public static async Task<string> DeleteAppMenuAsync()
+        public static async Task<string> DeleteAppMenuAsync(string token)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
             var url = $"https://api.weixin.qq.com/cgi-bin/menu/delete?access_token={token}";
             return await RequestAsync(url, method: "get");
         }
@@ -227,227 +159,110 @@ namespace JdCat.Cat.Common
         /// <summary>
         /// 获取用户OpenId
         /// </summary>
-        /// <param name="code"></param>
+        /// <param name="code">授权码</param>
+        /// <param name="appId">公众号appid</param>
+        /// <param name="secret">公众号密钥</param>
         /// <returns></returns>
-        public static async Task<string> GetOpenIdAsync(string code)
+        public static async Task<string> GetOpenIdAsync(string code, string appId, string secret)
         {
-            var url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WeChatAppId}&secret={WeChatSecret}&code={code}&grant_type=authorization_code";
-            using (var hc = new HttpClient())
-            {
-                var response = await hc.GetAsync(url);
-                var content = await response.Content.ReadAsStringAsync();
-                return content;
-            }
+            var url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={appId}&secret={secret}&code={code}&grant_type=authorization_code";
+            return await RequestAsync(url, method: "get");
         }
 
         /// <summary>
         /// 获取用户信息
         /// </summary>
-        /// <param name="openId"></param>
+        /// <param name="openId">用户openid</param>
+        /// <param name="token">公众号访问token</param>
         /// <returns></returns>
-        public static async Task<string> GetUserInfoAsync(string openId)
+        public static async Task<string> GetUserInfoAsync(string openId, string token)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
             var url = $"https://api.weixin.qq.com/cgi-bin/user/info?access_token={token}&openid={openId}&lang=zh_CN";
             return await RequestAsync(url, null, method: "get");
         }
 
-        #region 第三方开发平台业务方法
-
-        private static WxToken _openToken;
         /// <summary>
-        /// 获取第三方平台component_access_token
+        /// 微信统一下单
+        /// </summary>
+        /// <param name="xml">xml格式字符串</param>
+        /// <returns></returns>
+        public static async Task<WxUnifieResult> UnifiedOrderAsync(string xml)
+        {
+            var content = await RequestAsync("https://api.mch.weixin.qq.com/pay/unifiedorder", xml);
+            return UtilHelper.ReadXml<WxUnifieResult>(content);
+        }
+
+        /// <summary>
+        /// 会员激活通知
         /// </summary>
         /// <returns></returns>
-        public static async Task<string> GetOpenTokenAsync(AppData appData)
+        public static async Task<string> ActiveNotifyAsync(string token, JObject json)
         {
-            if (_openToken != null)
-            {
-                var second = (DateTime.Now - _openToken.GetTime.Value).TotalSeconds;
-                // 如果Token没有过期，则直接返回
-                if (second < _openToken.expires_in - 360)
-                {
-                    return _openToken.access_token;
-                }
-            }
+            var url = $"https://api.weixin.qq.com/card/update?access_token={token}";
 
-            var url = "https://api.weixin.qq.com/cgi-bin/component/api_component_token";
-            var content = new
-            {
-                component_appid = appData.OpenAppId,
-                component_appsecret = appData.OpenSecret,
-                component_verify_ticket = OpenTicket
-            };
-            using (var client = new HttpClient())
-            using (var body = new StringContent(JsonConvert.SerializeObject(content)))
-            {
-                var res = await client.PostAsync(url, body);
-                var result = await res.Content.ReadAsStringAsync();
-                var jObj = JObject.Parse(result);
-                var jToken = jObj["component_access_token"];
-                if (jToken == null)
-                {
-                    return null;
-                }
-                var token = jObj["component_access_token"].Value<string>();
-                var expires_in = jObj["expires_in"].Value<int>();
-                _openToken = new WxToken { access_token = token, GetTime = DateTime.Now, expires_in = expires_in };
-                return token;
-            }
+            return null;
         }
+
+        #region 第三方开发平台业务方法
+
         /// <summary>
         /// 获取预授权码pre_auth_code
         /// </summary>
-        /// <param name="component_appid">第三方平台AppId</param>
+        /// <param name="token">开放平台访问token</param>
         /// <returns></returns>
-        public static async Task<string> GetOpenPreAuthCodeAsync(AppData appData)
+        public static async Task<string> GetOpenPreAuthCodeAsync(string token)
         {
-            var token = await GetOpenTokenAsync(appData);
             if (string.IsNullOrEmpty(token)) return null;
             var url = $"https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token={token}";
-            var content = new { component_appid = appData.OpenAppId };
-            using (var client = new HttpClient())
-            using (var body = new StringContent(JsonConvert.SerializeObject(content)))
+            var content = new { component_appid = OpenAppId };
+            var result = await RequestAsync(url, content);
+            var jObj = JObject.Parse(result);
+            var jCode = jObj["pre_auth_code"];
+            if (jCode == null)
             {
-                var res = await client.PostAsync(url, body);
-                var result = await res.Content.ReadAsStringAsync();
-                var jObj = JObject.Parse(result);
-                var jCode = jObj["pre_auth_code"];
-                if (jCode == null)
-                {
-                    return null;
-                }
-                return jObj["pre_auth_code"].Value<string>();
+                return null;
             }
+            return jObj["pre_auth_code"].Value<string>();
         }
-        /// <summary>
-        /// 第三方平台授权访问token
-        /// </summary>
-        private static Dictionary<string, WxToken> _authAccessTokenDic = new Dictionary<string, WxToken>();
         /// <summary>
         /// 根据授权码获取接口凭据和授权信息
         /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="code"></param>
+        /// <param name="code">授权码</param>
+        /// <param name="token">开放平台访问token</param>
         /// <returns></returns>
-        public static async Task<WxAuthInfo> GetAuthToken(AppData appData, string code)
+        public static async Task<WxAuthInfo> GetAuthTokenAsync(string code, string token)
         {
-            var token = await GetOpenTokenAsync(appData);
             var url = $"https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token={token}";
             var content = new
             {
-                component_appid = appData.OpenAppId,
+                component_appid = OpenAppId,
                 authorization_code = code
             };
-            using (var client = new HttpClient())
-            using (var body = new StringContent(JsonConvert.SerializeObject(content)))
-            {
-                var res = await client.PostAsync(url, body);
-                var result = await res.Content.ReadAsStringAsync();
-                var entity = JsonConvert.DeserializeObject<WxAuthInfo>(result);
-                var wxToken = new WxToken
-                {
-                    access_token = entity.authorization_info.authorizer_access_token,
-                    expires_in = entity.authorization_info.expires_in,
-                    GetTime = DateTime.Now
-                };
-                SetAuthorizerAccessToken(entity.authorization_info.authorizer_appid, wxToken);
-                return entity;
-            }
-        }
-        /// <summary>
-        /// 刷新接口凭据
-        /// </summary>
-        /// <returns></returns>
-        public static async Task<string> RefreshTokenAsync(AppData appData, string appid, string refreshToken)
-        {
-            var token = await GetOpenTokenAsync(appData);
-            var url = $"https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token={token}";
-            var content = new
-            {
-                component_appid = appData.OpenAppId,
-                authorizer_appid = appid,
-                authorizer_refresh_token = refreshToken
-            };
-            var sendData = JsonConvert.SerializeObject(content);
-            var result = await PostAsync(url, sendData);
-            var jObj = JObject.Parse(result);
+            var result = await RequestAsync(url, content);
+            var entity = JsonConvert.DeserializeObject<WxAuthInfo>(result);
             var wxToken = new WxToken
             {
-                access_token = jObj["authorizer_access_token"].Value<string>(),
-                expires_in = jObj["expires_in"].Value<int>(),
+                access_token = entity.authorization_info.authorizer_access_token,
+                expires_in = entity.authorization_info.expires_in,
                 GetTime = DateTime.Now
             };
-            SetAuthorizerAccessToken(appid, wxToken);
-            return wxToken.access_token;
-        }
-        /// <summary>
-        /// 设置接口凭据
-        /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="token"></param>
-        private static void SetAuthorizerAccessToken(string appId, WxToken token)
-        {
-            if (_authAccessTokenDic.ContainsKey(appId))
-            {
-                _authAccessTokenDic[appId] = token;
-            }
-            else
-            {
-                _authAccessTokenDic.Add(appId, token);
-            }
-        }
-        /// <summary>
-        /// 获取接口凭据
-        /// </summary>
-        /// <returns></returns>
-        public static async Task<string> GetAuthorizerAccessTokenAsync(AppData appData, string appId, string refreshToken)
-        {
-            WxToken token;
-            if (_authAccessTokenDic.ContainsKey(appId))
-            {
-                token = _authAccessTokenDic[appId];
-                if (!token.IsExpires())
-                {
-                    return token.access_token;
-                }
-            }
-            return await RefreshTokenAsync(appData, appId, refreshToken);
+            return entity;
         }
         /// <summary>
         /// 获取授权方帐号信息
         /// </summary>
-        /// <param name="component_appid"></param>
+        /// <param name="token"></param>
         /// <param name="appId"></param>
         /// <returns></returns>
-        public static async Task<string> GetAuthorizerInfoAsync(AppData appData, string appId)
+        public static async Task<string> GetAuthorizerInfoAsync(string token, string appId)
         {
-            var token = await GetOpenTokenAsync(appData);
             var url = $"https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token={token}";
             var content = new
             {
-                component_appid = appData.OpenAppId,
+                component_appid = OpenAppId,
                 authorizer_appid = appId
             };
-            var body = JsonConvert.SerializeObject(content);
-            var result = await PostAsync(url, body);
-            return result;
-        }
-        /// <summary>
-        /// 发送Post请求
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
-        private static async Task<string> PostAsync(string url, string content)
-        {
-            using (var client = new HttpClient())
-            using (var body = new StringContent(content))
-            {
-                var res = await client.PostAsync(url, body);
-                var result = await res.Content.ReadAsStringAsync();
-                return result;
-            }
+            return await RequestAsync(url, content);
         }
 
         #endregion
@@ -488,79 +303,91 @@ namespace JdCat.Cat.Common
         /// <summary>
         /// 创建卡券
         /// </summary>
-        /// <param name="json"></param>
+        /// <param name="token">公众号访问token</param>
+        /// <param name="json">卡券信息</param>
         /// <returns></returns>
-        public static async Task<string> CreateCardAsync(JObject json)
+        public static async Task<string> CreateCardAsync(string token, JObject json)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
-            return await RequestAsync($"https://api.weixin.qq.com/card/create?access_token={token}", new StringContent(JsonConvert.SerializeObject(json)));
+            return await RequestAsync($"https://api.weixin.qq.com/card/create?access_token={token}", json);
         }
 
         /// <summary>
         /// 根据CardId获取卡券详情
         /// </summary>
-        /// <param name="cardId"></param>
+        /// <param name="token">公众号访问token</param>
+        /// <param name="cardId">卡券id</param>
         /// <returns></returns>
-        public static async Task<string> GetCardAsync(string cardId)
+        public static async Task<string> GetCardAsync(string token, string cardId)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
-            return await RequestAsync($"https://api.weixin.qq.com/card/get?access_token={token}", new StringContent(JsonConvert.SerializeObject(new { card_id = cardId })));
+            return await RequestAsync($"https://api.weixin.qq.com/card/get?access_token={token}", new { card_id = cardId });
         }
 
         /// <summary>
         /// 设置公众号白名单
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="token">公众号访问token</param>
+        /// <param name="obj">白名单列表</param>
         /// <returns></returns>
-        public static async Task<string> SetWhiteListAsync(object obj)
+        public static async Task<string> SetWhiteListAsync(string token, object obj)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
-            return await RequestAsync($"https://api.weixin.qq.com/card/testwhitelist/set?access_token={token}", new StringContent(JsonConvert.SerializeObject(obj)));
+            return await RequestAsync($"https://api.weixin.qq.com/card/testwhitelist/set?access_token={token}", obj);
         }
 
         /// <summary>
         /// 获取卡券二维码信息
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="token">公众号访问token</param>
+        /// <param name="obj">二维码信息</param>
         /// <returns></returns>
-        public static async Task<string> GetCardQrcodeAsync(object obj)
+        public static async Task<string> GetCardQrcodeAsync(string token, object obj)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
-            return await RequestAsync($"https://api.weixin.qq.com/card/qrcode/create?access_token={token}", new StringContent(JsonConvert.SerializeObject(obj)));
+            return await RequestAsync($"https://api.weixin.qq.com/card/qrcode/create?access_token={token}", obj);
         }
 
         /// <summary>
         /// 更新会员卡信息
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="token">公众号访问token</param>
+        /// <param name="obj">更新信息</param>
         /// <returns></returns>
-        public static async Task<string> UpdateCardAsync(object obj)
+        public static async Task<string> UpdateCardAsync(string token, object obj)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
-            return await RequestAsync($"https://api.weixin.qq.com/card/update?access_token={token}", new StringContent(JsonConvert.SerializeObject(obj)));
+            return await RequestAsync($"https://api.weixin.qq.com/card/update?access_token={token}", obj);
         }
 
         /// <summary>
         /// 设置会员卡表单内容
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="token">公众号访问token</param>
+        /// <param name="obj">表单信息</param>
         /// <returns></returns>
-        public static async Task<string> SetMemberCardActiveOptionAsync(object obj)
+        public static async Task<string> SetMemberCardActiveOptionAsync(string token, object obj)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
-            return await RequestAsync($"https://api.weixin.qq.com/card/membercard/activateuserform/set?access_token={token}", new StringContent(JsonConvert.SerializeObject(obj)));
+            return await RequestAsync($"https://api.weixin.qq.com/card/membercard/activateuserform/set?access_token={token}", obj);
         }
 
         /// <summary>
         /// 拉取会员信息（积分查询）
         /// </summary>
-        /// <param name="cardId"></param>
-        /// <param name="code"></param>
+        /// <param name="token">公众号访问token</param>
+        /// <param name="cardId">卡券id</param>
+        /// <param name="code">会员编号</param>
         /// <returns></returns>
-        public static async Task<string> GetMemberInfoAsync(string cardId, string code)
+        public static async Task<string> GetMemberInfoAsync(string token, string cardId, string code)
         {
-            var token = await GetTokenAsync(WeChatAppId, WeChatSecret);
-            return await RequestAsync($"https://api.weixin.qq.com/card/membercard/userinfo/get?access_token={token}", new StringContent(JsonConvert.SerializeObject(new { card_id = cardId, code })));
+            return await RequestAsync($"https://api.weixin.qq.com/card/membercard/userinfo/get?access_token={token}", new { card_id = cardId, code });
+        }
+
+        /// <summary>
+        /// 删除卡券
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static async Task<string> RemoveCardAsync(string token, string cardId)
+        {
+            var url = $"https://api.weixin.qq.com/card/delete?access_token={token}";
+            return await RequestAsync(url, new { card_id = cardId });
         }
 
         #endregion
