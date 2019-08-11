@@ -190,7 +190,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> GetOrders([FromQuery]int source, [FromQuery]DateTime? start, [FromQuery]DateTime? end, [FromQuery]PagingQuery paging)
         {
-            var list = await Service.GetOrdersAsync(source, start ?? DateTime.Now, end ?? DateTime.Now.AddDays(1), paging);
+            var list = await Service.GetOrdersAsync(source, start ?? DateTime.Now.Date, end?.AddDays(1) ?? DateTime.Now.Date.AddDays(1), paging);
             return Json(new
             {
                 list,
