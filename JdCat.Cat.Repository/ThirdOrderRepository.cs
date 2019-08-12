@@ -312,8 +312,15 @@ namespace JdCat.Cat.Repository
             return order;
         }
 
-        public async Task<bool> AddOrderNotifyAsync(ThirdOrder order)
+        public async Task<bool> AddOrderNotifyAsync(ThirdOrder order, bool isTimes = false)
         {
+            // 如果是补打，则将对象复制一遍，并将预约时间设置为空
+            if (isTimes)        
+            {
+                order = JsonConvert.DeserializeObject<ThirdOrder>(JsonConvert.SerializeObject(order));
+                order.DeliveryTime = null;
+            }
+
             await LoadSetmealAsync(order.ThirdOrderProducts);
             order.Business = null;
             var deliveryTime = order.DeliveryTime;
@@ -393,12 +400,16 @@ namespace JdCat.Cat.Repository
         }
 
 
-        public async Task<List<ThirdOrder>> GetOrdersAsync(int source, DateTime start, DateTime end, PagingQuery paging)
+        public async Task<List<ThirdOrder>> GetOrdersAsync(int source, DateTime start, DateTime end, PagingQuery paging, int dayNum)
         {
             var query = Context.ThirdOrders.Where(a => a.Ctime >= start && a.Ctime < end);
             if (source != 99)
             {
                 query = query.Where(a => a.OrderSource == source);
+            }
+            if(dayNum > 0)
+            {
+                query = query.Where(a => a.DaySeq == dayNum);
             }
             paging.RecordCount = query.Count();
             return await query.OrderByDescending(a => a.ID).Skip(paging.Skip).Take(paging.PageSize).ToListAsync();

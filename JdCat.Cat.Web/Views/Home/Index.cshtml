@@ -123,42 +123,59 @@
                     <a href="#/Report" class="active-menu"><i class="fa fa-home"></i> 首页</a>
                 </li>
                 <li>
-                    <a href="#/Product"><i class="fa fa-shopping-bag"></i> 商品管理</a>
+                    <a href="#"><i class="fa fa-shopping-bag"></i> 商品<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="#/Product">商品管理</a>
+                        </li>
+                        <li>
+                            <a href="#/Tang/Printer">商品打印管理</a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li>
                     <a href="#"><i class="fa fa-file-text"></i> 订单管理<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
-                            <a href="#/Order">外卖订单</a>
+                            <a href="#/Order">小程序订单</a>
                         </li>
                         <li>
-                            <a href="#/Order/History">外卖历史订单</a>
+                            <a href="#/Order/History">小程序历史订单</a>
                         </li>
                         <li>
                             <a href="#/Store/Order">堂食订单</a>
                         </li>
+                        <li>
+                            <a href="#/ThirdOrder/Order">美团饿了么订单</a>
+                        </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-user"></i> 员工管理<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-cog"></i> 小程序管理<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
-                            <a href="#/Tang/StaffPost">岗位管理</a>
+                            <a href="#/Business">小程序商户信息设置</a>
                         </li>
                         <li>
-                            <a href="#/Tang/Staff">员工列表</a>
+                            <a href="#/Comment">小程序评价管理</a>
+                        </li>
+                        <li>
+                            <a href="#/Business/SmallProgram">小程序配置</a>
+                        </li>
+                        <li>
+                            <a href="#/Business/Message">小程序新订单接收设置</a>
+                        </li>
+                        <li>
+                            <a href="#/Business/Feyin">云打印机配置</a>
+                        </li>
+                        <li>
+                            <a href="#/Business/Freight"> 阶梯式运费设置</a>
                         </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="#/User/List"><i class="fa fa-users"></i> 会员管理</a>
-                </li>
-                <li>
-                    <a href="#/Comment"><i class="fa fa-comment"></i> 评价管理</a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-file-excel-o"></i> 堂食管理<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-font-awesome"></i> 堂食管理<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
                             <a href="#/Tang/Desk">餐台管理</a>
@@ -167,13 +184,27 @@
                             <a href="#/Tang/Booth">档口管理</a>
                         </li>
                         <li>
-                            <a href="#/Tang/Payment">支付设置</a>
+                            <a href="#/Tang/Payment">自定义支付设置</a>
                         </li>
                         <li>
-                            <a href="#/Tang/Printer">堂食打印机</a>
+                            <a href="#/Tang/Mark">自定义备注设置</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-globe"></i> 美团饿了么管理<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="#/ThirdOrder/Meituan">美团接入配置</a>
                         </li>
                         <li>
-                            <a href="#/Tang/Mark">系统备注</a>
+                            <a href="#/ThirdOrder/MT/Products">美团商品映射</a>
+                        </li>
+                        <li>
+                            <a href="#/ThirdOrder/Eleme">饿了么接入配置</a>
+                        </li>
+                        <li>
+                            <a href="#/ThirdOrder/Eleme/Products">饿了么商品映射</a>
                         </li>
                     </ul>
                 </li>
@@ -181,14 +212,14 @@
                     <a href="#"><i class="fa fa-file-excel-o"></i> 报表<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
-                            <a href="#/Report/SaleStatistics">营业统计</a>
+                            <a href="#/Report/SaleStatistics">小程序统计</a>
                         </li>
                         <li>
-                            <a href="#/Report/Tang">营业统计（堂食）</a>
+                            <a href="#/Report/Tang">堂食统计</a>
                         </li>
-                        @*<li>
-                            <a href="#/Report/ProductAnalysis">商品分析</a>
-                        </li>*@
+                        <li>
+                            <a href="#/ThirdOrder/Report">美团饿了么统计</a>
+                        </li>
                         <li>
                             <a href="#/Report/Products">商品销售统计</a>
                         </li>
@@ -204,40 +235,28 @@
                         <li>
                             <a href="#/Report/Payment">支付方式统计（堂食）</a>
                         </li>
-                        @*<li>
-            <a href="#/Report/Benefit">支付备注统计</a>
-        </li>*@
                     </ul>
+                </li>
+                <li>
+                    <a href="#/User/List"><i class="fa fa-users"></i> 会员管理</a>
                 </li>
                 <li>
                     <a href="#/Sale"><i class="fa fa-gift"></i> 营销</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-globe"></i> 第三方外卖管理<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-user"></i> 员工管理<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
-                            <a href="#/ThirdOrder/Meituan"> 美团接入设置</a>
+                            <a href="#/Tang/StaffPost">岗位管理</a>
                         </li>
                         <li>
-                            <a href="#/ThirdOrder/MT/Products"> 美团商品映射</a>
-                        </li>
-                        <li>
-                            <a href="#/ThirdOrder/Eleme"> 饿了么接入设置</a>
-                        </li>
-                        <li>
-                            <a href="#/ThirdOrder/Eleme/Products">饿了么商品映射</a>
-                        </li>
-                        <li>
-                            <a href="#/ThirdOrder/Order">订单管理</a>
+                            <a href="#/Tang/Staff">员工列表</a>
                         </li>
                     </ul>
                 </li>
                 <li>
                     <a href="#"><i class="fa fa-truck"></i> 第三方配送管理<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
-                        <li>
-                            <a href="#/Business/Freight"> 阶梯式运费设置</a>
-                        </li>
                         <li>
                             <a href="#/Business/Dada">达达设置</a>
                         </li>
@@ -249,24 +268,9 @@
                         </li>
                     </ul>
                 </li>
-                @*<li>
-                        <a href="#/Setting/AuthInfo"><i class="fa fa-globe"></i> 小程序管理</a>
-                    </li>*@
                 <li>
-                    <a href="#"><i class="fa fa-cog"></i> 设置<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-cog"></i> 系统管理<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
-                        <li>
-                            <a href="#/Business"> 商户信息设置</a>
-                        </li>
-                        <li>
-                            <a href="#/Business/SmallProgram">小程序设置</a>
-                        </li>
-                        <li>
-                            <a href="#/Business/Feyin">打印机设置</a>
-                        </li>
-                        <li>
-                            <a href="#/Business/Message">新订单提醒管理</a>
-                        </li>
                         <li>
                             <a href="#/Business/Pwd">修改密码</a>
                         </li>

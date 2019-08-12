@@ -104,6 +104,10 @@ namespace JdCat.Cat.Model.Data
         /// 取消原因
         /// </summary>
         public string Reason { get; set; }
+        /// <summary>
+        /// 补打次数
+        /// </summary>
+        public int PrintTimes { get; set; }
 
         /// <summary>
         /// 订单状态

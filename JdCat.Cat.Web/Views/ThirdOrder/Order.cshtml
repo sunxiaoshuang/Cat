@@ -51,15 +51,15 @@
                 <select class="form-control margin-right-20" style="width: 200px;" v-model="selectedSource">
                     <option v-for="item in sources" v-text="item.name" :value="item.val"></option>
                 </select>
+                <label>当日编号：</label>
+                <input class="form-control margin-right-20" style="width: 140px;" type="number" v-model.number="dayNum" />
                 <button class="btn btn-primary" @@click="search()">
                     <i class="fa fa-search"></i>
                     搜索
                 </button>
             </div>
-
         </div>
         <hr />
-
         <table class="table table-striped table-bordered table-hover">
             <thead>
                 <tr>
@@ -67,10 +67,10 @@
                     <th width="80">当日编号</th>
                     <th width="80">订单来源</th>
                     <th width="180">订单编号</th>
-                    <th width="165">下单时间</th>
+                    <th width="165">预计送达时间</th>
                     <th width="90">订单状态</th>
                     <th width="90">订单金额</th>
-                    <th width="150">联系人</th>
+                    <th width="100">联系人</th>
                     <th width="120">联系电话</th>
                     <th>联系地址</th>
                 </tr>
@@ -78,11 +78,14 @@
             <tbody>
                 <tr v-for="(order, index) in orderList">
                     @*<td v-text="(paging.pageindex - 1) * paging.pageSize + 1 + index"></td>*@
-                    <td><a class="text-primary" @@click="cat(order)">查看详情</a></td>
+                    <td>
+                        <a class="text-primary" @@click="cat(order)">查看详情</a><br />
+                        <a class="text-primary" @@click="print(order)"></a>
+                    </td>
                     <td v-text="order.daySeq"></td>
                     <td v-text="order.orderSource === 0 ? '美团' : '饿了么'"></td>
                     <td v-text="order.orderId"></td>
-                    <td v-text="order.ctime"></td>
+                    <td v-text="order.deliveryTime"></td>
                     <td v-text="status(order.status)"></td>
                     <td v-text="'￥' + order.amount"></td>
                     <td v-text="order.recipientName"></td>

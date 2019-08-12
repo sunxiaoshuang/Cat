@@ -188,9 +188,9 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="end"></param>
         /// <param name="paging"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetOrders([FromQuery]int source, [FromQuery]DateTime? start, [FromQuery]DateTime? end, [FromQuery]PagingQuery paging)
+        public async Task<IActionResult> GetOrders([FromQuery]int source, [FromQuery]DateTime? start, [FromQuery]DateTime? end, [FromQuery]PagingQuery paging, [FromQuery]int dayNum)
         {
-            var list = await Service.GetOrdersAsync(source, start ?? DateTime.Now.Date, end?.AddDays(1) ?? DateTime.Now.Date.AddDays(1), paging);
+            var list = await Service.GetOrdersAsync(source, start ?? DateTime.Now.Date, end?.AddDays(1) ?? DateTime.Now.Date.AddDays(1), paging, dayNum);
             return Json(new
             {
                 list,
@@ -216,6 +216,19 @@ namespace JdCat.Cat.Web.Controllers
         public IActionResult Report()
         {
             return View();
+        }
+
+        /// <summary>
+        /// 补打订单
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Print(int id)
+        {
+            var order = await Service.GetOrderDetailAsync(id);
+            order.PrintTimes++;
+            await Service.AddOrderNotifyAsync(order, true);
+            await Service.CommitAsync();
+            return Content("ok");
         }
 
 

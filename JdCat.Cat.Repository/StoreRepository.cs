@@ -356,7 +356,7 @@ namespace JdCat.Cat.Repository
                             Amount = g.Sum(a => a.OldPrice ?? 0)
                         };
             var result = await query1.OrderByDescending(a => a.Amount).ToListAsync();
-            Log.Debug(JsonConvert.SerializeObject(result));
+            //Log.Debug(JsonConvert.SerializeObject(result));
             return result;
         }
 

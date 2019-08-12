@@ -76,9 +76,10 @@ namespace JdCat.Cat.IRepository
         /// <summary>
         /// 新增订单通知
         /// </summary>
-        /// <param name="order"></param>
+        /// <param name="order">订单信息</param>
+        /// <param name="isTimes">是否多次打印</param>
         /// <returns></returns>
-        Task<bool> AddOrderNotifyAsync(ThirdOrder order);
+        Task<bool> AddOrderNotifyAsync(ThirdOrder order, bool isTimes = false);
 
 
         /// <summary>
@@ -116,8 +117,9 @@ namespace JdCat.Cat.IRepository
         /// <param name="start">下单开始时间</param>
         /// <param name="end">下单截止时间</param>
         /// <param name="paging">分页参数</param>
+        /// <param name="dayNum">当日编号</param>
         /// <returns></returns>
-        Task<List<ThirdOrder>> GetOrdersAsync(int source, DateTime start, DateTime end, PagingQuery paging);
+        Task<List<ThirdOrder>> GetOrdersAsync(int source, DateTime start, DateTime end, PagingQuery paging, int dayNum);
         /// <summary>
         /// 获取订单详情
         /// </summary>

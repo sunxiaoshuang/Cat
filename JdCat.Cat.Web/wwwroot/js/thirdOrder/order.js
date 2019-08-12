@@ -10,6 +10,7 @@
             startDate: new Date().format("yyyy-MM-dd"),
             endDate: new Date().format("yyyy-MM-dd"),
             sources: [{ name: "全部", val: "99" }, { name: "美团", val: '0' }, { name: "饿了么", val: '1' }],
+            dayNum: '',
             selectedSource: "99",
             paging: {
                 pageSize: 20,
@@ -35,8 +36,10 @@
                     $.alert("订单起止时间间隔必须30天以内");
                     return;
                 }
+                var num = this.dayNum || 0;
+                if (num.toString().indexOf(".") > -1) num = 0;
                 $.loading();
-                var query = `pageSize=${pageSize = this.paging.pageSize}&pageIndex=${this.paging.pageIndex}&source=${this.selectedSource}&start=${this.startDate}&end=${this.endDate}`;
+                var query = `pageSize=${pageSize = this.paging.pageSize}&pageIndex=${this.paging.pageIndex}&source=${this.selectedSource}&start=${this.startDate}&end=${this.endDate}&dayNum=${num}`;
                 axios.get(`/ThirdOrder/GetOrders?${query}`)
                     .then(function (res) {
                         $.loaded();
@@ -83,6 +86,12 @@
                     url: "/ThirdOrder/Detail/" + order.id,
                     dialogWidth: 800
                 });
+            },
+            print: function (order) {
+                axios.get("/ThirdOrder/Print/" + order.id)
+                    .then(function () {
+                        $.alert("正在补打订单，请稍等...", "success");
+                    });
             }
         },
         created: function () {
