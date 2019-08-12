@@ -58,10 +58,10 @@ namespace JdCat.Cat.Repository
                 return null;
             }
             // 订单基本信息
-            var deliveryTime = Convert.ToInt64(dic["delivery_time"]);           // 预计送达时间
+            var deliveryTime = Convert.ToInt64(dic["delivery_time"] ?? "0");           // 预计送达时间
             DateTime? time = null;
             if (deliveryTime > 0) time = deliveryTime.ToDateTime();
-             var order = new ThirdOrder
+            var order = new ThirdOrder
             {
                 OrderId = orderId,
                 OrderIdView = Convert.ToInt64(dic["wm_order_id_view"]),
@@ -91,17 +91,17 @@ namespace JdCat.Cat.Repository
             // 订单商品
             order.ThirdOrderProducts = JArray.Parse(dic["detail"]).Select(product => new ThirdOrderProduct
             {
-                Code = product["app_food_code"].Value<string>(),
-                Name = product["food_name"].Value<string>(),
-                SkuId = product["sku_id"].Value<string>(),
+                Code = product["app_food_code"]?.Value<string>(),
+                Name = product["food_name"]?.Value<string>(),
+                SkuId = product["sku_id"]?.Value<string>(),
                 Quantity = product["quantity"].Value<double>(),
                 Price = product["price"].Value<double>(),
                 BoxNum = product["box_num"].Value<double>(),
                 BoxPrice = product["box_price"].Value<double>(),
-                Unit = product["unit"].Value<string>(),
+                Unit = product["unit"]?.Value<string>(),
                 Discount = product["food_discount"].Value<double>(),
-                Description = product["food_property"].Value<string>(),
-                Spec = product["spec"].Value<string>(),
+                Description = product["food_property"]?.Value<string>(),
+                Spec = product["spec"]?.Value<string>(),
                 CartId = product["cart_id"].Value<int>()
             }).ToList();
             var names = order.ThirdOrderProducts.Select(a => a.Name).ToList();
@@ -120,11 +120,11 @@ namespace JdCat.Cat.Repository
             {
                 order.ThirdOrderActivities = activities.Select(activity => new ThirdOrderActivity
                 {
-                    ActiveId = activity["act_detail_id"].Value<int>(),
+                    ActiveId = activity["act_detail_id"] == null ? 0 : activity["act_detail_id"].Value<int>(),
                     ReduceFee = activity["reduce_fee"].Value<double>(),
                     ThirdCharge = activity["mt_charge"].Value<double>(),
                     PoiCharge = activity["poi_charge"].Value<double>(),
-                    Remark = activity["remark"].Value<string>(),
+                    Remark = activity["remark"]?.Value<string>(),
                     Type = activity["type"].Value<int>()
                 }).ToList();
             }
@@ -396,12 +396,12 @@ namespace JdCat.Cat.Repository
         public async Task<List<ThirdOrder>> GetOrdersAsync(int source, DateTime start, DateTime end, PagingQuery paging)
         {
             var query = Context.ThirdOrders.Where(a => a.Ctime >= start && a.Ctime < end);
-            if(source != 99)
+            if (source != 99)
             {
                 query = query.Where(a => a.OrderSource == source);
             }
             paging.RecordCount = query.Count();
-            return await query.Skip(paging.Skip).Take(paging.PageSize).ToListAsync();
+            return await query.OrderByDescending(a => a.ID).Skip(paging.Skip).Take(paging.PageSize).ToListAsync();
         }
         public async Task<ThirdOrder> GetOrderDetailAsync(int id)
         {
