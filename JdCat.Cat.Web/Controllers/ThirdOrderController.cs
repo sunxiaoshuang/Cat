@@ -209,6 +209,15 @@ namespace JdCat.Cat.Web.Controllers
             return PartialView(order);
         }
 
+        /// <summary>
+        /// 营业统计报表
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Report()
+        {
+            return View();
+        }
+
 
         #region 美团必接的接口
 
