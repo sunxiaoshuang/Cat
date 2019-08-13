@@ -80,7 +80,7 @@
                     @*<td v-text="(paging.pageindex - 1) * paging.pageSize + 1 + index"></td>*@
                     <td>
                         <a class="text-primary" @@click="cat(order)">查看详情</a><br />
-                        <a class="text-primary" @@click="print(order)"></a>
+                        <a class="text-primary" @@click="print(order)">补打小票</a>
                     </td>
                     <td v-text="order.daySeq"></td>
                     <td v-text="order.orderSource === 0 ? '美团' : '饿了么'"></td>

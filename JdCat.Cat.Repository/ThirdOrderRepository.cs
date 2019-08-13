@@ -317,7 +317,7 @@ namespace JdCat.Cat.Repository
             // 如果是补打，则将对象复制一遍，并将预约时间设置为空
             if (isTimes)        
             {
-                order = JsonConvert.DeserializeObject<ThirdOrder>(JsonConvert.SerializeObject(order));
+                order = JsonConvert.DeserializeObject<ThirdOrder>(JsonConvert.SerializeObject(order, AppData.JsonSetting));
                 order.DeliveryTime = null;
             }
 
