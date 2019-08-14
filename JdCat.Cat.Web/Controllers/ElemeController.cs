@@ -111,7 +111,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         private async Task ApplyCancelAsync(JObject message)
         {
-            Log.Debug(message.ToString());
+            //Log.Debug(message.ToString());
             //var orderId = message["message"]["orderId"].Value<string>();
             //var order = await Service.GetOrderByCodeAsync(orderId);
             // todo 打印通知

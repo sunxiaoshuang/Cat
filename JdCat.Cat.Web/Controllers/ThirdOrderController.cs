@@ -72,10 +72,11 @@ namespace JdCat.Cat.Web.Controllers
         [HttpPost("/thirdOrder/mt/save")]
         public async Task<IActionResult> SaveMTSetting([FromBody]JObject obj)
         {
+            Business.MT_AutoRecieved = obj["isRecived"].Value<bool>();
             Business.MT_AppId = obj["appId"].Value<string>();
             Business.MT_AppKey = obj["key"].Value<string>();
             Business.MT_Poi_Id = obj["poi_id"].Value<string>();
-            await Service.UpdateAsync(Business, new List<string> { nameof(Business.MT_AppKey), nameof(Business.MT_AppId), nameof(Business.MT_Poi_Id) });
+            await Service.UpdateAsync(Business, new List<string> { nameof(Business.MT_AutoRecieved), nameof(Business.MT_AppKey), nameof(Business.MT_AppId), nameof(Business.MT_Poi_Id) });
             SaveSession();
             return Json("ok");
         }
@@ -180,6 +181,7 @@ namespace JdCat.Cat.Web.Controllers
         {
             return View();
         }
+
         /// <summary>
         /// 获取第三方订单
         /// </summary>
@@ -190,7 +192,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> GetOrders([FromQuery]int source, [FromQuery]DateTime? start, [FromQuery]DateTime? end, [FromQuery]PagingQuery paging, [FromQuery]int dayNum)
         {
-            var list = await Service.GetOrdersAsync(source, start ?? DateTime.Now.Date, end?.AddDays(1) ?? DateTime.Now.Date.AddDays(1), paging, dayNum);
+            var list = await Service.GetOrdersAsync(Business.ID, source, start ?? DateTime.Now.Date, end?.AddDays(1) ?? DateTime.Now.Date.AddDays(1), paging, dayNum);
             return Json(new
             {
                 list,
@@ -198,6 +200,7 @@ namespace JdCat.Cat.Web.Controllers
                 pages = paging.PageCount
             });
         }
+
         /// <summary>
         /// 获取订单详情页面
         /// </summary>

@@ -93,7 +93,7 @@ namespace JdCat.Cat.Web.Controllers
             var service = HttpContext.RequestServices.GetService<IOrderRepository>();
             try
             {
-                var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
+                //var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
                 //log.Debug("点我达回调：" + JsonConvert.SerializeObject(dwd));
                 // 每次回调时，均重新读取一次订单配送费用，并保存到数据库
                 var priceResult = await helper.GetOrderPriceAsync(orderCode);
@@ -101,14 +101,13 @@ namespace JdCat.Cat.Web.Controllers
                 if (priceResult.success)
                 {
                     cost = priceResult.result.receivable_price / 100;
-                    log.Debug($"编号：{orderCode}，点我达配送金额为{cost}");
+                    Log.Debug($"编号：{orderCode}，点我达配送金额为{cost}");
                 }
                 service.UpdateOrderByDwd(dwd, cost);
             }
             catch (Exception e)
             {
-                var log = LogManager.GetLogger(AppSetting.LogRepository.Name, typeof(OpenController));
-                log.Info("点我达回调错误：" + e.Message);
+                Log.Info("点我达回调错误：" + e.Message);
             }
 
 
@@ -172,6 +171,10 @@ namespace JdCat.Cat.Web.Controllers
 
 
         private IOrderRepository orderService;
+        /// <summary>
+        /// 顺丰回调：订单状态改变
+        /// </summary>
+        /// <returns></returns>
         [Route("/shunfeng/change")]
         public IActionResult SfChange()
         {
@@ -195,6 +198,10 @@ namespace JdCat.Cat.Web.Controllers
 
             return Json(new { error_code = 0, error_msg = "success" });
         }
+        /// <summary>
+        /// 顺丰回调：完成订单
+        /// </summary>
+        /// <returns></returns>
         [Route("/shunfeng/finish")]
         public IActionResult SfFinsh()
         {
@@ -207,6 +214,10 @@ namespace JdCat.Cat.Web.Controllers
 
             return Json(new { error_code = 0, error_msg = "success" });
         }
+        /// <summary>
+        /// 顺丰回调：取消订单
+        /// </summary>
+        /// <returns></returns>
         [Route("/shunfeng/cancel")]
         public IActionResult SfCancel()
         {

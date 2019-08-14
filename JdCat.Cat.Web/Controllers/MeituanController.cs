@@ -61,7 +61,7 @@ namespace JdCat.Cat.Web.Controllers
             {
                 var type = Request.Headers["Content-Type"];
                 var exist = Request.Headers.TryGetValue("Content-Type", out StringValues vs);
-                
+
                 if (exist && vs[0].Contains("application/x-www-form-urlencoded"))
                 {
                     foreach (var item in Request.Form)
@@ -87,7 +87,7 @@ namespace JdCat.Cat.Web.Controllers
                 }
             }
             // 如果没有任何请求参数，则直接返回成功
-            if(formDic.Count == 0)
+            if (formDic.Count == 0)
             {
                 context.Result = Json(new { data = "ok" });
                 return;
@@ -212,9 +212,20 @@ namespace JdCat.Cat.Web.Controllers
         /// 新订单
         /// </summary>
         /// <returns></returns>
-        public IActionResult Order()
+        public async Task<IActionResult> Order([FromServices]IThirdOrderRepository service)
         {
-            //Log.Debug("新订单：" + Body.ToUrlDecoding().ToUrlDecoding());
+            var business = await service.GetBusinessByMtPoi(formDic["app_poi_code"]);
+            if (business == null || !business.MT_AutoRecieved) return Json(new { data = "ok" });
+            // 如果设置了美团自动接单，则调用商户确认接口
+            var url = "https://waimaiopen.meituan.com/api/v1/order/confirm";
+            var mt = new MTInputData(business.MT_AppKey, url);
+            mt.SetValue("timestamp", DateTime.Now.ToTimestamp());
+            mt.SetValue("app_id", business.MT_AppId);
+            mt.SetValue("order_id", formDic["order_id"]);
+            var sig = mt.MakeSign();
+            mt.SetValue("sig", sig);
+            url = $"{url}?{mt.ToUrl()}";
+            await UtilHelper.RequestAsync(url, method: "get");
             return Json(new { data = "ok" });
         }
         /// <summary>

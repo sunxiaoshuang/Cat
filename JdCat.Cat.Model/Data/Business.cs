@@ -276,6 +276,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public bool IsEnjoymentActivity { get; set; }
         /// <summary>
+        /// 美团订单是否自动接单
+        /// </summary>
+        public bool MT_AutoRecieved { get; set; }
+        /// <summary>
         /// 美团应用id
         /// </summary>
         public string MT_AppId { get; set; }

@@ -41,6 +41,12 @@ namespace JdCat.Cat.IRepository
         /// <param name="reason"></param>
         /// <returns></returns>
         Task<ThirdOrder> MT_CancelAsync(string id, string reason);
+        /// <summary>
+        /// 根据美团门店编号获取商户信息
+        /// </summary>
+        /// <param name="poi"></param>
+        /// <returns></returns>
+        Task<Business> GetBusinessByMtPoi(string poi);
 
         /// <summary>
         /// 根据应用Appid获取饿了么应用密钥
@@ -113,13 +119,14 @@ namespace JdCat.Cat.IRepository
         /// <summary>
         /// 获取订单列表
         /// </summary>
+        /// <param name="businessId">商户id）</param>
         /// <param name="source">订单来源（99表示所有来源订单）</param>
         /// <param name="start">下单开始时间</param>
         /// <param name="end">下单截止时间</param>
         /// <param name="paging">分页参数</param>
         /// <param name="dayNum">当日编号</param>
         /// <returns></returns>
-        Task<List<ThirdOrder>> GetOrdersAsync(int source, DateTime start, DateTime end, PagingQuery paging, int dayNum);
+        Task<List<ThirdOrder>> GetOrdersAsync(int businessId, int source, DateTime start, DateTime end, PagingQuery paging, int dayNum);
         /// <summary>
         /// 获取订单详情
         /// </summary>

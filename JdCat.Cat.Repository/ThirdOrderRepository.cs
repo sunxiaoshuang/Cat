@@ -153,6 +153,11 @@ namespace JdCat.Cat.Repository
             return order;
         }
 
+        public async Task<Business> GetBusinessByMtPoi(string poi)
+        {
+            return await Context.Businesses.FirstOrDefaultAsync(a => a.MT_Poi_Id == poi);
+        }
+
 
         public async Task<string> GetElemeAppSecretAsync(long appId)
         {
@@ -392,17 +397,18 @@ namespace JdCat.Cat.Repository
         public async Task SetProductMappingsAsync(IEnumerable<ThirdProductMapping> mappings)
         {
             var source = mappings.FirstOrDefault().ThirdSource;
+            var businessId = mappings.FirstOrDefault().BusinessId;
             var codes = mappings.Select(a => a.ThirdProductName).ToList();
-            var products = await Context.ThirdProductMappings.Where(a => a.ThirdSource == source && codes.Contains(a.ThirdProductName)).ToListAsync();
+            var products = await Context.ThirdProductMappings.Where(a => a.BusinessId == businessId && a.ThirdSource == source && codes.Contains(a.ThirdProductName)).ToListAsync();
             Context.RemoveRange(products);
             Context.AddRange(mappings);
             await Context.SaveChangesAsync();
         }
 
 
-        public async Task<List<ThirdOrder>> GetOrdersAsync(int source, DateTime start, DateTime end, PagingQuery paging, int dayNum)
+        public async Task<List<ThirdOrder>> GetOrdersAsync(int businessId, int source, DateTime start, DateTime end, PagingQuery paging, int dayNum)
         {
-            var query = Context.ThirdOrders.Where(a => a.Ctime >= start && a.Ctime < end);
+            var query = Context.ThirdOrders.Where(a => a.BusinessId == businessId && a.Ctime >= start && a.Ctime < end);
             if (source != 99)
             {
                 query = query.Where(a => a.OrderSource == source);
