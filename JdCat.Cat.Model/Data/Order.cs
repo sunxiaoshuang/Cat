@@ -73,6 +73,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public DeliveryMode DeliveryMode { get; set; } = DeliveryMode.Third;
         /// <summary>
+        /// 用户预计送达时间
+        /// </summary>
+        public DateTime? DeliveryTime { get; set; }
+        /// <summary>
         /// 微信支付订单号
         /// </summary>
         public string WxPayCode { get; set; }

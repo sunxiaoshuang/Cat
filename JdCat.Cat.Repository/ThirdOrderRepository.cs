@@ -179,7 +179,7 @@ namespace JdCat.Cat.Repository
             var business = await Context.Businesses.FirstOrDefaultAsync(a => a.Eleme_Poi_Id == shopId);
             if (business == null) return null;
 
-            var phone = eleme["consigneePhones"]?.FirstOrDefault();
+            var phone = eleme["phoneList"]?.FirstOrDefault();
             var geo = eleme["deliveryGeo"].Value<string>().Split(',');
 
             var order = new ThirdOrder

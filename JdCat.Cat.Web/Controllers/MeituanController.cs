@@ -265,6 +265,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public IActionResult Downgrade()
         {
+            Log.Debug("隐私降级");
             return Json(new { data = "ok" });
         }
         /// <summary>

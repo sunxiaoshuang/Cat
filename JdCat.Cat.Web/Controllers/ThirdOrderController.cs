@@ -327,6 +327,7 @@ namespace JdCat.Cat.Web.Controllers
             var mt = new MTInputData(Business.MT_AppKey, url);
             mt.SetValue("timestamp", DateTime.Now.ToTimestamp());
             mt.SetValue("app_id", Business.MT_AppId);
+            mt.SetValue("app_poi_code", Business.MT_Poi_Id);
             mt.SetValue("offset", 0);
             mt.SetValue("limit", 100);
             var sig = mt.MakeSign();

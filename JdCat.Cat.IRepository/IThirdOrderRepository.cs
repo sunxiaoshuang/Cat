@@ -119,7 +119,7 @@ namespace JdCat.Cat.IRepository
         /// <summary>
         /// 获取订单列表
         /// </summary>
-        /// <param name="businessId">商户id）</param>
+        /// <param name="businessId">商户id</param>
         /// <param name="source">订单来源（99表示所有来源订单）</param>
         /// <param name="start">下单开始时间</param>
         /// <param name="end">下单截止时间</param>
