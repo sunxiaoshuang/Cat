@@ -37,6 +37,11 @@
                     var product;
                     if (mapping) {
                         product = self.products.first(function (a) { return a.id === mapping.productId; });
+                        if (!product) {
+                            // 如果有映射，但是没有找到映射商品，则设置为没有映射
+                            product = self.products.first(function (a) { return a.name === item.name; });
+                            mapping = false;
+                        }
                     } else {
                         product = self.products.first(function (a) { return a.name === item.name; });
                     }
@@ -58,7 +63,7 @@
             select: function (mapping) {
                 var curVue;
                 var $modal = $.view({
-                    title: "选中本地商品",
+                    title: "选择本地商品",
                     template,
                     dialogHeight: 600,
                     load: function () {
@@ -80,6 +85,7 @@
                                     mapping.localName = item.name;
                                     mapping.code = item.code;
                                     mapping.productId = item.id;
+                                    mapping.isSave = false;
                                     $modal.modal("hide");
                                 }
                             }

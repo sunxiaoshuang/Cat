@@ -398,8 +398,9 @@ namespace JdCat.Cat.Repository
         {
             var source = mappings.FirstOrDefault().ThirdSource;
             var businessId = mappings.FirstOrDefault().BusinessId;
-            var codes = mappings.Select(a => a.ThirdProductName).ToList();
-            var products = await Context.ThirdProductMappings.Where(a => a.BusinessId == businessId && a.ThirdSource == source && codes.Contains(a.ThirdProductName)).ToListAsync();
+            var names = mappings.Select(a => a.ThirdProductName).ToList();
+            var codes = mappings.Select(a => a.ThirdProductId).Where(a => !string.IsNullOrEmpty(a)).ToList();
+            var products = await Context.ThirdProductMappings.Where(a => a.BusinessId == businessId && a.ThirdSource == source && (codes.Contains(a.ThirdProductId) || names.Contains(a.ThirdProductName))).ToListAsync();
             Context.RemoveRange(products);
             Context.AddRange(mappings);
             await Context.SaveChangesAsync();
