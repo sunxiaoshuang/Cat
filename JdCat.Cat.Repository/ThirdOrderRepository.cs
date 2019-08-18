@@ -229,8 +229,8 @@ namespace JdCat.Cat.Repository
                 }
                 cardIndex++;
             }
-            var names = order.ThirdOrderProducts.Select(a => a.Name).ToList();
-            var mappings = await Context.ThirdProductMappings.Where(a => a.ThirdSource == 1 && a.BusinessId == order.BusinessId && names.Contains(a.ThirdProductName)).ToListAsync();
+            var codes = order.ThirdOrderProducts.Select(a => a.Code).ToList();          // 饿了么使用商品id匹配
+            var mappings = await Context.ThirdProductMappings.Where(a => a.ThirdSource == 1 && a.BusinessId == order.BusinessId && codes.Contains(a.ThirdProductId)).ToListAsync();
             order.ThirdOrderProducts.ForEach(item =>
             {
                 var mapping = mappings.FirstOrDefault(a => a.ThirdProductId == item.Code);
