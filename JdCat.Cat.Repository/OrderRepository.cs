@@ -855,13 +855,20 @@ namespace JdCat.Cat.Repository
             }).ToList();
 
             var json = await helper.Send(ycfkOrder, order.Business.YcfkKey, order.Business.YcfkSecret);
-            var jObj = JObject.Parse(json);
-            var code = jObj["StateCode"].Value<int>();
-            if (code > 0)
+            try
             {
-                result.Msg = jObj["StateMsg"].Value<string>();
-                order.ErrorReason = result.Msg;
-                return result;
+                var jObj = JObject.Parse(json);
+                var code = jObj["StateCode"].Value<int>();
+                if (code > 0)
+                {
+                    result.Msg = jObj["StateMsg"].Value<string>();
+                    order.ErrorReason = result.Msg;
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception("一城飞客自动发单异常：" + e.Message + $"。返回值：【{json}】");
             }
 
             order.Status = OrderStatus.DistributorReceipt;
