@@ -7,6 +7,7 @@ using JdCat.Cat.Common;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -76,7 +77,9 @@ namespace JdCat.Cat.Web.Controllers
             Business.MT_AppId = obj["appId"].Value<string>();
             Business.MT_AppKey = obj["key"].Value<string>();
             Business.MT_Poi_Id = obj["poi_id"].Value<string>();
-            await Service.UpdateAsync(Business, new List<string> { nameof(Business.MT_AutoRecieved), nameof(Business.MT_AppKey), nameof(Business.MT_AppId), nameof(Business.MT_Poi_Id) });
+            Business.MT_IsDelivery = obj["isDelivery"].Value<bool>();
+            Business.MT_DeliveryMode = (LogisticsType)obj["deliveryMode"].Value<int>();
+            await Service.UpdateAsync(Business, new List<string> { nameof(Business.MT_AutoRecieved), nameof(Business.MT_AppKey), nameof(Business.MT_AppId), nameof(Business.MT_Poi_Id), nameof(Business.MT_IsDelivery), nameof(Business.MT_DeliveryMode) });
             SaveSession();
             return Json("ok");
         }

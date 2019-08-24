@@ -66,6 +66,9 @@
 
         </view>
     </view>
+    <view class="adContainer">
+        <ad unit-id="adunit-0a2a14f04b610b2d" ad-intervals="30"></ad>
+    </view>
 </view>
 <view class="modal" animation="{{animationData}}" wx:if="{{isShowPhoneWindow}}">
     <view class="modal-shadow"></view>

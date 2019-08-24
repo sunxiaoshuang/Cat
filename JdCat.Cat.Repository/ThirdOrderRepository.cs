@@ -13,6 +13,8 @@ using JdCat.Cat.IRepository;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
 using JdCat.Cat.Model.Enum;
+using JdCat.Cat.Model.Report;
+using JdCat.Cat.Repository.Service;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -86,7 +88,8 @@ namespace JdCat.Cat.Repository
                 DaySeq = Convert.ToInt32(dic["day_seq"]),
                 Status = OrderStatus.Receipted,
                 OrderSource = 0,
-                BusinessId = business.ID
+                BusinessId = business.ID,
+                Business = business
             };
             // 订单商品
             order.ThirdOrderProducts = JArray.Parse(dic["detail"]).Select(product => new ThirdOrderProduct
@@ -130,6 +133,19 @@ namespace JdCat.Cat.Repository
             }
             await Context.AddAsync(order);
             await Context.SaveChangesAsync();
+
+            try
+            {
+                // 自动发送美团订单
+                if (business.MT_IsDelivery && business.MT_DeliveryMode != LogisticsType.None)
+                {
+                    await DeliveryOrderAsync(order, business.MT_DeliveryMode);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("美团自动发单错误：" + ex.Message);
+            }
 
             return order;
         }
@@ -223,6 +239,7 @@ namespace JdCat.Cat.Repository
                         Price = p["price"].Value<double>(),
                         Spec = string.Join(',', p["newSpecs"].Select(a => a["value"].ToString())),
                         Description = string.Join(',', p["attributes"].Select(a => a["value"].ToString())),
+                        Discount = Math.Round(p["price"].Value<double>() / p["shopPrice"].Value<double>(), 2),
                         CartId = cardIndex
                     };
                     order.ThirdOrderProducts.Add(product);
@@ -320,7 +337,7 @@ namespace JdCat.Cat.Repository
         public async Task<bool> AddOrderNotifyAsync(ThirdOrder order, bool isTimes = false)
         {
             // 如果是补打，则将对象复制一遍，并将预约时间设置为空
-            if (isTimes)        
+            if (isTimes)
             {
                 order = JsonConvert.DeserializeObject<ThirdOrder>(JsonConvert.SerializeObject(order, AppData.JsonSetting));
                 order.DeliveryTime = null;
@@ -344,7 +361,35 @@ namespace JdCat.Cat.Repository
             return await _database.StringSetAsync($"Jiandanmao:Notify:ThirdOrder:{order.BusinessId}:{order.ID}", JsonConvert.SerializeObject(order, AppData.JsonSetting), timespan);
         }
 
-
+        public async Task DeliveryOrderAsync(ThirdOrder order, LogisticsType logistics)
+        {
+            if (order.Business == null) order.Business = await Context.Businesses.FirstOrDefaultAsync(a => a.ID == order.BusinessId);
+            switch (logistics)
+            {
+                case LogisticsType.Dada:
+                    //return await DadaHandler(order);
+                    break;
+                case LogisticsType.Dianwoda:
+                    //return await DwdHandler(order);
+                    break;
+                case LogisticsType.Fengniao:
+                    break;
+                case LogisticsType.Meituan:
+                    break;
+                case LogisticsType.Self:
+                    //return SelfHandler(order);
+                    break;
+                case LogisticsType.Yichengfeike:
+                    await YcfkHandlerAsync(order);
+                    break;
+                case LogisticsType.Shunfeng:
+                    //return await SfHandler(order);
+                    break;
+                default:
+                    break;
+            }
+            await Context.SaveChangesAsync();
+        }
 
 
         public async Task<string> GetElemeTokenAsync(string url, string appKey, string appSecret)
@@ -407,6 +452,36 @@ namespace JdCat.Cat.Repository
         }
 
 
+        public async Task UpdateOrderStatus(YcfkCallback ycfk)
+        {
+            var orderCode = ycfk.OrderId.Split('_')[0];
+            var order = await Context.ThirdOrders.SingleOrDefaultAsync(a => a.OrderId == orderCode);
+            if (order == null) return;
+            switch (ycfk.OrderState)
+            {
+                case 1:             // 已处理
+                case 21:            // 等待分配骑手
+                case 22:            // 取餐中
+                    order.Status = OrderStatus.DistributorReceipt;
+                    break;
+                case 23:            // 配送中
+                    order.Status = OrderStatus.Distribution;
+                    break;
+                case 100:           // 同意退款
+                case 101:           // 拒绝退款
+                case 255:           // 已关闭
+
+                    break;
+                case 254:           // 已完成
+                    order.Status = OrderStatus.Achieve;
+                    break;
+                default:
+                    break;
+            }
+            await Context.SaveChangesAsync();
+        }
+
+
         public async Task<List<ThirdOrder>> GetOrdersAsync(int businessId, int source, DateTime start, DateTime end, PagingQuery paging, int dayNum)
         {
             var query = Context.ThirdOrders.Where(a => a.BusinessId == businessId && a.Ctime >= start && a.Ctime < end);
@@ -414,7 +489,7 @@ namespace JdCat.Cat.Repository
             {
                 query = query.Where(a => a.OrderSource == source);
             }
-            if(dayNum > 0)
+            if (dayNum > 0)
             {
                 query = query.Where(a => a.DaySeq == dayNum);
             }
@@ -427,6 +502,41 @@ namespace JdCat.Cat.Repository
                 .Include(a => a.ThirdOrderProducts)
                 .Include(a => a.ThirdOrderActivities)
                 .FirstOrDefaultAsync(a => a.ID == id);
+        }
+
+
+        public async Task<List<Report_ProductRanking>> GetProductsDataAsync(int businessId, int source, DateTime start, DateTime end)
+        {
+            var query = from order in Context.ThirdOrders
+                        where order.BusinessId == businessId && (order.Status & OrderStatus.Valid) > 0 && order.Ctime >= start && order.Ctime < end
+                        select order;
+            if(source != 99)
+            {
+                query = query.Where(a => a.OrderSource == source);
+            }
+            var list = from order in query
+                    join product in Context.ThirdOrderProducts on order.ID equals product.ThirdOrderId
+                    group product by product.Name into g
+                    select new Report_ProductRanking
+                    {
+                        Name = g.Key,
+                        Quantity = g.Sum(a => a.Quantity),
+                        //Amount = g.Sum(a => a.Price),
+                        ActualAmount = g.Sum(a => a.Price),
+                        DiscountQuantity = 0,
+                        DiscountAmount = 0,
+                        DiscountedAmount = 0
+                    };
+            var rows = await list.ToListAsync();
+            rows.ForEach(item =>
+            {
+                item.Amount = item.ActualAmount;
+                item.SaleAmount = item.Amount;
+                item.ActualQuantity = item.Quantity;
+                item.SaleQuantity = item.Quantity;
+            });
+            rows.Sort((a, b) => (int)(b.ActualAmount - a.ActualAmount));
+            return rows;
         }
 
 
@@ -454,6 +564,56 @@ namespace JdCat.Cat.Repository
                 var leafIds = relatives.Where(b => b.SetMealId == a).Select(b => b.ProductId);
                 setmeal.Tag1 = children.Where(b => leafIds.Contains(b.ID)).ToList();
             });
+        }
+
+        private async Task YcfkHandlerAsync(ThirdOrder order)
+        {
+            var helper = YcfkHelper.GetHelper();
+            var ycfkOrder = new YcfkOrder
+            {
+                OrderId = $"{order.OrderId}_{UtilHelper.RandNum()}_{order.OrderSource}",
+                Flag = order.OrderSource == 0 ? "美团" : "饿了么",
+                ViewOrderId = order.OrderId,
+                ShopId = order.Business.StoreId,
+                ShopName = order.Business.Name,
+                OrderUserName = order.RecipientName,
+                OrderUserPhone = order.RecipientPhone,
+                OrderUserAddress = order.RecipientAddress,
+                OrderRemark = order.Caution,
+                BoxFee = Convert.ToDecimal(order.PackageFee),
+                Freight = Convert.ToDecimal(order.ShippingFee),
+                ActivityMoney = Convert.ToDecimal(order.OriginalAmount - order.Amount),
+                UserGaodeCoordinate = order.Longitude + "|" + order.Latitude,
+                DayIndex = order.DaySeq
+            };
+
+            ycfkOrder.FoodList = order.ThirdOrderProducts.Select(a => new YcfkFoodItem
+            {
+                FoodName = a.Name,
+                FoodPrice = Convert.ToDecimal(a.Price / a.Quantity),
+                FoodCount = Convert.ToInt32(a.Quantity)
+            }).ToList();
+
+            var json = await helper.Send(ycfkOrder, order.Business.YcfkKey, order.Business.YcfkSecret);
+            try
+            {
+                var jObj = JObject.Parse(json);
+                var code = jObj["StateCode"].Value<int>();
+                if (code > 0)
+                {
+                    order.Error = jObj["StateMsg"].Value<string>();
+                    //Log.Debug("一城飞客配送异常：" + json);
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception("一城飞客自动发单异常：" + e.Message + $"。返回值：【{json}】");
+            }
+            //Log.Debug("一城飞客配送成功：" + json);
+
+            order.Status = OrderStatus.DistributorReceipt;
+            order.Error = "";
         }
     }
 }

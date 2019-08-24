@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using JdCat.Cat.Common.Models;
 using JdCat.Cat.Model;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Report;
 using Newtonsoft.Json.Linq;
 
 namespace JdCat.Cat.IRepository
@@ -117,6 +119,13 @@ namespace JdCat.Cat.IRepository
         Task SetProductMappingsAsync(IEnumerable<ThirdProductMapping> mappings);
 
         /// <summary>
+        /// 一城飞客配送状态变更
+        /// </summary>
+        /// <param name="ycfk"></param>
+        /// <returns></returns>
+        Task UpdateOrderStatus(YcfkCallback ycfk);
+
+        /// <summary>
         /// 获取订单列表
         /// </summary>
         /// <param name="businessId">商户id</param>
@@ -133,6 +142,16 @@ namespace JdCat.Cat.IRepository
         /// <param name="id"></param>
         /// <returns></returns>
         Task<ThirdOrder> GetOrderDetailAsync(int id);
+
+        /// <summary>
+        /// 获取商户指定时间内的商品统计
+        /// </summary>
+        /// <param name="businessId">商户id</param>
+        /// <param name="source">订单来源，99代表不区分来源</param>
+        /// <param name="start">查询开始时间</param>
+        /// <param name="end">查询结束时间</param>
+        /// <returns></returns>
+        Task<List<Report_ProductRanking>> GetProductsDataAsync(int businessId, int source, DateTime start, DateTime end);
 
     }
 }

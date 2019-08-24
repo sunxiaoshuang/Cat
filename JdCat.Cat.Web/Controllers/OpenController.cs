@@ -119,7 +119,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="ycfk"></param>
         /// <param name="service"></param>
         /// <returns></returns>
-        public IActionResult YcfkCallback([FromServices]IOrderRepository service, [FromServices]AppData appData, [FromServices]YcfkHelper helper)
+        public IActionResult YcfkCallback([FromServices]AppData appData, [FromServices]YcfkHelper helper)
         {
             //var orderId = Request.Form["OrderId"];
             //var orderState = Request.Form["OrderState"];
@@ -137,21 +137,38 @@ namespace JdCat.Cat.Web.Controllers
                 //var signature = helper.CreateSignature(content, ts);
                 //if (sign != signature) return Json(new { StateCode = 2, StateMsg = "签名验证失败" });
 
-                var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(content));
+                var json = Encoding.UTF8.GetString(Convert.FromBase64String(content));
                 var ycfk = JsonConvert.DeserializeObject<YcfkCallback>(json);
-                //Log.Info(JsonConvert.SerializeObject(ycfk));
-                try
+                var idArr = ycfk.OrderId.Split('_');
+                if(idArr.Length == 2)          // 小程序订单
                 {
-                    service.UpdateOrderStatus(ycfk);
+                    var service = HttpContext.RequestServices.GetService<IOrderRepository>();
+                    try
+                    {
+                        service.UpdateOrderStatus(ycfk);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("一城飞客订单更新异常：" + e.Message);
+                    }
                 }
-                catch (Exception e)
+                else if(idArr.Length == 3)      // 第三方订单
                 {
-                    Log.Error("一城飞客订单更新异常：" + e.Message);
+                    var service = HttpContext.RequestServices.GetService<IThirdOrderRepository>();
+                    try
+                    {
+                        service.UpdateOrderStatus(ycfk);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("一城飞客订单更新异常：" + e.Message);
+                    }
                 }
             }
             else if (action.ToString().ToLower() == "sendwluserlocation")
             {
-                var json = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(content));
+                var service = HttpContext.RequestServices.GetService<IOrderRepository>();
+                var json = Encoding.UTF8.GetString(Convert.FromBase64String(content));
                 var data = JObject.Parse(json);
                 if (data == null || string.IsNullOrEmpty(data["OrderId"].ToString()))
                 {

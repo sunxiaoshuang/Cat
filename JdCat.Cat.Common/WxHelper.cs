@@ -291,7 +291,10 @@ namespace JdCat.Cat.Common
                 var res = await client.GetAsync(url);
                 res.EnsureSuccessStatusCode();
                 var result = await res.Content.ReadAsStringAsync();
-                mapApiDic.Add(location, result);
+                if (!mapApiDic.ContainsKey(location))
+                {
+                    mapApiDic.Add(location, result);
+                }
                 return result;
             }
         }

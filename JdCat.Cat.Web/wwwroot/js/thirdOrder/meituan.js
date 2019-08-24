@@ -9,6 +9,10 @@
                     $.alert("请将信息输入完整！");
                     return;
                 }
+                if (this.isDelivery && !this.deliveryMode) {
+                    $.alert("请选择配送方式！");
+                    return;
+                }
                 $.loading();
                 axios.post(`/thirdorder/mt/save`, this.$data)
                     .then(function (res) {

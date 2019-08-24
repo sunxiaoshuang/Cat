@@ -292,6 +292,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string MT_Poi_Id { get; set; }
         /// <summary>
+        /// 是否发送配送
+        /// </summary>
+        public bool MT_IsDelivery { get; set; }
+        /// <summary>
+        /// 配送方式
+        /// </summary>
+        public LogisticsType MT_DeliveryMode { get; set; }
+        /// <summary>
         /// 饿了么应用id
         /// </summary>
         public long? Eleme_AppId { get; set; }

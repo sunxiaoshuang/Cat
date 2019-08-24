@@ -118,6 +118,14 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public int OrderSource { get; set; }
         /// <summary>
+        /// 订单配送方式
+        /// </summary>
+        public LogisticsType LogisticsType { get; set; }
+        /// <summary>
+        /// 订单错误信息
+        /// </summary>
+        public string Error { get; set; }
+        /// <summary>
         /// 订单所属商户
         /// </summary>
         public int BusinessId { get; set; }

@@ -9,7 +9,9 @@
             appId: '@Model.MT_AppId',
             key: '@Model.MT_AppKey',
             poi_id: '@Model.MT_Poi_Id',
-            isRecived: @(Model.MT_AutoRecieved ? "true" : "false")
+            isRecived: @(Model.MT_AutoRecieved ? "true" : "false"),
+            isDelivery: @(Model.MT_IsDelivery ? "true" : "false"),
+            deliveryMode: @((int)Model.MT_DeliveryMode)
         };
     </script>
     <environment include="Development">
@@ -72,6 +74,42 @@
                                 <input type="radio" name="recived" :value="false" v-model="isRecived">
                                 <span class="custom-checkbox"></span>
                                 否
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1 col-xs-offset-1">
+                        是否自动配送
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                            <label class="label-checkbox">
+                                <input type="radio" name="isDelivery" :value="true" v-model="isDelivery">
+                                <span class="custom-checkbox"></span>
+                                是
+                            </label>
+                        </div>
+                        <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                            <label class="label-checkbox">
+                                <input type="radio" name="isDelivery" :value="false" v-model="isDelivery">
+                                <span class="custom-checkbox"></span>
+                                否
+                            </label>
+                        </div>
+                        <p class="text-danger" style="clear:both; margin:0;padding: 0;">注：美团订单自配送可选择！</p>
+                    </div>
+                </div>
+                <div class="form-group" v-if="isDelivery">
+                    <label class="control-label col-xs-2 col-md-1 col-xs-offset-1">
+                        <span class="require">配送方式</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                            <label class="label-checkbox">
+                                <input type="radio" name="deliveryMode" :value="6" v-model="deliveryMode">
+                                <span class="custom-checkbox"></span>
+                                一城飞客
                             </label>
                         </div>
                     </div>

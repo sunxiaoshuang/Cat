@@ -234,9 +234,10 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         public async Task<IActionResult> Received([FromServices]IThirdOrderRepository service)
         {
-            //Log.Debug("美团订单：" + formDic.ToJson());
+            //Log.Debug("美团订单：" + formDic["wm_poi_name"] + "，" + formDic["day_seq"]);
             var order = await service.MT_SaveAsync(formDic);
-            // todo 发送订单通知
+            if (order == null) return Json(new { data = "ok" });
+            // 发送订单通知
             await service.AddOrderNotifyAsync(order);
 
             return Json(new { data = "ok" });

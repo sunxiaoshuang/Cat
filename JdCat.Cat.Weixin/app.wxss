@@ -438,3 +438,11 @@ navigator input {
 .pull-right {
   float: right !important;
 }
+
+
+.adContainer {
+  width: 90%;
+  position: fixed;
+  left: 5%;
+  bottom: 0;
+}

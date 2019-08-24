@@ -834,6 +834,7 @@ namespace JdCat.Cat.Repository
             var ycfkOrder = new YcfkOrder
             {
                 OrderId = order.OrderCode + "_" + order.DistributionFlow,
+                ViewOrderId = order.OrderCode,
                 ShopId = order.Business.StoreId,
                 ShopName = order.Business.Name,
                 OrderUserName = order.ReceiverName,
@@ -844,7 +845,8 @@ namespace JdCat.Cat.Repository
                 Freight = Convert.ToDecimal(order.Freight),
                 ActivityMoney = Convert.ToDecimal(order.SaleCouponUserMoney ?? 0 + order.SaleFullReduceMoney ?? 0),
                 UserGaodeCoordinate = order.Lng + "|" + order.Lat,
-                DayIndex = order.Identifier
+                DayIndex = order.Identifier,
+                Flag = "简单猫"
             };
 
             ycfkOrder.FoodList = order.Products.Select(a => new YcfkFoodItem

@@ -514,6 +514,12 @@
     "inputFiles": [
       "wwwroot/js/thirdOrder/order.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/thirdProducts.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/thirdProducts.js"
+    ]
   }
 
 ]
