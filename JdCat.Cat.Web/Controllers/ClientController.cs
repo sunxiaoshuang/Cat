@@ -405,6 +405,18 @@ namespace JdCat.Cat.Web.Controllers
                 Data = list?.Select(a => new { a.ID, a.ObjectId })
             });
         }
+        [HttpPost]
+        public IActionResult UploadTangOrderActivity([FromBody]IEnumerable<TangOrderActivity> list, [FromServices]IClientRepository service)
+        {
+            int count = 0;
+            if (list != null) count = service.UploadOrderActivities(list);
+            return Json(new JsonData
+            {
+                Success = true,
+                Msg = $"更新订单商品记录：{count}条。",
+                Data = list?.Select(a => new { a.ID, a.ObjectId })
+            });
+        }
         #endregion
 
     }

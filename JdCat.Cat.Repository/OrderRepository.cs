@@ -161,7 +161,10 @@ namespace JdCat.Cat.Repository
 
         public Order GetOrderForDetail(int id)
         {
-            var order = Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).FirstOrDefault(a => a.ID == id);
+            //var order = Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).FirstOrDefault(a => a.ID == id);
+            var order = Context.Orders.Include(a => a.Products)
+                .Include(a => a.OrderActivities)
+                .FirstOrDefault(a => a.ID == id);
             QuarySetMealProduct(order.Products.Where(a => a.ProductIdSet != null));
             return order;
         }
@@ -416,6 +419,7 @@ namespace JdCat.Cat.Repository
                 .Include(a => a.Business)
                 .Include(a => a.DadaReturn)
                 .Include(a => a.Products)
+                .Include(a => a.OrderActivities)
                 .Include(a => a.SaleFullReduce)
                 .Include(a => a.SaleCouponUser).SingleOrDefault(a => a.ID == id);
         }
@@ -424,20 +428,21 @@ namespace JdCat.Cat.Repository
             return Context.Orders.Include(a => a.Products).SingleOrDefault(a => a.ID == id);
         }
 
-        public Order PaySuccess(WxPaySuccess ret)
+        public async Task<Order> PaySuccessAsync(WxPaySuccess ret)
         {
             var order = Context.Orders
             .Include(a => a.Business)
             .Include(a => a.User)
             .Include(a => a.Products)
+            .Include(a => a.OrderActivities)
             .Include(a => a.SaleFullReduce)
             .Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
-            var identify = GetMaxIdentify(order.BusinessId.Value) + 1;
 
             //var order = Context.Orders.Include(a => a.Products).Include(a => a.Business).SingleOrDefault(a => a.OrderCode == ret.out_trade_no);
             if (order == null) return null;
             if (order.Status == OrderStatus.NotPay)
             {
+                var identify = await GetMaxIdentifyAsync(order.BusinessId.Value);
                 order.WxPayCode = ret.transaction_id;
                 order.PayTime = DateTime.Now;
                 order.Status = OrderStatus.Payed;
@@ -1045,6 +1050,31 @@ namespace JdCat.Cat.Repository
         }
 
 
+        //public async Task<List<Order>> GetOrdersIncludeProductAsync(DateTime? endDate = null)
+        //{
+        //    var time = endDate ?? DateTime.Now;
+        //    //var time = new DateTime(2019, 8, 27);
+        //    //var start = new DateTime(2019, 8, 20);
+        //    return await Context.Orders.Include(a => a.Products).Where(a => a.CreateTime.Value < time).ToListAsync();
+        //}
+
+        //public async Task<List<Order>> GetOrdersNotActivityAsync()
+        //{
+        //    var orders = ExecuteReader<Order>(@"select ID, OrderCode from (
+	       //                             select a.*, b.ID as BiD from `order` a 
+		      //                              left join orderactivity b on a.id=b.OrderId
+	       //                             where SaleFullReduceId is not null or SaleCouponUserId is not null
+        //                            )t where BiD is null");
+        //    var ids = orders.Select(a => a.ID).ToList();
+        //    return await Context.Orders.Include(a => a.Products).Where(a => ids.Contains(a.ID)).ToListAsync();
+        //}
+
+
+
+
+
+
+
 
         /// <summary>
         /// 自己配送
@@ -1194,16 +1224,21 @@ namespace JdCat.Cat.Repository
         /// 获取今日最大订单流水
         /// </summary>
         /// <returns></returns>
-        private int GetMaxIdentify(int businessId)
+        private async Task<int> GetMaxIdentifyAsync(int businessId)
         {
-            var max = 0;
+            //var max = 0;
+            //var now = DateTime.Now.ToString("yyyy-MM-dd");
+            //var query = Context.Orders.Where(a => a.BusinessId == businessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == now);
+            //if (query.Count() > 0)
+            //{
+            //    max = query.Max(a => a.Identifier);
+            //}
+            //return max;
+
             var now = DateTime.Now.ToString("yyyy-MM-dd");
-            var query = Context.Orders.Where(a => a.BusinessId == businessId && a.CreateTime.Value.ToString("yyyy-MM-dd") == now);
-            if (query.Count() > 0)
-            {
-                max = query.Max(a => a.Identifier);
-            }
-            return max;
+            var key = $"Jiandanmao:Util:OrderDayNo:{businessId}:{now}";
+            var result = await _database.StringIncrementAsync(key);
+            return (int)result;
         }
 
         /// <summary>

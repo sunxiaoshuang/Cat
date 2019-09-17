@@ -24,14 +24,18 @@
         </view>
         <view class="sale-active-container">
             <swiper autoplay="{{true}}" vertical="{{true}}" class="sale">
-                <block wx:for="{{fullReduceList}}" wx:key="id">
-                    <swiper-item class="sale-item">
+                <swiper-item class="sale-item" wx:if="{{!!newCustom}}">
+                    <view class="slide-image">新</view>
+                    <text>{{'新客户下单立减' + newCustom.amount + '元'}}</text>
+                </swiper-item>
+                <block>
+                    <swiper-item class="sale-item" wx:for="{{fullReduceList}}" wx:key="id">
                         <view class="slide-image">减</view>
                         <text>{{item.name}}</text>
                     </swiper-item>
                 </block>
             </swiper>
-            <view class="sale-quantity">{{fullReduceList.length}}个活动</view>
+            <view class="sale-quantity">{{fullReduceList.length + (!!newCustom ? 1 : 0)}}个活动</view>
         </view>
     </view>
 </view>
@@ -170,6 +174,12 @@
             <view class="restaurant-activity" wx:if="{{fullReduceList.length > 0}}">
                 <view class="activity-title">
                     <text>店铺活动</text>
+                </view>
+                <view class="activity-content" wx:if="{{!!newCustom}}">
+                    <view class="slide-image">新</view>
+                    <view class="activity-name" style="margin-left: 20rpx;">
+                        <text>{{'新客户下单立减' + newCustom.amount + '元'}}</text>
+                    </view>
                 </view>
                 <view class="activity-content" wx:for="{{fullReduceList}}" wx:key="">
                     <view class="slide-image">减</view>

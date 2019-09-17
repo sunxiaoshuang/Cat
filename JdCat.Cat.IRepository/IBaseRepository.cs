@@ -26,6 +26,7 @@ namespace JdCat.Cat.IRepository
         DbSet<TEntity> Set<TEntity>() where TEntity : class;
         TEntity Add<TEntity>(TEntity entity) where TEntity : BaseEntity;
         Task<TEntity> AddAsync<TEntity>(TEntity entity) where TEntity : BaseEntity;
+        Task<IEnumerable<TEntity>> AddRangeAsync<TEntity>(IEnumerable<TEntity> entity) where TEntity : BaseEntity;
         int Delete<TEntity>(params TEntity[] entities) where TEntity : BaseEntity;
         Task<int> DeleteAsync<TEntity>(params TEntity[] entities) where TEntity : BaseEntity;
         int Update<TEntity>(TEntity entity, IEnumerable<string> fieldNames = null, bool commit = true) where TEntity : BaseEntity;

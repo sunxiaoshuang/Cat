@@ -9,6 +9,7 @@ const weekObj = {
   "6": 32,
   "0": 64
 };
+
 Page({
 
   /**
@@ -45,6 +46,8 @@ Page({
     submitText: "去结算", // 结算按钮文本显示 
     isBalance: true, // 是否可以结算
     fullReduceList: [], // 商户满减活动列表
+    newCustom: {},  // 新客立减
+    purchaseTimes: 0, // 用户下单次数
     saleText: "", // 购买商品时，根据满减活动，提示用户的显示信息
     isShowCoupon: false, // 是否显示领取优惠券页面
     isClosedCoupon: false, // 是否显示过领取优惠券
@@ -84,7 +87,7 @@ Page({
       business = session.business,
       user = session.userinfo,
       currentScene = wx.getStorageSync("currentScene");
-
+    this.data.purchaseTimes = user.purchaseTimes;
     if (currentScene === "search-product") { // 如果是从搜索页面返回
       var selectProduct = wx.getStorageSync("selectProduct");
       var scroll = `scroll_${selectProduct.menuId}_${selectProduct.viewIndex}`;
@@ -118,9 +121,12 @@ Page({
           // 商户满减活动
           var couponList = res.data.coupon,
             myCoupon = res.data.userCoupon,
+            newCustom = res.data.newCustom,
             unreceived = [];
+          
           self.setData({
-            fullReduceList: res.data.fullReduct
+            fullReduceList: res.data.fullReduct,
+            newCustom
           });
           self.data.couponList = couponList; // 商户优惠券
           self.data.myCoupon = myCoupon; // 用户优惠券
@@ -1296,12 +1302,31 @@ Page({
   // 处理购物车营销活动
   cartHandlerForSale: function () {
     var fullReduceList = this.data.fullReduceList.slice(),
+      business = qcloud.getSession().business,
       isEnjoymentActivity = qcloud.getSession().business.isEnjoymentActivity,
-      nowItem;
+      nowItem,
+      newCustom = this.data.newCustom,
+      minAmount = business.minAmount,
+      purchaseTimes = this.data.purchaseTimes;
     wx.removeStorageSync("nowFullReduce"); // 移除当前实现的满减活动
+    wx.removeStorageSync("newCustom"); // 移除当前新客立减活动
+
+    let discountQuantity = 0; // 折扣菜数量
+    this.data.cartList.filter(a => a.product.discount).forEach(cart => discountQuantity += cart.quantity);
+
+    if (discountQuantity === 0 && !!newCustom && purchaseTimes === 0) {
+      // 如果没有折扣菜，且存在新客立减活动，则采用该活动
+      let text = "";
+      if (minAmount <= newCustom.amount) {
+        text = "新客户首单立减" + newCustom.amount + "元"
+      }
+      wx.setStorageSync("newCustom", newCustom);
+      this.setData({
+        saleText: text
+      });
+      return;
+    }
     if(!isEnjoymentActivity) {    // 如果不允许活动同享
-      let discountQuantity = 0;
-      this.data.cartList.filter(a => a.product.discount).forEach(cart => discountQuantity += cart.quantity);
       if(discountQuantity === 1) {
         util.showError("本店满减活动不可与折扣商品同时享受");
       }

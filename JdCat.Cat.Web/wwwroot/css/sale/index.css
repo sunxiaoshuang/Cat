@@ -5,12 +5,15 @@
     position: relative;
     transition: top .5s;
     top: 0;
+    text-align: center;
 }
+
     .thumbnail:not(.doing):hover {
         background-color: #efefef;
         top: -10px;
         cursor: pointer;
     }
+
     .thumbnail .doing-sign {
         display: none;
         height: 100%;
@@ -19,6 +22,7 @@
         top: 0;
         left: 0;
     }
+
         .thumbnail .doing-sign p {
             position: relative;
             line-height: 15em;
@@ -28,6 +32,7 @@
             letter-spacing: .3em;
             color: #fff;
         }
+
         .thumbnail .doing-sign > div:first-child {
             position: absolute;
             background-color: #fff;
@@ -36,31 +41,42 @@
             opacity: .7;
             background-color: #000;
         }
+
     .thumbnail.doing:hover .doing-sign {
         display: block;
     }
-.thumbnail .caption {
-    border-top: 1px solid #ccc;
-}
-    .thumbnail .caption p {
-        padding: 0;
-        line-height: 1em;
-        margin: 10px 0;
-        color: #9a9494;
-        height: 2em;
-        overflow: hidden;
+
+    .thumbnail .caption {
+        border-top: 1px solid #ccc;
+    }
+
+        .thumbnail .caption p {
+            padding: 0;
+            line-height: 1em;
+            margin: 10px 0;
+            color: #9a9494;
+            height: 2em;
+            overflow: hidden;
+        }
+
+    .thumbnail .jdcat {
+        font-size: 14em;
+        color: #f36c1b;
     }
 
 .text-primary:hover {
     cursor: pointer;
     color: #c55f38 !important;
 }
+
 table-sale th, table-sale td {
     text-align: center;
 }
+
 table-sale .fa-edit {
     margin-right: 20px;
 }
+
 table-sale td:last-child {
     width: 150px;
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JdCat.Cat.Common;
 using JdCat.Cat.IRepository;
+using JdCat.Cat.Model.Enum;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -71,7 +72,6 @@ namespace JdCat.Cat.Web.Controllers
         /// <returns></returns>
         private async Task OrderAsync(JObject message)
         {
-            JObject.Parse(message["message"].Value<string>());
             await Service.ElemeSaveAsync(message);
         }
 
@@ -83,7 +83,7 @@ namespace JdCat.Cat.Web.Controllers
         {
             var order = await Service.ElemeReceivedAsync(message);
             if (order == null) return;
-            // todo 打印通知
+            order.PrintType = PrintMode.All;
             await Service.AddOrderNotifyAsync(order);
         }
 

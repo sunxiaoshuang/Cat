@@ -42,7 +42,11 @@ namespace JdCat.Cat.Repository
 
         public async Task<TangOrder> GetOrderAsync(int id)
         {
-            return await Context.TangOrders.Include(a => a.TangOrderProducts).Include(a => a.TangOrderPayments).FirstOrDefaultAsync(a => a.ID == id);
+            return await Context.TangOrders
+                .Include(a => a.TangOrderProducts)
+                .Include(a => a.TangOrderPayments)
+                .Include(a => a.TangOrderActivities)
+                .FirstOrDefaultAsync(a => a.ID == id);
         }
 
         public async Task<List<Cat.Model.Data.PaymentType>> GetPaymentsAsync(int id)
@@ -238,6 +242,69 @@ namespace JdCat.Cat.Repository
             return await query3.OrderByDescending(a => a.Amount).ToListAsync();
         }
 
+        public async Task<List<Report_ProductSale>> GetThirdCooksReportAsync(int businessId, DateTime start, DateTime end, int type)
+        {
+            var staffQuery = from staff in Context.Staffs
+                             join post in Context.StaffPosts on staff.StaffPostId equals post.ID
+                             where staff.BusinessId == businessId && staff.Status == EntityStatus.Normal && (post.Authority & StaffPostAuth.Cook) > 0
+                             select new Report_ProductSale { Id = staff.ID, Name = staff.Name };
+            var staffs = await staffQuery.ToListAsync();
+            if (staffs == null || staffs.Count == 0) return null;
+            var ids = staffs.Select(a => a.Id).ToList();
+
+            var query1 = from order in Context.ThirdOrders
+                         select order;
+            if (type != 99) query1 = query1.Where(a => a.OrderSource == type);
+
+            var productQuery = from relative in Context.CookProductRelatives
+                               join product in Context.ThirdOrderProducts on relative.ProductId equals product.ProductId
+                               join order in query1 on product.ThirdOrderId equals order.ID
+                               where ids.Contains(relative.StaffId) && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
+                               select new { relative.StaffId, product.Quantity, Amount = product.Price * product.Quantity };
+
+            var products = await productQuery.ToListAsync();
+
+            staffs.ForEach(a =>
+            {
+                var p = products.Where(b => a.Id == b.StaffId).ToList();
+                if (p.Count == 0) return;
+                a.Count = p.Sum(c => c.Quantity);
+                a.Amount = p.Sum(c => c.Amount);
+            });
+            return staffs;
+        }
+        public async Task<List<Report_ProductSale>> GetSingleThirdCookReportAsync(int cookId, DateTime start, DateTime end, int type)
+        {
+            return await GetThirdCookDetailReportAsync(new[] { cookId }, start, end, type);
+        }
+        public async Task<List<Report_ProductSale>> GetThirdCookDetailReportAsync(IEnumerable<int> cookIds, DateTime start, DateTime end, int type)
+        {
+            var query1 = from relative in Context.CookProductRelatives
+                         where cookIds.Contains(relative.StaffId)
+                         select relative;
+
+            var query2 = from order in Context.ThirdOrders
+                         select order;
+            if (type != 99) query2 = query2.Where(a => a.OrderSource == type);
+
+            var query3 = from order in query2
+                         join product in Context.ThirdOrderProducts on order.ID equals product.ThirdOrderId
+                         where (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
+                         select product;
+            var query4 = from relative in query1
+                         join product in query3 on relative.ProductId equals product.ProductId
+                         group product by new { product.ProductId, product.Name, relative.StaffId } into g
+                         select new Report_ProductSale
+                         {
+                             Id = g.Key.StaffId,
+                             Name = g.Key.Name,
+                             Count = g.Sum(a => a.Quantity),
+                             Amount = g.Sum(a => a.Price * a.Quantity)
+                         };
+
+            return await query4.OrderByDescending(a => a.Amount).ToListAsync();
+        }
+
         public async Task<List<Report_ProductSale>> GetBoothsReportAsync(int businessId, DateTime start, DateTime end)
         {
             var booths = await Context.StoreBooths.Where(a => a.BusinessId == businessId)
@@ -305,7 +372,7 @@ namespace JdCat.Cat.Repository
         }
         public async Task<List<Report_ProductSale>> GetSingleBoothReportForTakeoutAsync(int boothId, DateTime start, DateTime end)
         {
-            return await GetBoothDetailReportForTakeoutAsync(new [] { boothId }, start, end);
+            return await GetBoothDetailReportForTakeoutAsync(new[] { boothId }, start, end);
             //var query = from relative in Context.BoothProductRelatives
             //            join product in Context.OrderProducts on relative.ProductId equals product.ProductId into joinProduct
             //            from product in joinProduct.DefaultIfEmpty()
@@ -344,19 +411,78 @@ namespace JdCat.Cat.Repository
                         select relative;
 
             var query1 = from relative in query
-                        join product in Context.OrderProducts on relative.ProductId equals product.ProductId
-                        join order in Context.Orders on product.OrderId equals order.ID
-                        where (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
-                        group product by new { product.ProductId, product.Name, relative.StoreBoothId } into g
-                        select new Report_ProductSale
-                        {
-                            Id = g.Key.StoreBoothId,
-                            Name = g.Key.Name,
-                            Count = g.Sum(a => a.Quantity ?? 0),
-                            Amount = g.Sum(a => a.OldPrice ?? 0)
-                        };
+                         join product in Context.OrderProducts on relative.ProductId equals product.ProductId
+                         join order in Context.Orders on product.OrderId equals order.ID
+                         where (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
+                         group product by new { product.ProductId, product.Name, relative.StoreBoothId } into g
+                         select new Report_ProductSale
+                         {
+                             Id = g.Key.StoreBoothId,
+                             Name = g.Key.Name,
+                             Count = g.Sum(a => a.Quantity ?? 0),
+                             Amount = g.Sum(a => a.OldPrice ?? 0)
+                         };
             var result = await query1.OrderByDescending(a => a.Amount).ToListAsync();
             //Log.Debug(JsonConvert.SerializeObject(result));
+            return result;
+        }
+
+
+        public async Task<List<Report_ProductSale>> GetThirdBoothsReportAsync(int businessId, DateTime start, DateTime end, int type)
+        {
+            var booths = await Context.StoreBooths.Where(a => a.BusinessId == businessId)
+                .Select(a => new Report_ProductSale { Id = a.ID, Name = a.Name }).ToListAsync();
+            if (booths.Count == 0) return null;
+            var ids = booths.Select(a => a.Id).ToList();
+
+            var orderQuery = from order in Context.ThirdOrders
+                             select order;
+            if (type != 99) orderQuery = orderQuery.Where(a => a.OrderSource == type);
+
+            var productQuery = from relative in Context.BoothProductRelatives
+                               join product in Context.ThirdOrderProducts on relative.ProductId equals product.ProductId
+                               join order in orderQuery on product.ThirdOrderId equals order.ID
+                               where ids.Contains(relative.StoreBoothId) && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
+                               select new { relative.StoreBoothId, product.Quantity, Amount = product.Price * product.Quantity };
+
+            var products = await productQuery.ToListAsync();
+
+            booths.ForEach(a =>
+            {
+                var p = products.Where(b => a.Id == b.StoreBoothId).ToList();
+                if (p.Count == 0) return;
+                a.Count = p.Sum(c => c.Quantity);
+                a.Amount = p.Sum(c => c.Amount);
+            });
+            return booths;
+        }
+        public async Task<List<Report_ProductSale>> GetSingleThirdBoothReportAsync(int boothId, DateTime start, DateTime end, int type)
+        {
+            return await GetThirdBoothDetailReportAsync(new[] { boothId }, start, end, type);
+        }
+        public async Task<List<Report_ProductSale>> GetThirdBoothDetailReportAsync(IEnumerable<int> boothIds, DateTime start, DateTime end, int type)
+        {
+            var query = from relative in Context.BoothProductRelatives
+                        where boothIds.Contains(relative.StoreBoothId)
+                        select relative;
+
+            var orderQuery = from order in Context.ThirdOrders
+                             select order;
+            if (type != 99) orderQuery = orderQuery.Where(a => a.OrderSource == type);
+
+            var query1 = from relative in query
+                         join product in Context.ThirdOrderProducts on relative.ProductId equals product.ProductId
+                         join order in orderQuery on product.ThirdOrderId equals order.ID
+                         where (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
+                         group product by new { product.ProductId, product.Name, relative.StoreBoothId } into g
+                         select new Report_ProductSale
+                         {
+                             Id = g.Key.StoreBoothId,
+                             Name = g.Key.Name,
+                             Count = g.Sum(a => a.Quantity),
+                             Amount = g.Sum(a => a.Price * a.Quantity)
+                         };
+            var result = await query1.OrderByDescending(a => a.Amount).ToListAsync();
             return result;
         }
 
@@ -525,6 +651,6 @@ namespace JdCat.Cat.Repository
 
             return await query.ToListAsync();
         }
-        
+
     }
 }

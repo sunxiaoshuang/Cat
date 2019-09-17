@@ -214,7 +214,7 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 违约金
         /// </summary>
-        public virtual ICollection<DadaLiquidatedDamages> DadaLiquidatedDamages { get; set; }
+        //public virtual ICollection<DadaLiquidatedDamages> DadaLiquidatedDamages { get; set; }
         /// <summary>
         /// 满减活动id
         /// </summary>
@@ -237,6 +237,10 @@ namespace JdCat.Cat.Model.Data
         /// 配送距离
         /// </summary>
         public int? Distance { get; set; }
+        /// <summary>
+        /// 订单参与活动列表
+        /// </summary>
+        public virtual ICollection<OrderActivity> OrderActivities { get; set; }
 
 
         /// <summary>

@@ -146,7 +146,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Order PaySuccess(WxPaySuccess ret);
+        Task<Order> PaySuccessAsync(WxPaySuccess ret);
         /// <summary>
         /// 打印订单
         /// </summary>
@@ -236,5 +236,20 @@ namespace JdCat.Cat.IRepository
         /// <param name="order"></param>
         /// <returns></returns>
         Task<bool> AddOrderNotifyAsync(Order order);
+
+
+
+
+
+
+        //Task<List<Order>> GetOrdersIncludeProductAsync(DateTime? endDate = null);
+        //Task<List<Order>> GetOrdersNotActivityAsync();
+
+
+
+
+
+
+
     }
 }

@@ -18,8 +18,10 @@ namespace JdCat.Cat.Repository
 {
     public class UtilRepository : BaseRepository<Business>, IUtilRepository
     {
-        public UtilRepository(CatDbContext context) : base(context)
+        private StackExchange.Redis.IDatabase _database;
+        public UtilRepository(CatDbContext context, StackExchange.Redis.IConnectionMultiplexer connection) : base(context)
         {
+            _database = connection.GetDatabase();
         }
 
         public async Task<object> WxMsgHandlerAsync(WxEvent e)
@@ -244,6 +246,12 @@ namespace JdCat.Cat.Repository
         }
 
         #endregion
+
+        public async Task<long> GetNumberAsync()
+        {
+            return await _database.StringIncrementAsync("Jiandanmao:Util:1");
+            //return 1;
+        }
 
 
         #region 私有方法

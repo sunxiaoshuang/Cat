@@ -77,7 +77,11 @@ namespace JdCat.Cat.WxApi.Controllers
         [HttpGet("business/{id}")]
         public IActionResult GetBusiness(int id)
         {
-            return Json(Service.Set<Business>().Single(a => a.ID == id));
+            var business = Service.WxGetBusiness(id);
+            return Json(new
+            {
+                business.Address, business.AppId, business.Area, business.BusinessEndTime, business.BusinessEndTime2, business.BusinessEndTime3, business.BusinessLicenseImage, business.BusinessLicense, business.BusinessStartTime, business.BusinessStartTime2, business.BusinessStartTime3, business.Category, business.City, business.CityCode, business.CityName, business.Contact, business.Delivery, business.Description, business.DiscountQuantity, business.Distance, business.Freight, business.FreightMode, business.ID, business.IsClose, business.IsEnjoymentActivity, business.IsPublish, business.Lat, business.Lng, business.LogoSrc, business.MinAmount, business.Mobile, business.Name, business.Province, business.Range, business.Score, business.SpecialImage
+            });
         }
 
         [HttpPut("info")]

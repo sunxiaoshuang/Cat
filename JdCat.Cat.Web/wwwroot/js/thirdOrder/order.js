@@ -87,8 +87,8 @@
                     dialogWidth: 800
                 });
             },
-            print: function (order) {
-                axios.get("/ThirdOrder/Print/" + order.id)
+            print: function (order, mode) {
+                axios.get("/ThirdOrder/Print/" + order.id + "?mode=" + mode)
                     .then(function () {
                         $.alert("正在补打订单，请稍等...", "success");
                     });

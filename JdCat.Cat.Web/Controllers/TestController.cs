@@ -111,6 +111,11 @@ namespace JdCat.Cat.Web.Controllers
             return Content("ok");
         }
 
+        public async Task<IActionResult> T2([FromServices]IUtilRepository service)
+        {
+            return Content(await service.GetNumberAsync() + "");
+        }
+
         #region 达达
 
         public IActionResult DadaCallback([FromBody]DadaCallBack dada, [FromServices]IHostingEnvironment environment)

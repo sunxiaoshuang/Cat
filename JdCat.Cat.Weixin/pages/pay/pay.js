@@ -10,15 +10,18 @@ Page({
     oldPrice: 0,
     remark: "",
     productCost: 0,
+    productOldCost: 0,
     tablewareQuantity: 0,
     tablewareQuantitys: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     couponQuantity: 0,
     coupon: {},
     saleFullReduce: {},
+    saleNewCustom: {},
     packagePrice: 0,
     isInvoice: false,
     invoiceName: "",
-    invoiceTax: ""
+    invoiceTax: "",
+    canCoupon: true // 是否可以使用优惠券
   },
   onLoad: function () {
     /** 页面加载时操作：
@@ -31,6 +34,7 @@ Page({
     var cartList = wx.getStorageSync('cartList') || [],
       carts = [],
       productCost = 0,
+      productOldCost = 0,
       tablewareQuantity = 0,
       packagePrice = +wx.getStorageSync("packagePrice");
 
@@ -56,13 +60,16 @@ Page({
 
     carts.forEach(a => {
       productCost += a.price;
+      productOldCost += a.oldPrice;
       tablewareQuantity += a.packingQuantity * a.quantity;
     });
 
-    this.data.productCost = qcloud.utils.getNumber(productCost, 2); // 产品费用总和
-    this.data.saleFullReduce = wx.getStorageSync("nowFullReduce") || {}; // 当前使用的满减活动
+    this.data.productCost = qcloud.utils.getNumber(productCost, 2);       // 产品费用总和
+    this.data.productOldCost = qcloud.utils.getNumber(productOldCost, 2); // 产品费用总和（原价）
+    this.data.saleFullReduce = wx.getStorageSync("nowFullReduce") || {};  // 当前使用的满减活动
+    var saleNewCustom = wx.getStorageSync("newCustom");                   // 新客户立减活动
 
-    var coupons = wx.getStorageSync("myCoupon").filter(a => { // 优惠券列表
+    var coupons = wx.getStorageSync("myCoupon").filter(a => {             // 优惠券列表
       if (a.status != 1) return false;
       if (productCost >= a.minConsume) return true;
       return false;
@@ -80,10 +87,12 @@ Page({
       freight,
       couponQuantity: coupons.length,
       saleFullReduce: this.data.saleFullReduce,
+      saleNewCustom: saleNewCustom || {},
       packagePrice,
       invoiceName,
       invoiceTax,
-      isInvoice: !!isInvoice
+      isInvoice: !!isInvoice,
+      canCoupon: !saleNewCustom
     });
   },
   onShow: function () {
@@ -140,17 +149,20 @@ Page({
   },
   calcCost: function () {
     /** 计算订单各种费用：
-     * 1. 涉及的费用：产品总价、配送费、满减、优惠券
+     * 1. 涉及的费用：产品总价、配送费、新客户立减、满减、优惠券
      * 2. 计算总价，原价
      * 3. 载入视图
      */
     var productCost = this.data.productCost,
+      productOldCost = this.data.productOldCost,
       freight = this.data.freight,
       fullReduce = this.data.saleFullReduce.reduceMoney || 0,
+      newCustom = this.data.saleNewCustom.amount || 0,
       coupon = this.data.coupon.value || 0;
 
-    var total = qcloud.utils.getNumber(productCost + freight - fullReduce - coupon + this.data.packagePrice, 2);
-    var oldPrice = qcloud.utils.getNumber(productCost + freight + this.data.packagePrice, 2);
+    var total = qcloud.utils.getNumber(productCost + freight - newCustom - fullReduce - coupon + this.data.packagePrice, 2);
+    if (total <= 0) total = 0.01;
+    var oldPrice = qcloud.utils.getNumber(productOldCost + freight + this.data.packagePrice, 2);
     this.setData({
       total,
       freight,
@@ -196,6 +208,8 @@ Page({
       wx.setStorageSync("invoiceTax", this.data.invoiceTax);
       remark += `(开票公司：${this.data.invoiceName}，识别码：${this.data.invoiceTax})`;
     }
+
+
     wx.setStorageSync("isInvoice", this.data.isInvoice);
     var order = {
       price: this.data.total,
@@ -241,6 +255,52 @@ Page({
         productIdSet: a.product.productIdSet
       });
     });
+    // 分析订单活动
+    var activities = [];
+    // 1. 立减
+    let newCustom = this.data.saleNewCustom;
+    if (newCustom.amount > 0) {
+      activities.push({
+        amount: newCustom.amount,
+        type: 1,
+        activityId: newCustom.id,
+        remark: `新客户立减${newCustom.amount}元`
+      });
+    }
+    // 2. 满减
+    let fullReduce = this.data.saleFullReduce;
+    if (fullReduce.reduceMoney > 0) {
+      activities.push({
+        amount: fullReduce.reduceMoney,
+        type: 2,
+        activityId: fullReduce.id,
+        remark: `满${fullReduce.minPrice}元减${fullReduce.reduceMoney}元`
+      });
+    }
+    // 3. 优惠券
+    let coupon = this.data.coupon;
+    if (coupon.value > 0) {
+      activities.push({
+        amount: coupon.value,
+        type: 3,
+        activityId: coupon.id,
+        remark: `${coupon.value}元优惠券`
+      });
+    }
+    // 4. 商品折扣
+    order.products.forEach(product => {
+      if (!product.discount) return;
+      let amount = +(product.oldPrice - product.price).toFixed(2);
+      if (amount === 0) return;
+      activities.push({
+        amount: amount,
+        type: 4,
+        activityId: product.discount.id,
+        remark: `${product.name}折扣优惠${amount}元`
+      });
+    });
+    order.orderActivities = activities;
+
     qcloud.request({
       url: `/order/createOrder`,
       method: "POST",
@@ -249,7 +309,7 @@ Page({
         if (res.data.success) {
           self.data.cartList = [];
           wx.setStorageSync('cartList', []);
-          wx.setStorageSync('orderSubmit',true);
+          wx.setStorageSync('orderSubmit', true);
           wx.setStorageSync("orderDetail", res.data.data);
           self.useCoupon(order.saleCouponUserId);
           wx.redirectTo({

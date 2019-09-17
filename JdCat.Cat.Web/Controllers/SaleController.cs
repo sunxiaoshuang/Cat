@@ -94,7 +94,7 @@ namespace JdCat.Cat.Web.Controllers
                 var removeList = new List<Product>();
                 foreach (var item in type.Products)
                 {
-                    if(item.Formats.Count > 1)
+                    if (item.Formats.Count > 1)
                     {
                         removeList.Add(item);
                     }
@@ -138,6 +138,26 @@ namespace JdCat.Cat.Web.Controllers
             var result = Service.UpdateDiscount(discount);
             result.Msg = result.Success ? "修改成功" : "修改失败";
             return Json(result);
+        }
+
+        public async Task<IActionResult> NewCustom()
+        {
+            var entity = await Service.GetBusinessNewCustomAsync(Business.ID);
+            return View(entity ?? new SaleNewCustom { StartTime = DateTime.Now, EndTime = DateTime.Now.AddMonths(1) });
+        }
+
+        public async Task<IActionResult> SaveNewCustom([FromBody]SaleNewCustom entity)
+        {
+            if (entity.ID > 0)
+            {
+                await Service.UpdateAsync(entity, new[] { nameof(entity.Amount), nameof(entity.StartTime), nameof(entity.EndTime) });
+            }
+            else
+            {
+                entity.BusinessId = Business.ID;
+                await Service.AddAsync(entity);
+            }
+            return Content("ok");
         }
 
     }

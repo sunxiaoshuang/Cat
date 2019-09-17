@@ -130,6 +130,7 @@ var method = {
             } catch (e) {
                 // 如果执行出错，则退出轮询
                 clearInterval(interval);
+                throw e;
             }
         }, delay);
     },

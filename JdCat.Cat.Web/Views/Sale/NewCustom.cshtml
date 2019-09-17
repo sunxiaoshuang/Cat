@@ -1,0 +1,75 @@
+﻿@model JdCat.Cat.Model.Data.SaleNewCustom
+@{
+    ViewData["Title"] = "新客户立减";
+}
+
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    </environment>
+}
+
+@section Scripts {
+    <script>
+        var pageObj = {
+            id: @Model.ID,
+            amount: @Model.Amount,
+            startTime: '@Model.StartTime.ToString("yyyy-MM-dd")',
+            endTime: '@Model.EndTime.ToString("yyyy-MM-dd")',
+            businessId: @Model.BusinessId
+        };
+    </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+    <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <environment include="Development">
+        <script src="~/js/sale/newCustom.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/sale/newCustom.min.js" asp-append-version="true"></script>
+    </environment>
+}
+
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewData["Title"]</span>
+                    </h3>
+                </div>
+            </div>
+            <div class="panel-body form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1 col-xs-offset-1">
+                        <span class="require">立减金额</span>
+                    </label>
+                    <div class=" col-xs-4 col-md-3">
+                        <input type="text" v-model.number="amount" class="form-control width-200" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-2 col-md-1 col-xs-offset-1">
+                        <span class="require">活动时间</span>
+                    </label>
+                    <div class="col-xs-10 col-md-8 flex-row">
+                        <input autocomplete="off" class="form-control width-200" id="txtStartDate" v-model="startTime" />
+                        <label style="width: 30px; text-align: center;">-</label>
+                        <input autocomplete="off" class="form-control width-200" id="txtEndDate" v-model="endTime" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-offset-2 col-xs-10 margin-bottom-10">
+                <div class="kui-button">
+                    <button type="button" class="btn btn-primary" style="font-size: 85%; width: 100px" v-on:click="save()">
+                        保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

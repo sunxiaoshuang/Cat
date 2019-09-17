@@ -1,0 +1,138 @@
+﻿@{
+    ViewData["Title"] = "档口统计（平台）";
+}
+@section Styles {
+    <environment include="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+        <link href="~/css/report/index.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link href="~/css/report/index.min.css" rel="stylesheet" asp-append-version="true" />
+    </environment>
+    <style>
+        .table-cook tr {
+            cursor: pointer;
+        }
+
+            .table-cook tr.selected {
+                color: #fff !important;
+                background: #ea7042 !important;
+            }
+
+                .table-cook tr.selected td:last-child {
+                    position: relative;
+                }
+
+                    .table-cook tr.selected td:last-child::after {
+                        content: "";
+                        position: absolute;
+                        right: -12.7px;
+                        top: 5.5px;
+                        width: 25.4px;
+                        height: 25.4px;
+                        transform: rotate(45deg);
+                        background: #ea7042;
+                    }
+    </style>
+}
+@section Scripts {
+    <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+    <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <environment include="Development">
+        <script src="~/lib/echarts/echarts.js"></script>
+        <script src="~/js/report/thirdbooth.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/echarts/echarts.min.js"></script>
+        <script src="~/js/report/thirdbooth.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="mainframe" id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="panel panel-default" style="margin-bottom: 1px;">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="title">@ViewBag.Title</span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-horizontal">
+                        <div class="flex-row margin-bottom-10">
+                            <label>统计时间：</label>
+                            <input autocomplete="off" class="form-control width-200" id="txtStartDate" v-model="start" />
+                            <label style="width: 30px; text-align: center;">-</label>
+                            <input autocomplete="off" class="form-control width-200" id="txtEndDate" v-model="end" />
+                            <label class=" margin-left-20">订单来源：</label>
+                            <select class="form-control width-200" v-model="type">
+                                <option value="99">全部</option>
+                                <option value="0">美团</option>
+                                <option value="1">饿了么</option>
+                            </select>
+                            <button class="btn btn-primary margin-left-20" @@click="search()">
+                                <i class="fa fa-search"></i>
+                                搜索
+                            </button>
+                            <button class="btn btn-primary margin-left-20" @@click="exportData()">
+                                <i class="fa fa-file-excel-o"></i>
+                                导出统计数据
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body" style="min-height:400px;">
+                    <div class="col-md-5">
+                        <table class="table table-bordered table-striped table-cook">
+                            <thead>
+                                <tr>
+                                    <th width="80">序号</th>
+                                    <th>档口</th>
+                                    <th>产出数量</th>
+                                    <th>产出总额</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in items" v-bind:class="{'selected': item.selected}" @@click="cat(item)">
+                                    <td v-text="index + 1"></td>
+                                    <td v-text="item.name"></td>
+                                    <td v-text="item.count"></td>
+                                    <td v-text="item.amount"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot v-if="!items || items.length === 0">
+                                <tr>
+                                    <td colspan="4">没有任何档口...</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="chart" id="chart">
+                        </div>
+                        <table class="table table-bordered table-striped table-cook" v-show="products && products.length > 0">
+                            <thead>
+                                <tr>
+                                    <th width="80">序号</th>
+                                    <th>菜品</th>
+                                    <th>菜品数量</th>
+                                    <th>菜品总额</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in products">
+                                    <td v-text="index + 1"></td>
+                                    <td v-text="item.name"></td>
+                                    <td v-text="item.count"></td>
+                                    <td v-text="item.amount"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

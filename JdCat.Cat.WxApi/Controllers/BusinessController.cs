@@ -26,7 +26,7 @@ namespace JdCat.Cat.WxApi.Controllers
         {
 
         }
-        
+
         [HttpGet("{id}")]
         public IActionResult GetBusiness(int id)
         {
@@ -65,9 +65,11 @@ namespace JdCat.Cat.WxApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("init2/{id}")]
-        public IActionResult WxPageInit2(int id, int userId, [FromServices]IUserRepository userRepository)
+        public async Task<IActionResult> WxPageInit2(int id, int userId, [FromServices]IUserRepository userRepository)
         {
             var now = DateTime.Now;
+            // 用户信息
+            var user = await userRepository.GetAsync<User>(userId);
             // 满减活动
             var fullReduct = Service.GetFullReduce(new Business { ID = id }, false).ToList();
             var valid = fullReduct.Where(a => a.IsActiveValid());
@@ -76,12 +78,18 @@ namespace JdCat.Cat.WxApi.Controllers
             // 折扣券
             var discount = Service.GetDiscounts(new Business { ID = id })
                 .Where(a => a.Status == Model.Enum.ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
+            // 新客立减
+            var newCustom = await Service.GetBusinessNewCustomAsync(id);
+            if (newCustom != null && (newCustom.StartTime > now || newCustom.EndTime.AddDays(1) < now))
+            {
+                newCustom = null;
+            }
             // 用户优惠券
             var userCoupon = userRepository.GetUserCoupon(id, userId);
             // 商户配送费用设置
             var freights = Service.GetFreights(id);
 
-            return Json(new { fullReduct = valid, coupon, discount, userCoupon, freights });
+            return Json(new { fullReduct = valid, coupon, discount, userCoupon, freights, newCustom, user });
 
         }
 
@@ -127,7 +135,7 @@ namespace JdCat.Cat.WxApi.Controllers
         {
             var business = Service.Login(username, UtilHelper.MD5Encrypt(pwd));
             var result = new JsonData();
-            if(business == null)
+            if (business == null)
             {
                 result.Msg = "用户名或密码错误";
             }
@@ -143,8 +151,10 @@ namespace JdCat.Cat.WxApi.Controllers
         public IActionResult GetComments(int id, [FromQuery]PagingQuery paging)
         {
             var list = Service.GetComments(id, paging);
-            return Json(new {
-                list, more = list.Count > 0
+            return Json(new
+            {
+                list,
+                more = list.Count > 0
             });
         }
 

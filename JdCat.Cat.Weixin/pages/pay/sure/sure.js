@@ -93,6 +93,9 @@ Page({
           wx.requestPayment(qcloud.utils.extend({}, res.data.data, {
             success: function (res) {
               if (res.errMsg == "requestPayment:ok") {
+                var obj = qcloud.getSession();
+                obj.userinfo.purchaseTimes++;
+                qcloud.setSession(obj);
                 wx.redirectTo({
                   url: '/pages/order/orderInfo/orderInfo?id=' + self.data.order.id
                 });

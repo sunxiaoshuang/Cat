@@ -1,0 +1,390 @@
+﻿@model Business
+@{
+    Layout = null;
+    ViewData["Title"] = "订单分布图";
+}
+
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <title>@ViewData["Title"]</title>
+    <meta charset="utf-8">
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/Font-Awesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/lib/jdcat/iconfont.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/Font-Awesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/lib/jdcat/iconfont.css" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+    </environment>
+</head>
+<body style="height: 100%; margin: 0">
+    <div id="app" style="height: 100px;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="panel panel-default" style="margin-bottom: 1px;">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="title">@ViewBag.Title</span>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-horizontal">
+                            <div class="flex-row margin-bottom-10">
+                                <label>统计时间：</label>
+                                <input autocomplete="off" class="form-control width-200" id="txtStartDate" v-model="start" />
+                                <label style="width: 30px; text-align: center;">-</label>
+                                <input autocomplete="off" class="form-control width-200" id="txtEndDate" v-model="end" />
+                                <label class=" margin-left-20">订单来源：</label>
+                                <select class="form-control width-200" v-model="source">
+                                    <option value="-1">全部</option>
+                                    <option value="2">小程序</option>
+                                    <option value="0">美团</option>
+                                    <option value="1">饿了么</option>
+                                </select>
+                                <button class="btn btn-primary margin-left-20" @@click="search()">
+                                    <i class="fa fa-search"></i>
+                                    搜索
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+    <hr style="clear:both" />
+    <div id="container" style="height: 100%"></div>
+
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=RVRgkU79Ds5Bc6UrRc4fVf5T&__ec_v__=20190903"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+    <environment include="Development">
+        <script src="~/lib/vue/vue.js"></script>
+        <script src="~/lib/axios/axios.js"></script>
+        <script src="~/lib/axios/config.js"></script>
+        <script src="~/js/lib/jquery.js"></script>
+        <script src="~/js/lib/common.js"></script>
+        <script src="~/js/lib/plugins.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/vue/vue.min.js"></script>
+        <script src="~/lib/axios/axios.min.js"></script>
+        <script src="~/lib/axios/config.min.js" asp-append-version="true"></script>
+        <script src="~/js/lib/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap-datetimepicker.js"></script>
+        <script src="~/lib/bootstrap/dist/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+    <script type="text/javascript">
+        var now = jdCat.utilMethods.now();
+        var name = '@Html.Raw(Model.Name)', poiGeo = parseBaiduGeo(@Model.Lng, @Model.Lat);
+        var app = new Vue({
+            el: "#app",
+            data: {
+                start: now,
+                end: now,
+                source: -1
+            },
+            methods: {
+                search: function () {
+                    var start = +new Date(this.start),
+                        end = +new Date(this.end),
+                        timespan = 1000 * 60 * 60 * 24 * 31,
+                        source = this.source;
+                    if (start > end) {
+                        $.alert("开始时间必须大于结束时间");
+                        return;
+                    }
+                    if (start + timespan < end) {
+                        $.alert("起止时间跨度最大为31天");
+                        return;
+                    }
+
+                    axios.get(`/Report/GetOrderGeo?source=${source}&start=${this.start}&end=${this.end}`)
+                        .then(function (res) {
+                            var result = res.data;
+                            result.forEach(function (obj) {
+                                var addr = parseBaiduGeo(obj.item2, obj.item3);
+                                obj.item2 = addr[0];
+                                obj.item3 = addr[1];
+                            });
+                            var data = result.map(function (obj) {
+                                var val = obj.item4;
+                                if (val < 30) val = 30;
+                                else if (val > 70) val = 70;
+                                return { name: obj.item2 + ',' + obj.item3, value: val };
+                            })
+                            data.push({ name, value: 100 });
+                            var geo = {};
+                            result.forEach(function (obj) {
+                                var key = obj.item2 + ',' + obj.item3;
+                                geo[key] = [obj.item2, obj.item3];
+                            });
+                            geo[name] = poiGeo;
+                            create(data, geo);
+                        });
+                }
+            },
+            created: function () {
+                this.search();
+            }
+        });
+
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+
+        function create(data, geoCoordMap) {
+
+            //var data = [
+            //    { name: '1', value: 50 },
+            //    { name: '2', value: 50 },
+            //    { name: '2', value: 50 },
+            //    { name: '3', value: 50 },
+            //    { name: '4', value: 50 },
+            //    { name: '5', value: 50 },
+            //    { name: '6', value: 50 },
+            //    { name: '7', value: 50 },
+            //    { name: '8', value: 50 },
+            //    { name: '9', value: 50 },
+            //    { name: '刘胖子黄陂街店', value: 100 }
+            //];
+            //var geoCoordMap = {
+            //    '1': [114.29113, 30.575767],
+            //    '2': [114.29123, 30.574767],
+            //    '3': [114.29233, 30.573767],
+            //    '4': [114.29343, 30.576767],
+            //    '5': [114.29453, 30.577767],
+            //    '6': [114.29563, 30.578767],
+            //    '7': [114.29773, 30.579767],
+            //    '8': [114.29883, 30.573767],
+            //    '9': [114.28193, 30.573767],
+            //    '刘胖子黄陂街店': [114.29426, 30.573767]
+            //};
+
+            var convertData = function (data) {
+                var res = [];
+                for (var i = 0; i < data.length; i++) {
+                    var geoCoord = geoCoordMap[data[i].name];
+                    if (geoCoord) {
+                        res.push({
+                            name: data[i].name,
+                            value: geoCoord.concat(data[i].value)
+                        });
+                    }
+                }
+                return res;
+            };
+
+            var option = {
+                title: {
+                    text: '订单分布图',
+                    subtext: '',
+                    //sublink: 'http://t.e.jiandanmao.cn',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                bmap: {
+                    center: poiGeo,
+                    zoom: 14,
+                    roam: true,
+                    mapStyle: {
+                        styleJson: [{
+                            'featureType': 'water',
+                            'elementType': 'all',
+                            'stylers': {
+                                'color': '#d1d1d1'
+                            }
+                        }, {
+                            'featureType': 'land',
+                            'elementType': 'all',
+                            'stylers': {
+                                'color': '#f3f3f3'
+                            }
+                        }, {
+                            'featureType': 'railway',
+                            'elementType': 'all',
+                            'stylers': {
+                                'visibility': 'off'
+                            }
+                        }, {
+                            'featureType': 'highway',
+                            'elementType': 'all',
+                            'stylers': {
+                                'color': '#fdfdfd'
+                            }
+                        }, {
+                            'featureType': 'highway',
+                            'elementType': 'labels',
+                            'stylers': {
+                                'visibility': 'off'
+                            }
+                        }, {
+                            'featureType': 'arterial',
+                            'elementType': 'geometry',
+                            'stylers': {
+                                'color': '#fefefe'
+                            }
+                        }, {
+                            'featureType': 'arterial',
+                            'elementType': 'geometry.fill',
+                            'stylers': {
+                                'color': '#fefefe'
+                            }
+                        }, {
+                            'featureType': 'poi',
+                            'elementType': 'all',
+                            'stylers': {
+                                'visibility': 'on'
+                            }
+                        }, {
+                            'featureType': 'green',
+                            'elementType': 'all',
+                            'stylers': {
+                                'visibility': 'off'
+                            }
+                        }, {
+                            'featureType': 'subway',
+                            'elementType': 'all',
+                            'stylers': {
+                                'visibility': 'off'
+                            }
+                        }, {
+                            'featureType': 'manmade',
+                            'elementType': 'all',
+                            'stylers': {
+                                'color': '#d1d1d1'
+                            }
+                        }, {
+                            'featureType': 'local',
+                            'elementType': 'all',
+                            'stylers': {
+                                'color': '#d1d1d1'
+                            }
+                        }, {
+                            'featureType': 'arterial',
+                            'elementType': 'labels',
+                            'stylers': {
+                                'visibility': 'off'
+                            }
+                        }, {
+                            'featureType': 'boundary',
+                            'elementType': 'all',
+                            'stylers': {
+                                'color': '#fefefe'
+                            }
+                        }, {
+                            'featureType': 'building',
+                            'elementType': 'all',
+                            'stylers': {
+                                'color': '#d1d1d1'
+                            }
+                        }, {
+                            'featureType': 'label',
+                            'elementType': 'labels.text.fill',
+                            'stylers': {
+                                'color': '#999999'
+                            }
+                        }]
+                    }
+                },
+                series: [
+                    {
+                        name: '订单',
+                        type: 'scatter',
+                        coordinateSystem: 'bmap',
+                        data: convertData(data),
+                        symbolSize: function (val) {
+                            return val[2] / 5;
+                        },
+                        label: {
+                            normal: {
+                                formatter: "{b}",
+                                position: 'right',
+                                show: false
+                            },
+                            emphasis: {
+                                show: true
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: 'purple'
+                            }
+                        }
+                    },
+                    {
+                        name: '门店',
+                        type: 'effectScatter',
+                        coordinateSystem: 'bmap',
+                        data: convertData(data.sort(function (a, b) {
+                            return b.value - a.value;
+                        }).slice(0, 1)),
+                        symbolSize: function (val) {
+                            return val[2] / 5;
+                        },
+                        showEffectOn: 'render',
+                        rippleEffect: {
+                            brushType: 'stroke'
+                        },
+                        hoverAnimation: true,
+                        label: {
+                            normal: {
+                                formatter: '{b}',
+                                position: 'right',
+                                show: true
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: 'purple',
+                                shadowBlur: 10,
+                                shadowColor: '#333'
+                            }
+                        },
+                        zlevel: 1
+                    }
+                ]
+            };;
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+        }
+
+        $("#txtStartDate").datetimepicker(jdCat.utilData.dateOptions).on("changeDate", function (e) {
+            app.start = this.value;
+        });
+        $("#txtEndDate").datetimepicker(jdCat.utilData.dateOptions).on("changeDate", function (e) {
+            app.end = this.value;
+        });
+
+        function parseBaiduGeo(gg_lon, gg_lat) {//高德地图转百度地图
+            var pi_value = Math.PI;
+            var X_PI = pi_value * 3000.0 / 180.0;
+            var x = gg_lon, y = gg_lat;
+            var z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * X_PI);
+            var theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * X_PI);
+            var bd_lon = z * Math.cos(theta) + 0.0065;
+            var bd_lat = z * Math.sin(theta) + 0.006;
+            return [bd_lon, bd_lat];
+        }
+    </script>
+</body>
+</html>

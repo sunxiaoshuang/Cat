@@ -89,6 +89,10 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public virtual ICollection<TangOrderPayment> TangOrderPayments { get; set; }
         /// <summary>
+        /// 订单活动
+        /// </summary>
+        public virtual ICollection<TangOrderActivity> TangOrderActivities { get; set; }
+        /// <summary>
         /// 支付时间
         /// </summary>
         public DateTime? PayTime { get; set; }

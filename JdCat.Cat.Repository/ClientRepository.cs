@@ -93,6 +93,22 @@ namespace JdCat.Cat.Repository
             return UploadData(list);
         }
 
+        public int UploadOrderActivities(IEnumerable<TangOrderActivity> list)
+        {
+            var orderIds = list.Select(a => a.TangOrderObjectId).ToList().Distinct();
+            var orders = Context.TangOrders.Where(a => orderIds.Contains(a.ObjectId)).Select(a => new { a.ID, a.ObjectId }).ToList();
+            orders.ForEach(order => {
+                var activities = list.Where(a => a.TangOrderObjectId == order.ObjectId).ToList();
+                activities.ForEach(a =>
+                {
+                    a.TangOrderId = order.ID;
+                    a.ID = 0;
+                });
+            });
+            Context.Database.ExecuteSqlCommand($"delete from tangorderactivity where TangOrderId in ({string.Join(',', orders.Select(a => a.ID))})");
+            return UploadData(list);
+        }
+
 
         public async Task<dynamic> GetSynchronousDataAsync(int businessId)
         {

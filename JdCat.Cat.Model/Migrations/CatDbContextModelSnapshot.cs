@@ -820,6 +820,30 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("Order");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.OrderActivity", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ActivityId");
+
+                    b.Property<double>("Amount");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("OrderId");
+
+                    b.Property<string>("Remark");
+
+                    b.Property<int>("Type");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderActivity");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.OrderComment", b =>
                 {
                     b.Property<int>("ID")
@@ -1268,6 +1292,28 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("SaleFullReduce");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SaleNewCustom", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("Amount");
+
+                    b.Property<int>("BusinessId");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<DateTime>("EndTime");
+
+                    b.Property<DateTime>("StartTime");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("SaleNewCustom");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.SaleProductDiscount", b =>
                 {
                     b.Property<int>("ID")
@@ -1574,6 +1620,40 @@ namespace JdCat.Cat.Model.Migrations
                     b.ToTable("TangOrder");
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.TangOrderActivity", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("ActivityId");
+
+                    b.Property<double>("Amount");
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<DateTime>("ModifyTime");
+
+                    b.Property<string>("ObjectId");
+
+                    b.Property<string>("Remark");
+
+                    b.Property<int>("Status");
+
+                    b.Property<DateTime>("SyncTime");
+
+                    b.Property<int>("TangOrderId");
+
+                    b.Property<string>("TangOrderObjectId");
+
+                    b.Property<int>("Type");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("TangOrderId");
+
+                    b.ToTable("TangOrderActivity");
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.TangOrderPayment", b =>
                 {
                     b.Property<int>("ID")
@@ -1684,6 +1764,10 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<DateTime?>("CreateTime");
 
                     b.Property<DateTime>("Ctime");
+
+                    b.Property<string>("Data1");
+
+                    b.Property<string>("Data2");
 
                     b.Property<int>("DaySeq");
 
@@ -2111,7 +2195,7 @@ namespace JdCat.Cat.Model.Migrations
             modelBuilder.Entity("JdCat.Cat.Model.Data.DadaLiquidatedDamages", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Order", "Order")
-                        .WithMany("DadaLiquidatedDamages")
+                        .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -2179,6 +2263,14 @@ namespace JdCat.Cat.Model.Migrations
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.OrderActivity", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Order", "Order")
+                        .WithMany("OrderActivities")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.OrderComment", b =>
@@ -2305,6 +2397,14 @@ namespace JdCat.Cat.Model.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("JdCat.Cat.Model.Data.SaleNewCustom", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("JdCat.Cat.Model.Data.SaleProductDiscount", b =>
                 {
                     b.HasOne("JdCat.Cat.Model.Data.Business", "Business")
@@ -2404,6 +2504,14 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasOne("JdCat.Cat.Model.Data.Staff", "Staff")
                         .WithMany()
                         .HasForeignKey("StaffId");
+                });
+
+            modelBuilder.Entity("JdCat.Cat.Model.Data.TangOrderActivity", b =>
+                {
+                    b.HasOne("JdCat.Cat.Model.Data.TangOrder", "TangOrder")
+                        .WithMany("TangOrderActivities")
+                        .HasForeignKey("TangOrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("JdCat.Cat.Model.Data.TangOrderPayment", b =>

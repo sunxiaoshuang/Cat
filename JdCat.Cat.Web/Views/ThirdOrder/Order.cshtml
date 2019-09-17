@@ -87,7 +87,6 @@
             </thead>
             <tbody>
                 <tr v-for="(order, index) in orderList">
-                    @*<td v-text="(paging.pageindex - 1) * paging.pageSize + 1 + index"></td>*@
                     <td>
                         <a class="text-primary" @@click="cat(order)">查看详情</a><br />
                         <div class="dropdown">
@@ -97,13 +96,22 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a @@click="print(order)" class="text-primary">
+                                    <a @@click="print(order, 3)" class="text-primary">
                                         <span class="fa fa-print"> 整单打印</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a @@click="print(order, 1)" class="text-primary">
+                                        <span class="fa fa-print"> 前台打印</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a @@click="print(order, 2)" class="text-primary">
+                                        <span class="fa fa-print"> 后厨打印</span>
                                     </a>
                                 </li>
                             </ul>
                         </div>
-                        @*<button class="btn btn-primary btn-sm" @@click="print(order)">补打 <i class="fa fa-arrow-down"></i></button>*@
                     </td>
                     <td v-text="order.daySeq"></td>
                     <td v-text="order.orderSource === 0 ? '美团' : '饿了么'"></td>

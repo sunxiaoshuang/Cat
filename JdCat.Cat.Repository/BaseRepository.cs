@@ -70,6 +70,12 @@ namespace JdCat.Cat.Repository
             await Context.SaveChangesAsync();
             return entity;
         }
+        public async Task<IEnumerable<TEntity>> AddRangeAsync<TEntity>(IEnumerable<TEntity> entity) where TEntity : BaseEntity
+        {
+            await Context.AddRangeAsync(entity);
+            await Context.SaveChangesAsync();
+            return entity;
+        }
         public int Update<TEntity>(TEntity entity, IEnumerable<string> fieldNames = null, bool commit = true) where TEntity : BaseEntity
         {
             if (fieldNames == null || fieldNames.Count() == 0)

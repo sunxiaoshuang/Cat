@@ -46,7 +46,7 @@ namespace JdCat.Cat.Repository
 
         public async Task<ThirdOrder> GetOrderByCodeAsync(string order_id)
         {
-            return await Context.ThirdOrders.FirstOrDefaultAsync(a => a.OrderId == order_id);
+            return await Context.ThirdOrders.Include(a => a.Business).FirstOrDefaultAsync(a => a.OrderId == order_id);
         }
 
         public async Task<ThirdOrder> MT_SaveAsync(Dictionary<string, string> dic)
@@ -166,6 +166,19 @@ namespace JdCat.Cat.Repository
             order.Reason = reason;
             order.Status = OrderStatus.Close;
             await Context.SaveChangesAsync();
+
+            try
+            {
+                if (order.Business.MT_IsDelivery && order.Business.MT_DeliveryMode != LogisticsType.None)
+                {
+                    await UnDeliveryOrderAsync(order, reason);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("美团自动发单错误：" + ex.Message);
+            }
+
             return order;
         }
 
@@ -239,7 +252,8 @@ namespace JdCat.Cat.Repository
                         Price = p["price"].Value<double>(),
                         Spec = string.Join(',', p["newSpecs"].Select(a => a["value"].ToString())),
                         Description = string.Join(',', p["attributes"].Select(a => a["value"].ToString())),
-                        Discount = Math.Round(p["price"].Value<double>() / p["shopPrice"].Value<double>(), 2),
+                        //Discount = Math.Round(p["price"].Value<double>() / p["shopPrice"].Value<double>(), 2),
+                        Discount = 1,
                         CartId = cardIndex
                     };
                     order.ThirdOrderProducts.Add(product);
@@ -391,6 +405,31 @@ namespace JdCat.Cat.Repository
             await Context.SaveChangesAsync();
         }
 
+        public async Task UnDeliveryOrderAsync(ThirdOrder order, string reason)
+        {
+            switch (order.LogisticsType)
+            {
+                case LogisticsType.Dada:
+                    break;
+                case LogisticsType.Dianwoda:
+                    break;
+                case LogisticsType.Fengniao:
+                    break;
+                case LogisticsType.Meituan:
+                    break;
+                case LogisticsType.Self:
+                    break;
+                case LogisticsType.Yichengfeike:
+                    await UnYcfkHandlerAsync(order, reason);
+                    break;
+                case LogisticsType.Shunfeng:
+                    break;
+                default:
+                    break;
+            }
+            await Context.SaveChangesAsync();
+        }
+
 
         public async Task<string> GetElemeTokenAsync(string url, string appKey, string appSecret)
         {
@@ -451,11 +490,11 @@ namespace JdCat.Cat.Repository
             await Context.SaveChangesAsync();
         }
 
-
-        public async Task UpdateOrderStatus(YcfkCallback ycfk)
+        public async Task UpdateOrderStatusAsync(YcfkCallback ycfk)
         {
-            var orderCode = ycfk.OrderId.Split('_')[0];
-            var order = await Context.ThirdOrders.SingleOrDefaultAsync(a => a.OrderId == orderCode);
+            var id = ycfk.OrderId.Split('_')[0];
+            var order = await Context.ThirdOrders.Include(a => a.Business).FirstOrDefaultAsync(a => a.OrderId == id);
+            
             if (order == null) return;
             switch (ycfk.OrderState)
             {
@@ -466,6 +505,7 @@ namespace JdCat.Cat.Repository
                     break;
                 case 23:            // 配送中
                     order.Status = OrderStatus.Distribution;
+                    await MT_DeliveryOrderAsync(id, order.Business);
                     break;
                 case 100:           // 同意退款
                 case 101:           // 拒绝退款
@@ -474,6 +514,7 @@ namespace JdCat.Cat.Repository
                     break;
                 case 254:           // 已完成
                     order.Status = OrderStatus.Achieve;
+                    await MT_FinishOrderAsync(id, order.Business);
                     break;
                 default:
                     break;
@@ -522,7 +563,7 @@ namespace JdCat.Cat.Repository
                         Name = g.Key,
                         Quantity = g.Sum(a => a.Quantity),
                         //Amount = g.Sum(a => a.Price),
-                        ActualAmount = g.Sum(a => a.Price),
+                        ActualAmount = g.Sum(a => a.Price * a.Quantity),
                         DiscountQuantity = 0,
                         DiscountAmount = 0,
                         DiscountedAmount = 0
@@ -565,7 +606,11 @@ namespace JdCat.Cat.Repository
                 setmeal.Tag1 = children.Where(b => leafIds.Contains(b.ID)).ToList();
             });
         }
-
+        /// <summary>
+        /// 一城飞客发单
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
         private async Task YcfkHandlerAsync(ThirdOrder order)
         {
             var helper = YcfkHelper.GetHelper();
@@ -613,7 +658,54 @@ namespace JdCat.Cat.Repository
             //Log.Debug("一城飞客配送成功：" + json);
 
             order.Status = OrderStatus.DistributorReceipt;
+            order.LogisticsType = LogisticsType.Yichengfeike;
             order.Error = "";
+            order.Data1 = ycfkOrder.OrderId;
         }
+        /// <summary>
+        /// 取消一城飞客配送
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        private async Task UnYcfkHandlerAsync(ThirdOrder order, string reason)
+        {
+            var helper = YcfkHelper.GetHelper();
+            await helper.Cancel(order.Data1, reason, order.Business.YcfkKey, order.Business.YcfkSecret);
+        }
+
+        /// <summary>
+        /// 美团订单配送中
+        /// </summary>
+        /// <returns></returns>
+        private async Task MT_DeliveryOrderAsync(string id, Business business)
+        {
+            var url = "https://waimaiopen.meituan.com/api/v1/order/delivering";
+            var mt = new MTInputData(business.MT_AppKey, url);
+            mt.SetValue("timestamp", DateTime.Now.ToTimestamp());
+            mt.SetValue("app_id", business.MT_AppId);
+            mt.SetValue("order_id", id);
+            var sig = mt.MakeSign();
+            mt.SetValue("sig", sig);
+            url = $"{url}?{mt.ToUrl()}";
+            await UtilHelper.RequestAsync(url, method: "get");
+        }
+        /// <summary>
+        /// 美团订单已完成
+        /// </summary>
+        /// <returns></returns>
+        private async Task MT_FinishOrderAsync(string id, Business business)
+        {
+            var url = "https://waimaiopen.meituan.com/api/v1/order/arrived";
+            var mt = new MTInputData(business.MT_AppKey, url);
+            mt.SetValue("timestamp", DateTime.Now.ToTimestamp());
+            mt.SetValue("app_id", business.MT_AppId);
+            mt.SetValue("order_id", id);
+            var sig = mt.MakeSign();
+            mt.SetValue("sig", sig);
+            url = $"{url}?{mt.ToUrl()}";
+            await UtilHelper.RequestAsync(url, method: "get");
+        }
+
     }
 }

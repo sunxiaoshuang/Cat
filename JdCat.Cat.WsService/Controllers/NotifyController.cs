@@ -113,11 +113,8 @@ namespace JdCat.Cat.WsService.Controllers
             json.Data = vals.Where(a =>
             {
                 var obj = JObject.Parse(a);
-                if (obj["deliveryTime"] != null && obj["deliveryTime"].HasValues)
-                {
-                    var time = obj["deliveryTime"].Value<DateTime>();
-                    if (time > now.AddHours(1)) return false;
-                }
+                var time = obj["deliveryTime"].Value<DateTime?>();
+                if (time != null && time > now.AddHours(1)) return false;
                 ids.Add($"Jiandanmao:Notify:ThirdOrder:{id}:{obj["id"].Value<int>()}");
                 return true;
             }).ToList();
@@ -165,24 +162,52 @@ namespace JdCat.Cat.WsService.Controllers
             if (vals.Length == 0) return null;
             var now = DateTime.Now;
             var ids = new List<RedisKey>();
-            DateTime? time;
-            var list = vals.Where(a =>
+
+            //DateTime? time;
+            //var list = vals.Where(a =>
+            //{
+            //    var obj = JObject.Parse(a);
+            //    // 如果存在预约时间，且预约时间大于当前时间一小时，则暂不发出通知
+            //    if (obj["deliveryTime"] != null
+            //        && (time = obj["deliveryTime"].Value<DateTime?>()) != null
+            //        && time > now.AddHours(1))
+            //    {
+            //        return false;
+            //    }
+            //    ids.Add($"Jiandanmao:Notify:ThirdOrder:{id}:{obj["id"].Value<int>()}");
+            //    return true;
+            //}).ToList();
+
+            //await database.KeyDeleteAsync(ids.ToArray());
+            //return list;
+
+            var results = new List<RedisValue>();
+            vals.ForEach(a =>
             {
-                var obj = JObject.Parse(a);
-                // 如果存在预约时间，且预约时间大于当前时间一小时，则暂不发出通知
-                if (obj["deliveryTime"] != null
-                    && (time = obj["deliveryTime"].Value<DateTime?>()) != null
-                    && time > now.AddHours(1))
+                var obj = JObject.Parse(a);                                                 // 订单对象
+                var time = obj["deliveryTime"].Value<DateTime?>();                          // 预约时间
+                var key = $"Jiandanmao:Notify:ThirdOrder:{id}:{obj["id"].Value<int>()}";    // 订单key
+                if (time == null || time < now.AddHours(1)) // 如果预约时间为空或者距离当前时间小于一小时，则直接输出
                 {
-                    return false;
+                    results.Add(a);
+                    ids.Add(key);
+                    return;
                 }
-                ids.Add($"Jiandanmao:Notify:ThirdOrder:{id}:{obj["id"].Value<int>()}");
-                return true;
-            }).ToList();
+                // 预订单则需要判断前台打印与后台打印逻辑
+                var mode = obj["printType"].Value<int>();
+                if (mode == 3)                  // 仅考虑整单打印的情况
+                {
+                    obj["printType"] = 1;       // 将订单打印方式改为打印前台小票
+                    results.Add(JsonConvert.SerializeObject(obj));      // 添加到输出结果
+                    obj["printType"] = 2;       // 然后将打印方式改为打印后台小票
+                    // 重新设置打印任务
+                    var timespan = time.Value.AddHours(2) - now;
+                    database.StringSetAsync(key, JsonConvert.SerializeObject(obj), timespan);
+                }
+            });
 
             await database.KeyDeleteAsync(ids.ToArray());
-
-            return list;
+            return results;
         }
         /// <summary>
         /// 获取商户本地订单

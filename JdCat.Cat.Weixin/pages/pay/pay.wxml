@@ -44,7 +44,7 @@
         <view>配送费</view>
         <view>￥ {{freight}}</view>
     </view>
-    <view class="deliver" wx:if="{{couponQuantity > 0}}" bindtap="selectCoupon">
+    <view class="deliver" wx:if="{{couponQuantity > 0 && canCoupon}}" bindtap="selectCoupon">
         <view style="display: flex; flex-grow: 1;flex-flow: row nowrap;">
             <view class="slide-image">惠</view>
             <text>优惠券</text>
@@ -54,6 +54,13 @@
         <view>
             <image src="../../images/icon/right-1.png" style="width: 60rpx;height: 60rpx;"></image>
         </view>
+    </view>
+    <view class="deliver" wx:if="{{!!saleNewCustom.id}}">
+        <view style="display:flex;">
+            <view class="slide-image">新</view>
+            <text>新客户立减</text>
+        </view>
+        <view class="price">- ￥{{saleNewCustom.amount}}</view>
     </view>
     <view class="deliver" wx:if="{{!!saleFullReduce.id}}">
         <view style="display:flex;">

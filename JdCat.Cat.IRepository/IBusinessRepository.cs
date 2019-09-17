@@ -84,6 +84,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="businessId"></param>
         /// <returns></returns>
         IEnumerable<FeyinDevice> GetPrinters(int businessId);
+
         /// <summary>
         /// 绑定打印设备
         /// </summary>
@@ -204,6 +205,15 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Task<List<Report_SaleStatisticsTang>> GetSaleStatisticsTangAsync(Business business, DateTime start, DateTime end);
 
+        /// <summary>
+        /// 获取订单坐标分部统计
+        /// </summary>
+        /// <param name="businessId">商户id</param>
+        /// <param name="source">订单来源</param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns>返回：订单来源，经度，纬度，数量</returns>
+        Task<List<Tuple<OrderSource, double, double, int>>> GetOrderGeoAsync(int businessId, OrderSource source, DateTime start, DateTime end);
 
 
         #endregion
@@ -308,6 +318,12 @@ namespace JdCat.Cat.IRepository
         /// <param name="discount"></param>
         /// <returns></returns>
         JsonData UpdateDiscount(SaleProductDiscount discount);
+        /// <summary>
+        /// 获取商户新客立减信息
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        Task<SaleNewCustom> GetBusinessNewCustomAsync(int businessId);
 
         #endregion
 

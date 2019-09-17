@@ -520,6 +520,24 @@
     "inputFiles": [
       "wwwroot/js/report/thirdProducts.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/sale/newCustom.min.js",
+    "inputFiles": [
+      "wwwroot/js/sale/newCustom.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/thirdCook.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/thirdCook.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/report/thirdbooth.min.js",
+    "inputFiles": [
+      "wwwroot/js/report/thirdbooth.js"
+    ]
   }
 
 ]

@@ -105,6 +105,33 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Task<List<Report_ProductSale>> GetCookDetailReportForTakeoutAsync(IEnumerable<int> cookIds, DateTime start, DateTime end);
         /// <summary>
+        /// 获取第三方订单的厨师报表
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<List<Report_ProductSale>> GetThirdCooksReportAsync(int businessId, DateTime start, DateTime end, int type);
+        /// <summary>
+        /// 获取第三方订单中单个厨师的统计数据
+        /// </summary>
+        /// <param name="cookId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<List<Report_ProductSale>> GetSingleThirdCookReportAsync(int cookId, DateTime start, DateTime end, int type);
+        /// <summary>
+        /// 获取第三方订单的厨师产出详情
+        /// </summary>
+        /// <param name="cookIds"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<List<Report_ProductSale>> GetThirdCookDetailReportAsync(IEnumerable<int> cookIds, DateTime start, DateTime end, int type);
+
+        /// <summary>
         /// 获取商户档口报表
         /// </summary>
         /// <param name="businessId"></param>
@@ -152,6 +179,35 @@ namespace JdCat.Cat.IRepository
         /// <param name="end"></param>
         /// <returns></returns>
         Task<List<Report_ProductSale>> GetBoothDetailReportForTakeoutAsync(IEnumerable<int> boothIds, DateTime start, DateTime end);
+
+        /// <summary>
+        /// 获取第三方订单档口统计
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<List<Report_ProductSale>> GetThirdBoothsReportAsync(int businessId, DateTime start, DateTime end, int type);
+        /// <summary>
+        /// 获取单个档口的第三方订单统计
+        /// </summary>
+        /// <param name="boothId"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<List<Report_ProductSale>> GetSingleThirdBoothReportAsync(int boothId, DateTime start, DateTime end, int type);
+        /// <summary>
+        /// 获取第三方订单的档口产出详情
+        /// </summary>
+        /// <param name="boothIds"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<List<Report_ProductSale>> GetThirdBoothDetailReportAsync(IEnumerable<int> boothIds, DateTime start, DateTime end, int type);
+
         /// <summary>
         /// 获取商户食品销售统计数据
         /// </summary>

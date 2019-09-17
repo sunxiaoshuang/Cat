@@ -121,36 +121,34 @@
             ￥ @Model.MealFee
         </span>
     </div>
+    @*<div class="form-group">
+            <label class="col-xs-2 nowarp">
+                单品折扣立减：
+            </label>
+            <span class="col-xs-4">
+                ￥ @(Model.OriginalAmount - Model.Amount)
+            </span>
+            <label class="col-xs-2 nowarp">
+                整单折扣立减：
+            </label>
+            <span class="col-xs-3">
+                ￥ @(Model.Amount - Model.ActualAmount - Model.PreferentialAmount)
+            </span>
+        </div>*@
     <div class="form-group">
-        <label class="col-xs-2 nowarp">
-            单品折扣立减：
-        </label>
-        <span class="col-xs-4">
-            ￥ @(Model.OriginalAmount - Model.Amount)
-        </span>
-        <label class="col-xs-2 nowarp">
-            整单折扣立减：
-        </label>
-        <span class="col-xs-3">
-            ￥ @(Model.Amount - Model.ActualAmount - Model.PreferentialAmount)
-        </span>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2 nowarp">
-            整单优惠立减：
-        </label>
-        <span class="col-xs-4">
-            ￥ @Model.PreferentialAmount
-        </span>
+        @*<label class="col-xs-2 nowarp">
+                整单优惠立减：
+            </label>
+            <span class="col-xs-4">
+                ￥ @Model.PreferentialAmount
+            </span>*@
         <label class="col-xs-2">
             订单原价：
         </label>
-        <span class="col-xs-3">
+        <span class="col-xs-4">
             ￥ @Model.OriginalAmount
         </span>
-    </div>
-    <div class="form-group">
-        <label class="col-xs-2 col-xs-offset-6">
+        <label class="col-xs-2">
             订单实收：
         </label>
         <span class="col-xs-3" style="color: red;">
@@ -190,6 +188,32 @@
             </table>
         </div>
     </div>
+    @if (Model.TangOrderActivities != null && Model.TangOrderActivities.Count > 0)
+    {
+        <div class="form-group">
+            <div class="col-xs-6">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>活动名称</th>
+                            <th>优惠金额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.TangOrderActivities)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Remark
+                                </td>
+                                <td><i class="fa fa-rmb"> @item.Amount</i></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </div>
 
 

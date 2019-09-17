@@ -483,6 +483,7 @@ namespace JdCat.Cat.Web.Controllers
             var count = await Service.UpdateAsync(printer, new List<string> {
                 nameof(printer.Name), nameof(printer.IP), nameof(printer.Port), nameof(printer.Type), nameof(printer.State), nameof(printer.Quantity),nameof(printer.Mode), nameof(printer.Format), nameof(printer.Scope), nameof(printer.CashierName)
             });
+            Log.Info($"门店{Business.Name}中的打印机{printer.Name}更新，更新后状态{printer.State}");
             return Json(new JsonData { Success = true, Msg = "更新成功" });
         }
         /// <summary>

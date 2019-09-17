@@ -68,6 +68,21 @@ namespace JdCat.Cat.Repository.Service
         }
 
         /// <summary>
+        /// 申请取消订单
+        /// </summary>
+        /// <param name="OrderCode"></param>
+        /// <param name="Reason"></param>
+        /// <param name="key"></param>
+        /// <param name="secret"></param>
+        /// <returns></returns>
+        public async Task<string> ApplyCancel(string OrderCode, string Reason, string key = null, string secret = null)
+        {
+            var action = "OrderRefund";
+            var content = JsonConvert.SerializeObject(new { OrderId = OrderCode, ApplyType = 0, Reason = "", IsRefuse = 1 });
+            return await Request(action, content, key, secret);
+        }
+
+        /// <summary>
         /// 创建签名
         /// </summary>
         /// <param name="content"></param>

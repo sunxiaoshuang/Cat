@@ -30,6 +30,7 @@
     <Compile Remove="Migrations\20190726033227_Add_ThirdOrder.cs" />
     <Compile Remove="Migrations\20190728025743_Modify_Business_Eleme.cs" />
     <Compile Remove="Migrations\20190730045114_Add_ThirdProductMapping.cs" />
+    <Compile Remove="Migrations\20190905150902_aaaa.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -210,7 +210,7 @@ namespace JdCat.Cat.WxApi.Controllers
                 var content = sr.ReadToEnd();
                 var ret = UtilHelper.ReadXml<WxPaySuccess>(content);
                 if (string.IsNullOrEmpty(ret.transaction_id)) return BadRequest("支付不成功");
-                var order = Service.PaySuccess(ret);
+                var order = await Service.PaySuccessAsync(ret);
                 if (order != null)
                 {
                     try

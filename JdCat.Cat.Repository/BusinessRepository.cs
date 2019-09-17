@@ -296,7 +296,7 @@ namespace JdCat.Cat.Repository
             //        ");
         }
 
-        public List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end)
+        public List<Report_SaleStatistics> GetSaleStatistics2(Business business, DateTime start, DateTime end)
         {
             var startTime = new DateTime(start.Year, start.Month, start.Day);
             var endTime = new DateTime(end.Year, end.Month, end.Day);
@@ -354,6 +354,64 @@ namespace JdCat.Cat.Repository
 
         }
 
+        public List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end)
+        {
+            var startTime = new DateTime(start.Year, start.Month, start.Day);
+            var endTime = new DateTime(end.Year, end.Month, end.Day);
+            endTime = endTime.AddDays(1);
+
+            var query1 = from order in Context.Orders
+                         join activity in Context.OrderActivities on order.ID equals activity.OrderId into joinActivity
+                         from activity in joinActivity.DefaultIfEmpty()
+                         where order.BusinessId == business.ID && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= startTime && order.CreateTime < endTime
+                         select new
+                         {
+                             order.ID,
+                             CreateTime = order.CreateTime.Value.ToString("yyyy-MM-dd"),
+                             Amount = order.Price,
+                             order.PackagePrice,
+                             order.Freight,
+                             ActivityType = activity == null ? OrderActivityType.None : activity.Type,
+                             ActivityAmount = activity == null ? 0 : activity.Amount
+                         };
+            var query2 = query1.ToList()
+                .GroupBy(a => new { a.ID, a.CreateTime, a.Amount, a.PackagePrice, a.Freight })
+                .Select(a => new
+                {
+                    a.Key.CreateTime,
+                    a.Key.Amount,
+                    a.Key.PackagePrice,
+                    a.Key.Freight,
+                    ProductDiscountAmount = a.Sum(b => b.ActivityType == OrderActivityType.ProductDiscount ? b.ActivityAmount : 0),
+                    OtherAmount = a.Sum(b => b.ActivityType != OrderActivityType.ProductDiscount ? b.ActivityAmount : 0)
+                })
+                .GroupBy(a => a.CreateTime)
+                .Select(g => new Report_SaleStatistics
+                {
+                    Date = g.Key,
+                    //ProductOriginalAmount = g.Sum(a => a.Amount.Value - a.PackagePrice.Value - a.Freight.Value + a.OtherAmount + a.ProductDiscountAmount), // 商品原价等于：订单总价 - 包装费 - 配送费 + 优惠活动 + 商品折扣
+                    ProductAmount = g.Sum(a => a.Amount.Value - a.PackagePrice.Value - a.Freight.Value + a.OtherAmount),
+                    DiscountAmount = g.Sum(a => a.ProductDiscountAmount),
+                    PackageAmount = g.Sum(a => a.PackagePrice.Value),
+                    FreightAmount = g.Sum(a => a.Freight.Value),
+                    ActivityAmount = g.Sum(a => a.OtherAmount),
+                    Quantity = g.Count(),
+                    ActualTotal = g.Sum(a => a.Amount.Value)
+                });
+
+            var list = query2.OrderByDescending(a => a.Date).ToList();
+            foreach (var item in list)
+            {
+                item.ProductOriginalAmount = item.ProductAmount + item.DiscountAmount;
+                item.Total = item.ProductOriginalAmount + item.FreightAmount + item.PackageAmount;
+                //item.DiscountAmount = item.ProductOriginalAmount - item.ProductAmount;
+                item.BenefitAmount = item.DiscountAmount + item.ActivityAmount;
+            }
+            return list;
+
+        }
+
+
         /// <summary>
         /// 获取指定日期的销售统计数据（堂食）
         /// </summary>
@@ -366,9 +424,35 @@ namespace JdCat.Cat.Repository
             var startTime = new DateTime(start.Year, start.Month, start.Day);
             var endTime = new DateTime(end.Year, end.Month, end.Day).AddDays(1);
 
+            //var query1 = from order in Context.TangOrders
+            //             where order.BusinessId == business.ID && order.Status == EntityStatus.Normal && (order.OrderStatus & TangOrderStatus.Finish) > 0 && order.PayTime >= startTime && order.PayTime < endTime
+            //             select new { PayTime = order.PayTime.HasValue ? order.PayTime.Value.ToString("yyyy-MM-dd") : null, order.OriginalAmount, order.Amount, order.ActualAmount, order.MealFee, order.PreferentialAmount };
+            //var query2 = from order in query1
+            //             group order by order.PayTime into g
+            //             select new Report_SaleStatisticsTang
+            //             {
+            //                 Date = g.Key,
+            //                 Quantity = g.Count(),
+            //                 GoodAmount = g.Sum(a => a.OriginalAmount - a.MealFee),
+            //                 ActualGoodAmount = g.Sum(a => a.Amount - a.MealFee),
+            //                 MealFee = g.Sum(a => a.MealFee),
+            //                 GoodDiscountAmount = g.Sum(a => a.OriginalAmount - a.Amount),
+            //                 OrderDiscountAmount = g.Sum(a => a.Amount - a.ActualAmount - a.PreferentialAmount),
+            //                 PreferentialAmount = g.Sum(a => a.PreferentialAmount),
+            //                 Amount = g.Sum(a => a.OriginalAmount),
+            //                 ActualAmount = g.Sum(a => a.ActualAmount)
+            //             };
+
             var query1 = from order in Context.TangOrders
-                        where order.BusinessId == business.ID && order.Status == EntityStatus.Normal && (order.OrderStatus & TangOrderStatus.Finish) > 0 && order.PayTime >= startTime && order.PayTime < endTime
-                         select new { PayTime = order.PayTime.HasValue ? order.PayTime.Value.ToString("yyyy-MM-dd") : null, order.OriginalAmount, order.Amount, order.ActualAmount, order.MealFee, order.PreferentialAmount };
+                         join activity in Context.TangOrderActivities on order.ID equals activity.TangOrderId into joinActivity
+                         from activity in joinActivity.DefaultIfEmpty()
+                         where order.BusinessId == business.ID && order.Status == EntityStatus.Normal && (order.OrderStatus & TangOrderStatus.Finish) > 0 && order.PayTime >= startTime && order.PayTime < endTime
+                         group activity by new { order.ID, order.PayTime, order.OriginalAmount, order.Amount, order.ActualAmount, order.MealFee } into g 
+                         select new { PayTime = g.Key.PayTime.HasValue ? g.Key.PayTime.Value.ToString("yyyy-MM-dd") : null, g.Key.OriginalAmount, g.Key.Amount, g.Key.ActualAmount, g.Key.MealFee,
+                             GoodDiscountAmount = g.Sum(a => a == null ? 0 : a.Type == OrderActivityType.ProductDiscount ? a.Amount : 0),
+                             OrderDiscountAmount = g.Sum(a => a == null ? 0 : a.Type == OrderActivityType.OrderDiscount ? a.Amount : 0),
+                             PreferentialAmount = g.Sum(a => a == null ? 0 : a.Type == OrderActivityType.OrderPreferential ? a.Amount : 0)
+                         };
             var query2 = from order in query1
                          group order by order.PayTime into g
                          select new Report_SaleStatisticsTang
@@ -378,14 +462,44 @@ namespace JdCat.Cat.Repository
                              GoodAmount = g.Sum(a => a.OriginalAmount - a.MealFee),
                              ActualGoodAmount = g.Sum(a => a.Amount - a.MealFee),
                              MealFee = g.Sum(a => a.MealFee),
-                             GoodDiscountAmount = g.Sum(a => a.OriginalAmount - a.Amount),
-                             OrderDiscountAmount = g.Sum(a => a.Amount - a.ActualAmount - a.PreferentialAmount),
+                             GoodDiscountAmount = g.Sum(a => a.GoodDiscountAmount),
+                             OrderDiscountAmount = g.Sum(a => a.OrderDiscountAmount),
                              PreferentialAmount = g.Sum(a => a.PreferentialAmount),
                              Amount = g.Sum(a => a.OriginalAmount),
                              ActualAmount = g.Sum(a => a.ActualAmount)
                          };
 
             return await query2.ToListAsync();
+        }
+
+        public async Task<List<Tuple<OrderSource, double, double, int>>> GetOrderGeoAsync(int businessId, OrderSource source, DateTime start, DateTime end)
+        {
+            var result = new List<Tuple<OrderSource, double, double, int>>();
+            if ((source & OrderSource.SmallProgram) > 0)
+            {
+                var small = await Context.Orders.Where(a => a.BusinessId == businessId && (a.Status & OrderStatus.Valid) > 0 && a.CreateTime >= start && a.CreateTime < end)
+                    .GroupBy(a => new { a.Lng, a.Lat })
+                    .Select(a => new Tuple<OrderSource, double, double, int>(OrderSource.SmallProgram, a.Key.Lng, a.Key.Lat, a.Count()))
+                    .ToListAsync();
+                result.AddRange(small);
+            }
+            if ((source & OrderSource.Meituan) > 0 || (source & OrderSource.Eleme) > 0)
+            {
+                var query = Context.ThirdOrders.Where(a => a.BusinessId == businessId && (a.Status & OrderStatus.Valid) > 0 && a.Ctime >= start && a.Ctime < end);
+                if ((source & OrderSource.Meituan) == 0)
+                {
+                    query = query.Where(a => a.OrderSource != 0);
+                }
+                if ((source & OrderSource.Eleme) == 0)
+                {
+                    query = query.Where(a => a.OrderSource != 1);
+                }
+                var third = await query.GroupBy(a => new { a.Longitude, a.Latitude, a.OrderSource })
+                  .Select(a => new Tuple<OrderSource, double, double, int>(a.Key.OrderSource == 0 ? OrderSource.Meituan : OrderSource.Eleme, a.Key.Longitude, a.Key.Latitude, a.Count()))
+                  .ToListAsync();
+                result.AddRange(third);
+            }
+            return result;
         }
 
         public SaleFullReduce GetFullReduceById(int id)
@@ -579,6 +693,10 @@ namespace JdCat.Cat.Repository
             result.Success = Context.SaveChanges() > 0;
             result.Data = entity;
             return result;
+        }
+        public async Task<SaleNewCustom> GetBusinessNewCustomAsync(int businessId)
+        {
+            return await Context.SaleNewCustoms.FirstOrDefaultAsync(a => a.BusinessId == businessId);
         }
 
         public Business Login(string username, string password)

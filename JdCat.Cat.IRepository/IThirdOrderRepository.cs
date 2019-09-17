@@ -123,7 +123,7 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="ycfk"></param>
         /// <returns></returns>
-        Task UpdateOrderStatus(YcfkCallback ycfk);
+        Task UpdateOrderStatusAsync(YcfkCallback ycfk);
 
         /// <summary>
         /// 获取订单列表

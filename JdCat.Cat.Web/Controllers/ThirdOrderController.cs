@@ -228,9 +228,10 @@ namespace JdCat.Cat.Web.Controllers
         /// 补打订单
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> Print(int id)
+        public async Task<IActionResult> Print(int id, [FromQuery]PrintMode mode = PrintMode.All)
         {
             var order = await Service.GetOrderDetailAsync(id);
+            order.PrintType = mode;
             order.PrintTimes++;
             await Service.AddOrderNotifyAsync(order, true);
             await Service.CommitAsync();

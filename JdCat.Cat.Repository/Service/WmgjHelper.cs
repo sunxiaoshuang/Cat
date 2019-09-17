@@ -170,13 +170,17 @@ namespace JdCat.Cat.Repository.Service
                 content.Append($"|6{UtilHelper.PrintLineLeftRight("包装费", Convert.ToDouble(order.PackagePrice.Value) + "", 24)}");
             }
             content.Append($"|6{UtilHelper.PrintLineLeftRight("配送费", Convert.ToDouble(order.Freight.Value) + "", 24)}");
-            if (order.SaleCouponUser != null)
+            //if (order.SaleCouponUser != null)
+            //{
+            //    content.Append($"|6{UtilHelper.PrintLineLeftRight("[" + order.SaleCouponUser.Name + "]", "-￥" + Convert.ToDouble(order.SaleCouponUser.Value) + "", 24)}");
+            //}
+            //if (order.SaleFullReduce != null)
+            //{
+            //    content.Append($"|6{UtilHelper.PrintLineLeftRight("[" + order.SaleFullReduce.Name + "]", "-￥" + Convert.ToDouble(order.SaleFullReduce.ReduceMoney) + "", 24)}");
+            //}
+            if (order.OrderActivities != null && order.OrderActivities.Count > 0)
             {
-                content.Append($"|6{UtilHelper.PrintLineLeftRight("[" + order.SaleCouponUser.Name + "]", "-￥" + Convert.ToDouble(order.SaleCouponUser.Value) + "", 24)}");
-            }
-            if (order.SaleFullReduce != null)
-            {
-                content.Append($"|6{UtilHelper.PrintLineLeftRight("[" + order.SaleFullReduce.Name + "]", "-￥" + Convert.ToDouble(order.SaleFullReduce.ReduceMoney) + "", 24)}");
+                order.OrderActivities.ForEach(a => content.Append($"|6{UtilHelper.PrintLineLeftRight("[" + a.Remark + "]", "-￥" + a.Amount + "", 24)}"));
             }
             content.Append("|6------------------------");
             if (order.OldPrice.HasValue && order.Price != order.OldPrice)

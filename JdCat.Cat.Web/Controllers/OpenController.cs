@@ -119,7 +119,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="ycfk"></param>
         /// <param name="service"></param>
         /// <returns></returns>
-        public IActionResult YcfkCallback([FromServices]AppData appData, [FromServices]YcfkHelper helper)
+        public async Task<IActionResult> YcfkCallback([FromServices]AppData appData)
         {
             //var orderId = Request.Form["OrderId"];
             //var orderState = Request.Form["OrderState"];
@@ -157,7 +157,7 @@ namespace JdCat.Cat.Web.Controllers
                     var service = HttpContext.RequestServices.GetService<IThirdOrderRepository>();
                     try
                     {
-                        service.UpdateOrderStatus(ycfk);
+                        await service.UpdateOrderStatusAsync(ycfk);
                     }
                     catch (Exception e)
                     {
@@ -176,10 +176,14 @@ namespace JdCat.Cat.Web.Controllers
                 }
                 else
                 {
-                    var orderCode = data["OrderId"].ToString().Split('_')[0];
-                    var id = service.GetOrderIdByCode(orderCode);
-                    var ycfk = new YcfkLocation { Lat = (double)data["Lat"], Lng = (double)data["Lng"], OrderId = id };
-                    service.Add(ycfk);
+                    var arr = data["OrderId"].ToString().Split('_');
+                    if (arr.Length == 2)        // 小程序的订单记录骑手位置
+                    {
+                        var orderCode = arr[0];
+                        var id = service.GetOrderIdByCode(orderCode);
+                        var ycfk = new YcfkLocation { Lat = (double)data["Lat"], Lng = (double)data["Lng"], OrderId = id };
+                        service.Add(ycfk);
+                    }
                 }
 
             }

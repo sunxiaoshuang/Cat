@@ -10,6 +10,7 @@ using JdCat.Cat.Common;
 using JdCat.Cat.Common.Models;
 using JdCat.Cat.IRepository;
 using JdCat.Cat.Model.Data;
+using JdCat.Cat.Model.Enum;
 using JdCat.Cat.Model.Report;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -293,6 +294,117 @@ namespace JdCat.Cat.Web.Controllers
             //var xls = result.ToWorksheet(title);
             //return File(xls, AppData.XlsxContentType, title + ".xlsx");
         }
+
+        /// <summary>
+        /// 第三方订单厨师统计
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult ThirdCook()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 获取第三方订单厨师统计数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetThirdCookData([FromQuery]DateTime start, [FromQuery] DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = await service.GetThirdCooksReportAsync(Business.ID, start, end.AddDays(1), type);
+            return Json(result ?? new List<Report_ProductSale>());
+        }
+        /// <summary>
+        /// 获取单个厨师的产出
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetSingleThirdCookData(int id, [FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = await service.GetSingleThirdCookReportAsync(id, start, end.AddDays(1), type);
+            return Json(result ?? new List<Report_ProductSale>());
+        }
+        /// <summary>
+        /// 导出厨师统计数据
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> ExportThirdCookData([FromQuery]DateTime start, [FromQuery] DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = await service.GetThirdCooksReportAsync(Business.ID, start, end.AddDays(1), type);
+            var total = new Report_ProductSale { Name = "合计", Amount = 0, Count = 0 };
+            result.ForEach(item => {
+                total.Amount += item.Amount;
+                total.Count += item.Count;
+            });
+            var typename = "[平台]";
+            if (type == 0) typename = "[美团]";
+            else if (type == 1) typename = "[饿了么]";
+            var title = $"厨师{typename}产出统计";
+
+            var detail = await service.GetThirdCookDetailReportAsync(result.Select(a => a.Id), start, end.AddDays(1), type);
+
+            using (var package = new ExcelPackage())
+            {
+                var columnCount = 5;
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells["A1"].Value = title;
+                worksheet.Cells["A2"].Value = $"营业日期：从{start:yyyy-MM-dd}到{end:yyyy-MM-dd}";
+                worksheet.Cells["A3"].Value = $"导出时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                worksheet.Cells[1, 1, 1, columnCount].Merge = true;
+                worksheet.Cells[2, 1, 2, columnCount].Merge = true;
+                worksheet.Cells[3, 1, 3, columnCount].Merge = true;
+                worksheet.Cells["A1"].Style.Font.Size = 16;
+                worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A4"].Value = "序号";
+                worksheet.Cells["B4"].Value = "厨师";
+                worksheet.Cells["C4"].Value = "商品";
+                worksheet.Cells["D4"].Value = "总数";
+                worksheet.Cells["E4"].Value = "总销售额";
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                int rowIndex = 5, index = 1;
+                foreach (var cook in result)
+                {
+                    var startRow = rowIndex;
+                    worksheet.Cells[$"B{rowIndex}"].Value = cook.Name;
+                    var detailList = detail.Where(a => a.Id == cook.Id).ToList();
+                    foreach (var item in detailList)
+                    {
+                        worksheet.Cells[$"A{rowIndex}"].Value = index;
+                        worksheet.Cells[$"C{rowIndex}"].Value = item.Name;
+                        worksheet.Cells[$"D{rowIndex}"].Value = item.Count;
+                        worksheet.Cells[$"E{rowIndex}"].Value = item.Amount;
+                        index++;
+                        rowIndex++;
+                    }
+                    worksheet.Cells[$"A{rowIndex}"].Value = index;
+                    worksheet.Cells[$"C{rowIndex}"].Value = "合计";
+                    worksheet.Cells[$"D{rowIndex}"].Value = cook.Count;
+                    worksheet.Cells[$"E{rowIndex}"].Value = cook.Amount;
+
+                    worksheet.Cells[rowIndex - detailList.Count, 2, rowIndex, 2].Merge = true;
+
+                    index++;
+                    rowIndex++;
+                }
+                worksheet.Cells[$"A{rowIndex}"].Value = index;
+                worksheet.Cells[$"B{rowIndex}"].Value = "合计";
+                worksheet.Cells[$"D{rowIndex}"].Value = total.Count;
+                worksheet.Cells[$"E{rowIndex}"].Value = total.Amount;
+                worksheet.Cells[5, 1, rowIndex, columnCount].AutoFitColumns();
+                var dataBorder = worksheet.Cells[4, 1, rowIndex, columnCount].Style.Border;
+                dataBorder.Bottom.Style = dataBorder.Top.Style = dataBorder.Left.Style = dataBorder.Right.Style = ExcelBorderStyle.Thin;
+                var xls = package.GetAsByteArray();
+                return File(xls, AppData.XlsxContentType, $"{title}({start:yyyyMMdd}-{end:yyyyMMdd}).xlsx");
+
+            }
+
+        }
+
         #endregion
 
         #region 档口
@@ -406,6 +518,117 @@ namespace JdCat.Cat.Web.Controllers
             //var xls = result.ToWorksheet(title);
             //return File(xls, AppData.XlsxContentType, title + ".xlsx");
         }
+
+        /// <summary>
+        /// 第三方订单档口统计
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult ThirdBooth()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 获取第三方订单档口统计数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetThirdBoothData([FromQuery]DateTime start, [FromQuery] DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = await service.GetThirdBoothsReportAsync(Business.ID, start, end.AddDays(1), type);
+            return Json(result ?? new List<Report_ProductSale>());
+        }
+        /// <summary>
+        /// 获取单个第三方订单档口的产出
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetSingleThirdBoothData(int id, [FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = await service.GetSingleThirdBoothReportAsync(id, start, end.AddDays(1), type);
+            return Json(result ?? new List<Report_ProductSale>());
+        }
+        /// <summary>
+        /// 导出档口第三方订单统计数据
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> ExportThirdBoothData([FromQuery]DateTime start, [FromQuery] DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
+        {
+            var result = await service.GetThirdBoothsReportAsync(Business.ID, start, end.AddDays(1), type);
+            var total = new Report_ProductSale { Name = "合计", Amount = 0, Count = 0 };
+            result.ForEach(item => {
+                total.Amount += item.Amount;
+                total.Count += item.Count;
+            });
+
+            var typename = "[平台]";
+            if (type == 0) typename = "[美团]";
+            else if (type == 1) typename = "[饿了么]";
+            var title = $"档口{typename}产出统计";
+
+            var detail = await service.GetThirdBoothDetailReportAsync(result.Select(a => a.Id), start, end.AddDays(1), type);
+
+            using (var package = new ExcelPackage())
+            {
+                var columnCount = 5;
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells["A1"].Value = title;
+                worksheet.Cells["A2"].Value = $"营业日期：从{start:yyyy-MM-dd}到{end:yyyy-MM-dd}";
+                worksheet.Cells["A3"].Value = $"导出时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
+                worksheet.Cells[1, 1, 1, columnCount].Merge = true;
+                worksheet.Cells[2, 1, 2, columnCount].Merge = true;
+                worksheet.Cells[3, 1, 3, columnCount].Merge = true;
+                worksheet.Cells["A1"].Style.Font.Size = 16;
+                worksheet.Cells["A1"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                worksheet.Cells["A4"].Value = "序号";
+                worksheet.Cells["B4"].Value = "档口";
+                worksheet.Cells["C4"].Value = "商品";
+                worksheet.Cells["D4"].Value = "总数";
+                worksheet.Cells["E4"].Value = "总销售额";
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[4, 1, 4, columnCount].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+                int rowIndex = 5, index = 1;
+                foreach (var booth in result)
+                {
+                    var startRow = rowIndex;
+                    worksheet.Cells[$"B{rowIndex}"].Value = booth.Name;
+                    var detailList = detail.Where(a => a.Id == booth.Id).ToList();
+                    foreach (var item in detailList)
+                    {
+                        worksheet.Cells[$"A{rowIndex}"].Value = index;
+                        worksheet.Cells[$"C{rowIndex}"].Value = item.Name;
+                        worksheet.Cells[$"D{rowIndex}"].Value = item.Count;
+                        worksheet.Cells[$"E{rowIndex}"].Value = item.Amount;
+                        index++;
+                        rowIndex++;
+                    }
+                    worksheet.Cells[$"A{rowIndex}"].Value = index;
+                    worksheet.Cells[$"C{rowIndex}"].Value = "合计";
+                    worksheet.Cells[$"D{rowIndex}"].Value = booth.Count;
+                    worksheet.Cells[$"E{rowIndex}"].Value = booth.Amount;
+
+                    worksheet.Cells[rowIndex - detailList.Count, 2, rowIndex, 2].Merge = true;
+
+                    index++;
+                    rowIndex++;
+                }
+                worksheet.Cells[$"A{rowIndex}"].Value = index;
+                worksheet.Cells[$"B{rowIndex}"].Value = "合计";
+                worksheet.Cells[$"D{rowIndex}"].Value = total.Count;
+                worksheet.Cells[$"E{rowIndex}"].Value = total.Amount;
+                worksheet.Cells[5, 1, rowIndex, columnCount].AutoFitColumns();
+                var dataBorder = worksheet.Cells[4, 1, rowIndex, columnCount].Style.Border;
+                dataBorder.Bottom.Style = dataBorder.Top.Style = dataBorder.Left.Style = dataBorder.Right.Style = ExcelBorderStyle.Thin;
+                var xls = package.GetAsByteArray();
+                return File(xls, AppData.XlsxContentType, $"{title}({start:yyyyMMdd}-{end:yyyyMMdd}).xlsx");
+
+            }
+        }
+
         #endregion
 
         #region 订单产品
@@ -665,7 +888,28 @@ namespace JdCat.Cat.Web.Controllers
             return Json(await service.GetSinglePaymentDataAsync(id, start, end.AddDays(1)));
         }
 
+        #endregion
 
+        #region 图表
+
+        public IActionResult OrderPartition()
+        {
+            return View(Business);
+        }
+
+        public async Task<IActionResult> GetOrderGeo([FromQuery]int source, [FromQuery]DateTime? start, [FromQuery]DateTime? end)
+        {
+            start = start ?? DateTime.Now;
+            end = end ?? DateTime.Now;
+            end = end.Value.AddDays(1);
+            var type = OrderSource.None;
+            if (source == -1) type = OrderSource.SmallProgram | OrderSource.Meituan | OrderSource.Eleme;
+            else if (source == 0) type = OrderSource.Meituan;
+            else if (source == 1) type = OrderSource.Eleme;
+            else if (source == 2) type = OrderSource.SmallProgram;
+            var result = await Service.GetOrderGeoAsync(Business.ID, type, start.Value, end.Value);
+            return Json(result);
+        }
 
         #endregion
 

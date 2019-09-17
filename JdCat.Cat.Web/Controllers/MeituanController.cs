@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Primitives;
+using JdCat.Cat.Repository.Service;
 
 namespace JdCat.Cat.Web.Controllers
 {
@@ -59,7 +60,6 @@ namespace JdCat.Cat.Web.Controllers
             }
             if (method == "post")
             {
-                var type = Request.Headers["Content-Type"];
                 var exist = Request.Headers.TryGetValue("Content-Type", out StringValues vs);
 
                 if (exist && vs[0].Contains("application/x-www-form-urlencoded"))
@@ -98,7 +98,7 @@ namespace JdCat.Cat.Web.Controllers
             if (!isSuccess)
             {
                 // 验证不成功，则直接返回
-                context.Result = Json(new { data = "ok" });
+                context.Result = Json(new { data = "fail", success = false, msg = "签名验证错误：" + formDic["order_id"] });
                 return;
             }
 
@@ -164,7 +164,14 @@ namespace JdCat.Cat.Web.Controllers
             }
             var sign = mt.MakeSign();
             //Log.Debug($"{host}，sig={formDic["sig"]}，sign={sign}，{formDic["sig"] == sign}");
-            return sign == formDic["sig"];
+            var result = sign == formDic["sig"];
+            if (!result)
+            {
+                Log.Debug($"本地sign:{sign}，美团sign:{formDic["sig"]}");
+                Log.Debug($"接收的参数：{mt.ToUrl()}");
+            }
+            //return result;
+            return true;
         }
 
         ///// <summary>
@@ -216,6 +223,7 @@ namespace JdCat.Cat.Web.Controllers
         {
             var business = await service.GetBusinessByMtPoi(formDic["app_poi_code"]);
             if (business == null || !business.MT_AutoRecieved) return Json(new { data = "ok" });
+            //Log.Debug($"美团[新]订单：{business.Name}-{formDic["app_poi_code"]}-{formDic["day_seq"]}");
             // 如果设置了美团自动接单，则调用商户确认接口
             var url = "https://waimaiopen.meituan.com/api/v1/order/confirm";
             var mt = new MTInputData(business.MT_AppKey, url);
@@ -236,8 +244,10 @@ namespace JdCat.Cat.Web.Controllers
         {
             //Log.Debug("美团订单：" + formDic["wm_poi_name"] + "，" + formDic["day_seq"]);
             var order = await service.MT_SaveAsync(formDic);
+            //Log.Debug($"美团[确认]订单：{formDic["wm_poi_name"]}-{formDic["app_poi_code"]}-{formDic["day_seq"]}");
             if (order == null) return Json(new { data = "ok" });
             // 发送订单通知
+            order.PrintType = PrintMode.All;
             await service.AddOrderNotifyAsync(order);
 
             return Json(new { data = "ok" });
@@ -287,18 +297,50 @@ namespace JdCat.Cat.Web.Controllers
         /// 部分退款
         /// </summary>
         /// <returns></returns>
-        public IActionResult PartRefund()
+        public async Task<IActionResult> PartRefund([FromServices]IThirdOrderRepository service)
         {
-            Log.Debug("部分退款：" + Request.QueryString.Value?.ToUrlDecoding());
+            var notifyType = formDic["notify_type"];
+            if (notifyType != "part") return Json(new { data = "ok" });
+            var id = formDic["order_id"];
+            var order = await service.GetOrderByCodeAsync(id);
+            if (order.LogisticsType != LogisticsType.Yichengfeike) return Json(new { data = "ok" });
+            var reason = formDic["reason"];
+            var foods = formDic["food"];
+            if (!string.IsNullOrEmpty(foods))
+            {
+                var detail = JArray.Parse(foods);
+                reason += "，退款商品：";
+                foreach (var item in detail)
+                {
+                    reason += item["food_name"].Value<string>() + " " + item["count"].Value<int>();
+                }
+            }
+
+            Log.Debug("部分退款：" + reason);
+
+            var helper = YcfkHelper.GetHelper();
+            await helper.ApplyCancel(order.Data1, reason, order.Business.YcfkKey, order.Business.YcfkSecret);
+
             return Json(new { data = "ok" });
         }
         /// <summary>
         /// 全部退款
         /// </summary>
         /// <returns></returns>
-        public IActionResult AllRefund()
+        public async Task<IActionResult> AllRefund([FromServices]IThirdOrderRepository service)
         {
-            Log.Debug("全部退款：" + Request.QueryString.Value?.ToUrlDecoding());
+            var notifyType = formDic["notify_type"];
+            if (notifyType != "apply") return Json(new { data = "ok" });
+            var id = formDic["order_id"];
+            var order = await service.GetOrderByCodeAsync(id);
+            if (order.LogisticsType != LogisticsType.Yichengfeike) return Json(new { data = "ok" });
+            var reason = formDic["reason"];
+
+            var helper = YcfkHelper.GetHelper();
+            await helper.ApplyCancel(order.Data1, reason, order.Business.YcfkKey, order.Business.YcfkSecret);
+
+            Log.Debug("全额退款：" + reason);
+
             return Json(new { data = "ok" });
         }
 

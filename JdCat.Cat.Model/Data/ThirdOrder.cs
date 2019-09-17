@@ -108,7 +108,20 @@ namespace JdCat.Cat.Model.Data
         /// 补打次数
         /// </summary>
         public int PrintTimes { get; set; }
+        /// <summary>
+        /// 扩展字段1（1. 标注发送配送的订单id）
+        /// </summary>
+        public string Data1 { get; set; }
+        /// <summary>
+        /// 扩展字段2
+        /// </summary>
+        public string Data2 { get; set; }
 
+        /// <summary>
+        /// 打印方式
+        /// </summary>
+        [NotMapped]
+        public PrintMode PrintType { get; set; }
         /// <summary>
         /// 订单状态
         /// </summary>

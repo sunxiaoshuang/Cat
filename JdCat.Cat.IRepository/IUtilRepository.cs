@@ -80,5 +80,11 @@ namespace JdCat.Cat.IRepository
         Task SendNewOrderMsgAsync(Order order);
 
         #endregion
+
+        #region 测试
+
+        Task<long> GetNumberAsync();
+
+        #endregion
     }
 }

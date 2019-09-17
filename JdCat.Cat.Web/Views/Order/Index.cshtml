@@ -205,12 +205,12 @@
                                         <div class="col-md-4 col-xs-6">
                                             <p>应付款：<i class="fa fa-jpy"></i> <span v-text="order.oldPrice"></span></p>
                                         </div>
-                                        <div class="col-md-4 col-xs-6">
+                                        @*<div class="col-md-4 col-xs-6">
                                             <p>满减活动：- <i class="fa fa-jpy"></i> <span v-text="!order.saleFullReduce ? 0 : order.saleFullReduce.reduceMoney"></span></p>
                                         </div>
                                         <div class="col-md-4 col-xs-6">
                                             <p>优惠券：- <i class="fa fa-jpy"></i> <span v-text="!order.saleCouponUser ? 0 : order.saleCouponUser.value"></span></p>
-                                        </div>
+                                        </div>*@
                                         <div class="col-md-4 col-xs-6">
                                             <p style="color:red;">实付款：<i class="fa fa-jpy"></i> <span v-text="order.price"></span></p>
                                         </div>
@@ -232,6 +232,24 @@
                                                         <td v-text="product.description"></td>
                                                         <td><i class="fa fa-jpy"></i> <span v-text="product.price"></span></td>
                                                         <td v-text="product.quantity"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <table class="product-detail">
+                                                <thead>
+                                                    <tr>
+                                                        <td>订单活动</td>
+                                                        <td>活动金额</td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="activity in order.orderActivities">
+                                                        <td v-text="activity.remark"></td>
+                                                        <td><i class="fa fa-jpy"></i> <span v-text="activity.amount"></span></td>
                                                     </tr>
                                                 </tbody>
                                             </table>

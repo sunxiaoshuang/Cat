@@ -60,6 +60,7 @@ namespace JdCat.Cat.Model
         public DbSet<TangOrder> TangOrders { get; set; }
         public DbSet<TangOrderProduct> TangOrderProducts { get; set; }
         public DbSet<TangOrderPayment> TangOrderPayments { get; set; }
+        public DbSet<TangOrderActivity> TangOrderActivities { get; set; }
         public DbSet<Staff> Staffs { get; set; }
         public DbSet<PaymentType> PaymentTypes { get; set; }
         public DbSet<StaffPost> StaffPosts { get; set; }
@@ -78,6 +79,8 @@ namespace JdCat.Cat.Model
         public DbSet<ThirdOrderActivity> ThirdOrderActivitys { get; set; }
         public DbSet<ThirdOrderProduct> ThirdOrderProducts { get; set; }
         public DbSet<ThirdProductMapping> ThirdProductMappings { get; set; }
+        public DbSet<SaleNewCustom> SaleNewCustoms { get; set; }
+        public DbSet<OrderActivity> OrderActivities { get; set; }
 
 
 
