@@ -890,7 +890,7 @@ namespace JdCat.Cat.Repository
         }
         public List<BusinessFreight> GetFreights(int businessId)
         {
-            return Context.BusinessFreights.Where(a => a.BusinessId == businessId).OrderBy(a => a.MaxDistance).ToList();
+            return Context.BusinessFreights.Where(a => a.BusinessId == businessId).OrderByDescending(a => a.MaxDistance).ToList();
         }
         public BusinessFreight CreateFreight(BusinessFreight freight)
         {

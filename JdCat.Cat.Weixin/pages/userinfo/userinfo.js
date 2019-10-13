@@ -14,14 +14,14 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    if (wx.createRewardedVideoAd) {
-      videoAd = wx.createRewardedVideoAd({
-        adUnitId: 'adunit-acda8ee29bef6c81'
-      })
-      videoAd.onLoad(() => {})
-      videoAd.onError((err) => {})
-      videoAd.onClose((res) => {})
-    }
+    // if (wx.createRewardedVideoAd) {
+    //   videoAd = wx.createRewardedVideoAd({
+    //     adUnitId: 'adunit-acda8ee29bef6c81'
+    //   })
+    //   videoAd.onLoad(() => {})
+    //   videoAd.onError((err) => {})
+    //   videoAd.onClose((res) => {})
+    // }
   
   },
 
@@ -36,16 +36,16 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    if (videoAd) {
-      videoAd.show().catch(() => {
-        // 失败重试
-        videoAd.load()
-          .then(() => videoAd.show())
-          .catch(err => {
-            console.log('激励视频 广告显示失败')
-          })
-      })
-    }
+    // if (videoAd) {
+    //   videoAd.show().catch(() => {
+    //     // 失败重试
+    //     videoAd.load()
+    //       .then(() => videoAd.show())
+    //       .catch(err => {
+    //         console.log('激励视频 广告显示失败')
+    //       })
+    //   })
+    // }
   },
 
   /**

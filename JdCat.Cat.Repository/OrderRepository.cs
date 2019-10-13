@@ -417,7 +417,7 @@ namespace JdCat.Cat.Repository
         {
             return Context.Orders
                 .Include(a => a.Business)
-                .Include(a => a.DadaReturn)
+                //.Include(a => a.DadaReturn)
                 .Include(a => a.Products)
                 .Include(a => a.OrderActivities)
                 .Include(a => a.SaleFullReduce)
@@ -836,6 +836,7 @@ namespace JdCat.Cat.Repository
             var result = new JsonData();
             var helper = YcfkHelper.GetHelper();
             order.DistributionFlow++;       // 每次发送订单前，配送流水均增加1
+            var activityMoney = order.OrderActivities?.Sum(a => a.Amount) ?? 0;
             var ycfkOrder = new YcfkOrder
             {
                 OrderId = order.OrderCode + "_" + order.DistributionFlow,
@@ -848,7 +849,7 @@ namespace JdCat.Cat.Repository
                 OrderRemark = order.Remark,
                 BoxFee = Convert.ToDecimal(order.PackagePrice),
                 Freight = Convert.ToDecimal(order.Freight),
-                ActivityMoney = Convert.ToDecimal(order.SaleCouponUserMoney ?? 0 + order.SaleFullReduceMoney ?? 0),
+                ActivityMoney = Convert.ToDecimal(activityMoney),
                 UserGaodeCoordinate = order.Lng + "|" + order.Lat,
                 DayIndex = order.Identifier,
                 Flag = "简单猫"
@@ -1061,9 +1062,9 @@ namespace JdCat.Cat.Repository
         //public async Task<List<Order>> GetOrdersNotActivityAsync()
         //{
         //    var orders = ExecuteReader<Order>(@"select ID, OrderCode from (
-	       //                             select a.*, b.ID as BiD from `order` a 
-		      //                              left join orderactivity b on a.id=b.OrderId
-	       //                             where SaleFullReduceId is not null or SaleCouponUserId is not null
+        //                             select a.*, b.ID as BiD from `order` a 
+        //                              left join orderactivity b on a.id=b.OrderId
+        //                             where SaleFullReduceId is not null or SaleCouponUserId is not null
         //                            )t where BiD is null");
         //    var ids = orders.Select(a => a.ID).ToList();
         //    return await Context.Orders.Include(a => a.Products).Where(a => ids.Contains(a.ID)).ToListAsync();

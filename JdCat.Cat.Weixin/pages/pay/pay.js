@@ -121,7 +121,7 @@ Page({
   },
   changeAddress: function () { // 改变地址后，重新计算配送费
     var business = qcloud.getSession().business,
-      freights = wx.getStorageSync("freights");
+      freights = wx.getStorageSync("freights")
     if (!freights || freights.length === 0) {
       this.data.freight = business.freight;
     } else {
@@ -133,16 +133,13 @@ Page({
         lat: business.lat,
         lng: business.lng
       });
-      var result = freights.some(function (item) {
+      freights.some(function (item) {
         if (item.maxDistance * 1000 >= distance) {
           freight = item.amount;
           return true;
         }
         return false;
       });
-      if (!result) {
-        freight = that.data.freights[that.data.freights.length - 1].amount;
-      }
       this.data.freight = freight;
     }
     this.calcCost();
