@@ -1,5 +1,6 @@
 
 var host = 'https://api.whliupangzi.cn';
+// var host = 'http://localhost:5000';
 // e.jiandanmao.cn
 // t.e.jiandanmao.cn
 // e.whliupangzi.cn

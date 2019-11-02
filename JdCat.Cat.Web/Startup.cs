@@ -114,6 +114,13 @@ namespace JdCat.Cat.Web
             services.AddSingleton(YcfkHelper.GetHelper().Init(config));
             // 微信
             WxHelper.Init(config);
+
+            // 注册定时服务
+            if (config.IsTimer)
+            {
+                services.AddHostedService<TimedHostedService>();
+            }
+            
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

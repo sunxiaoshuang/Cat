@@ -212,14 +212,15 @@ namespace JdCat.Cat.Repository
             var query2 = from order in Context.Orders
                          join product in Context.OrderProducts on order.ID equals product.OrderId
                          where (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
-                         select product;
+                         select new { product, order.BusinessId };
             var query3 = from relative in query1
-                         join product in query2 on relative.ProductId equals product.ProductId
-                         group product by new { product.ProductId, product.Name, relative.StaffId } into g
+                         join product in query2 on relative.ProductId equals product.product.ProductId
+                         group product.product by new { product.product.ProductId, product.product.Name, relative.StaffId, product.BusinessId } into g
                          select new Report_ProductSale
                          {
                              Id = g.Key.StaffId,
                              Name = g.Key.Name,
+                             BusinessId = g.Key.BusinessId.Value,
                              Count = g.Sum(a => a.Quantity ?? 0),
                              Amount = g.Sum(a => a.Price ?? 0)
                          };
@@ -414,10 +415,11 @@ namespace JdCat.Cat.Repository
                          join product in Context.OrderProducts on relative.ProductId equals product.ProductId
                          join order in Context.Orders on product.OrderId equals order.ID
                          where (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= start && order.CreateTime < end
-                         group product by new { product.ProductId, product.Name, relative.StoreBoothId } into g
+                         group product by new { product.ProductId, product.Name, relative.StoreBoothId, order.BusinessId } into g
                          select new Report_ProductSale
                          {
                              Id = g.Key.StoreBoothId,
+                             BusinessId = g.Key.BusinessId.Value,
                              Name = g.Key.Name,
                              Count = g.Sum(a => a.Quantity ?? 0),
                              Amount = g.Sum(a => a.OldPrice ?? 0)

@@ -16,6 +16,7 @@ using Newtonsoft.Json.Serialization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using JdCat.Cat.Common.Models;
+using JdCat.Cat.Model.Enum;
 
 namespace JdCat.Cat.WxApi.Controllers
 {
@@ -48,9 +49,10 @@ namespace JdCat.Cat.WxApi.Controllers
             var coupon = Service.GetCouponValid(new Business { ID = id });
             // 折扣券
             var discount = Service.GetDiscounts(new Business { ID = id })
-                .Where(a => a.Status == Model.Enum.ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
+                .Where(a => a.Status == ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
             // 用户优惠券
             var userCoupon = userRepository.GetUserCoupon(id, userId);
+            // 用户用户
             // 商户配送费用设置
             var freights = Service.GetFreights(id);
             // 用户购物车
@@ -75,9 +77,11 @@ namespace JdCat.Cat.WxApi.Controllers
             var valid = fullReduct.Where(a => a.IsActiveValid());
             // 优惠券
             var coupon = Service.GetCouponValid(new Business { ID = id });
+            // 消费返券
+            var retCoupon = (await Service.GetBusinessReturnCouponAsync(id)).Where(a => a.Status == CouponStatus.Up);
             // 折扣券
             var discount = Service.GetDiscounts(new Business { ID = id })
-                .Where(a => a.Status == Model.Enum.ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
+                .Where(a => a.Status == ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
             // 新客立减
             var newCustom = await Service.GetBusinessNewCustomAsync(id);
             if (newCustom != null && (newCustom.StartTime > now || newCustom.EndTime.AddDays(1) < now))
@@ -89,7 +93,7 @@ namespace JdCat.Cat.WxApi.Controllers
             // 商户配送费用设置
             var freights = Service.GetFreights(id);
 
-            return Json(new { fullReduct = valid, coupon, discount, userCoupon, freights, newCustom, user });
+            return Json(new { fullReduct = valid, coupon, retCoupon, discount, userCoupon, freights, newCustom, user });
 
         }
 
@@ -122,7 +126,7 @@ namespace JdCat.Cat.WxApi.Controllers
             var coupon = Service.GetCouponValid(new Business { ID = id });
             // 折扣券
             var discount = Service.GetDiscounts(new Business { ID = id })
-                .Where(a => a.Status == Model.Enum.ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
+                .Where(a => a.Status == ActivityStatus.Active && a.StartDate <= now && a.EndDate >= now).ToList();
 
             // 用户优惠券
             var userCoupon = userRepository.GetUserCoupon(id, userId);

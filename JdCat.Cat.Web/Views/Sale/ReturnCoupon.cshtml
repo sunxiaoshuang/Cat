@@ -1,0 +1,85 @@
+﻿<div class="container-fluid" id="return">
+    <div class="row form-horizontal">
+        <div class="form-group">
+            <label class="col-xs-2 control-label">
+                返券金额：
+            </label>
+            <div class="col-xs-9">
+                <input type="number" v-model.trim.number="entity.costAmount" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-2">
+                有效期：
+            </label>
+            <div class="col-xs-10 flex-form">
+                <select class="form-control" v-bind:disabled="!isCreate" v-model="timeType" style="display: inline-block; width: 120px;">
+                    <option value="0">相对时间</option>
+                    <option value="1">指定时间</option>
+                </select>
+                <div v-show="timeType == 0">
+                    <span style="margin: 0 10px;">领取后</span>
+                    <input type="number" v-bind:disabled="!isCreate" class="form-control" v-model="entity.validDay" style="display: inline-block; width: 100px;" />
+                    <span style="margin: 0 10px;">天</span>
+                </div>
+                <div v-show="timeType != 0" style="margin-left: 20px; position:relative;">
+                    <div class="input-group pull-left" style="width: 150px;">
+                        <input type="text" v-bind:disabled="!isCreate" autocomplete="off" class="form-control" v-model="entity.startDate" placeholder="开始日期" id="txtStartDate" />
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                    </div>
+                    <span class="pull-left" style="margin-top: 8px;padding: 0 10px;">至</span>
+                    <div class="input-group pull-left" style="width: 150px;">
+                        <input type="text" v-bind:disabled="!isCreate" autocomplete="off" class="form-control" v-model="entity.endDate" placeholder="截止日期" id="txtEndDate" />
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-2">
+                券面金额：
+            </label>
+            <div class="col-xs-9">
+                <input type="number" v-bind:disabled="!isCreate" v-model.trim.number="entity.value" class="form-control" />
+                <span style="color: #999;">代金券面额，例如：金额2元，商品原价10元，用户仅需付8元</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-2">
+                发放数量：
+            </label>
+            <div class="col-xs-9 flex-form">
+                <select class="form-control" v-bind:disabled="!isCreate" v-model="quantityType" style="display:inline-block; width: 120px;">
+                    <option value="0">不限制</option>
+                    <option value="1">限制</option>
+                </select>
+                <div v-show="quantityType == 1">
+                    <span style="margin: 0 20px;">总库存</span>
+                    <input type="number" v-bind:disabled="!isCreate" v-model.trim.number="entity.quantity" class="form-control" style="display: inline-block;width: 100px;" />
+                    <span style="margin: 0 20px;">张</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-2">
+                最低消费：
+            </label>
+            <div class="col-xs-9 flex-form">
+                <select class="form-control" v-bind:disabled="!isCreate" v-model="minConsumeType" style="display:inline-block; width: 120px;">
+                    <option value="0">不限制</option>
+                    <option value="1">限制</option>
+                </select>
+                <div v-show="minConsumeType == 1">
+                    <span style="margin: 0 20px;">消费满</span>
+                    <input type="number" v-bind:disabled="!isCreate" v-model.trim.number="entity.minConsume" class="form-control" style="display: inline-block;width: 100px;" />
+                    <span style="margin: 0 20px;">元使用券</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

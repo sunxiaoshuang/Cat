@@ -538,6 +538,12 @@
     "inputFiles": [
       "wwwroot/js/report/thirdbooth.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/sale/saleReturn.min.js",
+    "inputFiles": [
+      "wwwroot/js/sale/saleReturn.js"
+    ]
   }
 
 ]

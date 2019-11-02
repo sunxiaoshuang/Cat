@@ -80,6 +80,7 @@ namespace JdCat.Cat.Model
         public DbSet<ThirdOrderProduct> ThirdOrderProducts { get; set; }
         public DbSet<ThirdProductMapping> ThirdProductMappings { get; set; }
         public DbSet<SaleNewCustom> SaleNewCustoms { get; set; }
+        public DbSet<SaleReturnCoupon> SaleReturnCoupons { get; set; }
         public DbSet<OrderActivity> OrderActivities { get; set; }
 
 

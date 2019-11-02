@@ -128,6 +128,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         List<SaleCouponUser> ReceiveCoupons(User user, IEnumerable<int> ids);
         /// <summary>
+        /// 消费返券领取
+        /// </summary>
+        /// <param name="coupons"></param>
+        /// <returns></returns>
+        Task ReceiveReturnCouponsAsync(IEnumerable<SaleCouponUser> coupons);
+        /// <summary>
         /// 获取商家用户
         /// </summary>
         /// <param name="business"></param>

@@ -447,8 +447,14 @@ namespace JdCat.Cat.Repository
                          join activity in Context.TangOrderActivities on order.ID equals activity.TangOrderId into joinActivity
                          from activity in joinActivity.DefaultIfEmpty()
                          where order.BusinessId == business.ID && order.Status == EntityStatus.Normal && (order.OrderStatus & TangOrderStatus.Finish) > 0 && order.PayTime >= startTime && order.PayTime < endTime
-                         group activity by new { order.ID, order.PayTime, order.OriginalAmount, order.Amount, order.ActualAmount, order.MealFee } into g 
-                         select new { PayTime = g.Key.PayTime.HasValue ? g.Key.PayTime.Value.ToString("yyyy-MM-dd") : null, g.Key.OriginalAmount, g.Key.Amount, g.Key.ActualAmount, g.Key.MealFee,
+                         group activity by new { order.ID, order.PayTime, order.OriginalAmount, order.Amount, order.ActualAmount, order.MealFee } into g
+                         select new
+                         {
+                             PayTime = g.Key.PayTime.HasValue ? g.Key.PayTime.Value.ToString("yyyy-MM-dd") : null,
+                             g.Key.OriginalAmount,
+                             g.Key.Amount,
+                             g.Key.ActualAmount,
+                             g.Key.MealFee,
                              GoodDiscountAmount = g.Sum(a => a == null ? 0 : a.Type == OrderActivityType.ProductDiscount ? a.Amount : 0),
                              OrderDiscountAmount = g.Sum(a => a == null ? 0 : a.Type == OrderActivityType.OrderDiscount ? a.Amount : 0),
                              PreferentialAmount = g.Sum(a => a == null ? 0 : a.Type == OrderActivityType.OrderPreferential ? a.Amount : 0)
@@ -697,6 +703,14 @@ namespace JdCat.Cat.Repository
         public async Task<SaleNewCustom> GetBusinessNewCustomAsync(int businessId)
         {
             return await Context.SaleNewCustoms.FirstOrDefaultAsync(a => a.BusinessId == businessId);
+        }
+        public async Task<List<SaleReturnCoupon>> GetBusinessReturnCouponAsync(int businessId)
+        {
+            return await Context.SaleReturnCoupons
+                .AsNoTracking()
+                .Where(a => a.BusinessId == businessId && !a.IsDelete)
+                .OrderByDescending(a => a.Value)
+                .ToListAsync();
         }
 
         public Business Login(string username, string password)

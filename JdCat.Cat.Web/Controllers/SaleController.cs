@@ -160,5 +160,48 @@ namespace JdCat.Cat.Web.Controllers
             return Content("ok");
         }
 
+        [HttpGet]
+        public IActionResult SaleReturn()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> GetReturnList()
+        {
+            return Json(await Service.GetBusinessReturnCouponAsync(Business.ID));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveReturnCoupon([FromBody]SaleReturnCoupon coupon)
+        {
+            coupon.Name = coupon.Value + "元优惠券";
+            coupon.BusinessId = Business.ID;
+            if (coupon.MinConsume < 0) coupon.MinConsume = -1;
+            if (coupon.Quantity < 0)
+            {
+                coupon.Quantity = -1;
+            }
+            else
+            {
+                coupon.Stock = coupon.Quantity;
+            }
+            await Service.AddAsync(coupon);
+            return Json(new JsonData { Success = true, Msg = "ok", Data = coupon });
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteReturnCoupon(int id)
+        {
+            var entity = new SaleReturnCoupon { ID = id, IsDelete = true };
+            await Service.UpdateAsync(entity, new[] { nameof(entity.IsDelete) });
+            return Json(new JsonData { Success = true, Msg = "ok" });
+        }
+
+        [HttpGet]
+        public IActionResult ReturnCoupon()
+        {
+            return PartialView();
+        }
+
     }
 }

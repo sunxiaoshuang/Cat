@@ -31,6 +31,10 @@
     <Compile Remove="Migrations\20190728025743_Modify_Business_Eleme.cs" />
     <Compile Remove="Migrations\20190730045114_Add_ThirdProductMapping.cs" />
     <Compile Remove="Migrations\20190905150902_aaaa.cs" />
+    <Compile Remove="Migrations\20191101144955_Modify_SaleCouponUser_BusinessId.cs" />
+    <Compile Remove="Migrations\20191101145458_Modify_SaleCouponUser_BusinessId.cs" />
+    <Compile Remove="Migrations\20191101151743_Modify_SaleCouponUser_BusinessId1.cs" />
+    <Compile Remove="Migrations\20191101183343_Modify_SaleCouponUser_Field.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -36,5 +36,12 @@ namespace JdCat.Cat.Model.Data
         /// 所属订单实体
         /// </summary>
         public virtual Order Order { get; set; }
+
+        /// <summary>
+        /// 标识属性
+        /// </summary>
+        [NotMapped]
+        public string Tag { get; set; }
+
     }
 }

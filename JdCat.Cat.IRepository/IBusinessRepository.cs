@@ -324,6 +324,12 @@ namespace JdCat.Cat.IRepository
         /// <param name="businessId"></param>
         /// <returns></returns>
         Task<SaleNewCustom> GetBusinessNewCustomAsync(int businessId);
+        /// <summary>
+        /// 获取商户消费返券列表
+        /// </summary>
+        /// <param name="businessId"></param>
+        /// <returns></returns>
+        Task<List<SaleReturnCoupon>> GetBusinessReturnCouponAsync(int businessId);
 
         #endregion
 

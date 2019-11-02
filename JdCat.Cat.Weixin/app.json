@@ -24,7 +24,8 @@
     "pages/order/refund/refund",
     "pages/order/orderLocation/orderLocation",
     "pages/logs/logs",
-    "pages/showPage/showPage"
+    "pages/showPage/showPage",
+    "pages/retCoupon/retCoupon"
   ],
   "window": {
     "backgroundColor": "#f36c21",

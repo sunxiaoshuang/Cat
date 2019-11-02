@@ -209,7 +209,8 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> GetSingleCookData(int id, [FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
         {
             var result = type == 0 ? await service.GetSingleCookReportForTakeoutAsync(id, start, end.AddDays(1)) : await service.GetSingleCookReportAsync(id, start, end.AddDays(1));
-            return Json(result ?? new List<Report_ProductSale>());
+            var list = result?.Where(a => a.BusinessId == Business.ID).ToList();
+            return Json(list ?? new List<Report_ProductSale>());
         }
         /// <summary>
         /// 导出厨师统计数据
@@ -432,7 +433,8 @@ namespace JdCat.Cat.Web.Controllers
         public async Task<IActionResult> GetSingleBoothData(int id, [FromQuery]DateTime start, [FromQuery]DateTime end, [FromQuery]int type, [FromServices]IStoreRepository service)
         {
             var result = type == 0 ? await service.GetSingleBoothReportForTakeoutAsync(id, start, end.AddDays(1)) : await service.GetSingleBoothReportAsync(id, start, end.AddDays(1));
-            return Json(result ?? new List<Report_ProductSale>());
+            var list = result?.Where(a => a.BusinessId == Business.ID).ToList();
+            return Json(list ?? new List<Report_ProductSale>());
         }
         /// <summary>
         /// 导出档口统计数据

@@ -81,12 +81,27 @@ namespace JdCat.Cat.Repository
                 {
                     var couponUser = Context.SaleCouponUsers.Include(a => a.Coupon).Single(a => a.ID == order.SaleCouponUserId.Value);
                     couponUser.Status = CouponStatus.Used;
-                    couponUser.UseTime = DateTime.Now;
+                    couponUser.UseTime = now;
                     couponUser.Coupon.Consumed += 1;
                     if (couponUser.Coupon.Quantity > 0 && couponUser.Coupon.Consumed > couponUser.Coupon.Quantity)
                     {
                         couponUser.Coupon.Consumed = couponUser.Coupon.Quantity;
                     }
+                }
+                var retCoupons = order.OrderActivities.Where(a => a.Tag == "retCoupon").ToList();
+                if (retCoupons.Count > 0)
+                {
+                    var ids = retCoupons.Select(a => a.ActivityId).ToList();
+                    var coupons = Context.SaleCouponUsers.Where(a => ids.Contains(a.ID)).ToList();
+                    coupons.ForEach(a =>
+                    {
+                        a.Status = CouponStatus.Used;
+                        a.UseTime = now;
+                    });
+                    var retIds = coupons.Select(a => a.ReturnCouponId).ToList();
+                    var rets = Context.SaleReturnCoupons.Where(a => retIds.Contains(a.ID)).ToList();
+                    rets.ForEach(a => a.Consumed++);
+
                 }
                 if (Context.SaveChanges() == 0)
                 {

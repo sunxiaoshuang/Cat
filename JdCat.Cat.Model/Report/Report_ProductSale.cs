@@ -15,5 +15,7 @@ namespace JdCat.Cat.Model.Report
         public double Count { get; set; }
         [Description("总销售额")]
         public double Amount { get; set; }
+        [Description("商户编号")]
+        public int BusinessId { get; set; }
     }
 }

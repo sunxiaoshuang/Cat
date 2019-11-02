@@ -225,8 +225,8 @@ Page({
       businessId: business.id,
       saleFullReduceId: this.data.saleFullReduce.id,
       saleFullReduceMoney: this.data.saleFullReduce.reduceMoney,
-      saleCouponUserId: this.data.coupon.id,
-      saleCouponUserMoney: this.data.coupon.value,
+      saleCouponUserId: this.data.coupon.couponId > 0 ? this.data.coupon.id : null,
+      saleCouponUserMoney: this.data.coupon.couponId > 0 ? this.data.coupon.value : null,
       products: [],
       openId: user.openId,
       distance: +distance.toFixed(0),
@@ -281,7 +281,8 @@ Page({
         amount: coupon.value,
         type: 3,
         activityId: coupon.id,
-        remark: `${coupon.value}元优惠券`
+        remark: `${coupon.value}元优惠券`,
+        tag: coupon.returnCouponId ? 'retCoupon' : null
       });
     }
     // 4. 商品折扣
@@ -297,7 +298,6 @@ Page({
       });
     });
     order.orderActivities = activities;
-
     qcloud.request({
       url: `/order/createOrder`,
       method: "POST",
@@ -308,7 +308,7 @@ Page({
           wx.setStorageSync('cartList', []);
           wx.setStorageSync('orderSubmit', true);
           wx.setStorageSync("orderDetail", res.data.data);
-          self.useCoupon(order.saleCouponUserId);
+          self.useCoupon(coupon.id);
           wx.redirectTo({
             url: '/pages/pay/sure/sure'
           });

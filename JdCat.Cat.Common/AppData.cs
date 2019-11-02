@@ -25,14 +25,15 @@ namespace JdCat.Cat.Common
         {
             var props = typeof(AppData).GetProperties();
             var appData = config.GetSection("appData");
-            var items = appData.GetChildren();
+            //var items = appData.GetChildren();
+            appData.Bind(this);
 
-            foreach (var prop in props)
-            {
-                var value = appData[prop.Name];
-                if (string.IsNullOrEmpty(value)) continue;
-                prop.SetValue(this, value);
-            }
+            //foreach (var prop in props)
+            //{
+            //    var value = appData[prop.Name];
+            //    if (string.IsNullOrEmpty(value)) continue;
+            //    prop.SetValue(this, value);
+            //}
             Connection = config.GetConnectionString("CatContext");
         }
 
@@ -283,6 +284,10 @@ namespace JdCat.Cat.Common
                 return _elemeToken;
             }
         }
+        /// <summary>
+        /// 是否启动定时任务
+        /// </summary>
+        public bool IsTimer { get; set; }
 
     }
 }

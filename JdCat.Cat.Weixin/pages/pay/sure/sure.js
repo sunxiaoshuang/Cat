@@ -96,9 +96,23 @@ Page({
                 var obj = qcloud.getSession();
                 obj.userinfo.purchaseTimes++;
                 qcloud.setSession(obj);
-                wx.redirectTo({
-                  url: '/pages/order/orderInfo/orderInfo?id=' + self.data.order.id
-                });
+
+                var retCoupons = wx.getStorageSync("retCoupons");
+                if (retCoupons && retCoupons.length > 0) {
+                  var amount = self.data.order.price;
+                  var coupon = retCoupons.find(a => amount >= a.costAmount);
+                  if (coupon) {
+                    wx.setStorageSync("receviceReturnCoupon", coupon);
+                    wx.redirectTo({
+                      url: '/pages/retCoupon/retCoupon'
+                    });
+                    return;
+                  }
+                  
+                  wx.redirectTo({
+                    url: '/pages/order/orderInfo/orderInfo?id=' + self.data.order.id
+                  });
+                }
               }
             },
             fail: function (err) {

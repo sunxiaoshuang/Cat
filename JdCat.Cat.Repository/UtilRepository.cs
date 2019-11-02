@@ -254,6 +254,19 @@ namespace JdCat.Cat.Repository
         }
 
 
+        public async Task<string> GetNextCodeForReturnCouponAsync()
+        {
+            var num = await _database.StringIncrementAsync("Jiandanmao:Util:ReturnCoupon:Code");
+            var code = num.ToString().PadLeft(6, '0');
+            var year = DateTime.Now.Year;
+            var rand = UtilHelper.RandNum(4);
+            return $"{year}{code}{rand}";
+        }
+        
+
+
+
+
         #region 私有方法
 
         /// <summary>

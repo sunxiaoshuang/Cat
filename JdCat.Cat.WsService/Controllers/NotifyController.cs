@@ -183,44 +183,46 @@ namespace JdCat.Cat.WsService.Controllers
 
             #region 包含预订单逻辑
 
-            //var results = new List<RedisValue>();
-            //vals.ForEach(a =>
-            //{
-            //    var obj = JObject.Parse(a);                                                 // 订单对象
-            //    var time = obj["deliveryTime"].Value<DateTime?>();                          // 预约时间
-            //    var key = $"Jiandanmao:Notify:ThirdOrder:{id}:{obj["id"].Value<int>()}";    // 订单key
-            //    if (time == null || time < now.AddHours(1)) // 如果预约时间为空或者距离当前时间小于一小时，则直接输出
-            //    {
-            //        results.Add(a);
-            //        ids.Add(key);
-            //        return;
-            //    }
-            //    // 预订单则需要判断前台打印与后台打印逻辑
-            //    var mode = obj["printType"].Value<int>();
-            //    if (mode == 3)                  // 仅考虑整单打印的情况
-            //    {
-            //        obj["printType"] = 1;       // 将订单打印方式改为打印前台小票
-            //        results.Add(JsonConvert.SerializeObject(obj));      // 添加到输出结果
-            //        obj["printType"] = 2;       // 然后将打印方式改为打印后台小票
-            //        // 重新设置打印任务
-            //        var timespan = time.Value.AddHours(2) - now;
-            //        database.StringSetAsync(key, JsonConvert.SerializeObject(obj), timespan);
-            //    }
-            //});
-            #endregion
-
-
             var results = new List<RedisValue>();
             vals.ForEach(a =>
             {
                 var obj = JObject.Parse(a);                                                 // 订单对象
+                var time = obj["deliveryTime"].Value<DateTime?>();                          // 预约时间
                 var key = $"Jiandanmao:Notify:ThirdOrder:{id}:{obj["id"].Value<int>()}";    // 订单key
-                results.Add(a);
-                ids.Add(key);
+                if (time == null || time < now.AddMinutes(50)) // 如果预约时间为空或者距离当前时间小于50分钟，则直接输出
+                {
+                    results.Add(a);
+                    ids.Add(key);
+                    return;
+                }
+                // 预订单则需要判断前台打印与后台打印逻辑
+                var mode = obj["printType"].Value<int>();
+                if (mode == 3)                  // 仅考虑整单打印的情况
+                {
+                    obj["printType"] = 1;       // 将订单打印方式改为打印前台小票
+                    results.Add(JsonConvert.SerializeObject(obj));      // 添加到输出结果
+                    obj["printType"] = 2;       // 然后将打印方式改为打印后台小票
+                    // 重新设置打印任务
+                    var timespan = time.Value.AddHours(2) - now;
+                    database.StringSetAsync(key, JsonConvert.SerializeObject(obj), timespan);
+                }
             });
-
             await database.KeyDeleteAsync(ids.ToArray());
             return results;
+            #endregion
+
+
+            //var results = new List<RedisValue>();
+            //vals.ForEach(a =>
+            //{
+            //    var obj = JObject.Parse(a);                                                 // 订单对象
+            //    var key = $"Jiandanmao:Notify:ThirdOrder:{id}:{obj["id"].Value<int>()}";    // 订单key
+            //    results.Add(a);
+            //    ids.Add(key);
+            //});
+
+            //await database.KeyDeleteAsync(ids.ToArray());
+            //return results;
         }
         /// <summary>
         /// 获取商户本地订单

@@ -136,6 +136,7 @@ Page({
           self.data.initLoaded = true; // 标识数据初始化完成
           wx.setStorageSync("myCoupon", myCoupon); // 将用户优惠券缓存起来
           wx.setStorageSync("freights", self.data.freights); // 将配送费用写入缓存
+          wx.setStorageSync("retCoupons", res.data.retCoupon);  // 将商户的消费返券列表写入缓存
           if (couponList.length > 0) {
             self.couponHandler();
           }

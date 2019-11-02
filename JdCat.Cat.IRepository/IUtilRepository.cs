@@ -81,6 +81,13 @@ namespace JdCat.Cat.IRepository
 
         #endregion
 
+        /// <summary>
+        /// 获取下一个消费返券的编码
+        /// </summary>
+        /// <returns></returns>
+        Task<string> GetNextCodeForReturnCouponAsync();
+
+
         #region 测试
 
         Task<long> GetNumberAsync();

@@ -99,6 +99,14 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Task<string> GetElemeTokenAsync(string url, string appKey, string appSecret);
         /// <summary>
+        /// 刷新饿了么访问令牌，返回新令牌
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="secret"></param>
+        /// <returns></returns>
+        Task<string> RefreshElemeTokenAsync(string url, string key, string secret);
+
+        /// <summary>
         /// 获取商户与第三方平台的商品映射关系
         /// </summary>
         /// <param name="businessId"></param>
@@ -152,6 +160,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="end">查询结束时间</param>
         /// <returns></returns>
         Task<List<Report_ProductRanking>> GetProductsDataAsync(int businessId, int source, DateTime start, DateTime end);
+
 
     }
 }

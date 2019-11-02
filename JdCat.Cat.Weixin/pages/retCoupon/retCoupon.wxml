@@ -1,0 +1,8 @@
+<view class="container">
+    <image src="/images/pic/kaixin.png" mode="aspectFit" />
+    <text style="color: #777">消费满{{costAmount || 0}}元，恭喜您获得：</text>
+    <view class="coupon">
+        <text >{{coupon.value || 0}}元优惠券</text>
+    </view>
+    <button size="mini" bindtap="toCoupon">去查看</button>
+</view>

@@ -53,7 +53,8 @@
             },
             loadData: function () {
                 var self = this;
-                axios.post(`/order/getorders?status=${this.curType.type}&code=${this.search_code}&phone=${this.search_phone}`, this.pageObj)
+                var time = $("#txtStartDate").val();
+                axios.post(`/order/getorders?status=${this.curType.type}&code=${this.search_code}&phone=${this.search_phone}&startDate=${time}&endDate=${time}`, this.pageObj)
                     .then(function (res) {
                         self.orderList = handerData(res.data.data.list);
                         self.pageObj.recordCount = res.data.data.rows;
@@ -436,6 +437,17 @@
         }
         return list;
     }
+
+    var dateOptions = {
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        maxView: 1,
+        minView: 2,
+        todayBtn: true,
+        todayHighlight: true,
+        language: "zh-CN"
+    };
+    $("#txtStartDate").datetimepicker(dateOptions);
 
     $("#modal-sendType").on("hidden.bs.modal", () => {
         app.sendTypes.forEach(a => a.selected = false);

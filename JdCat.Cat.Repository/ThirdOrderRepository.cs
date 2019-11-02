@@ -441,14 +441,19 @@ namespace JdCat.Cat.Repository
                 var json = JObject.Parse(token);
                 var getTime = json["getTime"].Value<DateTime>();
                 var expires_in = json["expires_in"].Value<int>();
-                if (getTime.AddSeconds(expires_in - 43200) > now)
+                if (getTime.AddSeconds(expires_in - 172800) > now)          // 如果还有两天过期，则需要刷新token
                 {
                     return json["access_token"].Value<string>();
                 }
             }
 
-            // 如果token不存在或者token已过期，在执行下面的逻辑
-            var auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{appKey}:{appSecret}"));
+            // 如果token不存在或者token已过期，再执行下面的逻辑
+            return await RefreshElemeTokenAsync(url, appKey, appSecret);
+        }
+
+        public async Task<string> RefreshElemeTokenAsync(string url, string key, string secret)
+        {
+            var auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{key}:{secret}"));
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", auth);
@@ -463,11 +468,14 @@ namespace JdCat.Cat.Repository
                     throw new Exception("饿了么获取token异常：" + json["error"].Value<string>());
                 }
                 var access_token = json["access_token"].Value<string>();
-                json["getTime"] = now;
+                json["getTime"] = DateTime.Now;
                 await _database.StringSetAsync(key, JsonConvert.SerializeObject(json));
+                Log.Info($"商户key：{key}，token刷新成功");
                 return access_token;
             }
+
         }
+
         public async Task<List<ThirdProductMapping>> GetProductMappingsAsync(int businessId, int source)
         {
             return await Context.ThirdProductMappings.Where(a => a.BusinessId == businessId && a.ThirdSource == source).ToListAsync();
@@ -628,6 +636,7 @@ namespace JdCat.Cat.Repository
                 BoxFee = Convert.ToDecimal(order.PackageFee),
                 Freight = Convert.ToDecimal(order.ShippingFee),
                 ActivityMoney = Convert.ToDecimal(order.OriginalAmount - order.Amount),
+                ReachTime = order.DeliveryTime?.ToString("yyyy-MM-dd HH:mm:ss"),
                 UserGaodeCoordinate = order.Longitude + "|" + order.Latitude,
                 DayIndex = order.DaySeq
             };

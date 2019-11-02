@@ -3,14 +3,16 @@ using System;
 using JdCat.Cat.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JdCat.Cat.Model.Migrations
 {
     [DbContext(typeof(CatDbContext))]
-    partial class CatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191031075303_Add_SaleReturnCoupon")]
+    partial class Add_SaleReturnCoupon
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1227,7 +1229,7 @@ namespace JdCat.Cat.Model.Migrations
 
                     b.Property<string>("Code");
 
-                    b.Property<int?>("CouponId");
+                    b.Property<int>("CouponId");
 
                     b.Property<DateTime?>("CreateTime");
 
@@ -1238,8 +1240,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<string>("Name");
 
                     b.Property<int?>("OrderId");
-
-                    b.Property<int?>("ReturnCouponId");
 
                     b.Property<DateTime?>("StartDate");
 
@@ -1256,8 +1256,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("CouponId");
-
-                    b.HasIndex("ReturnCouponId");
 
                     b.HasIndex("UserId");
 
@@ -1390,8 +1388,6 @@ namespace JdCat.Cat.Model.Migrations
                     b.Property<bool>("IsDelete");
 
                     b.Property<double>("MinConsume");
-
-                    b.Property<string>("Name");
 
                     b.Property<int>("Quantity");
 
@@ -2426,11 +2422,8 @@ namespace JdCat.Cat.Model.Migrations
                 {
                     b.HasOne("JdCat.Cat.Model.Data.SaleCoupon", "Coupon")
                         .WithMany("CouponUsers")
-                        .HasForeignKey("CouponId");
-
-                    b.HasOne("JdCat.Cat.Model.Data.SaleReturnCoupon", "ReturnCoupon")
-                        .WithMany()
-                        .HasForeignKey("ReturnCouponId");
+                        .HasForeignKey("CouponId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("JdCat.Cat.Model.Data.User", "User")
                         .WithMany()

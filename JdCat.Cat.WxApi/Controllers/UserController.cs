@@ -276,6 +276,17 @@ namespace JdCat.Cat.WxApi.Controllers
             return Json(list);
         }
 
+        [HttpPost("receiveReturnCoupon")]
+        public async Task<IActionResult> ReceiveReturnCoupon ([FromBody]IEnumerable<SaleCouponUser> coupons, [FromServices]IUtilRepository util)
+        {
+            foreach (var item in coupons)
+            {
+                item.Code = await util.GetNextCodeForReturnCouponAsync();
+            }
+            await Service.ReceiveReturnCouponsAsync(coupons);
+            return Json(new JsonData { Success = true, Data = coupons });
+        }
+
         [HttpGet("comments/{id}")]
         public async Task<IActionResult> GetUserComments(int id)
         {

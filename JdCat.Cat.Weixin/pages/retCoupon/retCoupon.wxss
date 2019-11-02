@@ -1,0 +1,29 @@
+page {
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+image {
+    width: 500rpx;
+}
+
+.coupon {
+    border: 1rpx solid #f36c1b;
+    border-radius: 20rpx;
+    color: #f36c1b;
+    margin-top: 50rpx;
+    padding: 20rpx 60rpx;
+}
+
+button {
+    margin-top: 60rpx;
+    background-color: #f36c1b;
+    color: #fff;
+}

@@ -100,8 +100,13 @@ namespace JdCat.Cat.Model.Data
         /// <summary>
         /// 商户优惠券id
         /// </summary>
-        public int CouponId { get; set; }
+        public int? CouponId { get; set; }
         public virtual SaleCoupon Coupon { get; set; }
+        /// <summary>
+        /// 商户返券id
+        /// </summary>
+        public int? ReturnCouponId { get; set; }
+        public virtual SaleReturnCoupon ReturnCoupon { get; set; }
         /// <summary>
         /// 关联的订单id
         /// </summary>

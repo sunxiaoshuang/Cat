@@ -179,17 +179,36 @@ namespace JdCat.Cat.Repository
         public List<SaleCouponUser> GetUserCoupon(int businessId, int id)
         {
             var now = DateTime.Now;
-            List<SaleCouponUser> list;
-            if (businessId == 0)
-            {
-                list = Context.SaleCouponUsers.Include(a => a.Coupon).Where(a => a.UserId == id).ToList();
-            }
-            else
-            {
-                list = Context.SaleCouponUsers.Include(a => a.Coupon).Where(a => a.UserId == id && a.Coupon.BusinessId == businessId).ToList();
-            }
+
+            var query = Context.SaleCouponUsers.Where(a => a.UserId == id);
             // 取得未使用或者半年内领取的优惠券
-            var result = list.Where(a => a.CreateTime > now.AddDays(-180) || a.Status == CouponStatus.NotUse).ToList();
+            var list = query.Where(a => a.CreateTime > now.AddDays(-180) || a.Status == CouponStatus.NotUse).ToList();
+            //if (businessId == 0)
+            //{
+            //    list = Context.SaleCouponUsers.Include(a => a.Coupon).Where(a => a.UserId == id).ToList();
+            //}
+            //else
+            //{
+            //    list = Context.SaleCouponUsers.Include(a => a.Coupon).Where(a => a.UserId == id && a.Coupon.BusinessId == businessId).ToList();
+            //}
+            var coupons = Context.SaleCoupons.Where(a => a.BusinessId == businessId).ToList();
+            var retCoupons = Context.SaleReturnCoupons.Where(a => a.BusinessId == businessId).ToList();
+            var result = new List<SaleCouponUser>();
+            list.ForEach(item =>
+            {
+                var coupon = coupons.FirstOrDefault(a => a.ID == item.CouponId);
+                if (coupon != null)
+                {
+                    result.Add(item);
+                    return;
+                }
+                var retCoupon = retCoupons.FirstOrDefault(a => a.ID == item.ReturnCouponId);
+                if (retCoupon != null)
+                {
+                    result.Add(item);
+                    return;
+                }
+            });
             return result;
         }
         public List<SaleCouponUser> ReceiveCoupons(User user, IEnumerable<int> ids)
@@ -243,6 +262,23 @@ namespace JdCat.Cat.Repository
             Context.SaveChanges();
             return list;
         }
+
+        public async Task ReceiveReturnCouponsAsync(IEnumerable<SaleCouponUser> coupons)
+        {
+            var ids = coupons.Select(a => a.ReturnCouponId).ToList();
+            var entities = await Context.SaleReturnCoupons.Where(a => ids.Contains(a.ID)).ToListAsync();
+            await Context.AddRangeAsync(coupons);
+            entities.ForEach(entity => 
+            {
+                entity.Received++;
+                if(entity.Stock > 0)
+                {
+                    entity.Stock--;
+                }
+            });
+            await Context.SaveChangesAsync();
+        }
+
         public IEnumerable<User> GetUsers(Business business)
         {
             return Context.Users.Where(user => user.BusinessId == business.ID && user.IsRegister).OrderByDescending(a => a.CreateTime);
