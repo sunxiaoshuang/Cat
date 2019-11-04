@@ -8,6 +8,8 @@
 *.sln.docstates
 JdCat.Cat.Web/wwwroot/js/*.min.js
 JdCat.Cat.Web/Properties
+appsettings.Development.json
+appsettings.json
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)

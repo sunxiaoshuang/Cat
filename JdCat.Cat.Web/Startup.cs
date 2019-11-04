@@ -80,6 +80,7 @@ namespace JdCat.Cat.Web
             // 序列化参数
             services.AddSingleton(AppData.JsonSetting);
 
+
             // 达达请求
             var dada = DadaHelper.GetHelper();
             dada.Init(config, AppData.JsonSetting);
