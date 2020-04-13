@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <UserSecretsId>6d9a85e1-fdba-4d6a-bdec-ec904f1d7557</UserSecretsId>
     <!--<MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>-->
   </PropertyGroup>
 

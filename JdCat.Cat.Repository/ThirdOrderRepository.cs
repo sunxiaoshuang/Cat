@@ -644,7 +644,7 @@ namespace JdCat.Cat.Repository
             ycfkOrder.FoodList = order.ThirdOrderProducts.Select(a => new YcfkFoodItem
             {
                 FoodName = a.Name,
-                FoodPrice = Convert.ToDecimal(a.Price / a.Quantity),
+                FoodPrice = Convert.ToDecimal(a.Price),
                 FoodCount = Convert.ToInt32(a.Quantity)
             }).ToList();
 
