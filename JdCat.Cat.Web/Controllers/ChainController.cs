@@ -224,7 +224,7 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="query"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetOrders([FromQuery]PagingQuery query, OrderStatus status, DateTime? startDate, DateTime? endDate, int businessId)
+        public IActionResult GetOrders([FromQuery]PagingQuery query, OrderStatus status, DateTime? startDate, DateTime? endDate, int businessId, int delivery)
         {
             if (!startDate.HasValue)
             {
@@ -234,7 +234,7 @@ namespace JdCat.Cat.Web.Controllers
             {
                 endDate = DateTime.Now;
             }
-            var list = Service.GetOrders(Business.ID, businessId, status, query, startDate.Value, endDate.Value).Select(a => new { a.Identifier, a.BusinessId, a.OrderCode, a.CreateTime, a.Status, a.Price, a.ReceiverName, a.Phone, a.ReceiverAddress });
+            var list = Service.GetOrders(Business.ID, businessId, status, query, startDate.Value, endDate.Value, delivery).Select(a => new { a.Identifier, a.BusinessId, a.OrderCode, a.CreateTime, a.Status, a.Price, a.ReceiverName, a.Phone, a.ReceiverAddress });
             return Json(new
             {
                 list,

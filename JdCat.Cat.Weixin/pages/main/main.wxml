@@ -42,7 +42,7 @@
 <scroll-view class="mainContainer" disable-scroll="true">
     <view class="header">
         <view class="tab">
-            <view class="title {{index==currentPage?'selected':''}}" wx:for="{{swiperTitle}}" wx:key="" data-index="{{index}}" bindtap="turnPage">
+            <view class="title {{index==currentPage?'selected':''}}" wx:for="{{swiperTitle}}" wx:key="*this" data-index="{{index}}" bindtap="turnPage">
                 {{item.text}}
             </view>
         </view>
@@ -55,7 +55,7 @@
         <swiper-item id="orderPage">
             <view class="orderMain">
                 <scroll-view class="orderPage-sideBar" bindscrolltolower="lower" scroll-y="{{true}}" scroll-with-animation="{{true}}" scroll-into-view="{{'menuType_' + selected}}">
-                    <view class="menuList" wx:for="{{menu}}" wx:key="">
+                    <view class="menuList" wx:for="{{menu}}" wx:key="id">
                         <view id="{{'menuType_' + index}}" class="menu {{index==selected?'selected':''}}" data-index="{{index}}" catchtap="turnMenu">
                             <text>{{item.name}}</text>
                         </view>
@@ -64,7 +64,7 @@
                 </scroll-view>
                 <view class="foodListMain">
                     <scroll-view class="foodList" scroll-y="true" scroll-with-animation="true" scroll-top="{{scrollTop}}" scroll-into-view="{{foodToView}}" bindscroll="scrollFoodList">
-                        <view class="food" wx:for="{{productList}}" wx:key="" id="{{'scroll_' + item.menuId + '_' + item.viewIndex}}">
+                        <view class="food" wx:for="{{productList}}" wx:key="id" id="{{'scroll_' + item.menuId + '_' + item.viewIndex}}">
                             <image class="img" catchtap="productDetail" mode="aspectFill" lazy-load="{{true}}" data-index="{{index}}" src="{{productFilter.productImage(item, businessId)}}"></image>
                             <view class="food-block">
                                 <view class="food-info" catchtap="productDetail" data-index="{{index}}">
@@ -139,7 +139,7 @@
                     </view>
                 </view>
                 <view class="comment-list">
-                    <view class="comment-item" wx:for="{{comment.comments}}" wx:key="" wx:for-item="comment">
+                    <view class="comment-item" wx:for="{{comment.comments}}" wx:key="id" wx:for-item="comment">
                         <view class="comment-logo">
                             <image src="{{comment.face}}" />
                         </view>
@@ -151,7 +151,7 @@
                             <view class="score-star">
                                 <text class="star text-gray" style="left: 0;">★★★★★</text>
                                 <text class="star text-primary" style="left: 0">
-                                    <text wx:for="{{common.filter.commentLevelFilter(comment.orderScore)}}" wx:key="">★</text>
+                                    <text wx:for="{{common.filter.commentLevelFilter(comment.orderScore)}}" wx:key="*this">★</text>
                                 </text>
                             </view>
                             <view class="comment-content">
@@ -181,7 +181,7 @@
                         <text>{{'新客户下单立减' + newCustom.amount + '元'}}</text>
                     </view>
                 </view>
-                <view class="activity-content" wx:for="{{fullReduceList}}" wx:key="">
+                <view class="activity-content" wx:for="{{fullReduceList}}" wx:key="id">
                     <view class="slide-image">减</view>
                     <view class="activity-name" style="margin-left: 20rpx;">
                         <text>{{item.name}}</text>
@@ -263,7 +263,7 @@
             </view>
         </view>
         <scroll-view class="cart-view" scroll-y>
-            <view class="cart" wx:for="{{cartList}}" wx:for-item="cart" wx:key="id">
+            <view class="cart" wx:for="{{cartList}}" wx:for-item="cart" wx:key="">
                 <view class="cart-food-name">
                     {{cart.name}}
                     <text style="font-size: 80%; color: #aaa;">{{calc.cartDescription(cart)}}</text>
@@ -304,7 +304,7 @@
         <view class="format-format" wx:if="{{productList[productIndex].formats.length > 1}}">
             <text>规格：</text>
             <view class="format-list">
-                <view wx:for="{{productList[productIndex].formats}}" wx:key="" class="format-item {{item.selected ? 'active' : ''}}" data-index="{{index}}" bindtap="selectFormat">
+                <view wx:for="{{productList[productIndex].formats}}" wx:key="id" class="format-item {{item.selected ? 'active' : ''}}" data-index="{{index}}" bindtap="selectFormat">
                     {{item.name}}
                 </view>
             </view>

@@ -83,6 +83,16 @@ namespace JdCat.Cat.Common
             //}
         }
         /// <summary>
+        /// 发送模版消息
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public static async Task<string> SendTemplateMessageAsync(Dictionary<string, object> dic)
+        {
+            var url = $"https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token={dic["access_token"]}";
+            return await RequestAsync(url, dic);
+        }
+        /// <summary>
         /// 根据商户id与Token获取公众号永久二维码
         /// </summary>
         /// <param name="businessId">商户id</param>

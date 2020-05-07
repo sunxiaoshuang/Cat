@@ -483,7 +483,7 @@ namespace JdCat.Cat.IRepository
         /// <param name="status"></param>
         /// <param name="query"></param>
         /// <returns></returns>
-        List<Order> GetOrders(int chainId, int businessId, OrderStatus? status, PagingQuery query, DateTime startDate, DateTime endDate);
+        List<Order> GetOrders(int chainId, int businessId, OrderStatus? status, PagingQuery query, DateTime startDate, DateTime endDate, int delivery);
 
         /// <summary>
         /// 获取营业统计

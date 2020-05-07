@@ -1,6 +1,6 @@
 <wxs module="calc" src="../wxs/calc/order.wxs"></wxs>
 <scroll-view class="payMain" scroll-y="true">
-    <view class="address">
+    <view class="address" wx:if="{{!isSelfTaking}}">
         <view class="select-address" wx:if="{{!address.id}}">
             <button plain="true" bindtap="selectAddress">
                 <image src="../../images/icon/plus-4.png" style="width: 30rpx;height: 30rpx;" />
@@ -31,7 +31,9 @@
             </view>
             <view class="foodCount">×{{cart.quantity}}</view>
             <view class="foodPrice">
-                <text wx:if="{{cart.price != cart.oldPrice}}" class="oldPrice">￥{{cart.oldPrice}}</text>
+                <text wx:if="{{cart.price != cart.oldPrice}}" class="oldPrice">
+                    ￥{{cart.oldPrice}}
+                </text>
                 <text>￥{{cart.price}}</text>
             </view>
         </view>
@@ -74,27 +76,43 @@
         <view class="price">￥ {{total}}</view>
     </view>
     <view class="invoice">
+        <view>我要自提</view>
+        <view class="switch">
+            <switch bindchange="changeDelivery" checked="{{isSelfTaking}}" />
+        </view>
+    </view>
+    <view class="deliver" wx:if="{{isSelfTaking}}">
+        <view>联系电话</view>
+        <view>
+            <input type="text" bindinput="inputField" value="{{phoneNumber}}" focus="{{phoneNumberFocus}}" data-fieldName="phoneNumber"></input>
+        </view>
+    </view>
+    <view class="deliver" wx:if="{{isSelfTaking}}">
+        <view>取餐人</view>
+        <view>
+            <input type="text" bindinput="inputField" value="{{takePerson}}" data-fieldName="takePerson"></input>
+        </view>
+    </view>
+    <view class="invoice">
         <view>是否开发票</view>
         <view class="switch">
             <switch bindchange="changeInvoice" checked="{{isInvoice}}" />
         </view>
     </view>
     <view class="invoice" wx:if="{{isInvoice}}">
-        <view>公司名称：</view>
+        <view>公司名称</view>
         <input type="text" bindinput="inputField" value="{{invoiceName}}" focus="{{invoiceNameFocus}}" data-fieldName="invoiceName" bindconfirm="completeName"></input>
     </view>
     <view class="invoice" wx:if="{{isInvoice}}">
-        <view>纳税识别码：</view>
+        <view>纳税识别码</view>
         <input type="text" bindinput="inputField" value="{{invoiceTax}}" focus="{{invoiceTaxFocus}}" data-fieldName="invoiceTax"></input>
     </view>
     <view class="mark">
         <view>买家留言：</view>
         <input type="text" cursor-spacing="10" bindinput="inputField" data-fieldName="remark" style="padding-left: 30rpx;" placeholder="口味偏好等要求（请勿填写手机号）"></input>
     </view>
-    <view style="height: 300px;">
-        
-    </view>
+    <view style="height: 300px;"></view>
     <view class="commit">
-        <button type="primary" bindtap="submit">提交订单</button>
+        <button type="primary" bindtap="sure">提交订单</button>
     </view>
 </scroll-view>

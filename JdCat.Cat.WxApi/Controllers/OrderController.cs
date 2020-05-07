@@ -203,7 +203,7 @@ namespace JdCat.Cat.WxApi.Controllers
         }
 
         [HttpPost("paySuccess")]
-        public async Task<IActionResult> PaySuccess([FromServices]AppData appData, [FromServices]IBusinessRepository businessRepository)
+        public async Task<IActionResult> PaySuccess([FromServices]AppData appData)
         {
             using (StreamReader sr = new StreamReader(Request.Body))
             {
@@ -228,8 +228,8 @@ namespace JdCat.Cat.WxApi.Controllers
                     }
 
                     var util = HttpContext.RequestServices.GetService<IUtilRepository>();
-                    await util.SendPaySuccessMsgAsync(order);
-                    await util.SendNewOrderMsgAsync(order);
+                    //await util.SendPaySuccessMsgAsync(order);     // 不再发送小程序通知
+                    await util.SendNewOrderMsgAsync(order);         // 公众号通知
                     // （旧）订单提醒：将数据存储在通知服务中，等待客户端来取
                     try
                     {
@@ -255,7 +255,7 @@ namespace JdCat.Cat.WxApi.Controllers
                     {
                         Log.Error("新订单消息通知错误：" + e.Message);
                     }
-                    // 新：订单通知
+                    // 新：订单通知（将订单存放在redis中，等待客户端来取）
                     await Service.AddOrderNotifyAsync(order);
                 }
                 else

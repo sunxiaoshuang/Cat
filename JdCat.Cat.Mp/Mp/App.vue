@@ -17,7 +17,7 @@
 
 
 <style>
-	@import "./static/fonts/iconfont.css";
+	@import "./static/fonts/iconfont.css"
 	
 	.container {
 		display: flex;

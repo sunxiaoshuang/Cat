@@ -115,7 +115,7 @@ namespace JdCat.Cat.Model.Data
         /// </summary>
         public string RefundTemplateId { get; set; }
         /// <summary>
-        /// 订单交易模版Id（小程序）
+        /// 订单取餐模版Id（小程序）
         /// </summary>
         public string TemplateNotifyId { get; set; }
         /// <summary>

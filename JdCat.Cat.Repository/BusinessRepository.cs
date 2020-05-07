@@ -1042,7 +1042,7 @@ namespace JdCat.Cat.Repository
                 .OrderBy(a => a.ID).Select(a => new Tuple<int, string>(a.ID, a.Name)).ToList();
         }
 
-        public List<Order> GetOrders(int chainId, int businessId, OrderStatus? status, PagingQuery query, DateTime startDate, DateTime endDate)
+        public List<Order> GetOrders(int chainId, int businessId, OrderStatus? status, PagingQuery query, DateTime startDate, DateTime endDate, int delivery)
         {
             var end = endDate.AddDays(1);
             IQueryable<Order> sql = Context.Orders;
@@ -1058,6 +1058,10 @@ namespace JdCat.Cat.Repository
             if (status != null && status > 0)
             {
                 sql = sql.Where(a => (a.Status & status.Value) > 0);
+            }
+            if (delivery != 99)
+            {
+                sql = sql.Where(a => a.DeliveryMode == (DeliveryMode)delivery);
             }
             sql = sql.Where(a => a.CreateTime >= startDate && a.CreateTime < end);
             query.RecordCount = sql.Count();

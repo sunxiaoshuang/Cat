@@ -205,8 +205,11 @@ page {
   text-align: right;
 }
 .invoice input {
-  border: 1px solid #eee;
+  /* border: 1px solid #eee;
   flex-grow: 1;
   margin-left: 20rpx;
-  padding: 10rpx;
+  padding: 10rpx; */
+}
+input {
+  text-align: right;
 }

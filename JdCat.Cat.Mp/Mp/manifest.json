@@ -65,7 +65,7 @@
         "devServer" : {
             "https" : false
         },
-        "domain" : "http://mp.whliupangzi.cn",
-        "title" : "武汉刘胖子"
+        "domain" : "http://mp.jiandanmao.cn",
+        "title" : "简单猫科技"
     }
 }

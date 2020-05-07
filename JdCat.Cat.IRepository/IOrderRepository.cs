@@ -237,7 +237,16 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Task<bool> AddOrderNotifyAsync(Order order);
 
-
+        /// <summary>
+        /// 根据商户的订单各种状态，查询订单
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="mode"></param>
+        /// <param name="status"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <returns></returns>
+        Task<List<Order>> GetOrderByStatus(int id, DeliveryMode mode = DeliveryMode.Third, OrderStatus status = OrderStatus.Unfinish, DateTime? startTime = null, DateTime? endTime = null);
 
 
 

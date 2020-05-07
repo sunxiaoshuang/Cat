@@ -5,7 +5,8 @@
 			<uni-collapse-item :title="type.name" thumb="../../static/menu-list.png" v-for="type in types" v-bind:key="type.name">
 				<uni-list>
 					<uni-swipe-action :options="options" v-for="product in type.list" v-bind:key="product.name" @click="click($event, product)">
-						<uni-list-item :title="product.name" :show-arrow="false" style="padding-left: 36upx;" :show-badge="product.status === 2" :badge-text="stateFilter(product.status)">
+						<uni-list-item :title="product.name" :show-arrow="false" style="padding-left: 36upx;" :show-badge="product.status === 2"
+						 :badge-text="stateFilter(product.status)">
 						</uni-list-item>
 					</uni-swipe-action>
 				</uni-list>
@@ -13,7 +14,8 @@
 		</uni-collapse>
 		<uni-list v-else>
 			<uni-swipe-action :options="options" v-for="product in productsFilter" v-bind:key="product.name" @click="click($event, product)">
-				<uni-list-item :title="product.name" :show-arrow="false" style="padding-left: 36upx;" :show-badge="product.status === 2" :badge-text="stateFilter(product.status)">
+				<uni-list-item :title="product.name" :show-arrow="false" style="padding-left: 36upx;" :show-badge="product.status === 2"
+				 :badge-text="stateFilter(product.status)">
 				</uni-list-item>
 			</uni-swipe-action>
 		</uni-list>
@@ -30,8 +32,13 @@
 	import uniCollapse from "@/components/uni-collapse/uni-collapse.vue"
 	import uniCollapseItem from "@/components/uni-collapse-item/uni-collapse-item.vue"
 	import uniSwipeAction from "@/components/uni-swipe-action/uni-swipe-action.vue"
-    import helper from '../../common/helper.js';
-	const stateArr = {0: '初始化', 1: '已上架', 2: '已下架', 3: '已删除'};
+	import helper from '../../common/helper.js';
+	const stateArr = {
+		0: '初始化',
+		1: '已上架',
+		2: '已下架',
+		3: '已删除'
+	};
 	export default {
 		components: {
 			mSearch,
@@ -65,7 +72,7 @@
 			var self = this;
 			helper.request({
 				url: "/mana/products/" + e.id,
-				success(res){
+				success(res) {
 					self.types = res.data;
 					self.types.forEach(type => type.list.forEach(product => self.products.push(product)));
 				}
@@ -73,7 +80,7 @@
 		},
 		methods: {
 			search(e) {
-				if(!e) {
+				if (!e) {
 					this.productsFilter = [];
 					return;
 				}
@@ -81,11 +88,11 @@
 			},
 			click(e, product) {
 				var status = e.text === "上架" ? 1 : 2;
-				if(status === product.status)return;
+				if (status === product.status) return;
 				helper.request({
 					url: `/mana/products/${product.id}?status=${status}`,
 					method: "put",
-					success(res){
+					success(res) {
 						uni.showToast({
 							title: e.text + '成功'
 						});
@@ -93,7 +100,7 @@
 					}
 				})
 			},
-			stateFilter(state){
+			stateFilter(state) {
 				return stateArr[state];
 			}
 		}

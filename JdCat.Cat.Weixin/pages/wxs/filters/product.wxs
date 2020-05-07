@@ -1,6 +1,6 @@
 
 var defaultImageSrc = "/images/logo-2.jpg";
-var imageUrl = "http://f.whliupangzi.cn";
+var imageUrl = "http://f.jiandanmao.cn";
 var product = {
 
     productImage: function (product, businessId, flag) {

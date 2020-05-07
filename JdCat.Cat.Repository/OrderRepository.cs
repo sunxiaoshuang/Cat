@@ -113,7 +113,7 @@ namespace JdCat.Cat.Repository
             result.Data = order;
             result.Success = true;
             // 清空购物车（以后删除这段代码）
-            Context.Database.ExecuteSqlCommand("delete from `ShoppingCart` where userid={0}", order.UserId);
+            //Context.Database.ExecuteSqlCommand("delete from `ShoppingCart` where userid={0}", order.UserId);
             return result;
         }
 
@@ -655,7 +655,12 @@ namespace JdCat.Cat.Repository
         {
             if (!order.Business.IsAutoReceipt) return;
 
-            if (order.Business.ServiceProvider == LogisticsType.None)
+            if (order.DeliveryMode == DeliveryMode.Self)
+            {
+                // 自提
+                order.Status = OrderStatus.Receipted;
+            }
+            else if (order.Business.ServiceProvider == LogisticsType.None)
             {
                 order.Status = OrderStatus.Receipted;
             }
@@ -1085,6 +1090,16 @@ namespace JdCat.Cat.Repository
         //    return await Context.Orders.Include(a => a.Products).Where(a => ids.Contains(a.ID)).ToListAsync();
         //}
 
+
+        public async Task<List<Order>> GetOrderByStatus(int id, DeliveryMode mode = DeliveryMode.Third, OrderStatus status = OrderStatus.Valid, DateTime? startTime = null, DateTime? endTime = null)
+        {
+            var now = DateTime.Now;
+            var start = startTime ?? new DateTime(now.Year, now.Month, now.Day);
+            var end = endTime.HasValue ? endTime.Value.AddDays(1) : new DateTime(now.Year, now.Month, now.Day).AddDays(1);
+            return await Context.Orders
+                .Where(a => (a.Status & status) > 0 && a.DeliveryMode == mode && a.CreateTime >= start && a.CreateTime < end)
+                .ToListAsync();
+        }
 
 
 

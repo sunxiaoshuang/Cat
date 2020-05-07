@@ -43,6 +43,11 @@
 						text: '我的商品',
 						url: '/pages/product/product'
 					},
+					{
+						image: '/static/self-take.png',
+						text: '自提订单',
+						url: '/pages/self-take-order/self-take-order'
+					},
 					// {
 					// 	image: '/static/yingye-cny.png',
 					// 	text: '营业统计',

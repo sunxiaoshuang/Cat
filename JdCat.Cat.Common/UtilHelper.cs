@@ -500,7 +500,8 @@ namespace JdCat.Cat.Common
                     }
                     else
                     {
-                        body = new StringContent(JsonConvert.SerializeObject(content));
+                        var data = JsonConvert.SerializeObject(content);
+                        body = new StringContent(data);
                     }
                 }
                 switch (method)

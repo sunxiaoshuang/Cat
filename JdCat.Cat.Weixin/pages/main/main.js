@@ -71,7 +71,7 @@ Page({
       hasLocation,
       locationName
     });
-    
+
   },
   // 分享
   onShareAppMessage: function () {

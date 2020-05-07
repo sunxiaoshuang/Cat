@@ -54,6 +54,11 @@
                 <input autocomplete="off" class="form-control width-200" id="txtStartDate" v-model="startDate" />
                 <label style="width: 30px; text-align: center;">-</label>
                 <input autocomplete="off" class="form-control width-200" id="txtEndDate" v-model="endDate" />
+
+                <label class="margin-left-20">送餐类型：</label>
+                <select class="form-control margin-right-20" style="width: 200px;" v-model="delivery">
+                    <option v-for="item in deliveryMode" :value="item.value">{{item.name}}</option>
+                </select>
             </div>
             <div class="flex-row margin-bottom-10">
                 <label>选择门店：</label>

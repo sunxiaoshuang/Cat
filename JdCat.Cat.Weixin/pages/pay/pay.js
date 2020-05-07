@@ -21,6 +21,10 @@ Page({
     isInvoice: false,
     invoiceName: "",
     invoiceTax: "",
+    isSelfTaking: false,
+    takePerson: '',
+    phoneNumber: '',
+    phoneNumberFocus: false,
     canCoupon: true // 是否可以使用优惠券
   },
   onLoad: function () {
@@ -64,12 +68,12 @@ Page({
       tablewareQuantity += a.packingQuantity * a.quantity;
     });
 
-    this.data.productCost = qcloud.utils.getNumber(productCost, 2);       // 产品费用总和
+    this.data.productCost = qcloud.utils.getNumber(productCost, 2); // 产品费用总和
     this.data.productOldCost = qcloud.utils.getNumber(productOldCost, 2); // 产品费用总和（原价）
-    this.data.saleFullReduce = wx.getStorageSync("nowFullReduce") || {};  // 当前使用的满减活动
-    var saleNewCustom = wx.getStorageSync("newCustom");                   // 新客户立减活动
+    this.data.saleFullReduce = wx.getStorageSync("nowFullReduce") || {}; // 当前使用的满减活动
+    var saleNewCustom = wx.getStorageSync("newCustom"); // 新客户立减活动
 
-    var coupons = wx.getStorageSync("myCoupon").filter(a => {             // 优惠券列表
+    var coupons = wx.getStorageSync("myCoupon").filter(a => { // 优惠券列表
       if (a.status != 1) return false;
       if (productCost >= a.minConsume) return true;
       return false;
@@ -108,9 +112,12 @@ Page({
 
     var address = wx.getStorageSync("selectAddress") || "",
       oldAddress = this.data.address;
+
     this.setData({
       address,
-      coupon
+      coupon,
+      takePerson: address ? address.receiver : '',
+      phoneNumber: address ? address.phone : ''
     });
 
     if (address && (!oldAddress || address.id != oldAddress.id)) {
@@ -119,7 +126,10 @@ Page({
       this.calcCost();
     }
   },
-  changeAddress: function () { // 改变地址后，重新计算配送费
+  /**
+   * 地址改变后，重新计算配送费和订单综合
+   */
+  changeAddress: function () {
     var business = qcloud.getSession().business,
       freights = wx.getStorageSync("freights")
     if (!freights || freights.length === 0) {
@@ -144,6 +154,9 @@ Page({
     }
     this.calcCost();
   },
+  /**
+   * 计算订单总额
+   */
   calcCost: function () {
     /** 计算订单各种费用：
      * 1. 涉及的费用：产品总价、配送费、新客户立减、满减、优惠券
@@ -157,6 +170,10 @@ Page({
       newCustom = this.data.saleNewCustom.amount || 0,
       coupon = this.data.coupon.value || 0;
 
+    if (this.data.isSelfTaking) { // 如果是自提，则配送费为零
+      freight = 0
+    }
+
     var total = qcloud.utils.getNumber(productCost + freight - newCustom - fullReduce - coupon + this.data.packagePrice, 2);
     if (total <= 0) total = 0.01;
     var oldPrice = qcloud.utils.getNumber(productOldCost + freight + this.data.packagePrice, 2);
@@ -166,10 +183,15 @@ Page({
       oldPrice
     });
   },
+  radioChange(e) {
+    this.setData({
+      deliveryMode: +e.detail.value
+    })
+  },
   selectAddress: function () {
     wx.navigateTo({
       url: "/pages/address/list/list?flag=select"
-    });
+    })
   },
   selectCoupon: function () {
     wx.navigateTo({
@@ -181,43 +203,67 @@ Page({
       tablewareQuantity: this.data.tablewareQuantitys[e.detail.value]
     });
   },
+  sure() {
+    let self = this, business = qcloud.getSession().business
+    wx.requestSubscribeMessage({
+      tmplIds: [business.templateNotifyId],
+      complete() {
+        self.submit()
+      }
+    })
+  },
   submit: function () {
-    if (!this.data.address) {
-      util.showError("请选择收货地址");
-      return;
-    }
-    util.showBusy("loading");
     var self = this,
       business = qcloud.getSession().business,
-      user = qcloud.getSession().userinfo;
-    var distance = util.calcDistance(this.data.address, business);
-    if (business.range > 0 && (business.range - distance / 1000 < 0)) {
-      util.showError("地址超出商家配送范围");
-      return;
+      user = qcloud.getSession().userinfo,
+      address = this.data.isSelfTaking ? {} : this.data.address
+
+    if (this.data.isSelfTaking) {
+      // 如果是自提
+      if (!this.data.phoneNumber) {
+        util.showError('请输入联系电话')
+        return
+      }
+    } else {
+      // 需要配送地址
+      if (!address) {
+        util.showError("请选择收货地址")
+        return
+      }
+      // 验证是否超过范围
+      var distance = util.calcDistance(address, business)
+      if (business.range > 0 && (business.range - distance / 1000 < 0)) {
+        util.showError("地址超出商家配送范围")
+        return
+      }
     }
+
     var remark = this.data.remark || "";
+    // 验证发票信息
     if (this.data.isInvoice) {
       if (!this.data.invoiceName || !this.data.invoiceTax) {
-        util.showError("请填写公司名称、纳税识别码");
-        return;
+        util.showError("请填写公司名称、纳税识别码")
+        return
       }
       wx.setStorageSync("invoiceName", this.data.invoiceName);
       wx.setStorageSync("invoiceTax", this.data.invoiceTax);
       remark += `(开票公司：${this.data.invoiceName}，识别码：${this.data.invoiceTax})`;
     }
-
-
     wx.setStorageSync("isInvoice", this.data.isInvoice);
+
+    util.showBusy("loading")
+
+    // 提交订单
     var order = {
       price: this.data.total,
       oldPrice: this.data.oldPrice,
       freight: this.data.freight,
-      receiverName: this.data.address.receiver,
-      receiverAddress: this.data.address.mapInfo + " " + this.data.address.detailInfo,
-      lat: this.data.address.lat,
-      lng: this.data.address.lng,
-      phone: this.data.address.phone,
-      gender: this.data.address.gender,
+      receiverName: address.receiver || '',
+      receiverAddress: address.mapInfo + " " + address.detailInfo,
+      lat: address.lat || business.lat,
+      lng: address.lng || business.lng,
+      phone: address.phone,
+      gender: address.gender || 0,
       remark: remark,
       tablewareQuantity: this.data.tablewareQuantity,
       cityCode: business.cityCode,
@@ -229,11 +275,18 @@ Page({
       saleCouponUserMoney: this.data.coupon.couponId > 0 ? this.data.coupon.value : null,
       products: [],
       openId: user.openId,
-      distance: +distance.toFixed(0),
+      distance: ~~distance,
+      deliveryMode: this.data.isSelfTaking ? 2 : 0,
       packagePrice: +this.data.packagePrice,
-      invoiceName: this.data.invoiceName,
-      invoiceTax: this.data.invoiceTax,
+      invoiceName: this.data.isInvoice ? this.data.invoiceName : '',
+      invoiceTax: this.data.isInvoice ? this.data.invoiceTax: ''
     };
+
+    if (this.data.isSelfTaking) {
+      order.receiverAddress = '自提'
+      order.phone = this.data.phoneNumber
+      order.receiverName = this.data.takePerson || ''
+    }
 
     this.data.cartList.forEach(a => {
       order.products.push({
@@ -330,6 +383,13 @@ Page({
       }
     });
     wx.setStorageSync("myCoupon", myCoupon);
+  },
+  changeDelivery(e) {
+    this.setData({
+      isSelfTaking: e.detail.value,
+      phoneNumberFocus: e.detail.value
+    })
+    this.changeAddress()
   },
   changeInvoice: function () {
     var result = !this.data.isInvoice;

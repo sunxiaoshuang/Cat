@@ -24,7 +24,14 @@
                 pageIndex: 1,
                 pageCount: 1,
                 recordCount: 0
-            }
+            },
+            deliveryMode: [
+                { name: '全部', value: 99 },
+                { name: '外送', value: 0 },
+                { name: '商家自送', value: 1 },
+                { name: '自提', value: 2 }
+            ],
+            delivery: 99
         },
         methods: {
             getData: function () {
@@ -43,7 +50,7 @@
                     $.alert("订单起止时间间隔必须30天以内");
                     return;
                 }
-                var query = `pageSize=${pageSize = this.paging.pageSize}&pageIndex=${this.paging.pageIndex}&status=${type.type}&startDate=${this.startDate}&endDate=${this.endDate}&businessId=${this.selectedItem}`;
+                var query = `pageSize=${pageSize = this.paging.pageSize}&pageIndex=${this.paging.pageIndex}&status=${type.type}&startDate=${this.startDate}&endDate=${this.endDate}&businessId=${this.selectedItem}&delivery=${this.delivery}`;
                 axios.get(`/Chain/GetOrders?${query}`)
                     .then(function (res) {
                         self.orderList = res.data.list;

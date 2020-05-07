@@ -87,6 +87,10 @@ namespace JdCat.Cat.Model.Enum
         /// <summary>
         /// 可以退款的状态
         /// </summary>
-        CanRefund = 1 + 4 + 8 + 16
+        CanRefund = 1 + 4 + 8 + 16,
+        /// <summary>
+        /// 未完成到订单
+        /// </summary>
+        Unfinish = 1 + 4 + 8 + 16 + 2048
     }
 }

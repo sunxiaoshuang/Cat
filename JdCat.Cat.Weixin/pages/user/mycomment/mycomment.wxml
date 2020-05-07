@@ -1,6 +1,6 @@
 <wxs module="common" src="../../wxs/filters/common.wxs"></wxs>
 <view class="container">
-    <view class="comment" wx:for="{{comments}}" wx:key="" bindtap="cat" data-comment="{{item}}">
+    <view class="comment" wx:for="{{comments}}" wx:key="id" bindtap="cat" data-comment="{{item}}">
         <view class="store">
             <text>门店：{{item.name}}</text>
             <text class="jdcat jdcat-right pull-right" style="color: #bbb; font-size: 1.2em"></text>

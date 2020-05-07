@@ -6,9 +6,9 @@ namespace JdCat.Cat.Model.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            //migrationBuilder.DropForeignKey(
-            //    name: "FK_SaleCouponUser_SaleCoupon_CouponId",
-            //    table: "SaleCouponUser");
+            migrationBuilder.DropForeignKey(
+                name: "FK_SaleCouponUser_SaleCoupon_CouponId",
+                table: "SaleCouponUser");
 
             migrationBuilder.AlterColumn<int>(
                 name: "CouponId",
@@ -16,10 +16,10 @@ namespace JdCat.Cat.Model.Migrations
                 nullable: true,
                 oldClrType: typeof(int));
 
-            //migrationBuilder.AddColumn<int>(
-            //    name: "ReturnCouponId",
-            //    table: "SaleCouponUser",
-            //    nullable: true);
+            migrationBuilder.AddColumn<int>(
+                name: "ReturnCouponId",
+                table: "SaleCouponUser",
+                nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SaleCouponUser_ReturnCouponId",

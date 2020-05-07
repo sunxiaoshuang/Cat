@@ -17,11 +17,11 @@
     },
     "JdCat.Cat.Web": {
       "commandName": "Project",
-      "launchBrowser": true,
+      //"launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:53789/"
+      "applicationUrl": "http://localhost:5000/"
     }
   }
 }

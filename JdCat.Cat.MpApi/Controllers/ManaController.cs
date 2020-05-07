@@ -9,6 +9,7 @@ using JdCat.Cat.Model.Enum;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace JdCat.Cat.MpApi.Controllers
 {
@@ -95,6 +96,40 @@ namespace JdCat.Cat.MpApi.Controllers
             return Ok("操作成功");
         }
 
+        /// <summary>
+        /// 获取商户到自提订单
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("selfTakeOrders/{id}")]
+        public async Task<IActionResult> GetSelfTakeOrder(int id, [FromQuery]DateTime? date, [FromServices]IOrderRepository rep)
+        {
+            return Json(await rep.GetOrderByStatus(id, DeliveryMode.Self, startTime: date, endTime: date));
+        }
+
+        [HttpGet("sendMsg/{id}")]
+        public async Task<IActionResult> GetSendMsg(int id, [FromServices]IUtilRepository res, [FromServices]IConfiguration config)
+        {
+            var order = await res.GetAsync<Order>(id);
+            order.Status = OrderStatus.DistributorReceipt;
+            await res.CommitAsync();
+            await res.SendTakeOrderMsgAsync(order, config["appData:key1"], config["appData:key2"], config["appData:key3"], config["appData:key4"]);
+            return Ok("通知成功");
+        }
+
+        /// <summary>
+        /// 客户取走订单后的操作
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rep"></param>
+        /// <returns></returns>
+        [HttpPut("takenAway/{id}")]
+        public async Task<IActionResult> PutTakenAway(int id, [FromServices]IOrderRepository rep)
+        {
+            var order = new Order { ID = id, Status = OrderStatus.Achieve };
+            var res = await rep.UpdateAsync(order, new List<string> { nameof(order.Status) });
+            return Json(new JsonData { Success = res > 0, Msg = "修改成功" });
+        }
 
     }
 }

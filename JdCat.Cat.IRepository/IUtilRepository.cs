@@ -78,6 +78,13 @@ namespace JdCat.Cat.IRepository
         /// </summary>
         /// <param name="order"></param>
         Task SendNewOrderMsgAsync(Order order);
+        /// <summary>
+        /// 发送取餐提醒
+        /// </summary>
+        /// <param name="order">订单</param>
+        /// <param name="keys">消息体关键字</param>
+        /// <returns></returns>
+        Task SendTakeOrderMsgAsync(Order order, params string[] keys);
 
         #endregion
 

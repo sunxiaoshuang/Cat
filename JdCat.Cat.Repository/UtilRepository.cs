@@ -245,6 +245,37 @@ namespace JdCat.Cat.Repository
             }
         }
 
+        public async Task SendTakeOrderMsgAsync(Order order, params string[] keys)
+        {
+            var business = await GetAsync<Business>(order.BusinessId.Value);
+            if (string.IsNullOrEmpty(business.TemplateNotifyId)) return;
+            var token = await GetTokenAsync(business.AppId, business.Secret);
+            var msg = new Dictionary<string, object>
+            {
+                ["access_token"] = token,
+                ["template_id"] = business.TemplateNotifyId,
+                ["page"] = "pages/order/orderInfo/orderInfo?id=" + order.ID
+            };
+            if (string.IsNullOrEmpty(order.OpenId))
+            {
+                var user = await GetAsync<User>(order.UserId.Value);
+                msg["touser"] = user.OpenId;
+            }
+            else
+            {
+                msg["touser"] = order.OpenId;
+            }
+
+            msg["data"] = new Dictionary<string, object>
+            {
+                [keys[0]] = new { value = order.Identifier.ToString() },
+                [keys[1]] = new { value = order.CreateTime?.ToString("yyyy-MM-dd HH:mm:ss") },
+                [keys[2]] = new { value = order.OrderCode },
+                [keys[3]] = new { value = business.Address }
+            };
+            await WxHelper.SendTemplateMessageAsync(msg);
+        }
+
         #endregion
 
         public async Task<long> GetNumberAsync()
@@ -262,7 +293,7 @@ namespace JdCat.Cat.Repository
             var rand = UtilHelper.RandNum(4);
             return $"{year}{code}{rand}";
         }
-        
+
 
 
 
@@ -450,12 +481,12 @@ namespace JdCat.Cat.Repository
         /// <returns></returns>
         private async Task WechatHandlerErrorAsync(WxMessageReturn ret, WxEventMessage msg)
         {
-            if(ret.errcode == 43004)
+            if (ret.errcode == 43004)
             {
                 // 用户已取消关注，则删除该用户
                 var openId = msg.touser;
                 var users = await Context.WxListenUsers.Where(a => a.openid == openId).ToListAsync();
-                if(users.Count > 0)
+                if (users.Count > 0)
                 {
                     Context.RemoveRange(users);
                     await Context.SaveChangesAsync();
