@@ -23,7 +23,6 @@
     "pages/user/mycomment/mycomment",
     "pages/order/refund/refund",
     "pages/order/orderLocation/orderLocation",
-    "pages/logs/logs",
     "pages/showPage/showPage",
     "pages/retCoupon/retCoupon"
   ],

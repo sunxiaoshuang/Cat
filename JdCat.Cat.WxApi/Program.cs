@@ -27,6 +27,10 @@ namespace JdCat.Cat.WxApi
             return WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(config)
                 .UseStartup<Startup>()
+                .UseKestrel(options =>
+                {
+                    options.Limits.MinResponseDataRate = null;
+                })
                 .Build();
         }
     }
