@@ -84,6 +84,29 @@
                                         <span class="glyphicon glyphicon-calendar"></span>
                                     </span>
                                 </div>
+                                <div class="pull-left" style="width: 250px; margin-left: 10px;">
+                                    <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                                        <label class="label-checkbox">
+                                            <input type="radio" name="delivery" :value="99" v-model="mode">
+                                            <span class="custom-checkbox"></span>
+                                            全部
+                                        </label>
+                                    </div>
+                                    <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                                        <label class="label-checkbox">
+                                            <input type="radio" name="delivery" :value="2" v-model="mode">
+                                            <span class="custom-checkbox"></span>
+                                            自提
+                                        </label>
+                                    </div>
+                                    <div class="kui-checkbox checkbox pull-left m-left-md m-right-md margin-right-20">
+                                        <label class="label-checkbox">
+                                            <input type="radio" name="delivery" :value="0" v-model="mode">
+                                            <span class="custom-checkbox"></span>
+                                            其他
+                                        </label>
+                                    </div>
+                                </div>
                                 <button class="btn btn-primary pull-left" style="margin-left: 20px;" @@click="search()">
                                     <i class="fa fa-search"></i>
                                     查询
@@ -106,61 +129,61 @@
                             <span style="color:red;">应收金额</span> = 商品销售总额 + 配送费 + 包装费；
                             <span style="color:red;">实收金额</span> = 商品销售净额 + 配送费 + 包装费 - 活动金额；
                         </p>
-                        </div>
-                        <div class="col-md-12">
-                            <table class="table table-hover table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th width="100" style="text-align: center !important;">序号</th>
-                                        <th>日期</th>
-                                        <th>订单实数</th>
-                                        <th>商品销售总额</th>
-                                        <th>商品销售净额</th>
-                                        <th>配送费</th>
-                                        <th>包装费</th>
-                                        <th>商品折扣优惠</th>
-                                        <th>活动优惠</th>
-                                        <th>优惠总额</th>
-                                        <th>应收金额</th>
-                                        <th>实收金额</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, $index) in list">
-                                        <td v-text="$index + 1" align="center"></td>
-                                        <td v-text="item.date"></td>
-                                        <td v-text="item.quantity"></td>
-                                        <td v-text="currency(item.productOriginalAmount)"></td>
-                                        <td v-text="currency(item.productAmount)"></td>
-                                        <td v-text="currency(item.freightAmount)"></td>
-                                        <td v-text="currency(item.packageAmount)"></td>
-                                        <td v-text="currency(item.discountAmount)"></td>
-                                        <td v-text="currency(item.activityAmount)"></td>
-                                        <td v-text="currency(item.benefitAmount)"></td>
-                                        <td v-text="currency(item.total)"></td>
-                                        <td v-text="currency(item.actualTotal)"></td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr v-if="list.length > 0">
-                                        <td align="center">总计</td>
-                                        <td></td>
-                                        <td v-text="quantity"></td>
-                                        <td v-text="currency(productOriginalAmount)"></td>
-                                        <td v-text="currency(productAmount)"></td>
-                                        <td v-text="currency(freightAmount)"></td>
-                                        <td v-text="currency(packageAmount)"></td>
-                                        <td v-text="currency(discountAmount)"></td>
-                                        <td v-text="currency(activityAmount)"></td>
-                                        <td v-text="currency(benefitAmount)"></td>
-                                        <td v-text="currency(total)"></td>
-                                        <td v-text="currency(actualTotal)"></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th width="100" style="text-align: center !important;">序号</th>
+                                    <th>日期</th>
+                                    <th>订单实数</th>
+                                    <th>商品销售总额</th>
+                                    <th>商品销售净额</th>
+                                    <th>配送费</th>
+                                    <th>包装费</th>
+                                    <th>商品折扣优惠</th>
+                                    <th>活动优惠</th>
+                                    <th>优惠总额</th>
+                                    <th>应收金额</th>
+                                    <th>实收金额</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, $index) in list">
+                                    <td v-text="$index + 1" align="center"></td>
+                                    <td v-text="item.date"></td>
+                                    <td v-text="item.quantity"></td>
+                                    <td v-text="currency(item.productOriginalAmount)"></td>
+                                    <td v-text="currency(item.productAmount)"></td>
+                                    <td v-text="currency(item.freightAmount)"></td>
+                                    <td v-text="currency(item.packageAmount)"></td>
+                                    <td v-text="currency(item.discountAmount)"></td>
+                                    <td v-text="currency(item.activityAmount)"></td>
+                                    <td v-text="currency(item.benefitAmount)"></td>
+                                    <td v-text="currency(item.total)"></td>
+                                    <td v-text="currency(item.actualTotal)"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr v-if="list.length > 0">
+                                    <td align="center">总计</td>
+                                    <td></td>
+                                    <td v-text="quantity"></td>
+                                    <td v-text="currency(productOriginalAmount)"></td>
+                                    <td v-text="currency(productAmount)"></td>
+                                    <td v-text="currency(freightAmount)"></td>
+                                    <td v-text="currency(packageAmount)"></td>
+                                    <td v-text="currency(discountAmount)"></td>
+                                    <td v-text="currency(activityAmount)"></td>
+                                    <td v-text="currency(benefitAmount)"></td>
+                                    <td v-text="currency(total)"></td>
+                                    <td v-text="currency(actualTotal)"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
+            </div>
         </div>
     </div>
     <div style="height: 100px;"></div>

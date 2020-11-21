@@ -79,13 +79,13 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="end"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetSaleStatistics([FromQuery]DateTime? start, [FromQuery]DateTime? end)
+        public IActionResult GetSaleStatistics([FromQuery]DateTime? start, [FromQuery]DateTime? end, [FromQuery]int mode)
         {
             if (!start.HasValue || !end.HasValue)
             {
                 return Json(new string[] { });
             }
-            return Json(Service.GetSaleStatistics(Business, start.Value, end.Value));
+            return Json(Service.GetSaleStatistics(Business, start.Value, end.Value, mode));
         }
 
         /// <summary>
@@ -95,10 +95,10 @@ namespace JdCat.Cat.Web.Controllers
         /// <param name="end"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult ExportSaleStatistics([FromQuery]DateTime? start, [FromQuery]DateTime? end)
+        public IActionResult ExportSaleStatistics([FromQuery]DateTime? start, [FromQuery]DateTime? end, [FromQuery]int mode)
         {
             var name = $"销售统计({start.Value:yyyyMMdd}-{end.Value:yyyyMMdd}).xlsx";
-            var list = Service.GetSaleStatistics(Business, start.Value, end.Value);
+            var list = Service.GetSaleStatistics(Business, start.Value, end.Value, mode);
             var index = 1;
             var totalPrice = 0d;
             var totalQuantity = 0;

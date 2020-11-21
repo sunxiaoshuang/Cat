@@ -305,6 +305,12 @@ namespace JdCat.Cat.Repository
                 order = await Context.ThirdOrders.Include(a => a.ThirdOrderProducts).Include(a => a.ThirdOrderActivities).FirstOrDefaultAsync(a => a.OrderId == orderId);
                 if (order == null) return null;
             }
+            else
+            {
+                // 此处的逻辑，为了防止重复出单设计
+                // 已经是接收状态的订单，则不再做任何处理
+                if (order.Status == OrderStatus.Receipted) return null;
+            }
             order.Status = OrderStatus.Receipted;
             await Context.SaveChangesAsync();
             return order;

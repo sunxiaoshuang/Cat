@@ -354,16 +354,21 @@ namespace JdCat.Cat.Repository
 
         }
 
-        public List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end)
+        public List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end, int mode)
         {
             var startTime = new DateTime(start.Year, start.Month, start.Day);
             var endTime = new DateTime(end.Year, end.Month, end.Day);
             endTime = endTime.AddDays(1);
 
-            var query1 = from order in Context.Orders
+            var query = Context.Orders.Where(a => a.BusinessId == business.ID && (a.Status & OrderStatus.Valid) > 0 && a.CreateTime >= startTime && a.CreateTime < endTime);
+            if (mode != 99)
+            {
+                query = query.Where(a => a.DeliveryMode == (DeliveryMode)mode);
+            }
+
+            var query1 = from order in query
                          join activity in Context.OrderActivities on order.ID equals activity.OrderId into joinActivity
                          from activity in joinActivity.DefaultIfEmpty()
-                         where order.BusinessId == business.ID && (order.Status & OrderStatus.Valid) > 0 && order.CreateTime >= startTime && order.CreateTime < endTime
                          select new
                          {
                              order.ID,

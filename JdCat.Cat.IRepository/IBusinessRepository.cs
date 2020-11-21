@@ -193,8 +193,9 @@ namespace JdCat.Cat.IRepository
         /// <param name="business"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
+        /// <param name="mode">送货方式</param>
         /// <returns></returns>
-        List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end);
+        List<Report_SaleStatistics> GetSaleStatistics(Business business, DateTime start, DateTime end, int mode);
 
         /// <summary>
         /// 获取指定日期的销售统计数据（堂食）

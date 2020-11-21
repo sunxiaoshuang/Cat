@@ -11,6 +11,7 @@
             price: pageData.list.length > 0 ? +pageData.list[pageData.list.length - 1].price.toFixed(2) : 0,
             todayQuantity: pageData.list.length > 0 ? pageData.list[pageData.list.length - 1].quantity : 0,
             list: [],
+            mode: 99,
             start: undefined,
             end: undefined,
             productOriginalAmount: 0,
@@ -36,7 +37,7 @@
                     return;
                 }
                 this.clearTotal();
-                axios.get(`/Report/GetSaleStatistics?start=${this.start}&end=${this.end}`)
+                axios.get(`/Report/GetSaleStatistics?start=${this.start}&end=${this.end}&mode=${this.mode}`)
                     .then(function (res) {
                         self.list = res.data;
                         self.list.forEach(item => {
@@ -81,7 +82,7 @@
                 this.quantity = this.productOriginalAmount = this.productAmount = this.freightAmount = this.packageAmount = this.discountAmount = this.activityAmount = this.benefitAmount = this.total = this.actualTotal = 0;
             },
             report: function () {
-                window.open(`/Report/ExportSaleStatistics?start=${this.start}&end=${this.end}`);
+                window.open(`/Report/ExportSaleStatistics?start=${this.start}&end=${this.end}&mode=${this.mode}`);
             }
         },
         created: function () {
