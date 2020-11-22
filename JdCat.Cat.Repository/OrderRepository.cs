@@ -565,6 +565,10 @@ namespace JdCat.Cat.Repository
         {
             return Context.Orders.Include(a => a.Products).Include(a => a.SaleFullReduce).Include(a => a.SaleCouponUser).SingleOrDefault(a => a.OrderCode == code);
         }
+        public async Task<Order> GetOrderByCodeAsync(string code)
+        {
+            return await Context.Orders.FirstOrDefaultAsync(a => a.OrderCode == code);
+        }
         public int GetOrderIdByCode(string orderCode)
         {
             var ids = Context.Orders.Where(a => a.OrderCode == orderCode).Select(a => a.ID).ToList();

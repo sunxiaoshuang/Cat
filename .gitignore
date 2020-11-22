@@ -30,6 +30,7 @@ Temp/
 File/
 js/*.min.js
 [Pp]roperties/
+unpackage/
 
 # Visual Studio 2015 cache/options directory
 .vs/

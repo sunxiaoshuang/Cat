@@ -161,6 +161,12 @@ namespace JdCat.Cat.IRepository
         /// <returns></returns>
         Order GetOrderByCode(string code);
         /// <summary>
+        /// 根据订单编号获取订单
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        Task<Order> GetOrderByCodeAsync(string code);
+        /// <summary>
         /// 根据订单编号获取订单id
         /// </summary>
         /// <param name="orderCode"></param>

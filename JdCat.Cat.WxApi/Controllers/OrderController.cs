@@ -21,6 +21,7 @@ using System.Text;
 using log4net;
 using JdCat.Cat.Model.Enum;
 using JdCat.Cat.WxApi.Models;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
 
 namespace JdCat.Cat.WxApi.Controllers
 {
@@ -202,6 +203,7 @@ namespace JdCat.Cat.WxApi.Controllers
             }
         }
 
+        private static Dictionary<string, int> orderHandler = new Dictionary<string, int>();
         [HttpPost("paySuccess")]
         public async Task<IActionResult> PaySuccess([FromServices]AppData appData)
         {
@@ -210,6 +212,27 @@ namespace JdCat.Cat.WxApi.Controllers
                 var content = sr.ReadToEnd();
                 var ret = UtilHelper.ReadXml<WxPaySuccess>(content);
                 if (string.IsNullOrEmpty(ret.transaction_id)) return BadRequest("支付不成功");
+
+                // 判断付款
+                //var order = Service.GetOrderByCode(ret.out_trade_no);
+                //if (order == null) return BadRequest("订单异常");
+                //if (order.Status != OrderStatus.NotPay)
+                //{
+                //    return Content("SUCCESS");
+                //}
+                if (orderHandler.ContainsKey(ret.out_trade_no))
+                {
+                    if (orderHandler[ret.out_trade_no] == 1)
+                    {
+                        return BadRequest("正在处理");
+                    }
+                }
+                else
+                {
+                    orderHandler.Add(ret.out_trade_no, 1);
+                }
+
+                orderHandler[ret.out_trade_no] = 1;     // 订单处理中，设置为1
                 var order = await Service.PaySuccessAsync(ret);
                 if (order != null)
                 {
@@ -255,11 +278,16 @@ namespace JdCat.Cat.WxApi.Controllers
                     {
                         Log.Error("新订单消息通知错误：" + e.Message);
                     }
+                    finally
+                    {
+                        orderHandler[ret.out_trade_no] = 2;     // 订单处理完成，设置为2
+                    }
                     // 新：订单通知（将订单存放在redis中，等待客户端来取）
                     await Service.AddOrderNotifyAsync(order);
                 }
                 else
                 {
+                    orderHandler[ret.out_trade_no] = 2;     // 未找到订单，设置为2
                     return BadRequest("简单猫订单参数错误");
                 }
             }
