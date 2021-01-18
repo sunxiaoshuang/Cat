@@ -455,5 +455,18 @@ namespace JdCat.Cat.Web.Controllers
         }
         #endregion
 
+
+        #region 订单迁移
+
+        [Route("/order/migration")]
+        public IActionResult OrderMigrations([FromQuery]DateTime? time, [FromServices]IOrderRepository rep)
+        {
+            var order = new Order();
+            time = time ?? DateTime.Now.AddMonths(-10);
+            var orders = rep.GetOrders()
+            return Content("成功");
+        }
+
+        #endregion
     }
 }
